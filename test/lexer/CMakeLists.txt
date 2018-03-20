@@ -1,0 +1,6 @@
+set(CMAKESL_TEST_SOURCES 
+    ${CMAKESL_TEST_SOURCES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/lexer_test.cpp 
+
+    PARENT_SCOPE
+)
