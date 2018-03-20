@@ -1,2 +1,4 @@
-add_subdirectory(ast)
-add_subdirectory(parse)
+set(CMAKESL_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+
+add_subdirectory(lexer)
+
