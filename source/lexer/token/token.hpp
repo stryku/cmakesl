@@ -10,15 +10,18 @@ namespace cmsl
         {
             class token
             {
-            private:
-                using token_t = cmsl::lexer::token::token_type;
-
             public:
+                using token_type_t = cmsl::lexer::token::token_type;
+
+                explicit token(token_type_t type = token_type_t::undef)
+                    : m_type{ type }
+                {}
+
                 bool is_valid() const;
-                token_t get_type() const;
+                token_type_t get_type() const;
 
             private:
-                token_t m_type{ token_t::undef };
+                token_type_t m_type{ token_type_t::undef };
             };
         }
     }

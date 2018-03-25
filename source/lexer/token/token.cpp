@@ -8,10 +8,10 @@ namespace cmsl
         {
             bool token::is_valid() const
             {
-                return get_type() != token_t::undef;
+                return get_type() != token_type_t::undef;
             }
 
-            token::token_t token::get_type() const
+            token::token_type_t token::get_type() const
             {
                 return m_type;
             }
