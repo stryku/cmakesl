@@ -12,7 +12,7 @@ namespace cmsl
             using lexer_t = cmsl::lexer::lexer;
             using token_type_t = cmsl::lexer::token::token_type;
 
-            TEST(Lexer, GetToken_Empty_GetEmpty)
+            TEST(Lexer, Lex_Empty_GetEmpty)
             {
                 const auto source = "";
                 cmsl::lexer::lexer lex;
@@ -22,10 +22,10 @@ namespace cmsl
 
             namespace integer
             {
-                struct GetToken : public testing::Test, testing::WithParamInterface<std::string>
+                struct Lex : public testing::Test, testing::WithParamInterface<std::string>
                 {};
 
-                TEST_P(GetToken, Digit_GetInteger)
+                TEST_P(Lex, Digit_GetInteger)
                 {
                     const auto source = GetParam();
                     cmsl::lexer::lexer lex;
@@ -35,7 +35,7 @@ namespace cmsl
                 }
 
                 const auto values = testing::Values("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
-                INSTANTIATE_TEST_CASE_P(Lexer, GetToken, values);
+                INSTANTIATE_TEST_CASE_P(Lexer, Lex, values);
             }
         }
     }
