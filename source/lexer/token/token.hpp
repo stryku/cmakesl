@@ -14,10 +14,8 @@ namespace cmsl
                 using token_t = cmsl::lexer::token::token_type;
 
             public:
-                bool is_valid() const
-                {
-                    return m_type != token_t::undef;
-                }
+                bool is_valid() const;
+                token_t get_type() const;
 
             private:
                 token_t m_type{ token_t::undef };

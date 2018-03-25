@@ -12,45 +12,30 @@ namespace cmsl
             using lexer_t = cmsl::lexer::lexer;
             using token_type_t = cmsl::lexer::token::token_type;
 
-            TEST(Lexer, GetToken_Empty_GetInvalid)
+            TEST(Lexer, GetToken_Empty_GetEmpty)
             {
                 const auto source = "";
                 cmsl::lexer::lexer lex;
-                const auto token = lex.get_token(source);
-                ASSERT_THAT(token.is_valid(), false);
+                const auto tokens = lex.lex(source);
+                ASSERT_THAT(tokens.empty(), true);
             }
 
             namespace integer
             {
-                struct IntegerTestState
-                {
-                    std::string source;
-                };
-
-                struct GetToken_Digit_GetInteger : public testing::Test, testing::WithParamInterface<IntegerTestState>
+                struct GetToken : public testing::Test, testing::WithParamInterface<std::string>
                 {};
 
-                const auto values = testing::Values(
-                    IntegerTestState{ "0" },
-                    IntegerTestState{ "1" },
-                    IntegerTestState{ "2" },
-                    IntegerTestState{ "3" },
-                    IntegerTestState{ "4" },
-                    IntegerTestState{ "5" },
-                    IntegerTestState{ "6" },
-                    IntegerTestState{ "7" },
-                    IntegerTestState{ "8" },
-                    IntegerTestState{ "9" }
-                );
-
-                TEST_P(GetToken_Digit_GetInteger, Lexer)
+                TEST_P(GetToken, Digit_GetInteger)
                 {
-                    const auto state = GetParam();
+                    const auto source = GetParam();
                     cmsl::lexer::lexer lex;
-                    const auto token = lex.get_token(state.source);
-                    ASSERT_THAT(token.is_valid(), true);
-                    ASSERT_THAT(token.get_type(), token_type_t::integer);
+                    const auto tokens = lex.lex(source);
+                    ASSERT_THAT(tokens.size(), 1u);
+                    ASSERT_THAT(tokens.front().get_type(), token_type_t::integer);
                 }
+
+                const auto values = testing::Values("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+                INSTANTIATE_TEST_CASE_P(Lexer, GetToken, values);
             }
         }
     }
