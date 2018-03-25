@@ -38,6 +38,12 @@ else()
     "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
 endif()
 
+find_package(Boost REQUIRED)
+if (NOT Boost_FOUND)
+    message (ERROR "Boost not found!")
+endif()
+include_directories (${Boost_INCLUDE_DIRS})
+
 set(CMAKESL_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 add_subdirectory(source)
