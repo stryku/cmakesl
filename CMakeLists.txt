@@ -38,7 +38,7 @@ else()
     "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
 endif()
 
-set(CMAKESL_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sources)
+set(CMAKESL_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 add_subdirectory(source)
 add_subdirectory(test)
