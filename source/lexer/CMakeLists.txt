@@ -3,6 +3,7 @@ set(LEXER_SOURCES
     lexer.cpp
     
     token/token.hpp
+    token/token.cpp
     token/token_type.hpp
 )
 
