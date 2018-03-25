@@ -1,20 +1,20 @@
 #pragma once
 
-#include "lexer/token.hpp"
-
 #include <string>
 
 namespace cmsl
 {
     namespace lexer
     {
+        namespace token
+        {
+            class token;
+        }
+
         class lexer
         {
         public:
-            token get_token(const std::string& source) const
-            {
-                return token{};
-            }
+            token::token get_token(const std::string& source) const;
         };
     }
 }
