@@ -17,7 +17,7 @@ namespace cmsl
         public:
             using tokens_container_t = std::vector<token::token>;
 
-            tokens_container_t lex(const std::string);
+            tokens_container_t lex(const std::string& source);
 
         private:
             token::token get_token(const std::string& source) const;
