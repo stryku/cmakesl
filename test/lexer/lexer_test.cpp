@@ -15,8 +15,8 @@ namespace cmsl
             TEST(Lexer, Lex_Empty_GetEmpty)
             {
                 const auto source = "";
-                cmsl::lexer::lexer lex;
-                const auto tokens = lex.lex(source);
+                cmsl::lexer::lexer lex{ source };
+                const auto tokens = lex.lex();
                 ASSERT_THAT(tokens.empty(), true);
             }
 
@@ -28,8 +28,8 @@ namespace cmsl
                 TEST_P(Lex, Digit_GetInteger)
                 {
                     const auto source = GetParam();
-                    cmsl::lexer::lexer lex;
-                    const auto tokens = lex.lex(source);
+                    cmsl::lexer::lexer lex{ source };
+                    const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
                     ASSERT_THAT(tokens.front().get_type(), token_type_t::integer);
                 }
