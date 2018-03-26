@@ -91,6 +91,24 @@ namespace cmsl
                 );
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_OneChar, values);
             }
+
+            namespace identifier
+            {
+                struct Lex_Identifier : public testing::Test, testing::WithParamInterface<std::string>
+                {};
+
+                TEST_P(Lex_Identifier, GetIndetifier)
+                {
+                    const auto source = GetParam();
+                    cmsl::lexer::lexer lex{ source };
+                    const auto tokens = lex.lex();
+                    ASSERT_THAT(tokens.size(), 1u);
+                    ASSERT_THAT(tokens.front().get_type(), token_type_t::identifier);
+                }
+
+                const auto values = testing::Values("_", "_abc020", "abc_202", "abc010DEF");
+                INSTANTIATE_TEST_CASE_P(Lexer, Lex_Identifier, values);
+            }
         }
     }
 }
