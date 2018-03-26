@@ -14,7 +14,7 @@ namespace cmsl
 
             
 
-            TEST(Lexer, Lex_Empty_GetEmpty)
+            TEST(Lexer_Lex, Empty_GetEmpty)
             {
                 const auto source = "";
                 cmsl::lexer::lexer lex{ source };
@@ -24,10 +24,10 @@ namespace cmsl
 
             namespace integer
             {
-                struct Lex : public testing::Test, testing::WithParamInterface<std::string>
+                struct Lex_Digit : public testing::Test, testing::WithParamInterface<std::string>
                 {};
 
-                TEST_P(Lex, Digit_GetInteger)
+                TEST_P(Lex_Digit, GetInteger)
                 {
                     const auto source = GetParam();
                     cmsl::lexer::lexer lex{ source };
@@ -37,7 +37,7 @@ namespace cmsl
                 }
 
                 const auto values = testing::Values("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
-                INSTANTIATE_TEST_CASE_P(Lexer, Lex, values);
+                INSTANTIATE_TEST_CASE_P(Lexer, Lex_Digit, values);
             }
 
             namespace real
@@ -58,6 +58,18 @@ namespace cmsl
                                                     "1.", "123.",
                                                     ".0", ".012");
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Real, values);
+            }
+
+            namespace dot
+            {
+                TEST(Lexer_Lex, Dot_GetDot)
+                {
+                    const auto source = ".";
+                    cmsl::lexer::lexer lex{ source };
+                    const auto tokens = lex.lex();
+                    ASSERT_THAT(tokens.size(), 1u);
+                    ASSERT_THAT(tokens.front().get_type(), token_type_t::dot);
+                }
             }
         }
     }
