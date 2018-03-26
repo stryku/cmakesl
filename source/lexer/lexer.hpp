@@ -39,17 +39,17 @@ namespace cmsl
             };
 
             using aritmetical_token_definition_t = std::unordered_map<char, aritmetical_token_definition>;
-
             aritmetical_token_definition_t create_arithmetical_token_definitions() const;
+
+            using one_char_tokens_t = std::unordered_map<char, token_t::token_type_t>;
+            one_char_tokens_t create_one_char_tokens() const;
 
             token_t get_next_token();
             token_t get_numeric_token();
             token_t get_identifier_token();
-
             token_t get_equal_token();
-            token_t get_minus_token();
-
             token_t get_arithmetical_token(char operator_char);
+            token_t get_one_char_token(char c);
 
             void consume_integer();
             void consume_char();
@@ -59,6 +59,7 @@ namespace cmsl
 
             bool is_identifier_char(char c) const;
             bool is_arithmetical_operator(char c) const;
+            bool is_one_char_token(char c) const;
 
             char current() const;
             char next() const;
@@ -66,8 +67,8 @@ namespace cmsl
         private:
             const source_t m_source;
             source_it_t m_current_pos;
-
             const aritmetical_token_definition_t m_aritmetical_token_definitions;
+            const one_char_tokens_t m_one_char_tokens;
         };
     }
 }
