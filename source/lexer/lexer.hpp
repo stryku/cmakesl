@@ -48,6 +48,7 @@ namespace cmsl
             token_t get_numeric_token();
             token_t get_identifier_token();
             token_t get_equal_token();
+            token_t get_string_token();
             token_t get_arithmetical_token(char operator_char);
             token_t get_one_char_token(char c);
 
