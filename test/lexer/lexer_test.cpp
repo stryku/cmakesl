@@ -12,6 +12,8 @@ namespace cmsl
             using lexer_t = cmsl::lexer::lexer;
             using token_type_t = cmsl::lexer::token::token_type;
 
+            
+
             TEST(Lexer, Lex_Empty_GetEmpty)
             {
                 const auto source = "";
@@ -36,6 +38,26 @@ namespace cmsl
 
                 const auto values = testing::Values("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex, values);
+            }
+
+            namespace real
+            {
+                struct Lex_Real : public testing::Test, testing::WithParamInterface<std::string>
+                {};
+
+                TEST_P(Lex_Real, GetReal)
+                {
+                    const auto source = GetParam();
+                    cmsl::lexer::lexer lex{ source };
+                    const auto tokens = lex.lex();
+                    ASSERT_THAT(tokens.size(), 1u);
+                    ASSERT_THAT(tokens.front().get_type(), token_type_t::real);
+                }
+
+                const auto values = testing::Values("1.0", "123.0", "123.012", "000123.123000",
+                                                    "1.", "123.",
+                                                    ".0", ".012");
+                INSTANTIATE_TEST_CASE_P(Lexer, Lex_Real, values);
             }
         }
     }

@@ -32,7 +32,13 @@ namespace cmsl
             token_t get_next_token();
             token_t get_numeric_token();
 
+            void consume_integer();
+
             bool is_end() const;
+            bool is_next() const;
+
+            char current() const;
+            char next() const;
 
         private:
             const source_t m_source;
