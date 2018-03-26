@@ -10,7 +10,8 @@ namespace cmsl
             {
                 undef,
                 integer,
-                real
+                real,
+                dot
             };
         }
     }
