@@ -16,6 +16,12 @@ namespace cmsl
             {
                 std::string source;
                 token_type_t expected_token;
+
+                friend std::ostream& operator<<(std::ostream& out, const TokenTestState& state)
+                {
+                    out << "{source}: " << state.source << " ------------{expected_token}: " << static_cast<int>(state.expected_token);
+                    return out;
+                }
             };
 
             TEST(Lexer_Lex, Empty_GetEmpty)
@@ -144,7 +150,9 @@ namespace cmsl
                     TokenTestState{ "%", token_type_t::percent },
                     TokenTestState{ "%=", token_type_t::percentequal },
                     TokenTestState{ "!", token_type_t::exclaim },
-                    TokenTestState{ "!=", token_type_t::exclaimequal }
+                    TokenTestState{ "!=", token_type_t::exclaimequal },
+                    TokenTestState{ "^", token_type_t::xor },
+                    TokenTestState{ "^=", token_type_t::xorequal }
                 );
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Operator, values);
             }
