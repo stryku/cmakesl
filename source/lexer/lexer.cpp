@@ -69,13 +69,17 @@ namespace cmsl
                     return token_t{ token_t::token_type_t::dot };
                 }
             }
-            if (is_one_char_token(curr))
-            {
-                return get_one_char_token(curr);
-            }
             if (curr == '=')
             {
                 return get_equal_token();
+            }
+            if (curr == '"')
+            {
+                return get_string_token();
+            }
+            if (is_one_char_token(curr))
+            {
+                return get_one_char_token(curr);
             }
             if (is_arithmetical_operator(curr))
             {
@@ -154,6 +158,39 @@ namespace cmsl
 
             // =
             return token_t{ token_t::token_type_t::equal };
+        }
+
+        lexer::token_t lexer::get_string_token()
+        {
+            consume_char();
+
+            // TODO: handle new lines
+            while (!is_end() && current() != '"')
+            {
+                if (current() == '\\')
+                {
+                    // Doesn't matter what is after '\', we need to consume it
+                    consume_char();
+
+                    if (is_end())
+                    {
+                        break;
+                    }
+                }
+
+                consume_char();
+            }
+
+            if (is_end())
+            {
+                // TODO: handle not closed string
+                return token_t{};
+            }
+
+            // current() == '"', consume
+            consume_char();
+
+            return token_t{ token_t::token_type_t::string };
         }
 
         lexer::token_t lexer::get_arithmetical_token(char operator_char)

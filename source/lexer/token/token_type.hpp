@@ -42,7 +42,8 @@ namespace cmsl
                 exclaim,
                 exclaimequal,
                 xor,
-                xorequal
+                xorequal,
+                string
             };
         }
     }

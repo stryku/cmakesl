@@ -1,7 +1,9 @@
-#include <gmock/gmock.h>
-
 #include "lexer/lexer.hpp"
 #include "lexer/token/token.hpp"
+
+#include <gmock/gmock.h>
+
+#include <sstream>
 
 namespace cmsl
 {
@@ -171,7 +173,19 @@ namespace cmsl
                     ASSERT_THAT(tokens.front().get_type(), token_type_t::string);
                 }
 
-                const auto values = testing::Values(std::quoted(""), std::quoted("123.def"), std::quoted(".123"), std::quoted(" \t\n\r\n"), std::quoted("'a' 'b' 'c'"));
+                std::string quoted(const std::string& str)
+                {
+                    std::stringstream ss;
+                    ss << std::quoted(str);
+                    return ss.str();
+                }
+
+                const auto values = testing::Values(quoted(""),
+                                                    quoted("123.def"),
+                                                    quoted(".123"),
+                                                    quoted(" \t\n\r\n"),
+                                                    quoted("'a' 'b' 'c'"),
+                                                    quoted("foo \"bar\" baz"));
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_String, values);
             }
         }
