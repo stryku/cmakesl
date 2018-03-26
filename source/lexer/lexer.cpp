@@ -56,7 +56,7 @@ namespace cmsl
             {
                 return get_numeric_token();
             }
-            if (curr == '.') // .123
+            if (curr == '.')
             {
                 if (is_next() && std::isdigit(next())) // .123
                 {
@@ -65,7 +65,7 @@ namespace cmsl
                 else
                 {
                     ++m_current_pos;
-                    assert(false); // Don't handle dot yet
+                    return token_t{ token_t::token_type_t::dot };
                 }
             }
 
