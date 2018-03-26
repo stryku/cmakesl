@@ -156,6 +156,24 @@ namespace cmsl
                 );
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Operator, values);
             }
+
+            namespace string
+            {
+                struct Lex_String : public testing::Test, testing::WithParamInterface<std::string>
+                {};
+
+                TEST_P(Lex_String, GetString)
+                {
+                    const auto source = GetParam();
+                    cmsl::lexer::lexer lex{ source };
+                    const auto tokens = lex.lex();
+                    ASSERT_THAT(tokens.size(), 1u);
+                    ASSERT_THAT(tokens.front().get_type(), token_type_t::string);
+                }
+
+                const auto values = testing::Values(std::quoted(""), std::quoted("123.def"), std::quoted(".123"), std::quoted(" \t\n\r\n"), std::quoted("'a' 'b' 'c'"));
+                INSTANTIATE_TEST_CASE_P(Lexer, Lex_String, values);
+            }
         }
     }
 }
