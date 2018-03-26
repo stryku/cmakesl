@@ -60,16 +60,36 @@ namespace cmsl
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Real, values);
             }
 
-            namespace dot
+            namespace one_char_tokens
             {
-                TEST(Lexer_Lex, Dot_GetDot)
+                struct OneCharTokenTestState
                 {
-                    const auto source = ".";
-                    cmsl::lexer::lexer lex{ source };
+                    std::string source;
+                    token_type_t expected_token;
+                };
+
+                struct Lex_OneChar : public testing::Test, testing::WithParamInterface<OneCharTokenTestState>
+                {};
+
+                TEST_P(Lex_OneChar, GetOneCharToken)
+                {
+                    const auto state = GetParam();
+                    cmsl::lexer::lexer lex{ state.source };
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
-                    ASSERT_THAT(tokens.front().get_type(), token_type_t::dot);
+                    ASSERT_THAT(tokens.front().get_type(), state.expected_token);
                 }
+
+                const auto values = testing::Values(
+                    OneCharTokenTestState{ ".", token_type_t::dot },
+                    OneCharTokenTestState{ "{", token_type_t::open_brace },
+                    OneCharTokenTestState{ "}", token_type_t::close_brace },
+                    OneCharTokenTestState{ "[", token_type_t::open_square },
+                    OneCharTokenTestState{ "]", token_type_t::close_square },
+                    OneCharTokenTestState{ "(", token_type_t::open_paren },
+                    OneCharTokenTestState{ ")", token_type_t::close_paren }
+                );
+                INSTANTIATE_TEST_CASE_P(Lexer, Lex_OneChar, values);
             }
         }
     }
