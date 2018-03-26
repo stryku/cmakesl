@@ -12,6 +12,7 @@ namespace cmsl
             : m_source{ source }
             , m_current_pos{ m_source.begin() }
             , m_aritmetical_token_definitions{ create_arithmetical_token_definitions() }
+            , m_one_char_tokens{ create_one_char_tokens() }
         {}
 
         lexer::tokens_container_t lexer::lex()
@@ -68,35 +69,9 @@ namespace cmsl
                     return token_t{ token_t::token_type_t::dot };
                 }
             }
-            if (curr == '{')
+            if (is_one_char_token(curr))
             {
-                consume_char();
-                return token_t{ token_t::token_type_t::open_brace };
-            }
-            if (curr == '}')
-            {
-                consume_char();
-                return token_t{ token_t::token_type_t::close_brace };
-            }
-            if (curr == '[')
-            {
-                consume_char();
-                return token_t{ token_t::token_type_t::open_square };
-            }
-            if (curr == ']')
-            {
-                consume_char();
-                return token_t{ token_t::token_type_t::close_square };
-            }
-            if (curr == '(')
-            {
-                consume_char();
-                return token_t{ token_t::token_type_t::open_paren };
-            }
-            if (curr == ')')
-            {
-                consume_char();
-                return token_t{ token_t::token_type_t::close_paren };
+                return get_one_char_token(curr);
             }
             if (curr == '=')
             {
@@ -181,21 +156,6 @@ namespace cmsl
             return token_t{ token_t::token_type_t::equal };
         }
 
-        lexer::token_t lexer::get_minus_token()
-        {
-            // current == '-'
-            ++m_current_pos;
-
-            if (current() == '-') // --
-            {
-                consume_char();
-                return token_t{ token_t::token_type_t::equalequal };
-            }
-
-            // =
-            return token_t{ token_t::token_type_t::equal };
-        }
-
         lexer::token_t lexer::get_arithmetical_token(char operator_char)
         {
             // current() == operator_char, go to next char
@@ -245,10 +205,41 @@ namespace cmsl
             return definitions;
         }
 
+        lexer::one_char_tokens_t lexer::create_one_char_tokens() const
+        {
+            one_char_tokens_t tokens;
+
+            tokens['('] = token_t::token_type_t::open_paren;
+            tokens[')'] = token_t::token_type_t::close_paren;
+            tokens['{'] = token_t::token_type_t::open_brace;
+            tokens['}'] = token_t::token_type_t::close_brace;
+            tokens['['] = token_t::token_type_t::open_square;
+            tokens[']'] = token_t::token_type_t::close_square;
+
+            return tokens;
+        }
+
         bool lexer::is_arithmetical_operator(char c) const
         {
             const auto arith_operators = cmsl::string_view{ "-+&|/*%!^" };
             return arith_operators.find(c) != cmsl::string_view::npos;
+        }
+
+        bool lexer::is_one_char_token(char c) const
+        {
+            const auto chars = cmsl::string_view{ "{}[]()" };
+            return chars.find(c) != cmsl::string_view::npos;
+        }
+
+        lexer::token_t lexer::get_one_char_token(char c)
+        {
+            const auto found = m_one_char_tokens.find(c);
+            assert(found != m_one_char_tokens.end());
+
+            consume_char();
+
+            const auto token_type = found->second;
+            return token_t{ token_type };
         }
     }
 }
