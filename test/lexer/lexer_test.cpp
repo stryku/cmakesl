@@ -12,7 +12,11 @@ namespace cmsl
             using lexer_t = cmsl::lexer::lexer;
             using token_type_t = cmsl::lexer::token::token_type;
 
-            
+            struct TokenTestState
+            {
+                std::string source;
+                token_type_t expected_token;
+            };
 
             TEST(Lexer_Lex, Empty_GetEmpty)
             {
@@ -62,13 +66,7 @@ namespace cmsl
 
             namespace one_char_tokens
             {
-                struct OneCharTokenTestState
-                {
-                    std::string source;
-                    token_type_t expected_token;
-                };
-
-                struct Lex_OneChar : public testing::Test, testing::WithParamInterface<OneCharTokenTestState>
+                struct Lex_OneChar : public testing::Test, testing::WithParamInterface<TokenTestState>
                 {};
 
                 TEST_P(Lex_OneChar, GetOneCharToken)
@@ -81,13 +79,13 @@ namespace cmsl
                 }
 
                 const auto values = testing::Values(
-                    OneCharTokenTestState{ ".", token_type_t::dot },
-                    OneCharTokenTestState{ "{", token_type_t::open_brace },
-                    OneCharTokenTestState{ "}", token_type_t::close_brace },
-                    OneCharTokenTestState{ "[", token_type_t::open_square },
-                    OneCharTokenTestState{ "]", token_type_t::close_square },
-                    OneCharTokenTestState{ "(", token_type_t::open_paren },
-                    OneCharTokenTestState{ ")", token_type_t::close_paren }
+                    TokenTestState{ ".", token_type_t::dot },
+                    TokenTestState{ "{", token_type_t::open_brace },
+                    TokenTestState{ "}", token_type_t::close_brace },
+                    TokenTestState{ "[", token_type_t::open_square },
+                    TokenTestState{ "]", token_type_t::close_square },
+                    TokenTestState{ "(", token_type_t::open_paren },
+                    TokenTestState{ ")", token_type_t::close_paren }
                 );
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_OneChar, values);
             }
@@ -108,6 +106,47 @@ namespace cmsl
 
                 const auto values = testing::Values("_", "_abc020", "abc_202", "abc010DEF");
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Identifier, values);
+            }
+
+            namespace operators
+            {
+                struct Lex_Operator : public testing::Test, testing::WithParamInterface<TokenTestState>
+                {};
+
+                TEST_P(Lex_Operator, GetOperator)
+                {
+                    const auto state = GetParam();
+                    cmsl::lexer::lexer lex{ state.source };
+                    const auto tokens = lex.lex();
+                    ASSERT_THAT(tokens.size(), 1u);
+                    ASSERT_THAT(tokens.front().get_type(), state.expected_token);
+                }
+
+                const auto values = testing::Values(
+                    TokenTestState{ "=", token_type_t::equal },
+                    TokenTestState{ "==", token_type_t::equalequal },
+                    TokenTestState{ "-", token_type_t::minus },
+                    TokenTestState{ "--", token_type_t::minusminus },
+                    TokenTestState{ "-=", token_type_t::minusequal },
+                    TokenTestState{ "+", token_type_t::plus },
+                    TokenTestState{ "++", token_type_t::plusplus },
+                    TokenTestState{ "+=", token_type_t::plusequal },
+                    TokenTestState{ "&", token_type_t::amp },
+                    TokenTestState{ "&&", token_type_t::ampamp },
+                    TokenTestState{ "&=", token_type_t::ampequal },
+                    TokenTestState{ "|", token_type_t::pipe },
+                    TokenTestState{ "||", token_type_t::pipepipe },
+                    TokenTestState{ "|=", token_type_t::pipeequal },
+                    TokenTestState{ "/", token_type_t::slash },
+                    TokenTestState{ "/=", token_type_t::slashequal },
+                    TokenTestState{ "*", token_type_t::star },
+                    TokenTestState{ "*=", token_type_t::starequal },
+                    TokenTestState{ "%", token_type_t::percent },
+                    TokenTestState{ "%=", token_type_t::percentequal },
+                    TokenTestState{ "!", token_type_t::exclaim },
+                    TokenTestState{ "!=", token_type_t::exclaimequal }
+                );
+                INSTANTIATE_TEST_CASE_P(Lexer, Lex_Operator, values);
             }
         }
     }
