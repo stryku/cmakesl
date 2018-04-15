@@ -1,4 +1,4 @@
-#include "source_location/source_location.hpp"
+#include "common/source_location.hpp"
 
 #include <gmock/gmock.h>
 
@@ -10,7 +10,7 @@ namespace cmsl
         {
             using source_location_t = cmsl::source_location;
 
-            TEST(SourceLocationTest, New_Zero)
+            TEST(SourceLocation, New_Zero)
             {
                 source_location_t sl;
 
