@@ -7,6 +7,8 @@
 
 #include <sstream>
 
+using namespace testing;
+
 namespace cmsl
 {
     namespace test
@@ -23,7 +25,33 @@ namespace cmsl
                 const auto source = "";
                 cmsl::lexer::lexer lex{ err_observer, source };
                 (void)lex.lex();
-                // Assume no calls to error observer
+            }
+
+            namespace eof
+            {
+                struct StringNotEndedBeforeEOF : public Test, WithParamInterface<std::string>
+                {};
+
+                TEST_P(StringNotEndedBeforeEOF, NotifyError)
+                {
+                    errors_observer::errors_observer_mock err_observer_mock;
+                    errors::errors_observer err_observer;
+
+                    EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
+
+                    const auto source = GetParam();
+                    auto lex = lexer_t{ err_observer, source };
+                    (void)lex.lex();
+                }
+
+                const auto values = Values(
+                    "\"",
+                    "abc\"",
+                    "\"abc",
+                    "\"abc\\\"",
+                    "\"abc''"
+                );
+                INSTANTIATE_TEST_CASE_P(LexerErrorTest, StringNotEndedBeforeEOF, values);
             }
         }
     }

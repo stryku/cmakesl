@@ -1,3 +1,5 @@
+#include "errors/errors_observer.hpp"
+#include "errors/error.hpp"
 #include "lexer/lexer.hpp"
 
 #include <boost/assert.hpp>
@@ -184,7 +186,8 @@ namespace cmsl
 
             if (is_end())
             {
-                // TODO: handle not closed string
+                // TODO: pass proper error
+                m_err_observer.nofify_error(errors::error{});
                 return token_t{};
             }
 
