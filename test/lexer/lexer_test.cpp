@@ -1,5 +1,6 @@
 #include "lexer/lexer.hpp"
 #include "lexer/token/token.hpp"
+#include "errors/errors_observer.hpp"
 
 #include <gmock/gmock.h>
 
@@ -26,10 +27,18 @@ namespace cmsl
                 }
             };
 
+            errors::errors_observer dummy_err_observer;
+            
+
+            auto create_lexer(const std::string& source)
+            {
+                return cmsl::lexer::lexer{ dummy_err_observer, source };
+            }
+
             TEST(Lexer_Lex, Empty_GetEmpty)
             {
                 const auto source = "";
-                cmsl::lexer::lexer lex{ source };
+                auto lex = create_lexer(source);
                 const auto tokens = lex.lex();
                 ASSERT_THAT(tokens.empty(), true);
             }
@@ -42,7 +51,7 @@ namespace cmsl
                 TEST_P(Lex_Digit, GetInteger)
                 {
                     const auto source = GetParam();
-                    cmsl::lexer::lexer lex{ source };
+                    auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
                     ASSERT_THAT(tokens.front().get_type(), token_type_t::integer);
@@ -60,7 +69,7 @@ namespace cmsl
                 TEST_P(Lex_Real, GetReal)
                 {
                     const auto source = GetParam();
-                    cmsl::lexer::lexer lex{ source };
+                    auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
                     ASSERT_THAT(tokens.front().get_type(), token_type_t::real);
@@ -80,7 +89,7 @@ namespace cmsl
                 TEST_P(Lex_OneChar, GetOneCharToken)
                 {
                     const auto state = GetParam();
-                    cmsl::lexer::lexer lex{ state.source };
+                    auto lex = create_lexer(state.source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
                     ASSERT_THAT(tokens.front().get_type(), state.expected_token);
@@ -106,7 +115,7 @@ namespace cmsl
                 TEST_P(Lex_Identifier, GetIndetifier)
                 {
                     const auto source = GetParam();
-                    cmsl::lexer::lexer lex{ source };
+                    auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
                     ASSERT_THAT(tokens.front().get_type(), token_type_t::identifier);
@@ -124,7 +133,7 @@ namespace cmsl
                 TEST_P(Lex_Operator, GetOperator)
                 {
                     const auto state = GetParam();
-                    cmsl::lexer::lexer lex{ state.source };
+                    auto lex = create_lexer(state.source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
                     ASSERT_THAT(tokens.front().get_type(), state.expected_token);
@@ -167,7 +176,7 @@ namespace cmsl
                 TEST_P(Lex_String, GetString)
                 {
                     const auto source = GetParam();
-                    cmsl::lexer::lexer lex{ source };
+                    auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
                     ASSERT_THAT(tokens.front().get_type(), token_type_t::string);

@@ -1,3 +1,5 @@
+#include "errors/errors_observer.hpp"
+#include "errors/error.hpp"
 #include "lexer/lexer.hpp"
 
 #include <boost/assert.hpp>
@@ -8,8 +10,9 @@ namespace cmsl
 {
     namespace lexer
     {
-        lexer::lexer(source_t source)
-            : m_source{ source }
+        lexer::lexer(errors::errors_observer& err_observer, source_t source)
+            : m_err_observer{ err_observer }
+            , m_source{ source }
             , m_current_pos{ m_source.begin() }
             , m_aritmetical_token_definitions{ create_arithmetical_token_definitions() }
             , m_one_char_tokens{ create_one_char_tokens() }
@@ -183,7 +186,8 @@ namespace cmsl
 
             if (is_end())
             {
-                // TODO: handle not closed string
+                // TODO: pass proper error
+                m_err_observer.nofify_error(errors::error{});
                 return token_t{};
             }
 
