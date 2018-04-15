@@ -1,19 +1,5 @@
 #include "errors/errors_observer.hpp"
-#include "errors/error.hpp"
-
-#include <gmock/gmock.h>
-
-namespace cmsl
-{
-    namespace test
-    {
-        namespace errors_observer
-        {
-            struct errors_observer_mock;
-        }
-    }
-}
-
+#include "errors_observer_mock/errors_observer_mock.hpp"
 
 namespace
 {
@@ -26,21 +12,16 @@ namespace cmsl
     {
         namespace errors_observer
         {
-            struct errors_observer_mock
+            errors_observer_mock::errors_observer_mock()
             {
-                errors_observer_mock()
-                {
-                    assert(errors_observer_mock_ptr);
-                    errors_observer_mock_ptr = this;
-                }
+                assert(errors_observer_mock_ptr);
+                errors_observer_mock_ptr = this;
+            }
 
-                ~errors_observer_mock()
-                {
-                    errors_observer_mock_ptr = nullptr;
-                }
-
-                MOCK_METHOD1(notify_error, void(const cmsl::errors::error&));
-            };
+            errors_observer_mock::~errors_observer_mock()
+            {
+                errors_observer_mock_ptr = nullptr;
+            }
         }
     }
 

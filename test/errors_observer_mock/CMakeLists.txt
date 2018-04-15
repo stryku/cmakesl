@@ -7,6 +7,7 @@ set(PROJECT_NAME errors_observer_mock)
 add_library(${PROJECT_NAME} STATIC ${ERRORS_OBSERVER_MOCK_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${CMAKESL_SOURCES_DIR}
+    ${CMAKESL_TESTS_DIR}
     "${gtest_SOURCE_DIR}/include" 
     "${gmock_SOURCE_DIR}/include"
 )
