@@ -14,7 +14,7 @@ namespace cmsl
         {
             errors_observer_mock::errors_observer_mock()
             {
-                assert(errors_observer_mock_ptr);
+                assert(!errors_observer_mock_ptr);
                 errors_observer_mock_ptr = this;
             }
 
