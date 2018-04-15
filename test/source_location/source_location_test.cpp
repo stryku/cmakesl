@@ -10,12 +10,23 @@ namespace cmsl
         {
             using source_location_t = cmsl::source_location;
 
-            TEST(SourceLocation, New_Zero)
+            TEST(SourceLocation, InitialState__1_Line__1_Column__0_Absolute)
             {
                 source_location_t sl;
 
-                EXPECT_THAT(sl.line(), 0u);
-                EXPECT_THAT(sl.column(), 0u);
+                EXPECT_THAT(sl.line(), 1u);
+                EXPECT_THAT(sl.column(), 1u);
+                EXPECT_THAT(sl.absolute(), 0u);
+            }
+
+            TEST(SourceLocation, IncrementEmpty_InitialState)
+            {
+                source_location_t sl;
+
+                ++sl;
+
+                EXPECT_THAT(sl.line(), 1u);
+                EXPECT_THAT(sl.column(), 1u);
                 EXPECT_THAT(sl.absolute(), 0u);
             }
         }
