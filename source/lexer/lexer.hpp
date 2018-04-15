@@ -9,6 +9,11 @@
 
 namespace cmsl
 {
+    namespace errors
+    {
+        class errors_observer;
+    }
+
     namespace lexer
     {
         class lexer
@@ -21,7 +26,7 @@ namespace cmsl
         public:
             using tokens_container_t = std::vector<token_t>;
 
-            explicit lexer(source_t source);
+            lexer(errors::errors_observer& err_observer, source_t source);
 
             tokens_container_t lex();
 
@@ -66,6 +71,7 @@ namespace cmsl
             char next() const;
 
         private:
+            errors::errors_observer& m_err_observer;
             const source_t m_source;
             source_it_t m_current_pos;
             const aritmetical_token_definition_t m_aritmetical_token_definitions;
