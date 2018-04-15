@@ -18,7 +18,8 @@ namespace cmsl
 
             TEST(LexerErrorTest, Empty_NoError)
             {
-                testing::StrictMock<errors_observer::errors_observer_mock> err_observer;
+                testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
+                errors::errors_observer err_observer;
                 const auto source = "";
                 cmsl::lexer::lexer lex{ err_observer, source };
                 (void)lex.lex();
