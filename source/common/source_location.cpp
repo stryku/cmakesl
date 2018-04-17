@@ -25,7 +25,7 @@ namespace cmsl
 
     bool source_location::is_at_end() const
     {
-        return std::next(m_source.begin(), m_absolute) == m_source.end();
+        return current_it() == m_source.end();
     }
 
     source_location& source_location::operator++()
@@ -50,8 +50,24 @@ namespace cmsl
         return *this;
     }
 
-    char source_location::current_char() const
+    cmsl::string_view::value_type source_location::current_char() const
     {
         return m_source[m_absolute];
+    }
+
+    cmsl::string_view::const_iterator source_location::current_it() const
+    {
+        return std::next(m_source.begin(), m_absolute);
+    }
+
+    bool source_location::has_next() const
+    {
+        if (is_at_end())
+        {
+            return false;
+        }
+
+        const auto next_it = std::next(current_it());
+        return next_it != m_source.end();
     }
 }

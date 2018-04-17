@@ -119,10 +119,10 @@ namespace cmsl
                     bool expected_has_next;
                 };
 
-                struct IsAtEnd : public Test, WithParamInterface<HasNextSourceLocationTestState>
+                struct HasNext : public Test, WithParamInterface<HasNextSourceLocationTestState>
                 {};
 
-                TEST_P(IsAtEnd, IsAtEnd)
+                TEST_P(HasNext, HasNext)
                 {
                     const auto state = GetParam();
                     source_location_t sl{ state.source };
@@ -145,7 +145,7 @@ namespace cmsl
                     HasNextSourceLocationTestState{ "01234", 5u, false },
                     HasNextSourceLocationTestState{ "01234", 10u, false }
                 );
-                INSTANTIATE_TEST_CASE_P(SourceLocation, IsAtEnd, values);
+                INSTANTIATE_TEST_CASE_P(SourceLocation, HasNext, values);
             }
         }
     }
