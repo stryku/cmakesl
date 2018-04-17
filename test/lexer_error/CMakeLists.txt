@@ -6,7 +6,7 @@ set(CMAKESL_LEXER_ERROR_TEST_SOURCES
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${CMAKESL_LEXER_ERROR_TEST_SOURCES})
 
 add_executable(cmakesl_lexer_error_test ${CMAKESL_LEXER_ERROR_TEST_SOURCES})
-target_link_libraries(cmakesl_lexer_error_test gmock_main lexer errors_observer_mock)
+target_link_libraries(cmakesl_lexer_error_test gmock_main common lexer errors_observer_mock)
 target_include_directories(cmakesl_lexer_error_test PRIVATE 
     ${CMAKESL_SOURCES_DIR}
     ${CMAKESL_TESTS_DIR}

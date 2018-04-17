@@ -16,6 +16,7 @@ namespace cmsl
         source_location& operator++();
 
         cmsl::string_view::value_type current_char() const;
+        cmsl::string_view::value_type next_char() const;
 
         bool is_at_end() const;
         bool has_next() const;

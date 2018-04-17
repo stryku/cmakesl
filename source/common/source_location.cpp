@@ -70,4 +70,9 @@ namespace cmsl
         const auto next_it = std::next(current_it());
         return next_it != m_source.end();
     }
+
+    cmsl::string_view::value_type source_location::next_char() const
+    {
+        return *std::next(current_it());
+    }
 }
