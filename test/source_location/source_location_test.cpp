@@ -72,6 +72,43 @@ namespace cmsl
                     );
                 INSTANTIATE_TEST_CASE_P(SourceLocation, Increment, values);
             }
+
+            namespace end
+            {
+                struct IsAtEndSourceLocationTestState
+                {
+                    std::string source;
+                    size_t to_increment;
+                    bool expected_is_at_end;
+                };
+
+                struct IsAtEnd : public Test, WithParamInterface<IsAtEndSourceLocationTestState>
+                {};
+
+                TEST_P(IsAtEnd, IsAtEnd)
+                {
+                    const auto state = GetParam();
+                    source_location_t sl{ state.source };
+
+                    for (auto i = 0u; i < state.to_increment; ++i)
+                    {
+                        ++sl;
+                    }
+
+                    EXPECT_THAT(sl.is_at_end(), state.expected_is_at_end);
+                }
+
+                const auto values = Values(
+                    IsAtEndSourceLocationTestState{ "01234", 0u, false },
+                    IsAtEndSourceLocationTestState{ "01234", 1u, false },
+                    IsAtEndSourceLocationTestState{ "01234", 4u, false }, 
+                    IsAtEndSourceLocationTestState{ "0\n1234", 1u, false },
+                    IsAtEndSourceLocationTestState{ "0\n1234", 3u, false },
+                    IsAtEndSourceLocationTestState{ "01234", 5u, true },
+                    IsAtEndSourceLocationTestState{ "01234", 10u, true }
+                );
+                INSTANTIATE_TEST_CASE_P(SourceLocation, IsAtEnd, values);
+            }
         }
     }
 }
