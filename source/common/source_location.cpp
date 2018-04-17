@@ -34,5 +34,24 @@ namespace cmsl
         {
             return *this;
         }
+
+        ++m_absolute;
+
+        if (current_char() == '\n')
+        {
+            ++m_line;
+            m_column = 1u;
+        }
+        else
+        {
+            ++m_column;
+        }
+
+        return *this;
+    }
+
+    char source_location::current_char() const
+    {
+        return m_source[m_absolute];
     }
 }

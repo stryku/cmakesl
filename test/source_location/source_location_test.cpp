@@ -66,7 +66,7 @@ namespace cmsl
                 const auto values = Values(
                     IncrementSourceLocationTestState{ "01234", 1u, 1u, 2u, 1u },
                     IncrementSourceLocationTestState{ "01234", 2u, 1u, 3u, 2u },
-                    IncrementSourceLocationTestState{ "01234", 10u, 1u, 5u, 4u }, // Increment more than chars in source
+                    IncrementSourceLocationTestState{ "01234", 10u, 1u, 6u, 5u }, // Increment more than chars in source
                     IncrementSourceLocationTestState{ "0\n", 1u, 2u, 1u, 1u }, // Stop at newline -> get next line
                     IncrementSourceLocationTestState{ "0\n1", 2u, 2u, 2u, 2u }
                     );
