@@ -4,6 +4,10 @@
 
 namespace cmsl
 {
+    source_location::source_location(cmsl::string_view source) :
+        m_source{ source }
+    {}
+
     size_t source_location::line() const
     {
         return m_line;
