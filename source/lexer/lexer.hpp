@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/source_location.hpp"
 #include "common/string.hpp"
 #include "lexer/token/token.hpp"
 
@@ -61,7 +62,7 @@ namespace cmsl
             void consume_char();
 
             bool is_end() const;
-            bool is_next() const;
+            bool has_next() const;
 
             bool is_identifier_char(char c) const;
             bool is_arithmetical_operator(char c) const;
@@ -73,7 +74,7 @@ namespace cmsl
         private:
             errors::errors_observer& m_err_observer;
             const source_t m_source;
-            source_it_t m_current_pos;
+            source_location m_source_loc;
             const aritmetical_token_definition_t m_aritmetical_token_definitions;
             const one_char_tokens_t m_one_char_tokens;
         };

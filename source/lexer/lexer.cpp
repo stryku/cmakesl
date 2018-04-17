@@ -13,7 +13,7 @@ namespace cmsl
         lexer::lexer(errors::errors_observer& err_observer, source_t source)
             : m_err_observer{ err_observer }
             , m_source{ source }
-            , m_current_pos{ m_source.begin() }
+            , m_source_loc{ m_source }
             , m_aritmetical_token_definitions{ create_arithmetical_token_definitions() }
             , m_one_char_tokens{ create_one_char_tokens() }
         {}
@@ -34,22 +34,22 @@ namespace cmsl
 
         bool lexer::is_end() const
         {
-            return m_current_pos == m_source.end();
+            return m_source_loc.is_at_end();
         }
 
-        bool lexer::is_next() const
+        bool lexer::has_next() const
         {
-            return std::next(m_current_pos) != m_source.end();
+            return m_source_loc.has_next();
         }
 
         char lexer::current() const
         {
-            return *m_current_pos;
+            return m_source_loc.current_char();
         }
 
         char lexer::next() const
         {
-            return *std::next(m_current_pos);
+            return m_source_loc.next_char();
         }
 
         lexer::token_t lexer::get_next_token()
@@ -62,7 +62,7 @@ namespace cmsl
             }
             if (curr == '.')
             {
-                if (is_next() && std::isdigit(next())) // .123
+                if (has_next() && std::isdigit(next())) // .123
                 {
                     return get_numeric_token();
                 }
@@ -106,9 +106,9 @@ namespace cmsl
             }
 
             // Handle real e.g. 123.
-            if (*m_current_pos == '.')
+            if (current() == '.')
             {
-                ++m_current_pos;
+                ++m_source_loc;
                 consume_integer();
                 return token_t{ token_t::token_type_t::real };
             }
@@ -120,7 +120,7 @@ namespace cmsl
 
         void lexer::consume_integer()
         {
-            while (!is_end() && std::isdigit(*m_current_pos))
+            while (!is_end() && std::isdigit(current()))
             {
                 consume_char();
             }
@@ -129,12 +129,12 @@ namespace cmsl
         void lexer::consume_char()
         {
             assert(!is_end());
-            ++m_current_pos;
+            ++m_source_loc;
         }
 
         lexer::token_t lexer::get_identifier_token()
         {
-            while (is_identifier_char(*m_current_pos))
+            while (is_identifier_char(current()))
             {
                 consume_char();
             }
@@ -151,7 +151,7 @@ namespace cmsl
         lexer::token_t lexer::get_equal_token()
         {
             // current == '='
-            ++m_current_pos;
+            ++m_source_loc;
 
             if (current() == '=') // ==
             {
