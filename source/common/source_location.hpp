@@ -18,8 +18,11 @@ namespace cmsl
         cmsl::string_view::value_type current_char() const;
 
         bool is_at_end() const;
+        bool has_next() const;
 
     private:
+        cmsl::string_view::const_iterator current_it() const;
+
         size_t m_line{ 1u };
         size_t m_column{ 1u };
         size_t m_absolute{ 0u };
