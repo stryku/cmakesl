@@ -17,9 +17,9 @@ namespace cmsl
 
         cmsl::string_view::value_type current_char() const;
 
-    private:
         bool is_at_end() const;
 
+    private:
         size_t m_line{ 1u };
         size_t m_column{ 1u };
         size_t m_absolute{ 0u };
