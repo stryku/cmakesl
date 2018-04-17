@@ -2,6 +2,8 @@
 
 #include <gmock/gmock.h>
 
+using namespace testing;
+
 namespace cmsl
 {
     namespace test
@@ -12,22 +14,63 @@ namespace cmsl
 
             TEST(SourceLocation, InitialState__1_Line__1_Column__0_Absolute)
             {
-                source_location_t sl;
+                const auto source = "";
+                source_location_t sl{ source };
 
                 EXPECT_THAT(sl.line(), 1u);
                 EXPECT_THAT(sl.column(), 1u);
                 EXPECT_THAT(sl.absolute(), 0u);
             }
 
-            TEST(SourceLocation, IncrementEmpty_InitialState)
+            TEST(SourceLocation, IncrementEmpty_GetInitialState)
             {
-                source_location_t sl;
+                const auto source = "";
+                source_location_t sl{ source };
 
                 ++sl;
 
                 EXPECT_THAT(sl.line(), 1u);
                 EXPECT_THAT(sl.column(), 1u);
                 EXPECT_THAT(sl.absolute(), 0u);
+            }
+
+            namespace inc
+            {
+                struct IncrementSourceLocationTestState
+                {
+                    std::string source;
+                    size_t to_increment;
+                    size_t expected_line;
+                    size_t expected_column;
+                    size_t expected_absolute;
+                };
+
+                struct Increment : public Test, WithParamInterface<IncrementSourceLocationTestState>
+                {};
+
+                TEST_P(Increment, Increment)
+                {
+                    const auto state = GetParam();
+                    source_location_t sl{ state.source };
+
+                    for (auto i = 0u; i < state.to_increment; ++i)
+                    {
+                        ++sl;
+                    }
+
+                    EXPECT_THAT(sl.line(), state.expected_line);
+                    EXPECT_THAT(sl.column(), state.expected_column);
+                    EXPECT_THAT(sl.absolute(), state.expected_absolute);
+                }
+
+                const auto values = Values(
+                    IncrementSourceLocationTestState{ "01234", 1u, 1u, 2u, 1u },
+                    IncrementSourceLocationTestState{ "01234", 2u, 1u, 3u, 2u },
+                    IncrementSourceLocationTestState{ "01234", 10u, 1u, 5u, 4u }, // Increment more than chars in source
+                    IncrementSourceLocationTestState{ "0\n", 1u, 2u, 1u, 1u }, // Stop at newline -> get next line
+                    IncrementSourceLocationTestState{ "0\n1", 2u, 2u, 2u, 2u }
+                    );
+                INSTANTIATE_TEST_CASE_P(SourceLocation, Increment, values);
             }
         }
     }

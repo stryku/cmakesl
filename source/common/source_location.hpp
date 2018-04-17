@@ -7,6 +7,8 @@ namespace cmsl
     class source_location
     {
     public:
+        explicit source_location(cmsl::string_view source);
+
         size_t line() const;
         size_t column() const;
         size_t absolute() const;
