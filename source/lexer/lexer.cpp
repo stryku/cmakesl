@@ -93,7 +93,7 @@ namespace cmsl
                 return get_identifier_token();
             }
 
-            return token_t{};
+            return token_t::undef();
         }
 
         lexer::token_t lexer::get_numeric_token()
@@ -188,7 +188,7 @@ namespace cmsl
             {
                 // TODO: pass proper error
                 m_err_observer.nofify_error(errors::error{});
-                return token_t{};
+                return token_t::undef();
             }
 
             // current() == '"', consume
