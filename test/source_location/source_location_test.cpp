@@ -75,53 +75,53 @@ namespace cmsl
                 INSTANTIATE_TEST_CASE_P(SourceLocation, Increment, values);
             }
 
+            struct IncrementSourceLocationTestState
+            {
+                std::string source;
+                size_t to_increment;
+            };
+
+            struct IncrementFixture : TestWithParam<IncrementSourceLocationTestState>
+            {
+                virtual void SetUp()
+                {
+                    const auto& state = GetParam();
+                    sl = std::make_unique<source_location_t>(state.source);
+
+                    for (auto i = 0u; i < state.to_increment; ++i)
+                    {
+                        ++(*sl);
+                    }
+                }
+
+                virtual void TearDown()
+                {
+                    sl.reset();
+                }
+
+                std::unique_ptr<source_location_t> sl;
+            };
+
             namespace is_at_end
             {
-                struct IsAtEndSourceLocationTestState
-                {
-                    std::string source;
-                    size_t to_increment;
-                };
-
-                struct IncrementFixture : TestWithParam<IsAtEndSourceLocationTestState>
-                {
-                    virtual void SetUp()
-                    {
-                        const auto& state = GetParam();
-                        sl = std::make_unique<source_location_t>(state.source);
-
-                        for (auto i = 0u; i < state.to_increment; ++i)
-                        {
-                            ++(*sl);
-                        }
-                    }
-
-                    virtual void TearDown()
-                    {
-                        sl.reset();
-                    }
-
-                    std::unique_ptr<source_location_t> sl;
-                };
-
                 namespace should_not_reach_end
                 {
-                    struct NotEnoughIncrements : public IncrementFixture
+                    struct LessIncrementsThanSourceSize : public IncrementFixture
                     {};
 
-                    TEST_P(NotEnoughIncrements, ShouldNotReachEnd)
+                    TEST_P(LessIncrementsThanSourceSize, ShouldNotReachEnd)
                     {
                         EXPECT_THAT(sl->is_at_end(), false);
                     }
 
                     const auto values = Values(
-                        IsAtEndSourceLocationTestState{ "01234", 0u },
-                        IsAtEndSourceLocationTestState{ "01234", 1u },
-                        IsAtEndSourceLocationTestState{ "01234", 4u },
-                        IsAtEndSourceLocationTestState{ "01\n1234", 1u },
-                        IsAtEndSourceLocationTestState{ "01\n1234", 3u }
+                        IncrementSourceLocationTestState{ "01234", 0u },
+                        IncrementSourceLocationTestState{ "01234", 1u },
+                        IncrementSourceLocationTestState{ "01234", 4u },
+                        IncrementSourceLocationTestState{ "01\n1234", 1u },
+                        IncrementSourceLocationTestState{ "01\n1234", 3u }
                     );
-                    INSTANTIATE_TEST_CASE_P(SourceLocationTest, NotEnoughIncrements, values);
+                    INSTANTIATE_TEST_CASE_P(SourceLocationTest, LessIncrementsThanSourceSize, values);
                 }
 
                 namespace should_reach_end
@@ -135,8 +135,8 @@ namespace cmsl
                     }
 
                     const auto values = Values(
-                        IsAtEndSourceLocationTestState{ "01234", 5u },
-                        IsAtEndSourceLocationTestState{ "01234", 10u }
+                        IncrementSourceLocationTestState{ "01234", 5u },
+                        IncrementSourceLocationTestState{ "01234", 10u }
                     );
                     INSTANTIATE_TEST_CASE_P(SourceLocationTest, EnoughOrTooMuchIncrements, values);
                 }
@@ -144,40 +144,40 @@ namespace cmsl
 
             namespace has_next
             {
-                struct HasNextSourceLocationTestState
-                {
-                    std::string source;
-                    size_t to_increment;
-                    bool expected_has_next;
-                };
-
-                struct HasNext : public Test, WithParamInterface<HasNextSourceLocationTestState>
+                struct LessIncrementsThanSourceSizeMinusOne : public IncrementFixture
                 {};
 
-                TEST_P(HasNext, HasNext)
+                TEST_P(LessIncrementsThanSourceSizeMinusOne, HasNext)
                 {
-                    const auto state = GetParam();
-                    source_location_t sl{ state.source };
-
-                    for (auto i = 0u; i < state.to_increment; ++i)
-                    {
-                        ++sl;
-                    }
-
-                    EXPECT_THAT(sl.has_next(), state.expected_has_next);
+                    EXPECT_THAT(sl->has_next(), true);
                 }
 
                 const auto values = Values(
-                    HasNextSourceLocationTestState{ "01234", 0u, true },
-                    HasNextSourceLocationTestState{ "01234", 1u, true },
-                    HasNextSourceLocationTestState{ "01234", 3u, true },
-                    HasNextSourceLocationTestState{ "0\n1234", 1u, true },
-                    HasNextSourceLocationTestState{ "0\n1234", 3u, true },
-                    HasNextSourceLocationTestState{ "01234", 4u, false },
-                    HasNextSourceLocationTestState{ "01234", 5u, false },
-                    HasNextSourceLocationTestState{ "01234", 10u, false }
+                    IncrementSourceLocationTestState{ "01234", 0u },
+                    IncrementSourceLocationTestState{ "01234", 1u },
+                    IncrementSourceLocationTestState{ "01234", 3u },
+                    IncrementSourceLocationTestState{ "0\n1234", 1u },
+                    IncrementSourceLocationTestState{ "0\n1234", 3u }
                 );
-                INSTANTIATE_TEST_CASE_P(SourceLocation, HasNext, values);
+                INSTANTIATE_TEST_CASE_P(SourceLocation, LessIncrementsThanSourceSizeMinusOne, values);
+            }
+
+            namespace has_not_next
+            {
+                struct SourceSizeMinusOneOrMoreIncrements : public IncrementFixture
+                {};
+
+                TEST_P(SourceSizeMinusOneOrMoreIncrements, HasNoNext)
+                {
+                    EXPECT_THAT(sl->has_next(), false);
+                }
+
+                const auto values = Values(
+                    IncrementSourceLocationTestState{ "01234", 4u },
+                    IncrementSourceLocationTestState{ "01234", 5u },
+                    IncrementSourceLocationTestState{ "01234", 10u }
+                );
+                INSTANTIATE_TEST_CASE_P(SourceLocation, SourceSizeMinusOneOrMoreIncrements, values);
             }
         }
     }
