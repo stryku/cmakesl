@@ -1,7 +1,6 @@
 set(COMMON_SOURCES
     string.hpp
     source_location.hpp
-    source_location.cpp
 )
 
 add_library(common ${COMMON_SOURCES})
