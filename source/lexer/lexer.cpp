@@ -54,55 +54,63 @@ namespace cmsl
 
         lexer::token_t lexer::get_next_token()
         {
+            const auto begin_loc = m_source_loc;
+            const auto token_type = get_next_token_type();
+            const auto end_loc = m_source_loc;
+            return token_t{ token_type, source_range{ begin_loc, end_loc } };
+        }
+
+        lexer::token_t::token_type_t lexer::get_next_token_type()
+        {
             const auto curr = current();
 
             if (std::isdigit(curr))
             {
-                return get_numeric_token();
+                return get_numeric_token_type();
             }
             if (curr == '.')
             {
                 if (has_next() && std::isdigit(next())) // .123
                 {
-                    return get_numeric_token();
+                    return get_numeric_token_type();
                 }
                 else
                 {
                     consume_char();
-                    return token_t{ token_t::token_type_t::dot };
+                    return token_t::token_type_t::dot;
                 }
             }
             if (curr == '=')
             {
-                return get_equal_token();
+                return get_equal_token_type();
             }
             if (curr == '"')
             {
-                return get_string_token();
+                return get_string_token_type();
             }
             if (is_one_char_token(curr))
             {
-                return get_one_char_token(curr);
+                return get_one_char_token_type(curr);
             }
             if (is_arithmetical_operator(curr))
             {
-                return get_arithmetical_token(curr);
+                return get_arithmetical_token_type(curr);
             }
             if (std::isalpha(curr) || curr == '_')
             {
-                return get_identifier_token();
+                return get_identifier_token_type();
             }
 
-            return token_t::undef();
+            return token_t::token_type_t::undef;
         }
 
-        lexer::token_t lexer::get_numeric_token()
+        lexer::token_t::token_type_t lexer::get_numeric_token_type()
         {
             consume_integer();
 
             if (is_end())
             {
-                return token_t{ token_t::token_type_t::integer };
+                return token_t::token_type_t::integer;
             }
 
             // Handle real e.g. 123.
@@ -110,12 +118,12 @@ namespace cmsl
             {
                 ++m_source_loc;
                 consume_integer();
-                return token_t{ token_t::token_type_t::real };
+                return token_t::token_type_t::real;
             }
 
             // TODO: handle hex, oct and bin
 
-            return token_t{ token_t::token_type_t::integer };
+            return token_t::token_type_t::integer;
         }
 
         void lexer::consume_integer()
@@ -132,14 +140,14 @@ namespace cmsl
             ++m_source_loc;
         }
 
-        lexer::token_t lexer::get_identifier_token()
+        lexer::token_t::token_type_t lexer::get_identifier_token_type()
         {
             while (is_identifier_char(current()))
             {
                 consume_char();
             }
 
-            return token_t{ token_t::token_type_t::identifier };
+            return token_t::token_type_t::identifier;
         }
 
         bool lexer::is_identifier_char(char c) const
@@ -148,7 +156,7 @@ namespace cmsl
             return std::isalnum(c) || c == '_';
         }
 
-        lexer::token_t lexer::get_equal_token()
+        lexer::token_t::token_type_t lexer::get_equal_token_type()
         {
             // current == '='
             ++m_source_loc;
@@ -156,14 +164,14 @@ namespace cmsl
             if (current() == '=') // ==
             {
                 consume_char();
-                return token_t{ token_t::token_type_t::equalequal };
+                return token_t::token_type_t::equalequal;
             }
 
             // =
-            return token_t{ token_t::token_type_t::equal };
+            return token_t::token_type_t::equal;
         }
 
-        lexer::token_t lexer::get_string_token()
+        lexer::token_t::token_type_t lexer::get_string_token_type()
         {
             consume_char();
 
@@ -188,16 +196,16 @@ namespace cmsl
             {
                 // TODO: pass proper error
                 m_err_observer.nofify_error(errors::error{});
-                return token_t::undef();
+                return token_t::token_type_t::undef;
             }
 
             // current() == '"', consume
             consume_char();
 
-            return token_t{ token_t::token_type_t::string };
+            return token_t::token_type_t::string;
         }
 
-        lexer::token_t lexer::get_arithmetical_token(char operator_char)
+        lexer::token_t::token_type_t lexer::get_arithmetical_token_type(char operator_char)
         {
             // current() == operator_char, go to next char
             consume_char();
@@ -209,22 +217,22 @@ namespace cmsl
 
             if (is_end())
             {
-                return token_t{ definition.single };
+                return definition.single;
             }
 
             if (definition.has_twice() && current() == operator_char) // same, e.g. ++
             {
                 consume_char();
-                return token_t{ definition.twice };
+                return definition.twice;
             }
 
             if (current() == '=') // e.g. +=
             {
                 consume_char();
-                return token_t{ definition.op_equal };
+                return definition.op_equal;
             }
 
-            return token_t{ definition.single };
+            return definition.single;
         }
 
         lexer::aritmetical_token_definition_t lexer::create_arithmetical_token_definitions() const
@@ -272,7 +280,7 @@ namespace cmsl
             return chars.find(c) != cmsl::string_view::npos;
         }
 
-        lexer::token_t lexer::get_one_char_token(char c)
+        lexer::token_t::token_type_t lexer::get_one_char_token_type(char c)
         {
             const auto found = m_one_char_tokens.find(c);
             assert(found != m_one_char_tokens.end());
@@ -280,7 +288,7 @@ namespace cmsl
             consume_char();
 
             const auto token_type = found->second;
-            return token_t{ token_type };
+            return token_type;
         }
     }
 }

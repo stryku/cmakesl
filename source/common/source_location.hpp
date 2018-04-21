@@ -7,6 +7,7 @@ namespace cmsl
     class source_location
     {
     public:
+        explicit source_location();
         explicit source_location(cmsl::string_view source);
 
         size_t line() const;
@@ -32,11 +33,6 @@ namespace cmsl
 
     struct source_range
     {
-        explicit source_range()
-            : begin{ "" }
-            , end{ "" }
-        {}
-
         source_location begin;
         source_location end;
     };
