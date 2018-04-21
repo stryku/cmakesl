@@ -4,6 +4,10 @@
 
 namespace cmsl
 {
+    source_location::source_location()
+        : source_location{ "" }
+    {}
+
     source_location::source_location(cmsl::string_view source) :
         m_source{ source }
     {}
