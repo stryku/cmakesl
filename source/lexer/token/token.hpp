@@ -17,7 +17,7 @@ namespace cmsl
 
                 // Creates token with invalid begin and end locations
                 explicit token(token_type_t type);
-                explicit token(token_type_t type, source_range src_range);
+                explicit token(token_type_t type, const source_range& src_range);
 
                 bool is_valid() const;
                 token_type_t get_type() const;

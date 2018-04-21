@@ -10,7 +10,7 @@ namespace cmsl
                 : token{ type, source_range{} }
             {}
 
-            token::token(token_type_t type, source_range src_range)
+            token::token(token_type_t type, const source_range& src_range)
                 : m_type{ type }
                 , m_source_range{ src_range }
             {}
