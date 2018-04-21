@@ -2,6 +2,8 @@
 
 #include <gmock/gmock.h>
 
+#include <memory>
+
 using namespace testing;
 
 namespace cmsl
@@ -79,35 +81,65 @@ namespace cmsl
                 {
                     std::string source;
                     size_t to_increment;
-                    bool expected_is_at_end;
                 };
 
-                struct IsAtEnd : public Test, WithParamInterface<IsAtEndSourceLocationTestState>
-                {};
-
-                TEST_P(IsAtEnd, IsAtEnd)
+                struct IncrementFixture : TestWithParam<IsAtEndSourceLocationTestState>
                 {
-                    const auto state = GetParam();
-                    source_location_t sl{ state.source };
-
-                    for (auto i = 0u; i < state.to_increment; ++i)
+                    virtual void SetUp()
                     {
-                        ++sl;
+                        const auto& state = GetParam();
+                        sl = std::make_unique<source_location_t>(state.source);
+
+                        for (auto i = 0u; i < state.to_increment; ++i)
+                        {
+                            ++(*sl);
+                        }
                     }
 
-                    EXPECT_THAT(sl.is_at_end(), state.expected_is_at_end);
+                    virtual void TearDown()
+                    {
+                        sl.reset();
+                    }
+
+                    std::unique_ptr<source_location_t> sl;
+                };
+
+                namespace should_not_reach_end
+                {
+                    struct NotEnoughIncrements : public IncrementFixture
+                    {};
+
+                    TEST_P(NotEnoughIncrements, ShouldNotReachEnd)
+                    {
+                        EXPECT_THAT(sl->is_at_end(), false);
+                    }
+
+                    const auto values = Values(
+                        IsAtEndSourceLocationTestState{ "01234", 0u },
+                        IsAtEndSourceLocationTestState{ "01234", 1u },
+                        IsAtEndSourceLocationTestState{ "01234", 4u },
+                        IsAtEndSourceLocationTestState{ "01\n1234", 1u },
+                        IsAtEndSourceLocationTestState{ "01\n1234", 3u }
+                    );
+                    INSTANTIATE_TEST_CASE_P(SourceLocationTest, NotEnoughIncrements, values);
                 }
 
-                const auto values = Values(
-                    IsAtEndSourceLocationTestState{ "01234", 0u, false },
-                    IsAtEndSourceLocationTestState{ "01234", 1u, false },
-                    IsAtEndSourceLocationTestState{ "01234", 4u, false },
-                    IsAtEndSourceLocationTestState{ "0\n1234", 1u, false },
-                    IsAtEndSourceLocationTestState{ "0\n1234", 3u, false },
-                    IsAtEndSourceLocationTestState{ "01234", 5u, true },
-                    IsAtEndSourceLocationTestState{ "01234", 10u, true }
-                );
-                INSTANTIATE_TEST_CASE_P(SourceLocation, IsAtEnd, values);
+                namespace should_reach_end
+                {
+                    struct EnoughOrTooMuchIncrements : public IncrementFixture
+                    {};
+
+                    TEST_P(EnoughOrTooMuchIncrements, ShouldReachEnd)
+                    {
+                        EXPECT_THAT(sl->is_at_end(), true);
+                    }
+
+                    const auto values = Values(
+                        IsAtEndSourceLocationTestState{ "01234", 5u },
+                        IsAtEndSourceLocationTestState{ "01234", 10u }
+                    );
+                    INSTANTIATE_TEST_CASE_P(SourceLocationTest, EnoughOrTooMuchIncrements, values);
+                }
             }
 
             namespace has_next
