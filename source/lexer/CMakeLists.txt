@@ -1,10 +1,13 @@
 set(LEXER_SOURCES
-    lexer.hpp
-    lexer.cpp
-    
     token/token.hpp
     token/token.cpp
     token/token_type.hpp
+    
+    lexer.hpp
+    lexer.cpp
+    
+    source_location_manipulator.hpp
+    source_location_manipulator.cpp
 )
 
 add_library(lexer ${LEXER_SOURCES})

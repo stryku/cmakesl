@@ -54,9 +54,9 @@ namespace cmsl
 
         lexer::token_t lexer::get_next_token()
         {
-            const auto begin_loc = m_source_loc;
+            const auto begin_loc = m_source_loc.location();
             const auto token_type = get_next_token_type();
-            const auto end_loc = m_source_loc;
+            const auto end_loc = m_source_loc.location();
             return token_t{ token_type, source_range{ begin_loc, end_loc } };
         }
 
@@ -116,7 +116,7 @@ namespace cmsl
             // Handle real e.g. 123.
             if (current() == '.')
             {
-                ++m_source_loc;
+                m_source_loc.consume_char();
                 consume_integer();
                 return token_t::token_type_t::real;
             }
@@ -137,7 +137,7 @@ namespace cmsl
         void lexer::consume_char()
         {
             assert(!is_end());
-            ++m_source_loc;
+            m_source_loc.consume_char();
         }
 
         lexer::token_t::token_type_t lexer::get_identifier_token_type()
@@ -159,7 +159,7 @@ namespace cmsl
         lexer::token_t::token_type_t lexer::get_equal_token_type()
         {
             // current == '='
-            ++m_source_loc;
+            m_source_loc.consume_char();
 
             if (current() == '=') // ==
             {
