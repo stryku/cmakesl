@@ -15,6 +15,11 @@ namespace cmsl
             {
                 return m_type;
             }
+
+            token token::undef()
+            {
+                return token{ token_type_t::undef };
+            }
         }
     }
 }
