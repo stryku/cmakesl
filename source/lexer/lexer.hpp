@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/source_location.hpp"
 #include "common/string.hpp"
 #include "lexer/token/token.hpp"
+#include "lexer/source_location_manipulator.hpp"
 
 #include <string>
 #include <vector>
@@ -75,7 +75,7 @@ namespace cmsl
         private:
             errors::errors_observer& m_err_observer;
             const source_t m_source;
-            source_location m_source_loc;
+            source_location_manipulator m_source_loc;
             const aritmetical_token_definition_t m_aritmetical_token_definitions;
             const one_char_tokens_t m_one_char_tokens;
         };
