@@ -6,6 +6,15 @@ namespace cmsl
     {
         namespace token
         {
+            token::token(token_type_t type)
+                : token{ type, source_range{} }
+            {}
+
+            token::token(token_type_t type, source_range src_range)
+                : m_type{ type }
+                , m_source_range{ src_range }
+            {}
+
             bool token::is_valid() const
             {
                 return get_type() != token_type_t::undef;
