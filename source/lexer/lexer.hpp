@@ -51,12 +51,13 @@ namespace cmsl
             one_char_tokens_t create_one_char_tokens() const;
 
             token_t get_next_token();
-            token_t get_numeric_token();
-            token_t get_identifier_token();
-            token_t get_equal_token();
-            token_t get_string_token();
-            token_t get_arithmetical_token(char operator_char);
-            token_t get_one_char_token(char c);
+            token_t::token_type_t get_next_token_type();
+            token_t::token_type_t get_numeric_token_type();
+            token_t::token_type_t get_identifier_token_type();
+            token_t::token_type_t get_equal_token_type();
+            token_t::token_type_t get_string_token_type();
+            token_t::token_type_t get_arithmetical_token_type(char operator_char);
+            token_t::token_type_t get_one_char_token_type(char c);
 
             void consume_integer();
             void consume_char();
