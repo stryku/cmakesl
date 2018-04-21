@@ -15,9 +15,9 @@ namespace cmsl
             public:
                 using token_type_t = cmsl::lexer::token::token_type;
 
-                explicit token(token_type_t type)
-                    : m_type{ type }
-                {}
+                // Creates token with invalid begin and end locations
+                explicit token(token_type_t type);
+                explicit token(token_type_t type, source_range src_range);
 
                 bool is_valid() const;
                 token_type_t get_type() const;
@@ -26,6 +26,7 @@ namespace cmsl
 
             private:
                 token_type_t m_type{ token_type_t::undef };
+                source_range m_source_range;
             };
         }
     }

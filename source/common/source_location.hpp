@@ -29,4 +29,15 @@ namespace cmsl
         size_t m_absolute{ 0u };
         cmsl::string_view m_source;
     };
+
+    struct source_range
+    {
+        explicit source_range()
+            : begin{ "" }
+            , end{ "" }
+        {}
+
+        source_location begin;
+        source_location end;
+    };
 }
