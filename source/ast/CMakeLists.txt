@@ -1,4 +1,6 @@
 set(AST_SOURCES
+    ast_builder.cpp
+    ast_builder.hpp 
     ast_node.cpp
     ast_node.hpp 
 )
