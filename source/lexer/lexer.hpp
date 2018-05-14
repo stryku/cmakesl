@@ -25,11 +25,9 @@ namespace cmsl
             using token_t = token::token;
 
         public:
-            using tokens_container_t = std::vector<token_t>;
-
             lexer(errors::errors_observer& err_observer, source_t source);
 
-            tokens_container_t lex();
+            std::vector<token::token> lex();
 
         private:
             struct aritmetical_token_definition

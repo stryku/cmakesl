@@ -18,9 +18,9 @@ namespace cmsl
             , m_one_char_tokens{ create_one_char_tokens() }
         {}
 
-        lexer::tokens_container_t lexer::lex()
+        std::vector<token::token> lexer::lex()
         {
-            auto tokens = tokens_container_t{};
+            auto tokens = std::vector<token::token>{};
             const auto end = m_source.cend();
 
             while (!is_end())
