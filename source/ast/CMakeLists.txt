@@ -3,6 +3,8 @@ set(AST_SOURCES
     ast_builder.hpp 
     ast_node.cpp
     ast_node.hpp 
+    expr/expression.cpp
+    expr/expression.hpp 
 )
 
 add_library(ast ${AST_SOURCES})
