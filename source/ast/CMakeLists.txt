@@ -3,6 +3,10 @@ set(AST_SOURCES
     ast_builder.hpp 
     ast_node.cpp
     ast_node.hpp 
+    expr/block_expression.cpp
+    expr/block_expression.hpp
+    expr/constant_expression.cpp
+    expr/constant_expression.hpp
     expr/expression.cpp
     expr/expression.hpp 
 )
