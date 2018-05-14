@@ -6,7 +6,8 @@ namespace cmsl
     {
         class expression
         {
-
+        public:
+            virtual void evaluate() = 0;
         };
     }
 }
