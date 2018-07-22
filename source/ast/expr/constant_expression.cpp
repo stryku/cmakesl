@@ -10,7 +10,7 @@ namespace cmsl
 
         constant_expression::result_t constant_expression::evaluate()
         {
-            return{};
+            return std::stoi(m_token.str().to_string());
         }
     }
 }
