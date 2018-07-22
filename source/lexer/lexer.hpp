@@ -27,7 +27,7 @@ namespace cmsl
         public:
             lexer(errors::errors_observer& err_observer, source_t source);
 
-            std::vector<token::token> lex();
+            std::vector<token_t> lex();
 
         private:
             struct aritmetical_token_definition

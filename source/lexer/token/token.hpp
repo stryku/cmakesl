@@ -17,16 +17,19 @@ namespace cmsl
 
                 // Creates token with invalid begin and end locations
                 explicit token(token_type_t type);
-                explicit token(token_type_t type, const source_range& src_range);
+                explicit token(token_type_t type, const source_range& src_range, cmsl::string_view source);
 
                 bool is_valid() const;
                 token_type_t get_type() const;
 
                 static token undef();
 
+                cmsl::string_view str() const;
+
             private:
                 token_type_t m_type{ token_type_t::undef };
                 source_range m_source_range;
+                cmsl::string_view m_source;
             };
         }
     }
