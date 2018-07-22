@@ -13,6 +13,7 @@ namespace cmsl
 
             auto expr = build_block_expression();
 
+            return nullptr;
         }
 
         bool ast_builder::is_constant_expression_token(const token_t& token)
@@ -31,7 +32,7 @@ namespace cmsl
             {
                 if (is_constant_expression_token(*m_current_token))
                 {
-                    exprs.emplace_back(std::make_unique<constant_expression>());
+                    exprs.emplace_back(std::make_unique<constant_expression>(*m_current_token));
                 }
 
                 ++m_current_token;

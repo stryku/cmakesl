@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/variant.hpp>
+
 namespace cmsl
 {
     namespace ast
@@ -7,7 +9,10 @@ namespace cmsl
         class expression
         {
         public:
-            virtual void evaluate() = 0;
+            using result_t = boost::variant<int>;
+
+            virtual ~expression() {}
+            virtual result_t evaluate() = 0;
         };
     }
 }
