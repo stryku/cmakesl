@@ -4,9 +4,13 @@ namespace cmsl
 {
     namespace ast
     {
-        void constant_expression::evaluate()
-        {
+        constant_expression::constant_expression(lexer::token::token tok)
+            : m_token{ tok }
+        {}
 
+        constant_expression::result_t constant_expression::evaluate()
+        {
+            return{};
         }
     }
 }
