@@ -3,6 +3,8 @@ set(AST_SOURCES
     ast_builder.hpp 
     ast_node.cpp
     ast_node.hpp 
+    expr/binary_operator_expression.cpp
+    expr/binary_operator_expression.hpp
     expr/block_expression.cpp
     expr/block_expression.hpp
     expr/constant_expression.cpp
