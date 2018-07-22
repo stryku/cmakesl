@@ -11,6 +11,8 @@ set(AST_SOURCES
     expr/constant_expression.hpp
     expr/expression.cpp
     expr/expression.hpp 
+    expr/onp_expression.cpp
+    expr/onp_expression.hpp 
 )
 
 add_library(ast ${AST_SOURCES})

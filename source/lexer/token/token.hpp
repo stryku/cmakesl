@@ -4,6 +4,8 @@
 #include "common/string.hpp"
 #include "lexer/token/token_type.hpp"
 
+#include <vector>
+
 namespace cmsl
 {
     namespace lexer
@@ -31,6 +33,8 @@ namespace cmsl
                 source_range m_source_range;
                 cmsl::string_view m_source;
             };
+
+            using token_container_t = std::vector<token>;
         }
     }
 }
