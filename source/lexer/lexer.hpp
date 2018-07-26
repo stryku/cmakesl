@@ -59,6 +59,7 @@ namespace cmsl
 
             void consume_integer();
             void consume_char();
+            void consume_whitespaces();
 
             bool is_end() const;
             bool has_next() const;
@@ -66,6 +67,7 @@ namespace cmsl
             bool is_identifier_char(char c) const;
             bool is_arithmetical_operator(char c) const;
             bool is_one_char_token(char c) const;
+            bool is_whitespace(char c) const;
 
             char current() const;
             char next() const;

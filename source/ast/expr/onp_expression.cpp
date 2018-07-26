@@ -6,7 +6,7 @@ namespace cmsl
 {
     namespace ast
     {
-        onp_expression::onp_expression(lexer::token::token_container_t tokens)
+        /*onp_expression::onp_expression(lexer::token::token_container_t tokens)
             : m_tokens{ std::move(tokens) }
         {}
 
@@ -41,6 +41,6 @@ namespace cmsl
             }
 
             return stack.top();
-        }
+        }*/
     }
 }

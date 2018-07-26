@@ -62,6 +62,8 @@ namespace cmsl
 
         lexer::token_t::token_type_t lexer::get_next_token_type()
         {
+            consume_whitespaces();
+
             const auto curr = current();
 
             if (std::isdigit(curr))
@@ -139,6 +141,16 @@ namespace cmsl
             assert(!is_end());
             m_source_loc.consume_char();
         }
+
+        void lexer::consume_whitespaces()
+        {
+            assert(!is_end());
+            while (!is_end() && is_whitespace(current()))
+            {
+                consume_char();
+            }
+        }
+
 
         lexer::token_t::token_type_t lexer::get_identifier_token_type()
         {
@@ -264,6 +276,7 @@ namespace cmsl
             tokens['}'] = token_t::token_type_t::close_brace;
             tokens['['] = token_t::token_type_t::open_square;
             tokens[']'] = token_t::token_type_t::close_square;
+            tokens[';'] = token_t::token_type_t::semicolon;
 
             return tokens;
         }
@@ -276,7 +289,13 @@ namespace cmsl
 
         bool lexer::is_one_char_token(char c) const
         {
-            const auto chars = cmsl::string_view{ "{}[]()" };
+            const auto chars = cmsl::string_view{ "{}[]();" };
+            return chars.find(c) != cmsl::string_view::npos;
+        }
+
+        bool lexer::is_whitespace(char c) const
+        {
+            const auto chars = cmsl::string_view{ " \t\n\r" };
             return chars.find(c) != cmsl::string_view::npos;
         }
 

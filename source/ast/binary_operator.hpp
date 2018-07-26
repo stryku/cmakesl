@@ -3,6 +3,8 @@
 #include "ast/ast_node.hpp"
 #include "lexer/token/token.hpp"
 
+#include <memory>
+
 namespace cmsl
 {
     namespace ast
@@ -10,16 +12,16 @@ namespace cmsl
         class binary_operator : public ast_node
         {
         public:
-            binary_operator(ast_node* left, lexer::token::token op, ast_node* right)
-                : m_left{ left }
+            binary_operator(std::unique_ptr<ast_node> left, lexer::token::token op, std::unique_ptr<ast_node> right)
+                : m_left{ std::move(left) }
                 , m_operator{ op }
-                , m_right{ right }
+                , m_right{ std::move(right) }
             {}
 
         private:
-            ast_node* m_left;
+            std::unique_ptr<ast_node> m_left;
             lexer::token::token m_operator;
-            ast_node* m_right;
+            std::unique_ptr<ast_node> m_right;
         };
     }
 }
