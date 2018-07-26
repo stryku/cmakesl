@@ -26,7 +26,11 @@ namespace cmsl
             while (!is_end())
             {
                 const auto t = get_next_token();
-                tokens.push_back(t);
+
+                if (t.get_type() != token_t::token_type_t::undef)
+                {
+                    tokens.push_back(t);
+                }
             }
 
             return tokens;
@@ -63,6 +67,12 @@ namespace cmsl
         lexer::token_t::token_type_t lexer::get_next_token_type()
         {
             consume_whitespaces();
+
+            if (is_end())
+            {
+                // in such case, there are whitespaces at the end of source. No other chars
+                return token_t::token_type_t::undef;
+            }
 
             const auto curr = current();
 
