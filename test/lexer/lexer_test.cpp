@@ -197,6 +197,37 @@ namespace cmsl
                                                     quoted("foo \"bar\" baz"));
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_String, values);
             }
+
+            namespace whitespaces
+            {
+                struct Lex_Whitespaces_State
+                {
+                    std::string source;
+                    std::vector<token_type_t> expected_tokens;
+                };
+
+                struct Lex_Whitespaces : public testing::Test, testing::WithParamInterface<Lex_Whitespaces_State>
+                {};
+
+                TEST_P(Lex_Whitespaces, TokensType)
+                {
+                    const auto state = GetParam();
+                    auto lex = create_lexer(state.source);
+                    const auto tokens = lex.lex();
+
+                    ASSERT_THAT(tokens.size(), state.expected_tokens.size());
+
+                    for(auto i = 0u; i < tokens.size(); ++i)
+                    {
+                        ASSERT_THAT(tokens[i].get_type(), state.expected_tokens[i]);
+                    }
+                }
+
+                const auto values = testing::Values(Lex_Whitespaces_State{ " \t\n\r\n", {} },
+                                                    Lex_Whitespaces_State{ " \t\n123\r\n", { token_type_t::integer } },
+                                                    Lex_Whitespaces_State{ "123 \t\n123\r\n", { token_type_t::integer, token_type_t::integer } });
+                INSTANTIATE_TEST_CASE_P(Lexer, Lex_Whitespaces, values);
+            }
         }
     }
 }
