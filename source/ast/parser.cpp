@@ -1,0 +1,64 @@
+#include "ast/parser.hpp"
+
+#include "ast/type.hpp"
+
+namespace cmsl
+{
+    namespace ast
+    {
+        parser::parser(token_it token)
+            : m_token{ token }
+        {}
+
+        void parser::raise_error()
+        {
+            throw std::runtime_error{ "unexpected token" };
+        }
+
+        void parser::eat(boost::optional<lexer::token::token_type> type)
+        {
+            if (type && m_token->get_type() != *type)
+            {
+                raise_error();
+            }
+
+            ++m_token;
+        }
+
+        void parser::eat_type()
+        {
+            const auto token_type = m_token->get_type();
+
+            if (is_builtin_type(token_type) ||
+                token_type == token_type_t::identifier)
+            {
+                eat();
+            }
+            else
+            {
+                raise_error();
+            }
+        }
+
+        bool parser::is_builtin_type(token_type_t token_type) const
+        {
+            const auto builtin_types = {
+                token_type_t::t_int,
+                token_type_t::t_real
+            };
+
+            return std::any_of(std::cbegin(builtin_types), std::cend(builtin_types),
+                               [token_type](const auto builtin_type)
+                               {
+                                   return token_type == builtin_type;
+                               });
+        }
+
+        type parser::get_type()
+        {
+            const auto t = *m_token;
+            eat_type();
+            return type{ t };
+        }
+    }
+}
