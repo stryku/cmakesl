@@ -256,8 +256,9 @@ namespace cmsl
 
         type ast_builder::get_type()
         {
+            const auto t = *m_current_token;
             eat(token_t::token_type_t::identifier);
-            return type{};
+            return type{ t };
         }
 
         std::vector<parameter_declaration> ast_builder::parameters()
