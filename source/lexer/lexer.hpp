@@ -51,7 +51,7 @@ namespace cmsl
             token_t get_next_token();
             token_t::token_type_t get_next_token_type();
             token_t::token_type_t get_numeric_token_type();
-            token_t::token_type_t get_identifier_token_type();
+            token_t::token_type_t get_identifier_or_keyword_token_type();
             token_t::token_type_t get_equal_token_type();
             token_t::token_type_t get_string_token_type();
             token_t::token_type_t get_arithmetical_token_type(char operator_char);

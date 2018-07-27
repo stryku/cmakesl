@@ -44,7 +44,11 @@ namespace cmsl
                 xor,
                 xorequal,
                 string,
-                semicolon
+                semicolon,
+
+                // builtin types
+                t_int,
+                t_real
             };
         }
     }

@@ -228,6 +228,54 @@ namespace cmsl
                                                     Lex_Whitespaces_State{ "123 \t\n123\r\n", { token_type_t::integer, token_type_t::integer } });
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Whitespaces, values);
             }
+
+            namespace keywords
+            {
+                namespace pure
+                {
+                    struct PureKeywordState
+                    {
+                        std::string source;
+                        token_type_t expected_keyword;
+                    };
+
+                    struct PureKeyword : public testing::TestWithParam<PureKeywordState>
+                    {};
+
+                    TEST_P(PureKeyword, RecognizeKeyword)
+                    {
+                        const auto state = GetParam();
+                        auto lex = create_lexer(state.source);
+                        const auto tokens = lex.lex();
+
+                        ASSERT_THAT(tokens.size(), 1u);
+                        ASSERT_THAT(tokens[0].get_type(), state.expected_keyword);
+                    }
+
+                    const auto values = testing::Values(PureKeywordState{ "int", token_type_t::t_int },
+                                                        PureKeywordState{ "real", token_type_t::t_real });
+                    INSTANTIATE_TEST_CASE_P(Lexer, PureKeyword, values);
+                }
+
+                namespace polluted
+                {
+                    struct PollutedKeyword : public testing::TestWithParam<std::string>
+                    {};
+
+                    TEST_P(PollutedKeyword, RecognizedIdentifier)
+                    {
+                        const auto source = GetParam();
+                        auto lex = create_lexer(source);
+                        const auto tokens = lex.lex();
+
+                        ASSERT_THAT(tokens.size(), 1u);
+                        ASSERT_THAT(tokens[0].get_type(), token_type_t::identifier);
+                    }
+
+                    const auto values = testing::Values( "int123", "_real");
+                    INSTANTIATE_TEST_CASE_P(Lexer, PollutedKeyword, values);
+                }
+            }
         }
     }
 }
