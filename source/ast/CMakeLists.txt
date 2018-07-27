@@ -3,6 +3,14 @@ set(AST_SOURCES
     ast_builder.hpp 
     ast_node.cpp
     ast_node.hpp 
+    function.hpp
+    integral_constant.hpp
+    onp_expression.hpp
+    parameter_declaration.hpp
+    parser.cpp
+    parser.hpp
+    type.hpp
+    
     expr/binary_operator_expression.cpp
     expr/binary_operator_expression.hpp
     expr/block_expression.cpp
