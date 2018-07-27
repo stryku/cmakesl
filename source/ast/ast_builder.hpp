@@ -13,7 +13,7 @@ namespace cmsl
     {
         class expression;
         class type;
-        class parameter_declaration;
+        struct parameter_declaration;
 
         class ast_builder
         {
