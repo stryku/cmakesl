@@ -101,6 +101,44 @@ namespace cmsl
                     INSTANTIATE_TEST_CASE_P(ParserError_GetType, UnexpectedToken, values);
                 }
             }
+
+            namespace get_parameters_declaration
+            {
+                auto parameters(const token_container_t& list_tokens)
+                {
+                    token_container_t result{ token_t{ token_type_t::open_paren } };
+
+                    std::copy(std::cbegin(list_tokens), std::cend(list_tokens),
+                              std::back_inserter(result));
+
+                    result.emplace_back(token_t{ token_type_t::close_paren });
+
+                    return result;
+                }
+
+                using MissingParameterDeclaration = testing::TestWithParam<token_container_t>;
+
+                TEST_P(MissingParameterDeclaration, ReportError)
+                {
+                    testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
+                    errors::errors_observer err_observer;
+                    const auto tokens = GetParam();
+
+                    EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
+
+                    auto p = parser_t{ err_observer, tokens.cbegin() };
+                    (void)p.get_parameters_declaration();
+                }
+
+                const auto values = testing::Values(
+                    parameters({ token_t{ token_type_t::semicolon } }), // (,)
+                    parameters({ token_t{ token_type_t::identifier }, token_t{ token_type_t::identifier }, token_t{ token_type_t::semicolon } }), //(type name,)
+                    parameters({ token_t{ token_type_t::semicolon }, token_t{ token_type_t::identifier }, token_t{ token_type_t::identifier } }), //(,type name)
+                    parameters({ token_t{ token_type_t::identifier }, token_t{ token_type_t::identifier }, token_t{ token_type_t::semicolon }, token_t{ token_type_t::semicolon }, token_t{ token_type_t::identifier }, token_t{ token_type_t::identifier } }) //(type name,,type name)
+                );
+
+                INSTANTIATE_TEST_CASE_P(ParserError_GetParametersDeclaration, MissingParameterDeclaration, values);
+            }
         }
     }
 }
