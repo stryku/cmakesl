@@ -72,7 +72,7 @@ namespace cmsl
                 auto name = *m_token;
                 eat(token_type_t::identifier);
 
-                if (m_token->get_type() == token_type_t::semicolon);
+                if (m_token->get_type() == token_type_t::semicolon)
                 {
                     eat(token_type_t::semicolon);
                 } // todo handle semicolon without param

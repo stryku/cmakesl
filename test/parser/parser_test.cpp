@@ -74,6 +74,34 @@ namespace cmsl
                     const auto parameters = p.get_parameters_declaration();
                     ASSERT_THAT(parameters.empty(), true);
                 }
+
+                TEST(Parser_GetParametersDeclaration, NotEmpty_GetParameters)
+                {
+                    const auto tokens = tokens_container_t{
+                        token_t{ token_type_t::open_paren },
+
+                        token_t{ token_type_t::t_int },
+                        token_t{ token_type_t::identifier },
+                        token_t{ token_type_t::semicolon },
+
+                        token_t{ token_type_t::t_real },
+                        token_t{ token_type_t::identifier },
+                        token_t{ token_type_t::semicolon },
+
+                        token_t{ token_type_t::identifier },
+                        token_t{ token_type_t::identifier },
+
+                        token_t{ token_type_t::close_paren }
+                    };
+
+                    auto p = parser_t{ tokens.cbegin() };
+                    const auto parameters = p.get_parameters_declaration();
+                    ASSERT_THAT(parameters.size(), 3u);
+
+                    ASSERT_THAT(parameters[0].param_type.is_builtin(), true);
+                    ASSERT_THAT(parameters[1].param_type.is_builtin(), true);
+                    ASSERT_THAT(parameters[2].param_type.is_builtin(), false);
+                }
             }
         }
     }
