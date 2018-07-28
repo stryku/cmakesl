@@ -20,25 +20,46 @@ namespace cmsl
 
             namespace get_type
             {
-                using BuilinTypeState = std::vector<token_t>;
+                using TypeState = std::vector<token_t>;
 
-                struct BuiltinType : public testing::TestWithParam<BuilinTypeState>
-                {};
-
-                TEST_P(BuiltinType, GetBuiltInType)
+                namespace builtin
                 {
-                    const auto tokens = GetParam();
-                    auto p = parser_t{ tokens.cbegin() };
-                    const auto type = p.get_type();
-                    ASSERT_THAT(type.is_builtin(), true);
+                    using BuiltinTypeToken = testing::TestWithParam<TypeState>;
+
+                    TEST_P(BuiltinTypeToken, GetBuiltInType)
+                    {
+                        const auto tokens = GetParam();
+                        auto p = parser_t{ tokens.cbegin() };
+                        const auto type = p.get_type();
+                        ASSERT_THAT(type.is_builtin(), true);
+                    }
+
+                    const auto values = testing::Values(
+                        TypeState{ token_t{ token_type_t::t_int } },
+                        TypeState{ token_t{ token_type_t::t_real } }
+                    );
+
+                    INSTANTIATE_TEST_CASE_P(Parser_GetType, BuiltinTypeToken, values);
                 }
 
-                const auto values = testing::Values(
-                    BuilinTypeState{ token_t{ token_type_t::t_int } },
-                    BuilinTypeState{ token_t{ token_type_t::t_real } }
-                );
+                namespace identifier
+                {
+                    using IdentifierToken = testing::TestWithParam<TypeState>;
 
-                INSTANTIATE_TEST_CASE_P(Parser, BuiltinType, values);
+                    TEST_P(IdentifierToken, GetNotBuiltinType)
+                    {
+                        const auto tokens = GetParam();
+                        auto p = parser_t{ tokens.cbegin() };
+                        const auto type = p.get_type();
+                        ASSERT_THAT(type.is_builtin(), false);
+                    }
+
+                    const auto values = testing::Values(
+                        TypeState{ token_t{ token_type_t::identifier } }
+                    );
+
+                    INSTANTIATE_TEST_CASE_P(Parser_GetType, IdentifierToken, values);
+                }
             }
         }
     }
