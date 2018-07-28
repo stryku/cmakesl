@@ -1,12 +1,17 @@
 #include "ast/parser.hpp"
 #include "ast/type.hpp"
 
+#include "common/algorithm.hpp"
+
+#include "errors/errors_observer.hpp"
+
 namespace cmsl
 {
     namespace ast
     {
-        parser::parser(token_it token)
-            : m_token{ token }
+        parser::parser(errors::errors_observer& err_observer, token_it token)
+            : m_err_observer{ err_observer }
+            , m_token{ token }
         {}
 
         void parser::raise_error()
@@ -46,11 +51,7 @@ namespace cmsl
                 token_type_t::t_real
             };
 
-            return std::any_of(std::cbegin(builtin_types), std::cend(builtin_types),
-                               [token_type](const auto builtin_type)
-                               {
-                                   return token_type == builtin_type;
-                               });
+            return cmsl::contains(builtin_types, token_type);
         }
 
         type parser::get_type()

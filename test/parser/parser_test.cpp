@@ -1,5 +1,6 @@
 #include "ast/type.hpp"
 #include "ast/parser.hpp"
+#include "errors/errors_observer.hpp"
 #include "lexer/lexer.hpp"
 #include "lexer/token/token.hpp"
 
@@ -19,6 +20,8 @@ namespace cmsl
             using tokens_container_t = cmsl::lexer::token::token_container_t;
             using parser_t = cmsl::ast::parser;
 
+            errors::errors_observer dummy_err_observer;
+
             namespace get_type
             {
                 namespace builtin
@@ -28,7 +31,7 @@ namespace cmsl
                     TEST_P(BuiltinTypeToken, GetBuiltInType)
                     {
                         const auto tokens = GetParam();
-                        auto p = parser_t{ tokens.cbegin() };
+                        auto p = parser_t{ dummy_err_observer, tokens.cbegin() };
                         const auto type = p.get_type();
                         ASSERT_THAT(type.is_builtin(), true);
                     }
@@ -48,7 +51,7 @@ namespace cmsl
                     TEST_P(IdentifierToken, GetNotBuiltinType)
                     {
                         const auto tokens = GetParam();
-                        auto p = parser_t{ tokens.cbegin() };
+                        auto p = parser_t{ dummy_err_observer, tokens.cbegin() };
                         const auto type = p.get_type();
                         ASSERT_THAT(type.is_builtin(), false);
                     }
@@ -70,7 +73,7 @@ namespace cmsl
                         token_t{ token_type_t::close_paren }
                     };
 
-                    auto p = parser_t{ tokens.cbegin() };
+                    auto p = parser_t{ dummy_err_observer, tokens.cbegin() };
                     const auto parameters = p.get_parameters_declaration();
                     ASSERT_THAT(parameters.empty(), true);
                 }
@@ -94,7 +97,7 @@ namespace cmsl
                         token_t{ token_type_t::close_paren }
                     };
 
-                    auto p = parser_t{ tokens.cbegin() };
+                    auto p = parser_t{ dummy_err_observer, tokens.cbegin() };
                     const auto parameters = p.get_parameters_declaration();
                     ASSERT_THAT(parameters.size(), 3u);
 

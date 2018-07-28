@@ -7,6 +7,11 @@
 
 namespace cmsl
 {
+    namespace errors
+    {
+        class errors_observer;
+    }
+
     namespace ast
     {
         class ast_node;
@@ -18,7 +23,7 @@ namespace cmsl
             using token_it = lexer::token::token_container_t::const_iterator;
             using token_type_t = lexer::token::token_type;
 
-            parser(token_it token);
+            parser(errors::errors_observer& err_observer, token_it token);
 
             type get_type();
             std::vector<parameter_declaration> get_parameters_declaration();
@@ -31,6 +36,7 @@ namespace cmsl
             void raise_error();
 
         private:
+            errors::errors_observer& m_err_observer;
             token_it m_token;
         };
     }
