@@ -38,7 +38,7 @@ namespace cmsl
                     BuilinTypeState{ token_t{ token_type_t::t_real } }
                 );
 
-                INSTANTIATE_TEST_CASE_P(Parser, BuiltinType, values)
+                INSTANTIATE_TEST_CASE_P(Parser, BuiltinType, values);
             }
         }
     }

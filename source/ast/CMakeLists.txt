@@ -9,6 +9,7 @@ set(AST_SOURCES
     parameter_declaration.hpp
     parser.cpp
     parser.hpp
+    type.cpp
     type.hpp
     
     expr/binary_operator_expression.cpp
