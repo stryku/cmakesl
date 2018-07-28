@@ -1,5 +1,4 @@
 #include "ast/parser.hpp"
-
 #include "ast/type.hpp"
 
 namespace cmsl
@@ -12,7 +11,7 @@ namespace cmsl
 
         void parser::raise_error()
         {
-            throw std::runtime_error{ "unexpected token" };
+            throw std::runtime_error{ "parsing error" };
         }
 
         void parser::eat(boost::optional<lexer::token::token_type> type)
@@ -59,6 +58,31 @@ namespace cmsl
             const auto t = *m_token;
             eat_type();
             return type{ t };
+        }
+
+        std::vector<parameter_declaration> parser::get_parameters_declaration()
+        {
+            std::vector<parameter_declaration> params;
+
+            eat(token_type_t::open_paren);
+
+            while (m_token->get_type() != token_type_t::close_paren)
+            {
+                auto t = get_type();
+                auto name = *m_token;
+                eat(token_type_t::identifier);
+
+                if (m_token->get_type() == token_type_t::semicolon);
+                {
+                    eat(token_type_t::semicolon);
+                } // todo handle semicolon without param
+
+                params.push_back({ t, name });
+            }
+
+            eat(token_type_t::close_paren);
+
+            return params;
         }
     }
 }
