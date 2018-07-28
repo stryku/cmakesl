@@ -1,4 +1,5 @@
 #include "ast/type.hpp"
+#include "common/algorithm.hpp"
 
 namespace cmsl
 {
@@ -15,11 +16,7 @@ namespace cmsl
                 token_type_t::t_real
             };
 
-            return std::any_of(std::cbegin(builtin_types), std::cend(builtin_types),
-                               [token_type = m_token.get_type()](const auto builtin_type)
-                               {
-                                   return token_type == builtin_type;
-                               });
+            return cmsl::contains(builtin_types, m_token.get_type());
         }
     }
 }
