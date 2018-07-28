@@ -31,9 +31,9 @@ namespace cmsl
                     TEST_P(BuiltinTypeToken, GetBuiltInType)
                     {
                         const auto tokens = GetParam();
-                        auto p = parser_t{ dummy_err_observer, tokens.cbegin() };
+                        auto p = parser_t{ dummy_err_observer, tokens };
                         const auto type = p.get_type();
-                        ASSERT_THAT(type.is_builtin(), true);
+                        ASSERT_THAT(type->is_builtin(), true);
                     }
 
                     const auto values = testing::Values(
@@ -51,9 +51,9 @@ namespace cmsl
                     TEST_P(IdentifierToken, GetNotBuiltinType)
                     {
                         const auto tokens = GetParam();
-                        auto p = parser_t{ dummy_err_observer, tokens.cbegin() };
+                        auto p = parser_t{ dummy_err_observer, tokens };
                         const auto type = p.get_type();
-                        ASSERT_THAT(type.is_builtin(), false);
+                        ASSERT_THAT(type->is_builtin(), false);
                     }
 
                     const auto values = testing::Values(
@@ -73,7 +73,7 @@ namespace cmsl
                         token_t{ token_type_t::close_paren }
                     };
 
-                    auto p = parser_t{ dummy_err_observer, tokens.cbegin() };
+                    auto p = parser_t{ dummy_err_observer, tokens };
                     const auto parameters = p.get_parameters_declaration();
                     ASSERT_THAT(parameters.empty(), true);
                 }
@@ -97,7 +97,7 @@ namespace cmsl
                         token_t{ token_type_t::close_paren }
                     };
 
-                    auto p = parser_t{ dummy_err_observer, tokens.cbegin() };
+                    auto p = parser_t{ dummy_err_observer, tokens };
                     const auto parameters = p.get_parameters_declaration();
                     ASSERT_THAT(parameters.size(), 3u);
 

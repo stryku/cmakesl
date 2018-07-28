@@ -10,9 +10,10 @@ namespace cmsl
 {
     namespace ast
     {
-        parser::parser(errors::errors_observer& err_observer, token_it token)
+        parser::parser(errors::errors_observer& err_observer, const lexer::token::token_container_t& tokens)
             : m_err_observer{ err_observer }
-            , m_token{ token }
+            , m_token{ tokens.cbegin() }
+            , m_end{ tokens.cend() }
         {}
 
         void parser::raise_error()
@@ -20,17 +21,19 @@ namespace cmsl
             m_err_observer.nofify_error(errors::error{});
         }
 
-        void parser::eat(boost::optional<lexer::token::token_type> type)
+        bool parser::eat(boost::optional<lexer::token::token_type> type)
         {
             if (type && m_token->get_type() != *type)
             {
                 raise_error();
+                return false;
             }
 
             ++m_token;
+            return true;
         }
 
-        void parser::eat_type()
+        bool parser::eat_type()
         {
             const auto token_type = m_token->get_type();
 
@@ -38,10 +41,12 @@ namespace cmsl
                 token_type == token_type_t::identifier)
             {
                 eat();
+                return true;
             }
             else
             {
                 raise_error();
+                return false;
             }
         }
 
@@ -55,10 +60,15 @@ namespace cmsl
             return cmsl::contains(builtin_types, token_type);
         }
 
-        type parser::get_type()
+        boost::optional<type> parser::get_type()
         {
             const auto t = *m_token;
-            eat_type();
+
+            if (!eat_type())
+            {
+                return boost::none;
+            }
+
             return type{ t };
         }
 
@@ -66,25 +76,71 @@ namespace cmsl
         {
             std::vector<parameter_declaration> params;
 
-            eat(token_type_t::open_paren);
+            if (!eat(token_type_t::open_paren))
+            {
+                return{};
+            }
 
             while (m_token->get_type() != token_type_t::close_paren)
             {
-                auto t = get_type();
-                auto name = *m_token;
-                eat(token_type_t::identifier);
-
-                if (m_token->get_type() == token_type_t::semicolon)
+                const auto param_decl = get_parameter_declaration();
+                if (!param_decl)
                 {
-                    eat(token_type_t::semicolon);
-                } // todo handle semicolon without param
+                    return{};
+                }
 
-                params.push_back({ t, name });
+                params.push_back(std::move(*param_decl));
+
+                if (!prepare_for_next_parameter_declaration())
+                {
+                    return{};
+                }
             }
 
-            eat(token_type_t::close_paren);
+            if(!eat(token_type_t::close_paren))
+            {
+                return{};
+            }
 
             return params;
+        }
+
+        bool parser::prepare_for_next_parameter_declaration()
+        {
+            if (m_token->get_type() == token_type_t::semicolon)
+            {
+                if (!eat(token_type_t::semicolon))
+                {
+                    return false;
+                }
+
+                if (m_token->get_type() == token_type_t::close_paren)
+                {
+                    // Missed last parameter declaration
+                    raise_error();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        boost::optional<parameter_declaration> parser::get_parameter_declaration()
+        {
+            auto t = get_type();
+
+            if (!t)
+            {
+                return{};
+            }
+
+            auto name = *m_token;
+            if (!eat(token_type_t::identifier))
+            {
+                return{};
+            }
+            
+            return parameter_declaration{ *t, name };
         }
     }
 }
