@@ -9,9 +9,11 @@ namespace cmsl
         class type
         {
         public:
-            type(lexer::token::token token)
-                : m_token{ token }
-            {}
+            using token_type_t = lexer::token::token_type;
+
+            type(lexer::token::token token);
+
+            bool is_builtin() const;
 
         private:
             lexer::token::token m_token;
