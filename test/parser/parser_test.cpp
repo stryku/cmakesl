@@ -16,15 +16,14 @@ namespace cmsl
             using lexer_t = cmsl::lexer::lexer;
             using token_t = cmsl::lexer::token::token;
             using token_type_t = cmsl::lexer::token::token_type;
+            using tokens_container_t = cmsl::lexer::token::token_container_t;
             using parser_t = cmsl::ast::parser;
 
             namespace get_type
             {
-                using TypeState = std::vector<token_t>;
-
                 namespace builtin
                 {
-                    using BuiltinTypeToken = testing::TestWithParam<TypeState>;
+                    using BuiltinTypeToken = testing::TestWithParam<tokens_container_t>;
 
                     TEST_P(BuiltinTypeToken, GetBuiltInType)
                     {
@@ -35,8 +34,8 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        TypeState{ token_t{ token_type_t::t_int } },
-                        TypeState{ token_t{ token_type_t::t_real } }
+                        tokens_container_t{ token_t{ token_type_t::t_int } },
+                        tokens_container_t{ token_t{ token_type_t::t_real } }
                     );
 
                     INSTANTIATE_TEST_CASE_P(Parser_GetType, BuiltinTypeToken, values);
@@ -44,7 +43,7 @@ namespace cmsl
 
                 namespace identifier
                 {
-                    using IdentifierToken = testing::TestWithParam<TypeState>;
+                    using IdentifierToken = testing::TestWithParam<tokens_container_t>;
 
                     TEST_P(IdentifierToken, GetNotBuiltinType)
                     {
@@ -55,10 +54,25 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        TypeState{ token_t{ token_type_t::identifier } }
+                        tokens_container_t{ token_t{ token_type_t::identifier } }
                     );
 
                     INSTANTIATE_TEST_CASE_P(Parser_GetType, IdentifierToken, values);
+                }
+            }
+
+            namespace get_parameters_declaration
+            {
+                TEST(Parser_GetParametersDeclaration, Empty_GetEmpty)
+                {
+                    const auto tokens = tokens_container_t{
+                        token_t{ token_type_t::open_paren },
+                        token_t{ token_type_t::close_paren }
+                    };
+
+                    auto p = parser_t{ tokens.cbegin() };
+                    const auto parameters = p.get_parameters_declaration();
+                    ASSERT_THAT(parameters.empty(), true);
                 }
             }
         }
