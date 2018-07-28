@@ -1,5 +1,7 @@
-#include "lexer/lexer.hpp"
+#include "ast/type.hpp"
 #include "ast/parser.hpp"
+#include "lexer/lexer.hpp"
+#include "lexer/token/token.hpp"
 
 #include <gmock/gmock.h>
 
