@@ -31,7 +31,7 @@ namespace cmsl
                         testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
                         errors::errors_observer err_observer;
                         const auto tokens = GetParam();
-                        auto p = parser_t{ err_observer, tokens.cbegin() };
+                        auto p = parser_t{ err_observer, tokens };
                         (void)p.get_type();
                     }
 
@@ -56,7 +56,7 @@ namespace cmsl
 
                         EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
 
-                        auto p = parser_t{ err_observer, tokens.cbegin() };
+                        auto p = parser_t{ err_observer, tokens };
                         (void)p.get_type();
                     }
 
@@ -126,7 +126,7 @@ namespace cmsl
 
                     EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
 
-                    auto p = parser_t{ err_observer, tokens.cbegin() };
+                    auto p = parser_t{ err_observer, tokens };
                     (void)p.get_parameters_declaration();
                 }
 
