@@ -3,6 +3,7 @@
 
 #include "common/algorithm.hpp"
 
+#include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
 
 namespace cmsl
@@ -16,7 +17,7 @@ namespace cmsl
 
         void parser::raise_error()
         {
-            throw std::runtime_error{ "parsing error" };
+            m_err_observer.nofify_error(errors::error{});
         }
 
         void parser::eat(boost::optional<lexer::token::token_type> type)
