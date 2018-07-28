@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/parameter_declaration.hpp"
 #include "lexer/token/token.hpp"
 
 #include <boost/optional.hpp>
@@ -20,6 +21,7 @@ namespace cmsl
             parser(token_it token);
 
             type get_type();
+            std::vector<parameter_declaration> get_parameters_declaration();
 
         private:
             void eat(boost::optional<lexer::token::token_type> type = {});
