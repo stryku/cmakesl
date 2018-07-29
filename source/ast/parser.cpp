@@ -218,6 +218,7 @@ namespace cmsl
 
             if (!expect_token(token_type_t::semicolon))
             {
+                raise_error();
                 return nullptr;
             }
 
