@@ -2,6 +2,7 @@
 #include "errors/errors_observer.hpp"
 #include "errors_observer_mock/errors_observer_mock.hpp"
 #include "ast/parser.hpp"
+#include "ast/ast_node.hpp"
 
 #include "test/common/tokens.hpp"
 
@@ -175,6 +176,26 @@ namespace cmsl
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetParametersDeclaration, MissingParenthesis, values);
                 }
+            }
+
+            namespace get_onp_expression
+            {
+                using GetOnpExpression_UnexpectedToken = testing::TestWithParam<token_container_t>;
+
+                TEST_P(GetOnpExpression_UnexpectedToken, ReportError)
+                {
+                    report_error_test(GetParam(), [](auto& parser)
+                    {
+                        (void)parser.get_onp_expression();
+                    });
+                }
+
+                const auto values = testing::Values(
+                    token_container_t{ token_t_int() },
+                    token_container_t{ token_t_real() }
+                );
+
+                INSTANTIATE_TEST_CASE_P(ParserError, GetOnpExpression_UnexpectedToken, values);
             }
         }
     }
