@@ -3,6 +3,8 @@
 #include "errors_observer_mock/errors_observer_mock.hpp"
 #include "ast/parser.hpp"
 
+#include "test/common/tokens.hpp"
+
 #include <gmock/gmock.h>
 
 #include <sstream>
@@ -20,6 +22,8 @@ namespace cmsl
             using token_container_t = cmsl::lexer::token::token_container_t;
             using parser_t = cmsl::ast::parser;
 
+            using namespace cmsl::test::common;
+
             namespace get_type
             {
                 namespace builtin_or_identifier
@@ -30,15 +34,16 @@ namespace cmsl
                     {
                         testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
                         errors::errors_observer err_observer;
+                        const auto t = token_t_int;
                         const auto tokens = GetParam();
                         auto p = parser_t{ err_observer, tokens };
                         (void)p.get_type();
                     }
 
                     const auto values = testing::Values(
-                        token_container_t{ token_t{ token_type_t::t_int } },
-                        token_container_t{ token_t{ token_type_t::t_real } },
-                        token_container_t{ token_t{ token_type_t::identifier } }
+                        token_container_t{ token_t_int() },
+                        token_container_t{ token_t_real() },
+                        token_container_t{ token_identifier() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetType, BuiltinOrIdentifier, values);
@@ -61,41 +66,41 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        token_container_t{ token_t{ token_type_t::integer } },
-                        token_container_t{ token_t{ token_type_t::real } },
-                        token_container_t{ token_t{ token_type_t::dot } },
-                        token_container_t{ token_t{ token_type_t::open_brace } },
-                        token_container_t{ token_t{ token_type_t::close_brace } },
-                        token_container_t{ token_t{ token_type_t::open_square } },
-                        token_container_t{ token_t{ token_type_t::close_square } },
-                        token_container_t{ token_t{ token_type_t::open_paren } },
-                        token_container_t{ token_t{ token_type_t::close_paren } },
-                        token_container_t{ token_t{ token_type_t::equal } },
-                        token_container_t{ token_t{ token_type_t::equalequal } },
-                        token_container_t{ token_t{ token_type_t::minus } },
-                        token_container_t{ token_t{ token_type_t::minusminus } },
-                        token_container_t{ token_t{ token_type_t::minusequal } },
-                        token_container_t{ token_t{ token_type_t::plus } },
-                        token_container_t{ token_t{ token_type_t::plusplus } },
-                        token_container_t{ token_t{ token_type_t::plusequal } },
-                        token_container_t{ token_t{ token_type_t::amp } },
-                        token_container_t{ token_t{ token_type_t::ampamp } },
-                        token_container_t{ token_t{ token_type_t::ampequal } },
-                        token_container_t{ token_t{ token_type_t::pipe } },
-                        token_container_t{ token_t{ token_type_t::pipepipe } },
-                        token_container_t{ token_t{ token_type_t::pipeequal } },
-                        token_container_t{ token_t{ token_type_t::slash } },
-                        token_container_t{ token_t{ token_type_t::slashequal } },
-                        token_container_t{ token_t{ token_type_t::star } },
-                        token_container_t{ token_t{ token_type_t::starequal } },
-                        token_container_t{ token_t{ token_type_t::percent } },
-                        token_container_t{ token_t{ token_type_t::percentequal } },
-                        token_container_t{ token_t{ token_type_t::exclaim } },
-                        token_container_t{ token_t{ token_type_t::exclaimequal } },
-                        token_container_t{ token_t{ token_type_t::xor } },
-                        token_container_t{ token_t{ token_type_t::xorequal } },
-                        token_container_t{ token_t{ token_type_t::string } },
-                        token_container_t{ token_t{ token_type_t::semicolon } }
+                        token_container_t{ token_integer() },
+                        token_container_t{ token_real() },
+                        token_container_t{ token_dot() },
+                        token_container_t{ token_open_brace() },
+                        token_container_t{ token_close_brace() },
+                        token_container_t{ token_open_square() },
+                        token_container_t{ token_close_square() },
+                        token_container_t{ token_open_paren() },
+                        token_container_t{ token_close_paren() },
+                        token_container_t{ token_equal() },
+                        token_container_t{ token_equalequal() },
+                        token_container_t{ token_minus() },
+                        token_container_t{ token_minusminus() },
+                        token_container_t{ token_minusequal() },
+                        token_container_t{ token_plus() },
+                        token_container_t{ token_plusplus() },
+                        token_container_t{ token_plusequal() },
+                        token_container_t{ token_amp() },
+                        token_container_t{ token_ampamp() },
+                        token_container_t{ token_ampequal() },
+                        token_container_t{ token_pipe() },
+                        token_container_t{ token_pipepipe() },
+                        token_container_t{ token_pipeequal() },
+                        token_container_t{ token_slash() },
+                        token_container_t{ token_slashequal() },
+                        token_container_t{ token_star() },
+                        token_container_t{ token_starequal() },
+                        token_container_t{ token_percent() },
+                        token_container_t{ token_percentequal() },
+                        token_container_t{ token_exclaim() },
+                        token_container_t{ token_exclaimequal() },
+                        token_container_t{ token_xor() },
+                        token_container_t{ token_xorequal() },
+                        token_container_t{ token_string() },
+                        token_container_t{ token_semicolon() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetType, UnexpectedToken, values);
@@ -108,12 +113,12 @@ namespace cmsl
                 {
                     auto parameters(const token_container_t& list_tokens)
                     {
-                        token_container_t result{ token_t{ token_type_t::open_paren } };
+                        token_container_t result{ token_open_paren() };
 
                         std::copy(std::cbegin(list_tokens), std::cend(list_tokens),
                                   std::back_inserter(result));
 
-                        result.emplace_back(token_t{ token_type_t::close_paren });
+                        result.emplace_back(token_close_paren());
 
                         return result;
                     }
@@ -133,10 +138,10 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        parameters({ token_t{ token_type_t::semicolon } }), // (,)
-                        parameters({ token_t{ token_type_t::identifier }, token_t{ token_type_t::identifier }, token_t{ token_type_t::semicolon } }), //(type name,)
-                        parameters({ token_t{ token_type_t::semicolon }, token_t{ token_type_t::identifier }, token_t{ token_type_t::identifier } }), //(,type name)
-                        parameters({ token_t{ token_type_t::identifier }, token_t{ token_type_t::identifier }, token_t{ token_type_t::semicolon }, token_t{ token_type_t::semicolon }, token_t{ token_type_t::identifier }, token_t{ token_type_t::identifier } }) //(type name,,type name)
+                        parameters({ token_semicolon() }), // (,)
+                        parameters({ token_identifier(), token_identifier(), token_semicolon() }), //(type name,)
+                        parameters({ token_semicolon(), token_identifier() , token_identifier() }), //(,type name)
+                        parameters({ token_identifier(), token_identifier(), token_semicolon(), token_semicolon(), token_identifier(), token_identifier() }) //(type name,,type name)
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetParametersDeclaration, MissingParameterDeclaration, values);
@@ -159,12 +164,12 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        token_container_t{ token_t{ token_type_t::open_paren } },
-                        token_container_t{ token_t{ token_type_t::close_paren } },
-                        token_container_t{ token_t{ token_type_t::open_paren }, token_t{ token_type_t::identifier },token_t{ token_type_t::identifier } },
-                        token_container_t{ token_t{ token_type_t::open_paren }, token_t{ token_type_t::identifier },token_t{ token_type_t::identifier }, token_t{ token_type_t::semicolon } },
-                        token_container_t{ token_t{ token_type_t::identifier },token_t{ token_type_t::identifier }, token_t{ token_type_t::close_paren } },
-                        token_container_t{ token_t{ token_type_t::identifier },token_t{ token_type_t::identifier }, token_t{ token_type_t::semicolon }, token_t{ token_type_t::close_paren } }
+                        token_container_t{ token_open_paren() },
+                        token_container_t{ token_close_paren() },
+                        token_container_t{ token_open_paren(), token_identifier(), token_identifier() },
+                        token_container_t{ token_open_paren(), token_identifier(), token_identifier(), token_semicolon() },
+                        token_container_t{ token_identifier(), token_identifier(), token_close_paren() },
+                        token_container_t{ token_identifier(), token_identifier(), token_semicolon(), token_close_paren() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetParametersDeclaration, MissingParenthesis, values);
