@@ -29,8 +29,11 @@ namespace cmsl
             std::vector<parameter_declaration> get_parameters_declaration();
 
         private:
-            bool eat(boost::optional<lexer::token::token_type> type = {});
+            bool eat(boost::optional<token_type_t> type = {});
             bool eat_type();
+            bool expect_not_at_end();
+            bool expect_token(token_type_t type);
+            bool expect_token_other_than(token_type_t type);
 
             bool is_builtin_type(token_type_t token_type) const;
 
@@ -39,6 +42,8 @@ namespace cmsl
             boost::optional<parameter_declaration> get_parameter_declaration();
             // Returns true on success, false otherwise
             bool prepare_for_next_parameter_declaration();
+
+            bool is_at_end() const;
 
         private:
             errors::errors_observer& m_err_observer;
