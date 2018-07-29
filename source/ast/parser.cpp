@@ -1,5 +1,6 @@
 #include "ast/parser.hpp"
 #include "ast/type.hpp"
+#include "ast/onp_expression.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -203,6 +204,45 @@ namespace cmsl
         bool parser::current_is(token_type_t token_type) const
         {
             return m_token->get_type() == token_type;
+        }
+
+        std::unique_ptr<ast_node> parser::get_onp_expression()
+        {
+            token_container_t onp_tokens;
+
+            while (current_is_onp_token())
+            {
+                onp_tokens.push_back(*m_token);
+                eat();
+            }
+
+            if (!expect_token(token_type_t::semicolon))
+            {
+                return nullptr;
+            }
+
+            eat(token_type_t::semicolon);
+
+            return std::make_unique<onp_expression>(std::move(onp_tokens));
+        }
+
+        bool parser::current_is_onp_token() const
+        {
+            if (is_at_end())
+            {
+                return false;
+            }
+
+            const auto allowed_tokens = {
+                token_type_t::integer,
+                token_type_t::real,
+                token_type_t::plus,
+                token_type_t::minus,
+                token_type_t::open_paren,
+                token_type_t::close_paren
+            };
+
+            return cmsl::contains(allowed_tokens, m_token->get_type());
         }
     }
 }
