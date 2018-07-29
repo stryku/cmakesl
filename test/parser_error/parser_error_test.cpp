@@ -24,6 +24,19 @@ namespace cmsl
 
             using namespace cmsl::test::common;
 
+            template <typename State, typename Action>
+            void report_error_test(State&& state, Action&& action)
+            {
+                testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
+                errors::errors_observer err_observer;
+                const auto tokens = state;
+
+                EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
+
+                auto p = parser_t{ err_observer, tokens };
+                action(p);
+            }
+
             namespace get_type
             {
                 namespace builtin_or_identifier
@@ -55,14 +68,10 @@ namespace cmsl
 
                     TEST_P(UnexpectedToken, ReportError)
                     {
-                        testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
-                        errors::errors_observer err_observer;
-                        const auto tokens = GetParam();
-
-                        EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
-
-                        auto p = parser_t{ err_observer, tokens };
-                        (void)p.get_type();
+                        report_error_test(GetParam(), [](auto& parser)
+                        {
+                            (void)parser.get_type();
+                        });
                     }
 
                     const auto values = testing::Values(
@@ -127,14 +136,10 @@ namespace cmsl
 
                     TEST_P(MissingParameterDeclaration, ReportError)
                     {
-                        testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
-                        errors::errors_observer err_observer;
-                        const auto tokens = GetParam();
-
-                        EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
-
-                        auto p = parser_t{ err_observer, tokens };
-                        (void)p.get_parameters_declaration();
+                        report_error_test(GetParam(), [](auto& parser)
+                        {
+                            (void)parser.get_parameters_declaration();
+                        });
                     }
 
                     const auto values = testing::Values(
@@ -153,23 +158,19 @@ namespace cmsl
 
                     TEST_P(MissingParenthesis, ReportError)
                     {
-                        testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
-                        errors::errors_observer err_observer;
-                        const auto tokens = GetParam();
-
-                        EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
-
-                        auto p = parser_t{ err_observer, tokens };
-                        (void)p.get_parameters_declaration();
+                        report_error_test(GetParam(), [](auto& parser)
+                        {
+                            (void)parser.get_parameters_declaration();
+                        });
                     }
 
                     const auto values = testing::Values(
-                        token_container_t{ token_open_paren() },
-                        token_container_t{ token_close_paren() },
-                        token_container_t{ token_open_paren(), token_identifier(), token_identifier() },
-                        token_container_t{ token_open_paren(), token_identifier(), token_identifier(), token_semicolon() },
-                        token_container_t{ token_identifier(), token_identifier(), token_close_paren() },
-                        token_container_t{ token_identifier(), token_identifier(), token_semicolon(), token_close_paren() }
+                        token_container_t{ token_open_paren() }, // (
+                        token_container_t{ token_close_paren() }, // )
+                        token_container_t{ token_open_paren(), token_identifier(), token_identifier() }, // (id id
+                        token_container_t{ token_open_paren(), token_identifier(), token_identifier(), token_semicolon() }, // ( id id,
+                        token_container_t{ token_identifier(), token_identifier(), token_close_paren() }, // id id)
+                        token_container_t{ token_identifier(), token_identifier(), token_semicolon(), token_close_paren() } // id id,)
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetParametersDeclaration, MissingParenthesis, values);
