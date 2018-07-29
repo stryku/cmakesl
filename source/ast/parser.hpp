@@ -5,6 +5,8 @@
 
 #include <boost/optional.hpp>
 
+#include <memory>
+
 namespace cmsl
 {
     namespace errors
@@ -31,11 +33,13 @@ namespace cmsl
         private:
             bool eat(boost::optional<token_type_t> type = {});
             bool eat_type();
+
             bool expect_not_at_end();
             bool expect_token(token_type_t type);
             bool expect_token_other_than(token_type_t type);
 
             bool is_builtin_type(token_type_t token_type) const;
+            bool current_is(token_type_t token_type) const;
 
             void raise_error();
 
