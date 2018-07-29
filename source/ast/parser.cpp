@@ -23,6 +23,12 @@ namespace cmsl
 
         bool parser::eat(boost::optional<lexer::token::token_type> type)
         {
+            if (is_at_end())
+            {
+                raise_error();
+                return false;
+            }
+
             if (type && m_token->get_type() != *type)
             {
                 raise_error();
@@ -81,8 +87,21 @@ namespace cmsl
                 return{};
             }
 
-            while (m_token->get_type() != token_type_t::close_paren)
+            while (true)
             {
+                if (is_at_end())
+                {
+                    // Unexpected end of tokens
+                    raise_error();
+                    return{};
+                }
+
+                if (m_token->get_type() == token_type_t::close_paren)
+                {
+                    // End of parameters
+                    break;
+                }
+
                 const auto param_decl = get_parameter_declaration();
                 if (!param_decl)
                 {
@@ -107,22 +126,34 @@ namespace cmsl
 
         bool parser::prepare_for_next_parameter_declaration()
         {
-            if (m_token->get_type() == token_type_t::semicolon)
+            if (!expect_not_at_end())
             {
-                if (!eat(token_type_t::semicolon))
-                {
-                    return false;
-                }
-
-                if (m_token->get_type() == token_type_t::close_paren)
-                {
-                    // Missed last parameter declaration
-                    raise_error();
-                    return false;
-                }
+                return false;
             }
 
-            return true;
+            if (m_token->get_type() != token_type_t::semicolon)
+            {
+                return true;
+            }
+
+            // At this point we have semicolon, so we expect next parameter
+
+            if (!eat(token_type_t::semicolon))
+            {
+                return false;
+            }
+
+            if (!expect_not_at_end())
+            {
+                return false;
+            }
+
+            if (m_token->get_type() == token_type_t::close_paren)
+            {
+                // Missed last parameter declaration
+                raise_error();
+                return false;
+            }
         }
 
         boost::optional<parameter_declaration> parser::get_parameter_declaration()
@@ -141,6 +172,32 @@ namespace cmsl
             }
             
             return parameter_declaration{ *t, name };
+        }
+
+        bool parser::is_at_end() const
+        {
+            return m_token == m_end;
+        }
+
+        bool parser::expect_token(token_type_t type)
+        {
+            return expect_not_at_end() && m_token->get_type() == type;
+        }
+
+        bool parser::expect_token_other_than(token_type_t type)
+        {
+            return expect_not_at_end() && m_token->get_type() != type;
+        }
+
+        bool parser::expect_not_at_end()
+        {
+            if (is_at_end())
+            {
+                raise_error();
+                return false;
+            }
+
+            return true;
         }
     }
 }
