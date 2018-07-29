@@ -29,7 +29,7 @@ namespace cmsl
                 return false;
             }
 
-            if (type && m_token->get_type() != *type)
+            if (type && !current_is(*type))
             {
                 raise_error();
                 return false;
@@ -96,7 +96,7 @@ namespace cmsl
                     return{};
                 }
 
-                if (m_token->get_type() == token_type_t::close_paren)
+                if (current_is(token_type_t::close_paren))
                 {
                     // End of parameters
                     break;
@@ -131,7 +131,7 @@ namespace cmsl
                 return false;
             }
 
-            if (m_token->get_type() != token_type_t::semicolon)
+            if (!current_is(token_type_t::semicolon))
             {
                 return true;
             }
@@ -198,6 +198,11 @@ namespace cmsl
             }
 
             return true;
+        }
+
+        bool parser::current_is(token_type_t token_type) const
+        {
+            return m_token->get_type() == token_type;
         }
     }
 }
