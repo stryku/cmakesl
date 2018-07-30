@@ -292,19 +292,16 @@ namespace cmsl
         std::unique_ptr<ast_node> parser::get_function()
         {
             const auto type = get_type();
-
             if (!type)
             {
                 return nullptr;
             }
 
-            if (!expect_not_at_end())
+            const auto name = get_identifier();
+            if (!name)
             {
                 return nullptr;
             }
-
-            const auto name = *m_token;
-            eat(token_type_t::identifier);
 
             auto parameters = get_parameters_declaration();
             if (!parameters)
@@ -319,7 +316,26 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<function>(*type, name, std::move(*parameters), std::move(block_expr));
+            return std::make_unique<function>(*type, *name, std::move(*parameters), std::move(block_expr));
+        }
+
+        boost::optional<lexer::token::token> parser::get_identifier()
+        {
+            if (!expect_not_at_end())
+            {
+                return boost::none;
+            }
+
+            if (!current_is(token_type_t::identifier))
+            {
+                raise_error();
+                return boost::none;
+            }
+
+            const auto id = *m_token;
+            eat();
+
+            return id;
         }
     }
 }

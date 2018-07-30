@@ -54,6 +54,8 @@ namespace cmsl
 
             bool is_at_end() const;
 
+            boost::optional<lexer::token::token> get_identifier();
+
         private:
             errors::errors_observer& m_err_observer;
             token_it m_token;
