@@ -155,6 +155,8 @@ namespace cmsl
                 raise_error();
                 return false;
             }
+
+            return true;
         }
 
         boost::optional<parameter_declaration> parser::get_parameter_declaration()
@@ -182,7 +184,18 @@ namespace cmsl
 
         bool parser::expect_token(token_type_t type)
         {
-            return expect_not_at_end() && m_token->get_type() == type;
+            if (!expect_not_at_end())
+            {
+                return false;
+            }
+
+            if (m_token->get_type() != type)
+            {
+                raise_error();
+                return false;
+            }
+
+            return true;
         }
 
         bool parser::expect_token_other_than(token_type_t type)
@@ -216,14 +229,8 @@ namespace cmsl
                 eat();
             }
 
-            if (!expect_not_at_end())
+            if (!expect_token(token_type_t::semicolon))
             {
-                return nullptr;
-            }
-
-            if (!current_is(token_type_t::semicolon))
-            {
-                raise_error();
                 return nullptr;
             }
 
@@ -253,14 +260,8 @@ namespace cmsl
 
         std::unique_ptr<ast_node> parser::get_block_expression()
         {
-            if (!expect_not_at_end())
-            {
-                return nullptr;
-            }
-
             if (!expect_token(token_type_t::open_brace))
             {
-                raise_error();
                 return nullptr;
             }
 
@@ -277,14 +278,8 @@ namespace cmsl
                 expressions.emplace_back(std::move(onp_expr));
             }
 
-            if (!expect_not_at_end())
-            {
-                return nullptr;
-            }
-
             if (!expect_token(token_type_t::close_brace))
             {
-                raise_error();
                 return nullptr;
             }
         }
