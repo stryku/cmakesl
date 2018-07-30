@@ -216,7 +216,12 @@ namespace cmsl
                 eat();
             }
 
-            if (!expect_token(token_type_t::semicolon))
+            if (!expect_not_at_end())
+            {
+                return nullptr;
+            }
+
+            if (!current_is(token_type_t::semicolon))
             {
                 raise_error();
                 return nullptr;
