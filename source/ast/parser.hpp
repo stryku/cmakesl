@@ -31,7 +31,7 @@ namespace cmsl
             boost::optional<type> get_type();
             std::vector<parameter_declaration> get_parameters_declaration();
             std::unique_ptr<ast_node> get_onp_expression();
-
+            std::unique_ptr<ast_node> get_block_expression();
 
         private:
             bool eat(boost::optional<token_type_t> type = {});

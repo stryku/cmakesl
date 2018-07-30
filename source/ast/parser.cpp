@@ -245,5 +245,43 @@ namespace cmsl
 
             return cmsl::contains(allowed_tokens, m_token->get_type());
         }
+
+        std::unique_ptr<ast_node> parser::get_block_expression()
+        {
+            if (!expect_not_at_end())
+            {
+                return nullptr;
+            }
+
+            if (!expect_token(token_type_t::open_brace))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            std::vector<std::unique_ptr<ast_node>> expressions;
+
+            while (!is_at_end() && !current_is(token_type_t::close_brace))
+            {
+                auto onp_expr = get_onp_expression();
+                if (!onp_expr)
+                {
+                    return nullptr;
+                }
+
+                expressions.emplace_back(std::move(onp_expr));
+            }
+
+            if (!expect_not_at_end())
+            {
+                return nullptr;
+            }
+
+            if (!expect_token(token_type_t::close_brace))
+            {
+                raise_error();
+                return nullptr;
+            }
+        }
     }
 }
