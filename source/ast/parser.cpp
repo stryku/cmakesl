@@ -1,11 +1,13 @@
 #include "ast/parser.hpp"
 #include "ast/type.hpp"
 #include "ast/onp_expression.hpp"
+#include "ast/block_expression.hpp"
 
 #include "common/algorithm.hpp"
 
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
+
 
 namespace cmsl
 {
@@ -282,6 +284,8 @@ namespace cmsl
             {
                 return nullptr;
             }
+
+            return std::make_unique<block_expression>(std::move(expressions));
         }
     }
 }
