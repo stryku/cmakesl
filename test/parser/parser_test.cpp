@@ -75,7 +75,9 @@ namespace cmsl
 
                     auto p = parser_t{ dummy_err_observer, tokens };
                     const auto parameters = p.get_parameters_declaration();
-                    ASSERT_THAT(parameters.empty(), true);
+                    const auto parameters_initialized = static_cast<bool>(parameters);
+                    ASSERT_THAT(parameters_initialized, true);
+                    ASSERT_THAT(parameters->size(), 0u);
                 }
 
                 TEST(Parser_GetParametersDeclaration, NotEmpty_GetParameters)
@@ -98,7 +100,7 @@ namespace cmsl
                     };
 
                     auto p = parser_t{ dummy_err_observer, tokens };
-                    const auto parameters = p.get_parameters_declaration();
+                    const auto parameters = *p.get_parameters_declaration();
                     ASSERT_THAT(parameters.size(), 3u);
 
                     ASSERT_THAT(parameters[0].param_type.is_builtin(), true);
