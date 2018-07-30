@@ -180,22 +180,44 @@ namespace cmsl
 
             namespace get_onp_expression
             {
-                using GetOnpExpression_UnexpectedToken = testing::TestWithParam<token_container_t>;
-
-                TEST_P(GetOnpExpression_UnexpectedToken, ReportError)
+                namespace unexpected_token
                 {
-                    report_error_test(GetParam(), [](auto& parser)
+                    using GetOnpExpression_UnexpectedToken = testing::TestWithParam<token_container_t>;
+
+                    TEST_P(GetOnpExpression_UnexpectedToken, ReportError)
                     {
-                        (void)parser.get_onp_expression();
-                    });
+                        report_error_test(GetParam(), [](auto& parser)
+                        {
+                            (void)parser.get_onp_expression();
+                        });
+                    }
+
+                    const auto values = testing::Values(
+                        token_container_t{ token_t_int() },
+                        token_container_t{ token_t_real() }
+                    );
+
+                    INSTANTIATE_TEST_CASE_P(ParserError, GetOnpExpression_UnexpectedToken, values);
                 }
 
-                const auto values = testing::Values(
-                    token_container_t{ token_t_int() },
-                    token_container_t{ token_t_real() }
-                );
+                namespace missing_semicolon
+                {
+                    using GetOnpExpression_MissingSemicolon = testing::TestWithParam<token_container_t>;
 
-                INSTANTIATE_TEST_CASE_P(ParserError, GetOnpExpression_UnexpectedToken, values);
+                    TEST_P(GetOnpExpression_MissingSemicolon, ReportError)
+                    {
+                        report_error_test(GetParam(), [](auto& parser)
+                        {
+                            (void)parser.get_onp_expression();
+                        });
+                    }
+
+                    const auto values = testing::Values(
+                        token_container_t{ token_integer(), token_plus(), token_integer() }
+                    );
+
+                    INSTANTIATE_TEST_CASE_P(ParserError, GetOnpExpression_MissingSemicolon, values);
+                }
             }
         }
     }
