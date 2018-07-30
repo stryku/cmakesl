@@ -219,6 +219,51 @@ namespace cmsl
                     INSTANTIATE_TEST_CASE_P(ParserError, GetOnpExpression_MissingSemicolon, values);
                 }
             }
+
+            namespace get_block_expression
+            {
+                namespace wrong_onp_expression
+                {
+                    using GetBlockExpression_WrongOnpExpression = testing::TestWithParam<token_container_t>;
+
+                    TEST_P(GetBlockExpression_WrongOnpExpression, ReportError)
+                    {
+                        report_error_test(GetParam(), [](auto& parser)
+                        {
+                            (void)parser.get_block_expression();
+                        });
+                    }
+
+                    const auto values = testing::Values(
+                        token_container_t{ token_t_int() },
+                        token_container_t{ token_integer(), token_plus(), token_integer() }
+                    );
+
+                    INSTANTIATE_TEST_CASE_P(ParserError, GetBlockExpression_WrongOnpExpression, values);
+                }
+
+                namespace missing_brace
+                {
+                    using GetBlockExpression_MissingBrace = testing::TestWithParam<token_container_t>;
+
+                    TEST_P(GetBlockExpression_MissingBrace, ReportError)
+                    {
+                        report_error_test(GetParam(), [](auto& parser)
+                        {
+                            (void)parser.get_block_expression();
+                        });
+                    }
+
+                    const auto values = testing::Values(
+                        token_container_t{ token_open_brace() },
+                        token_container_t{ token_close_brace() },
+                        token_container_t{ token_open_brace(), token_integer() },
+                        token_container_t{ token_integer(), token_close_brace() }
+                    );
+
+                    INSTANTIATE_TEST_CASE_P(ParserError, GetBlockExpression_MissingBrace, values);
+                }
+            }
         }
     }
 }
