@@ -264,6 +264,21 @@ namespace cmsl
                     INSTANTIATE_TEST_CASE_P(ParserError, GetBlockExpression_MissingBrace, values);
                 }
             }
+
+            namespace get_function
+            {
+                TEST(ParserError, GetFunction_MissingReturnType_ReportError)
+                {
+                    const auto tokens = token_container_t{ token_identifier(), token_open_paren(), token_close_paren(), token_open_brace(), token_close_brace() };
+                    testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
+                    errors::errors_observer err_observer;
+
+                    EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
+
+                    auto p = parser_t{ err_observer, tokens };
+                    (void)p.get_function();
+                }
+            }
         }
     }
 }
