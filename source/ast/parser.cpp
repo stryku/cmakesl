@@ -2,6 +2,7 @@
 #include "ast/type.hpp"
 #include "ast/onp_expression.hpp"
 #include "ast/block_expression.hpp"
+#include "ast/function.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -81,13 +82,13 @@ namespace cmsl
             return type{ t };
         }
 
-        std::vector<parameter_declaration> parser::get_parameters_declaration()
+        boost::optional<std::vector<parameter_declaration>> parser::get_parameters_declaration()
         {
             std::vector<parameter_declaration> params;
 
             if (!eat(token_type_t::open_paren))
             {
-                return{};
+                return boost::none;
             }
 
             while (true)
@@ -96,7 +97,7 @@ namespace cmsl
                 {
                     // Unexpected end of tokens
                     raise_error();
-                    return{};
+                    return boost::none;
                 }
 
                 if (current_is(token_type_t::close_paren))
@@ -108,20 +109,20 @@ namespace cmsl
                 const auto param_decl = get_parameter_declaration();
                 if (!param_decl)
                 {
-                    return{};
+                    return boost::none;
                 }
 
                 params.push_back(std::move(*param_decl));
 
                 if (!prepare_for_next_parameter_declaration())
                 {
-                    return{};
+                    return boost::none;
                 }
             }
 
             if(!eat(token_type_t::close_paren))
             {
-                return{};
+                return boost::none;
             }
 
             return params;
@@ -286,6 +287,39 @@ namespace cmsl
             }
 
             return std::make_unique<block_expression>(std::move(expressions));
+        }
+
+        std::unique_ptr<ast_node> parser::get_function()
+        {
+            const auto type = get_type();
+
+            if (!type)
+            {
+                return nullptr;
+            }
+
+            if (!expect_not_at_end())
+            {
+                return nullptr;
+            }
+
+            const auto name = *m_token;
+            eat(token_type_t::identifier);
+
+            auto parameters = get_parameters_declaration();
+            if (!parameters)
+            {
+                return nullptr;
+            }
+
+            auto block_expr = get_block_expression();
+
+            if (!block_expr)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<function>(*type, name, std::move(*parameters), std::move(block_expr));
         }
     }
 }
