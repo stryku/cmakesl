@@ -25,12 +25,11 @@ namespace cmsl
 
             using namespace cmsl::test::common;
 
-            template <typename State, typename Action>
-            void report_error_test(State&& state, Action&& action)
+            template <typename Tokens, typename Action>
+            void report_error_test(Tokens&& tokens, Action&& action)
             {
                 testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
                 errors::errors_observer err_observer;
-                const auto tokens = state;
 
                 EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
 
@@ -270,13 +269,37 @@ namespace cmsl
                 TEST(ParserError, GetFunction_MissingReturnType_ReportError)
                 {
                     const auto tokens = token_container_t{ token_identifier(), token_open_paren(), token_close_paren(), token_open_brace(), token_close_brace() };
-                    testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
-                    errors::errors_observer err_observer;
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        (void)parser.get_function();
+                    });
+                }
 
-                    EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
+                TEST(ParserError, GetFunction_MissingName_ReportError)
+                {
+                    const auto tokens = token_container_t{ token_t_int(), token_open_paren(), token_close_paren(), token_open_brace(), token_close_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        (void)parser.get_function();
+                    });
+                }
 
-                    auto p = parser_t{ err_observer, tokens };
-                    (void)p.get_function();
+                TEST(ParserError, GetFunction_MissingParameters_ReportError)
+                {
+                    const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_open_brace(), token_close_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        (void)parser.get_function();
+                    });
+                }
+
+                TEST(ParserError, GetFunction_MissingBody_ReportError)
+                {
+                    const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_open_paren(), token_close_paren() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        (void)parser.get_function();
+                    });
                 }
             }
         }
