@@ -1,6 +1,8 @@
 set(AST_SOURCES
     ast_builder.cpp
     ast_builder.hpp 
+    ast_context.cpp
+    ast_context.hpp
     ast_node.cpp
     ast_node.hpp 
     function.hpp

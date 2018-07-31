@@ -18,5 +18,10 @@ namespace cmsl
 
             return cmsl::contains(builtin_types, m_token.get_type());
         }
+
+        cmsl::string_view type::get_name() const
+        {
+            return m_token.str();
+        }
     }
 }
