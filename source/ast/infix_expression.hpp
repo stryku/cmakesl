@@ -7,10 +7,10 @@ namespace cmsl
 {
     namespace ast
     {
-        class onp_expression : public ast_node
+        class infix_expression : public ast_node
         {
         public:
-            onp_expression(lexer::token::token_container_t tokens)
+            infix_expression(lexer::token::token_container_t tokens)
                 : m_tokens{ std::move(tokens) }
             {}
 

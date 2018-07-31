@@ -177,7 +177,7 @@ namespace cmsl
                 }
             }
 
-            namespace get_onp_expression
+            namespace get_infix_expression
             {
                 namespace unexpected_token
                 {
@@ -187,7 +187,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_onp_expression();
+                            (void)parser.get_infix_expression();
                         });
                     }
 
@@ -207,7 +207,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_onp_expression();
+                            (void)parser.get_infix_expression();
                         });
                     }
 
@@ -221,7 +221,7 @@ namespace cmsl
 
             namespace get_block_expression
             {
-                namespace wrong_onp_expression
+                namespace wrong_infix_expression
                 {
                     using GetBlockExpression_WrongOnpExpression = testing::TestWithParam<token_container_t>;
 

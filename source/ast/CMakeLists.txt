@@ -5,7 +5,7 @@ set(AST_SOURCES
     ast_node.hpp 
     function.hpp
     integral_constant.hpp
-    onp_expression.hpp
+    infix_expression.hpp
     parameter_declaration.hpp
     parser.cpp
     parser.hpp
@@ -20,8 +20,8 @@ set(AST_SOURCES
     expr/constant_expression.hpp
     expr/expression.cpp
     expr/expression.hpp 
-    expr/onp_expression.cpp
-    expr/onp_expression.hpp 
+    expr/infix_expression.cpp
+    expr/infix_expression.hpp 
 )
 
 add_library(ast ${AST_SOURCES})
