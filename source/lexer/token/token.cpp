@@ -7,12 +7,13 @@ namespace cmsl
         namespace token
         {
             token::token(token_type_t type)
-                : token{ type, source_range{} }
+                : token{ type, source_range{}, cmsl::string_view{} }
             {}
 
-            token::token(token_type_t type, const source_range& src_range)
+            token::token(token_type_t type, const source_range& src_range, cmsl::string_view source)
                 : m_type{ type }
                 , m_source_range{ src_range }
+                , m_source{ source }
             {}
 
             bool token::is_valid() const
@@ -28,6 +29,14 @@ namespace cmsl
             token token::undef()
             {
                 return token{ token_type_t::undef };
+            }
+
+            cmsl::string_view token::str() const
+            {
+                return cmsl::string_view{
+                    std::next(m_source.begin(), m_source_range.begin.absolute),
+                    m_source_range.size()
+                };
             }
         }
     }

@@ -43,7 +43,12 @@ namespace cmsl
                 exclaimequal,
                 xor,
                 xorequal,
-                string
+                string,
+                semicolon,
+
+                // builtin types
+                t_int,
+                t_real
             };
         }
     }

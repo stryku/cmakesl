@@ -18,15 +18,19 @@ namespace cmsl
             , m_one_char_tokens{ create_one_char_tokens() }
         {}
 
-        lexer::tokens_container_t lexer::lex()
+        std::vector<token::token> lexer::lex()
         {
-            auto tokens = tokens_container_t{};
+            auto tokens = std::vector<token::token>{};
             const auto end = m_source.cend();
 
             while (!is_end())
             {
                 const auto t = get_next_token();
-                tokens.push_back(t);
+
+                if (t.get_type() != token_t::token_type_t::undef)
+                {
+                    tokens.push_back(t);
+                }
             }
 
             return tokens;
@@ -57,11 +61,19 @@ namespace cmsl
             const auto begin_loc = m_source_loc.location();
             const auto token_type = get_next_token_type();
             const auto end_loc = m_source_loc.location();
-            return token_t{ token_type, source_range{ begin_loc, end_loc } };
+            return token_t{ token_type, source_range{ begin_loc, end_loc }, m_source };
         }
 
         lexer::token_t::token_type_t lexer::get_next_token_type()
         {
+            consume_whitespaces();
+
+            if (is_end())
+            {
+                // in such case, there are whitespaces at the end of source. No other chars
+                return token_t::token_type_t::undef;
+            }
+
             const auto curr = current();
 
             if (std::isdigit(curr))
@@ -98,7 +110,7 @@ namespace cmsl
             }
             if (std::isalpha(curr) || curr == '_')
             {
-                return get_identifier_token_type();
+                return get_identifier_or_keyword_token_type();
             }
 
             return token_t::token_type_t::undef;
@@ -140,11 +152,32 @@ namespace cmsl
             m_source_loc.consume_char();
         }
 
-        lexer::token_t::token_type_t lexer::get_identifier_token_type()
+        void lexer::consume_whitespaces()
         {
-            while (is_identifier_char(current()))
+            assert(!is_end());
+            while (!is_end() && is_whitespace(current()))
             {
                 consume_char();
+            }
+        }
+
+
+        lexer::token_t::token_type_t lexer::get_identifier_or_keyword_token_type()
+        {
+            std::string token_val;
+            while (is_identifier_char(current()))
+            {
+                token_val += current();
+                consume_char();
+            }
+
+            if (token_val == "int")
+            {
+                return token_t::token_type_t::t_int;
+            }
+            else if (token_val == "real")
+            {
+                return token_t::token_type_t::t_real;
             }
 
             return token_t::token_type_t::identifier;
@@ -264,6 +297,7 @@ namespace cmsl
             tokens['}'] = token_t::token_type_t::close_brace;
             tokens['['] = token_t::token_type_t::open_square;
             tokens[']'] = token_t::token_type_t::close_square;
+            tokens[';'] = token_t::token_type_t::semicolon;
 
             return tokens;
         }
@@ -276,7 +310,13 @@ namespace cmsl
 
         bool lexer::is_one_char_token(char c) const
         {
-            const auto chars = cmsl::string_view{ "{}[]()" };
+            const auto chars = cmsl::string_view{ "{}[]();" };
+            return chars.find(c) != cmsl::string_view::npos;
+        }
+
+        bool lexer::is_whitespace(char c) const
+        {
+            const auto chars = cmsl::string_view{ " \t\n\r" };
             return chars.find(c) != cmsl::string_view::npos;
         }
 

@@ -15,5 +15,10 @@ namespace cmsl
     {
         source_location begin;
         source_location end;
+
+        constexpr auto size() const
+        {
+            return end.absolute - begin.absolute;
+        }
     };
 }
