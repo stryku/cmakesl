@@ -25,11 +25,9 @@ namespace cmsl
             using token_t = token::token;
 
         public:
-            using tokens_container_t = std::vector<token_t>;
-
             lexer(errors::errors_observer& err_observer, source_t source);
 
-            tokens_container_t lex();
+            std::vector<token_t> lex();
 
         private:
             struct aritmetical_token_definition
@@ -53,7 +51,7 @@ namespace cmsl
             token_t get_next_token();
             token_t::token_type_t get_next_token_type();
             token_t::token_type_t get_numeric_token_type();
-            token_t::token_type_t get_identifier_token_type();
+            token_t::token_type_t get_identifier_or_keyword_token_type();
             token_t::token_type_t get_equal_token_type();
             token_t::token_type_t get_string_token_type();
             token_t::token_type_t get_arithmetical_token_type(char operator_char);
@@ -61,6 +59,7 @@ namespace cmsl
 
             void consume_integer();
             void consume_char();
+            void consume_whitespaces();
 
             bool is_end() const;
             bool has_next() const;
@@ -68,6 +67,7 @@ namespace cmsl
             bool is_identifier_char(char c) const;
             bool is_arithmetical_operator(char c) const;
             bool is_one_char_token(char c) const;
+            bool is_whitespace(char c) const;
 
             char current() const;
             char next() const;

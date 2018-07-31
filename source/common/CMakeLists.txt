@@ -1,4 +1,5 @@
 set(COMMON_SOURCES
+    algorithm.hpp
     string.hpp
     source_location.hpp
 )
