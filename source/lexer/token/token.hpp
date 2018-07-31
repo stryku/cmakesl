@@ -21,6 +21,11 @@ namespace cmsl
                 explicit token(token_type_t type);
                 explicit token(token_type_t type, const source_range& src_range, cmsl::string_view source);
 
+                token(const token&) = default;
+                token& operator=(const token&) = default;
+                token(token&&) = default;
+                token& operator=(token&&) = default;
+
                 bool is_valid() const;
                 token_type_t get_type() const;
 
@@ -29,7 +34,7 @@ namespace cmsl
                 cmsl::string_view str() const;
 
             private:
-                token_type_t m_type{ token_type_t::undef };
+                token_type_t m_type;
                 source_range m_source_range;
                 cmsl::string_view m_source;
             };

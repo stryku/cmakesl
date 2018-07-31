@@ -1,0 +1,11 @@
+set(CMAKESL_TEST_COMMON_SOURCES
+    tokens.cpp
+    tokens.hpp
+)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${CMAKESL_TEST_COMMON_SOURCES})
+
+set(TEST_NAME tests_common)
+
+add_library(${TEST_NAME} STATIC ${CMAKESL_TEST_COMMON_SOURCES})
+target_include_directories(${TEST_NAME} PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_DIR})
