@@ -1,4 +1,4 @@
-#include "ast/expr/onp_expression.hpp"
+#include "ast/expr/infix_expression.hpp"
 
 #include <stack>
 
@@ -6,11 +6,11 @@ namespace cmsl
 {
     namespace ast
     {
-        onp_expression::onp_expression(lexer::token::token_container_t tokens)
+        /*infix_expression::infix_expression(lexer::token::token_container_t tokens)
             : m_tokens{ std::move(tokens) }
         {}
 
-        onp_expression::result_t onp_expression::evaluate()
+        infix_expression::result_t infix_expression::evaluate()
         {
             std::stack<int> stack;
 
@@ -41,6 +41,6 @@ namespace cmsl
             }
 
             return stack.top();
-        }
+        }*/
     }
 }
