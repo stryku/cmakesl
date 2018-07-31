@@ -1,6 +1,6 @@
 #include "ast/parser.hpp"
 #include "ast/type.hpp"
-#include "ast/onp_expression.hpp"
+#include "ast/infix_expression.hpp"
 #include "ast/block_expression.hpp"
 #include "ast/function.hpp"
 
@@ -222,13 +222,13 @@ namespace cmsl
             return m_token->get_type() == token_type;
         }
 
-        std::unique_ptr<ast_node> parser::get_onp_expression()
+        std::unique_ptr<ast_node> parser::get_infix_expression()
         {
-            token_container_t onp_tokens;
+            token_container_t infix_tokens;
 
-            while (current_is_onp_token())
+            while (current_is_infix_token())
             {
-                onp_tokens.push_back(*m_token);
+                infix_tokens.push_back(*m_token);
                 eat();
             }
 
@@ -239,10 +239,10 @@ namespace cmsl
 
             eat(token_type_t::semicolon);
 
-            return std::make_unique<onp_expression>(std::move(onp_tokens));
+            return std::make_unique<infix_expression>(std::move(infix_tokens));
         }
 
-        bool parser::current_is_onp_token() const
+        bool parser::current_is_infix_token() const
         {
             if (is_at_end())
             {
@@ -272,13 +272,13 @@ namespace cmsl
 
             while (!is_at_end() && !current_is(token_type_t::close_brace))
             {
-                auto onp_expr = get_onp_expression();
-                if (!onp_expr)
+                auto infix_expr = get_infix_expression();
+                if (!infix_expr)
                 {
                     return nullptr;
                 }
 
-                expressions.emplace_back(std::move(onp_expr));
+                expressions.emplace_back(std::move(infix_expr));
             }
 
             if (!expect_token(token_type_t::close_brace))

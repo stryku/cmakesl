@@ -30,7 +30,7 @@ namespace cmsl
 
             boost::optional<type> get_type();
             boost::optional<std::vector<parameter_declaration>> get_parameters_declaration();
-            std::unique_ptr<ast_node> get_onp_expression();
+            std::unique_ptr<ast_node> get_infix_expression();
             std::unique_ptr<ast_node> get_block_expression();
             std::unique_ptr<ast_node> get_function();
 
@@ -43,7 +43,7 @@ namespace cmsl
             bool expect_token_other_than(token_type_t type);
 
             bool is_builtin_type(token_type_t token_type) const;
-            bool current_is_onp_token() const;
+            bool current_is_infix_token() const;
             bool current_is(token_type_t token_type) const;
 
             void raise_error();
