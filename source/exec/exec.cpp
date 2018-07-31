@@ -18,11 +18,7 @@ namespace cmsl
             const auto tokens = lex.lex();
 
             ast::ast_builder builder;
-            //const auto expr = builder.build(tokens);
-            const auto ast = builder.build2(tokens);
-            //const auto result = expr->evaluate();
-
-            //std::cout << boost::get<int>(result);
+            const auto ast = builder.build(tokens);
         }
     }
 }
