@@ -1,12 +1,12 @@
 #include "ast/ast_builder.hpp"
 #include "ast/expr/block_expression.hpp"
 #include "ast/expr/constant_expression.hpp"
-#include "ast/expr/onp_expression.hpp"
+#include "ast/expr/infix_expression.hpp"
 #include "lexer/token/token.hpp"
 
 #include "ast/binary_operator.hpp"
 #include "ast/integral_constant.hpp"
-#include "ast/onp_expression.hpp"
+#include "ast/infix_expression.hpp"
 #include "ast/block_expression.hpp"
 #include "ast/type.hpp"
 #include "ast/function.hpp"
@@ -38,7 +38,7 @@ namespace cmsl
                 type == lexer::token::token_type::minus;
         }
 
-        bool ast_builder::is_onp_token(const token_t& token)
+        bool ast_builder::is_infix_token(const token_t& token)
         {
             const auto allowed_tokens = {
                 token_t::token_type_t::integer,
@@ -79,7 +79,7 @@ namespace cmsl
 
         /*std::unique_ptr<expression> ast_builder::expr()
         {
-            const auto onp_tokens = inf_to_onp();
+            const auto infix_tokens = inf_to_onp();
             return std::make_unique<onp_expression>(std::move(onp_tokens));
         }*/
 
@@ -205,19 +205,19 @@ namespace cmsl
             ++m_current_token;
         }
 
-        std::unique_ptr<ast_node> ast_builder::onp()
+        std::unique_ptr<ast_node> ast_builder::infix()
         {
-            tokens_container_t onp_tokens;
+            tokens_container_t infix_tokens;
 
-            while (is_onp_token(*m_current_token))
+            while (is_infix_token(*m_current_token))
             {
-                onp_tokens.push_back(*m_current_token);
+                infix_tokens.push_back(*m_current_token);
                 ++m_current_token;
             }
 
             eat(token_t::token_type_t::semicolon);
 
-            return std::make_unique<onp_expression>(std::move(onp_tokens));
+            return std::make_unique<infix_expression>(std::move(infix_tokens));
         }
 
         std::unique_ptr<ast_node> ast_builder::block_expr()
@@ -228,7 +228,7 @@ namespace cmsl
 
             while (m_current_token->get_type() != token_t::token_type_t::close_brace)
             {
-                expressions.emplace_back(onp());
+                expressions.emplace_back(infix());
             }
 
             eat(token_t::token_type_t::close_brace);

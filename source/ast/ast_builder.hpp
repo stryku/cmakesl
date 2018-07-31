@@ -29,21 +29,21 @@ namespace cmsl
         private:
             bool is_constant_expression_token(const token_t& token);
             bool is_binary_operator_token(const token_t& token);
-            bool is_onp_token(const token_t& token);
+            bool is_infix_token(const token_t& token);
 
             void eat(lexer::token::token_type token_type);
 
             //std::unique_ptr<expression> basic_expression();
             //std::unique_ptr<expression> expr();
 
-            //tokens_container_t inf_to_onp();
+            //tokens_container_t inf_to_infix();
 
             //std::unique_ptr<expression> build_block_expression();
 
 
 
 
-            std::unique_ptr<ast_node> onp();
+            std::unique_ptr<ast_node> infix();
             std::unique_ptr<ast_node> block_expr();
             std::unique_ptr<ast_node> get_function();
 

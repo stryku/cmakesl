@@ -44,7 +44,8 @@ if (NOT Boost_FOUND)
 endif()
 include_directories (${Boost_INCLUDE_DIRS})
 
-set(CMAKESL_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
+set(CMAKESL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 
 add_subdirectory(source)
 add_subdirectory(test)
