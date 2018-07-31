@@ -15,6 +15,8 @@ namespace cmsl
 
             bool is_builtin() const;
 
+            cmsl::string_view get_name() const;
+
         private:
             lexer::token::token m_token;
         };
