@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/type.hpp"
 #include "common/string.hpp"
 
 #include <memory>
@@ -9,8 +10,6 @@ namespace cmsl
 {
     namespace ast
     {
-        class type;
-
         class ast_context
         {
         public:
