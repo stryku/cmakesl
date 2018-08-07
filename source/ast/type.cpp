@@ -6,22 +6,27 @@ namespace cmsl
     namespace ast
     {
         type::type(lexer::token::token token)
-            : m_token{ token }
+            : m_name{ token.str() }
+        {}
+
+        type::type(type_kind kind)
+            : m_name{}
+            , m_kind{ kind }
         {}
 
         bool type::is_builtin() const
         {
             const auto builtin_types = {
-                token_type_t::t_int,
-                token_type_t::t_real
+                "int",
+                "real"
             };
 
-            return cmsl::contains(builtin_types, m_token.get_type());
+            return cmsl::contains(builtin_types, m_name);
         }
 
         cmsl::string_view type::get_name() const
         {
-            return m_token.str();
+            return m_name;
         }
     }
 }
