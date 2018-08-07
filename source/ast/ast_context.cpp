@@ -11,14 +11,14 @@ namespace cmsl
             : m_parent{ parent }
         {}
 
-        void ast_context::add_type(type* t)
+        void ast_context::add_type(std::unique_ptr<type> t)
         {
             if (cmsl::contains(m_types, t))
             {
                 return;
             }
 
-            m_types.push_back(t);
+            m_types.emplace_back(std::move(t));
         }
 
         type* ast_context::find_type(cmsl::string_view name)
@@ -34,7 +34,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            return *it;
+            return it->get();
         }
     }
 }
