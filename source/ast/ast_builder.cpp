@@ -1,7 +1,8 @@
 #include "ast/ast_builder.hpp"
-#include "ast/expr/block_expression.hpp"
-#include "ast/expr/constant_expression.hpp"
-#include "ast/expr/infix_expression.hpp"
+#include "ast/builtin_ast_context.hpp"
+//#include "ast/expr/block_expression.hpp"
+//#include "ast/expr/constant_expression.hpp"
+//#include "ast/expr/infix_expression.hpp"
 #include "lexer/token/token.hpp"
 
 #include "ast/binary_operator.hpp"
@@ -17,6 +18,14 @@ namespace cmsl
 {
     namespace ast
     {
+        ast_builder::ast_builder()
+        {
+            auto builtin_ctx = std::make_unique<builtin_ast_context>();
+            m_current_ast_ctx = builtin_ctx.get();
+            m_contextes.emplace_back(std::move(builtin_ctx));
+        }
+
+
         bool ast_builder::is_constant_expression_token(const token_t& token)
         {
             const auto type = token.get_type();
