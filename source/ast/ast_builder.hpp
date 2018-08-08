@@ -2,6 +2,7 @@
 
 #include "ast/ast_node.hpp"
 #include "ast/type.hpp"
+#include "ast/ast_context.hpp"
 #include "lexer/token/token.hpp"
 
 #include <memory>
@@ -23,6 +24,8 @@ namespace cmsl
             using tokens_it_t = tokens_container_t::const_iterator;
 
         public:
+            explicit ast_builder();
+
             std::unique_ptr<ast_node> build(const tokens_container_t& tokens);
 
         private:
@@ -43,6 +46,8 @@ namespace cmsl
         private:
             tokens_it_t m_current_token;
             tokens_it_t m_end;
+            ast_context* m_current_ast_ctx;
+            std::vector<std::unique_ptr<ast_context>> m_contextes;
         };
     }
 }
