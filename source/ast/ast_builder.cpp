@@ -25,7 +25,6 @@ namespace cmsl
             m_contextes.emplace_back(std::move(builtin_ctx));
         }
 
-
         bool ast_builder::is_constant_expression_token(const token_t& token)
         {
             const auto type = token.get_type();
@@ -58,98 +57,10 @@ namespace cmsl
                                });
         }
 
-        std::unique_ptr<ast_node> ast_builder::build(const tokens_container_t& tokens)
+        std::unique_ptr<ast_node> ast_builder::build(errors::errors_observer& err_observer, const tokens_container_t& tokens)
         {
-            m_current_token = tokens.cbegin();
-            m_end = tokens.cend();
-            return get_function();
-        }
-
-        void ast_builder::eat(token_t::token_type_t token_type)
-        {
-            if(m_current_token->get_type() != token_type)
-            {
-                int a; //todo
-            }
-
-            ++m_current_token;
-        }
-
-        std::unique_ptr<ast_node> ast_builder::infix()
-        {
-            tokens_container_t infix_tokens;
-
-            while (is_infix_token(*m_current_token))
-            {
-                infix_tokens.push_back(*m_current_token);
-                ++m_current_token;
-            }
-
-            eat(token_t::token_type_t::semicolon);
-
-            return std::make_unique<infix_expression>(std::move(infix_tokens));
-        }
-
-        std::unique_ptr<ast_node> ast_builder::block_expr()
-        {
-            eat(token_t::token_type_t::open_brace);
-
-            std::vector<std::unique_ptr<ast_node>> expressions;
-
-            while (m_current_token->get_type() != token_t::token_type_t::close_brace)
-            {
-                expressions.emplace_back(infix());
-            }
-
-            eat(token_t::token_type_t::close_brace);
-
-            return std::make_unique<block_expression>(std::move(expressions));
-        }
-
-        std::unique_ptr<ast_node> ast_builder::get_function()
-        {
-            const auto t = get_type();
-
-            const auto name = *m_current_token;
-            eat(token_t::token_type_t::identifier);
-
-            eat(token_t::token_type_t::open_paren);
-
-            auto params = parameters();
-
-            eat(token_t::token_type_t::close_paren);
-
-            auto block = block_expr();
-
-            return std::make_unique<function>(t, name, std::move(params), std::move(block));
-        }
-
-        type ast_builder::get_type()
-        {
-            const auto t = *m_current_token;
-            eat(token_t::token_type_t::identifier);
-            return type{ t };
-        }
-
-        std::vector<parameter_declaration> ast_builder::parameters()
-        {
-            std::vector<parameter_declaration> params;
-
-            while (m_current_token->get_type() != token_t::token_type_t::close_paren)
-            {
-                auto t = get_type();
-                auto name = *m_current_token;
-                eat(token_t::token_type_t::identifier);
-
-                if (m_current_token->get_type() == token_t::token_type_t::semicolon);
-                {
-                    eat(token_t::token_type_t::semicolon);
-                } // todo handle semicolon without param
-
-                params.push_back({ t, name });
-            }
-
-            return params;
+            m_parser = std::make_unique<parser>(err_observer, tokens);
+            return m_parser->get_function();
         }
     }
 }
