@@ -18,7 +18,7 @@ namespace cmsl
             const auto tokens = lex.lex();
 
             ast::ast_builder builder;
-            const auto ast = builder.build(tokens);
+            const auto ast = builder.build(err_observer, tokens);
         }
     }
 }

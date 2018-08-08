@@ -263,7 +263,7 @@ namespace cmsl
 
         std::unique_ptr<ast_node> parser::get_block_expression()
         {
-            if (!expect_token(token_type_t::open_brace))
+            if (!eat(token_type_t::open_brace))
             {
                 return nullptr;
             }
@@ -281,7 +281,7 @@ namespace cmsl
                 expressions.emplace_back(std::move(infix_expr));
             }
 
-            if (!expect_token(token_type_t::close_brace))
+            if (!eat(token_type_t::close_brace))
             {
                 return nullptr;
             }
