@@ -15,15 +15,12 @@ namespace cmsl
         class function : public ast_node
         {
         public:
-            function(type t, cmsl::string_view name, std::vector<parameter_declaration> params, std::unique_ptr<ast_node> body)
-                : m_type{ t }
-                , m_name{ name }
-                , m_params{ std::move(params) }
-                , m_body{ std::move(body) }
-            {}
+            function(type return_type, cmsl::string_view name, std::vector<parameter_declaration> params, std::unique_ptr<ast_node> body);
+
+            cmsl::string_view get_name() const;
 
         private:
-            type m_type;
+            type m_return_type;
             cmsl::string_view m_name;
             std::vector<parameter_declaration> m_params;
             std::unique_ptr<ast_node> m_body;
