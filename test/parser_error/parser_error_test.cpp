@@ -58,8 +58,7 @@ namespace cmsl
 
                     const auto values = testing::Values(
                         token_container_t{ token_t_int() },
-                        token_container_t{ token_t_real() },
-                        token_container_t{ token_identifier() }
+                        token_container_t{ token_t_real() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetType, BuiltinOrIdentifier, values);

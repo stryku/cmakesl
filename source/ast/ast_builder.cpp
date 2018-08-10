@@ -57,10 +57,21 @@ namespace cmsl
                                });
         }
 
-        std::unique_ptr<ast_node> ast_builder::build(errors::errors_observer& err_observer, const tokens_container_t& tokens)
+        std::unique_ptr<ast_context> ast_builder::build(ast_context& builtin_ast_ctx,
+                                                        errors::errors_observer& err_observer,
+                                                        const tokens_container_t& tokens)
         {
+            auto ctx = std::make_unique<ast_context>(&builtin_ast_ctx);
             m_parser = std::make_unique<parser>(err_observer, tokens);
-            return m_parser->get_function(*m_current_ast_ctx);
+
+            auto fun = m_parser->get_function(*ctx);
+
+            if (fun)
+            {
+                ctx->add_function(std::move(fun));
+            }
+
+            return std::move(ctx);
         }
     }
 }
