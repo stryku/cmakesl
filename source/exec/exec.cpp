@@ -21,6 +21,7 @@ namespace cmsl
             ast::ast_builder builder;
             ast::builtin_ast_context ctx;
             auto global_ast_ctx = builder.build(ctx, err_observer, tokens);
+            auto main_function = global_ast_ctx->find_function("main");
         }
     }
 }
