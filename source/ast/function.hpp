@@ -15,7 +15,7 @@ namespace cmsl
         class function : public ast_node
         {
         public:
-            function(type t, lexer::token::token name, std::vector<parameter_declaration> params, std::unique_ptr<ast_node> body)
+            function(type t, cmsl::string_view name, std::vector<parameter_declaration> params, std::unique_ptr<ast_node> body)
                 : m_type{ t }
                 , m_name{ name }
                 , m_params{ std::move(params) }
@@ -24,7 +24,7 @@ namespace cmsl
 
         private:
             type m_type;
-            lexer::token::token m_name;
+            cmsl::string_view m_name;
             std::vector<parameter_declaration> m_params;
             std::unique_ptr<ast_node> m_body;
         };
