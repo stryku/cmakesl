@@ -41,9 +41,30 @@ namespace cmsl
             return it->get();
         }
 
-        void ast_context::add_function(std::unique_ptr<ast_node> fun)
+        void ast_context::add_function(std::unique_ptr<function> fun)
         {
             m_functions.emplace_back(std::move(fun));
+        }
+
+        function* ast_context::find_function(cmsl::string_view name)
+        {
+            const auto it = std::find_if(std::begin(m_functions), std::end(m_functions),
+                                         [name](const auto& t)
+            {
+                return t->get_name() == name;
+            });
+
+            if (it == std::end(m_functions))
+            {
+                if (m_parent == nullptr)
+                {
+                    return nullptr;
+                }
+
+                return m_parent->find_function(name);
+            }
+
+            return it->get();
         }
     }
 }

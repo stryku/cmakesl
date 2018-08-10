@@ -27,7 +27,9 @@ namespace cmsl
         public:
             explicit ast_builder();
 
-            std::unique_ptr<ast_node> build(errors::errors_observer& err_observer, const tokens_container_t& tokens);
+            std::unique_ptr<ast_context> build(ast_context& builtin_ast_ctx,
+                                               errors::errors_observer& err_observer,
+                                               const tokens_container_t& tokens);
 
         private:
             bool is_constant_expression_token(const token_t& token);

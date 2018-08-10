@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ast/type.hpp"
-#include "ast/ast_node.hpp"
+#include "ast/function.hpp"
 #include "common/string.hpp"
 
 #include <memory>
@@ -11,8 +11,6 @@ namespace cmsl
 {
     namespace ast
     {
-        class ast_node;
-
         class ast_context
         {
         public:
@@ -22,12 +20,13 @@ namespace cmsl
             void add_type(std::unique_ptr<type> t);
             type* find_type(cmsl::string_view name);
 
-            void add_function(std::unique_ptr<ast_node> fun);
+            void add_function(std::unique_ptr<function> fun);
+            function* find_function(cmsl::string_view name);
 
         private:
             ast_context* m_parent;
             std::vector<std::unique_ptr<type>> m_types;
-            std::vector<std::unique_ptr<ast_node>> m_functions;
+            std::vector<std::unique_ptr<function>> m_functions;
         };
     }
 }

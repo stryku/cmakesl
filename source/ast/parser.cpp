@@ -297,7 +297,7 @@ namespace cmsl
             return std::make_unique<block_expression>(std::move(expressions));
         }
 
-        std::unique_ptr<ast_node> parser::get_function(ast_context& ctx)
+        std::unique_ptr<function> parser::get_function(ast_context& ctx)
         {
             const auto type = get_type(ctx);
             if (!type)
@@ -324,7 +324,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<function>(*type, *name, std::move(*parameters), std::move(block_expr));
+            return std::make_unique<function>(*type, name->str(), std::move(*parameters), std::move(block_expr));
         }
 
         boost::optional<lexer::token::token> parser::get_identifier()
