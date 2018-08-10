@@ -3,6 +3,8 @@ set(AST_SOURCES
     ast_builder.hpp 
     ast_context.cpp
     ast_context.hpp
+    builtin_ast_context.cpp
+    builtin_ast_context.hpp
     ast_node.cpp
     ast_node.hpp 
     function.hpp
@@ -13,6 +15,8 @@ set(AST_SOURCES
     parser.hpp
     type.cpp
     type.hpp
+    type_kind.cpp
+    type_kind.hpp
     
     expr/binary_operator_expression.cpp
     expr/binary_operator_expression.hpp

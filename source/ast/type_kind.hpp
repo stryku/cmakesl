@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/string.hpp"
+
 namespace cmsl
 {
     namespace ast
@@ -11,5 +13,7 @@ namespace cmsl
 
             k_user
         };
+
+        type_kind type_kind_from_string(cmsl::string_view str);
     }
 }

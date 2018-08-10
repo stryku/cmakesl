@@ -11,13 +11,13 @@ namespace cmsl
             : ast_context{ nullptr }
         {
             const auto builtin_types_kind = {
-                type_kind::k_int,
-                type_kind::k_real
+                std::make_pair("int", type_kind::k_int),
+                std::make_pair("real", type_kind::k_real)
             };
 
-            for (const auto kind : builtin_types_kind)
+            for (const auto pair : builtin_types_kind)
             {
-                add_type(std::make_unique<type>(type_kind::k_int));
+                add_type(std::make_unique<type>(pair.first, pair.second));
             }
         }
     }

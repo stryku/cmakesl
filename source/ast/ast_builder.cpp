@@ -60,7 +60,7 @@ namespace cmsl
         std::unique_ptr<ast_node> ast_builder::build(errors::errors_observer& err_observer, const tokens_container_t& tokens)
         {
             m_parser = std::make_unique<parser>(err_observer, tokens);
-            return m_parser->get_function();
+            return m_parser->get_function(*m_current_ast_ctx);
         }
     }
 }
