@@ -1,4 +1,5 @@
 #include "ast/parser.hpp"
+#include "ast/ast_context.hpp"
 #include "ast/type.hpp"
 #include "ast/infix_expression.hpp"
 #include "ast/block_expression.hpp"
@@ -70,19 +71,26 @@ namespace cmsl
             return cmsl::contains(builtin_types, token_type);
         }
 
-        boost::optional<type> parser::get_type()
+        type* parser::get_type(ast_context& ctx)
         {
             const auto t = *m_token;
 
             if (!eat_type())
             {
-                return boost::none;
+                return nullptr;
             }
 
-            return type{ t };
+            auto found_type = ctx.find_type(t.str());
+            if (found_type == nullptr)
+            {
+                raise_error(); //todo raise type not found error
+                return nullptr;
+            }
+
+            return found_type;
         }
 
-        boost::optional<std::vector<parameter_declaration>> parser::get_parameters_declaration()
+        boost::optional<std::vector<parameter_declaration>> parser::get_parameters_declaration(ast_context& ctx)
         {
             std::vector<parameter_declaration> params;
 
@@ -106,7 +114,7 @@ namespace cmsl
                     break;
                 }
 
-                const auto param_decl = get_parameter_declaration();
+                const auto param_decl = get_parameter_declaration(ctx);
                 if (!param_decl)
                 {
                     return boost::none;
@@ -162,9 +170,9 @@ namespace cmsl
             return true;
         }
 
-        boost::optional<parameter_declaration> parser::get_parameter_declaration()
+        boost::optional<parameter_declaration> parser::get_parameter_declaration(ast_context& ctx)
         {
-            auto t = get_type();
+            auto t = get_type(ctx);
 
             if (!t)
             {
@@ -289,9 +297,9 @@ namespace cmsl
             return std::make_unique<block_expression>(std::move(expressions));
         }
 
-        std::unique_ptr<ast_node> parser::get_function()
+        std::unique_ptr<ast_node> parser::get_function(ast_context& ctx)
         {
-            const auto type = get_type();
+            const auto type = get_type(ctx);
             if (!type)
             {
                 return nullptr;
@@ -303,7 +311,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            auto parameters = get_parameters_declaration();
+            auto parameters = get_parameters_declaration(ctx);
             if (!parameters)
             {
                 return nullptr;

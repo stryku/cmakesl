@@ -1,5 +1,6 @@
 #include "test/common/tokens.hpp"
 
+
 namespace cmsl
 {
     namespace test
@@ -8,6 +9,21 @@ namespace cmsl
         {
             using token_type_t = lexer::token::token_type;
             using token_t = lexer::token::token;
+
+            namespace details
+            {
+                token_t token_from_source(token_type_t type, cmsl::string_view source)
+                {
+                    const auto begin = source_location{};
+                    source_location end;
+                    end.line = 1u;
+                    end.column = source.size();
+                    end.absolute = source.size();
+                    const auto source_range = cmsl::source_range{ begin, end };
+
+                    return token_t{ type, source_range, source };
+                }
+            }
 
             token_t token_undef() { return token_t{ token_type_t::undef }; }
             token_t token_integer() { return token_t{ token_type_t::integer }; }
@@ -46,8 +62,18 @@ namespace cmsl
             token_t token_xorequal() { return token_t{ token_type_t::xorequal }; }
             token_t token_string() { return token_t{ token_type_t::string }; }
             token_t token_semicolon() { return token_t{ token_type_t::semicolon }; }
-            token_t token_t_int() { return token_t{ token_type_t::t_int }; }
-            token_t token_t_real() { return token_t{ token_type_t::t_real }; }
+
+            token_t token_t_int() 
+            {
+                static const cmsl::string_view source = "int";
+                return details::token_from_source(token_type_t::t_int, source);
+            }
+
+            token_t token_t_real()
+            {
+                static const auto source = "real";
+                return details::token_from_source(token_type_t::t_real, source);
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ namespace cmsl
             using token_type_t = lexer::token::token_type;
 
             explicit type(lexer::token::token token);
-            explicit type(type_kind kind);
+            explicit type(cmsl::string_view name, type_kind kind);
 
             bool is_builtin() const;
 
