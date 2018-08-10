@@ -40,5 +40,10 @@ namespace cmsl
 
             return it->get();
         }
+
+        void ast_context::add_function(std::unique_ptr<ast_node> fun)
+        {
+            m_functions.emplace_back(std::move(fun));
+        }
     }
 }
