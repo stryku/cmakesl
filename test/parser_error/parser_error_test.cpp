@@ -4,6 +4,7 @@
 #include "errors_observer_mock/errors_observer_mock.hpp"
 #include "ast/parser.hpp"
 #include "ast/ast_node.hpp"
+#include "ast/infix_node.hpp"
 
 #include "test/common/tokens.hpp"
 

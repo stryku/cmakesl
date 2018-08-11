@@ -6,6 +6,8 @@
 #include "ast/ast_builder.hpp"
 #include "ast/builtin_ast_context.hpp"
 #include "ast/block_node.hpp"
+#include "exec/stmt/return_statement.hpp"
+#include "ast/return_node.hpp"
 
 #include <iostream>
 
@@ -51,7 +53,8 @@ namespace cmsl
             {
                 case ast::ast_node_type::ret:
                 {
-                    expr.execute(*this);
+                    stmt::return_statement ret_stmt{ dynamic_cast<ast::return_node&>(expr) };
+                    ret_stmt.execute(*this);
                     return_from_function();
                     return true;
                 }

@@ -2,7 +2,11 @@ set(EXEC_SOURCES
     exec.cpp
     exec.hpp
     execution_context.hpp
-)
+    
+    stmt/statement.hpp
+    stmt/return_statement.cpp
+    stmt/return_statement.hpp
+) 
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR})
