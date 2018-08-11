@@ -9,10 +9,16 @@ namespace cmsl
     {
         class infix_node : public ast_node
         {
+        private:
+            using token_type_t = lexer::token::token_type;
+
         public:
             explicit infix_node(lexer::token::token_container_t tokens);
 
             int evaluate();
+
+        private:
+            lexer::token::token_container_t to_onp() const;
 
         private:
             lexer::token::token_container_t m_tokens;
