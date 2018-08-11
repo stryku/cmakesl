@@ -179,6 +179,10 @@ namespace cmsl
             {
                 return token_t::token_type_t::t_real;
             }
+            else if (token_val == "return")
+            {
+                return token_t::token_type_t::return_keyword;
+            }
 
             return token_t::token_type_t::identifier;
         }

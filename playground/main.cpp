@@ -5,9 +5,9 @@ int main()
 {
     const auto source = "int main()"
                         "{"
-                        "    4+2;"
+                        "    return 4+2;"
                         "}";
 
     cmsl::exec::executor exec;
-    exec.execute(source);
+    auto ret = exec.execute(source);
 }

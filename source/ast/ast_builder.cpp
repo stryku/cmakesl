@@ -5,10 +5,10 @@
 //#include "ast/expr/infix_expression.hpp"
 #include "lexer/token/token.hpp"
 
-#include "ast/binary_operator.hpp"
-#include "ast/integral_constant.hpp"
-#include "ast/infix_expression.hpp"
-#include "ast/block_expression.hpp"
+//#include "ast/binary_operator.hpp"
+//#include "ast/integral_constant.hpp"
+//#include "ast/infix_expression.hpp"
+//#include "ast/block_expression.hpp"
 #include "ast/type.hpp"
 #include "ast/function.hpp"
 
@@ -25,7 +25,7 @@ namespace cmsl
             m_contextes.emplace_back(std::move(builtin_ctx));
         }
 
-        bool ast_builder::is_constant_expression_token(const token_t& token)
+       /* bool ast_builder::is_constant_expression_token(const token_t& token)
         {
             const auto type = token.get_type();
             return type == lexer::token::token_type::integer ||
@@ -55,7 +55,7 @@ namespace cmsl
                                {
                                    return token.get_type() == token_type;
                                });
-        }
+        }*/
 
         std::unique_ptr<ast_context> ast_builder::build(ast_context& builtin_ast_ctx,
                                                         errors::errors_observer& err_observer,

@@ -1,6 +1,7 @@
 set(EXEC_SOURCES
     exec.cpp
     exec.hpp
+    execution_context.hpp
 )
 
 add_library(exec ${EXEC_SOURCES})

@@ -10,9 +10,9 @@ namespace cmsl
         class infix_expression : public ast_node
         {
         public:
-            infix_expression(lexer::token::token_container_t tokens)
-                : m_tokens{ std::move(tokens) }
-            {}
+            explicit infix_expression(lexer::token::token_container_t tokens);
+
+            int evaluate();
 
         private:
             lexer::token::token_container_t m_tokens;
