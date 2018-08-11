@@ -16,8 +16,13 @@ namespace cmsl
 
     namespace ast
     {
+        class ast_context;
         class ast_node;
         class type;
+        class function;
+        class block_expression;
+        class return_expression;
+        class infix_expression;
 
         class parser
         {
@@ -28,11 +33,12 @@ namespace cmsl
 
             parser(errors::errors_observer& err_observer, const token_container_t& tokens);
 
-            boost::optional<type> get_type();
-            boost::optional<std::vector<parameter_declaration>> get_parameters_declaration();
-            std::unique_ptr<ast_node> get_infix_expression();
-            std::unique_ptr<ast_node> get_block_expression();
-            std::unique_ptr<ast_node> get_function();
+            type* get_type(ast_context& ctx);
+            boost::optional<std::vector<parameter_declaration>> get_parameters_declaration(ast_context& ctx);
+            std::unique_ptr<infix_expression> get_infix_expression();
+            std::unique_ptr<block_expression> get_block_expression();
+            std::unique_ptr<function> get_function(ast_context& ctx);
+            std::unique_ptr<return_expression> get_return_expression();
 
         private:
             bool eat(boost::optional<token_type_t> type = {});
@@ -48,7 +54,7 @@ namespace cmsl
 
             void raise_error();
 
-            boost::optional<parameter_declaration> get_parameter_declaration();
+            boost::optional<parameter_declaration> get_parameter_declaration(ast_context& ctx);
             // Returns true on success, false otherwise
             bool prepare_for_next_parameter_declaration();
 

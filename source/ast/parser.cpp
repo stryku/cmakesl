@@ -1,8 +1,11 @@
 #include "ast/parser.hpp"
+#include "ast/ast_context.hpp"
 #include "ast/type.hpp"
 #include "ast/infix_expression.hpp"
 #include "ast/block_expression.hpp"
 #include "ast/function.hpp"
+#include "ast/return_expression.hpp"
+#include "ast/infix_expression.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -70,19 +73,26 @@ namespace cmsl
             return cmsl::contains(builtin_types, token_type);
         }
 
-        boost::optional<type> parser::get_type()
+        type* parser::get_type(ast_context& ctx)
         {
             const auto t = *m_token;
 
             if (!eat_type())
             {
-                return boost::none;
+                return nullptr;
             }
 
-            return type{ t };
+            auto found_type = ctx.find_type(t.str());
+            if (found_type == nullptr)
+            {
+                raise_error(); //todo raise type not found error
+                return nullptr;
+            }
+
+            return found_type;
         }
 
-        boost::optional<std::vector<parameter_declaration>> parser::get_parameters_declaration()
+        boost::optional<std::vector<parameter_declaration>> parser::get_parameters_declaration(ast_context& ctx)
         {
             std::vector<parameter_declaration> params;
 
@@ -106,7 +116,7 @@ namespace cmsl
                     break;
                 }
 
-                const auto param_decl = get_parameter_declaration();
+                const auto param_decl = get_parameter_declaration(ctx);
                 if (!param_decl)
                 {
                     return boost::none;
@@ -162,9 +172,9 @@ namespace cmsl
             return true;
         }
 
-        boost::optional<parameter_declaration> parser::get_parameter_declaration()
+        boost::optional<parameter_declaration> parser::get_parameter_declaration(ast_context& ctx)
         {
-            auto t = get_type();
+            auto t = get_type(ctx);
 
             if (!t)
             {
@@ -222,7 +232,7 @@ namespace cmsl
             return m_token->get_type() == token_type;
         }
 
-        std::unique_ptr<ast_node> parser::get_infix_expression()
+        std::unique_ptr<infix_expression> parser::get_infix_expression()
         {
             token_container_t infix_tokens;
 
@@ -261,9 +271,9 @@ namespace cmsl
             return cmsl::contains(allowed_tokens, m_token->get_type());
         }
 
-        std::unique_ptr<ast_node> parser::get_block_expression()
+        std::unique_ptr<block_expression> parser::get_block_expression()
         {
-            if (!expect_token(token_type_t::open_brace))
+            if (!eat(token_type_t::open_brace))
             {
                 return nullptr;
             }
@@ -272,16 +282,29 @@ namespace cmsl
 
             while (!is_at_end() && !current_is(token_type_t::close_brace))
             {
-                auto infix_expr = get_infix_expression();
-                if (!infix_expr)
+                std::unique_ptr<ast_node> expr;
+
+                if (current_is(token_type_t::return_keyword))
                 {
-                    return nullptr;
+                    expr = get_return_expression();
+                    if (!expr)
+                    {
+                        return nullptr;
+                    }
+                }
+                else
+                {
+                    expr = get_infix_expression();
+                    if (!expr)
+                    {
+                        return nullptr;
+                    }
                 }
 
-                expressions.emplace_back(std::move(infix_expr));
+                expressions.emplace_back(std::move(expr));
             }
 
-            if (!expect_token(token_type_t::close_brace))
+            if (!eat(token_type_t::close_brace))
             {
                 return nullptr;
             }
@@ -289,9 +312,9 @@ namespace cmsl
             return std::make_unique<block_expression>(std::move(expressions));
         }
 
-        std::unique_ptr<ast_node> parser::get_function()
+        std::unique_ptr<function> parser::get_function(ast_context& ctx)
         {
-            const auto type = get_type();
+            const auto type = get_type(ctx);
             if (!type)
             {
                 return nullptr;
@@ -303,7 +326,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            auto parameters = get_parameters_declaration();
+            auto parameters = get_parameters_declaration(ctx);
             if (!parameters)
             {
                 return nullptr;
@@ -316,7 +339,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<function>(*type, *name, std::move(*parameters), std::move(block_expr));
+            return std::make_unique<function>(*type, name->str(), std::move(*parameters), std::move(block_expr));
         }
 
         boost::optional<lexer::token::token> parser::get_identifier()
@@ -336,6 +359,23 @@ namespace cmsl
             eat();
 
             return id;
+        }
+
+        std::unique_ptr<return_expression> parser::get_return_expression()
+        {
+            if (!eat(token_type_t::return_keyword))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            auto infix_expr = get_infix_expression();
+            if (!infix_expr)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<return_expression>(std::move(infix_expr));
         }
     }
 }

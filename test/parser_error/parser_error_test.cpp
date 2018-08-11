@@ -1,3 +1,4 @@
+#include "ast/builtin_ast_context.hpp"
 #include "lexer/token/token.hpp"
 #include "errors/errors_observer.hpp"
 #include "errors_observer_mock/errors_observer_mock.hpp"
@@ -22,6 +23,7 @@ namespace cmsl
             using token_type_t = cmsl::lexer::token::token_type;
             using token_container_t = cmsl::lexer::token::token_container_t;
             using parser_t = cmsl::ast::parser;
+            using builtin_ctx_t = ast::builtin_ast_context;
 
             using namespace cmsl::test::common;
 
@@ -50,13 +52,13 @@ namespace cmsl
                         const auto t = token_t_int;
                         const auto tokens = GetParam();
                         auto p = parser_t{ err_observer, tokens };
-                        (void)p.get_type();
+                        builtin_ctx_t ctx;
+                        (void)p.get_type(ctx);
                     }
 
                     const auto values = testing::Values(
                         token_container_t{ token_t_int() },
-                        token_container_t{ token_t_real() },
-                        token_container_t{ token_identifier() }
+                        token_container_t{ token_t_real() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetType, BuiltinOrIdentifier, values);
@@ -70,7 +72,8 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_type();
+                            builtin_ctx_t ctx;
+                            (void)parser.get_type(ctx);
                         });
                     }
 
@@ -138,7 +141,8 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_parameters_declaration();
+                            builtin_ctx_t ctx;
+                            (void)parser.get_parameters_declaration(ctx);
                         });
                     }
 
@@ -160,7 +164,8 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_parameters_declaration();
+                            builtin_ctx_t ctx;
+                            (void)parser.get_parameters_declaration(ctx);
                         });
                     }
 
@@ -271,7 +276,8 @@ namespace cmsl
                     const auto tokens = token_container_t{ token_identifier(), token_open_paren(), token_close_paren(), token_open_brace(), token_close_brace() };
                     report_error_test(tokens, [](auto& parser)
                     {
-                        (void)parser.get_function();
+                        builtin_ctx_t ctx;
+                        (void)parser.get_function(ctx);
                     });
                 }
 
@@ -280,7 +286,8 @@ namespace cmsl
                     const auto tokens = token_container_t{ token_t_int(), token_open_paren(), token_close_paren(), token_open_brace(), token_close_brace() };
                     report_error_test(tokens, [](auto& parser)
                     {
-                        (void)parser.get_function();
+                        builtin_ctx_t ctx;
+                        (void)parser.get_function(ctx);
                     });
                 }
 
@@ -289,7 +296,8 @@ namespace cmsl
                     const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_open_brace(), token_close_brace() };
                     report_error_test(tokens, [](auto& parser)
                     {
-                        (void)parser.get_function();
+                        builtin_ctx_t ctx;
+                        (void)parser.get_function(ctx);
                     });
                 }
 
@@ -298,7 +306,8 @@ namespace cmsl
                     const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_open_paren(), token_close_paren() };
                     report_error_test(tokens, [](auto& parser)
                     {
-                        (void)parser.get_function();
+                        builtin_ctx_t ctx;
+                        (void)parser.get_function(ctx);
                     });
                 }
             }

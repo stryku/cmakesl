@@ -1,16 +1,29 @@
 set(AST_SOURCES
     ast_builder.cpp
     ast_builder.hpp 
+    ast_context.cpp
+    ast_context.hpp
+    block_expression.cpp
+    block_expression.hpp
+    builtin_ast_context.cpp
+    builtin_ast_context.hpp
+    expression_type.hpp
     ast_node.cpp
     ast_node.hpp 
+    function.cpp
     function.hpp
     integral_constant.hpp
+    infix_expression.cpp
     infix_expression.hpp
     parameter_declaration.hpp
     parser.cpp
     parser.hpp
+    return_expression.cpp
+    return_expression.hpp
     type.cpp
     type.hpp
+    type_kind.cpp
+    type_kind.hpp
     
     expr/binary_operator_expression.cpp
     expr/binary_operator_expression.hpp

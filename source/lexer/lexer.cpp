@@ -58,6 +58,7 @@ namespace cmsl
 
         lexer::token_t lexer::get_next_token()
         {
+            consume_whitespaces();
             const auto begin_loc = m_source_loc.location();
             const auto token_type = get_next_token_type();
             const auto end_loc = m_source_loc.location();
@@ -66,7 +67,6 @@ namespace cmsl
 
         lexer::token_t::token_type_t lexer::get_next_token_type()
         {
-            consume_whitespaces();
 
             if (is_end())
             {
@@ -178,6 +178,10 @@ namespace cmsl
             else if (token_val == "real")
             {
                 return token_t::token_type_t::t_real;
+            }
+            else if (token_val == "return")
+            {
+                return token_t::token_type_t::return_keyword;
             }
 
             return token_t::token_type_t::identifier;
