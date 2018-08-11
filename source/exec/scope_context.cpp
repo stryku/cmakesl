@@ -6,6 +6,10 @@ namespace cmsl
 {
     namespace exec
     {
+        scope_context::scope_context(const scope_context* parent)
+            : m_parent{ parent }
+        {}
+
         void scope_context::add_variable(cmsl::string_view name, int value)
         {
             m_variables[name] = value;

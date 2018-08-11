@@ -17,6 +17,10 @@ namespace cmsl
             {
                 auto& expr = m_node.get_expression();
                 const auto result = expr.evaluate();
+                auto& ctx = e.get_ctx();
+
+
+
                 e.set_function_return_value(result);
             }
         }

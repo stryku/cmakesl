@@ -1,6 +1,7 @@
 set(EXEC_SOURCES
     exec.cpp
     exec.hpp
+    execution_context.cpp
     execution_context.hpp
     scope_context.cpp
     scope_context.hpp

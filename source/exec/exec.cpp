@@ -73,5 +73,10 @@ namespace cmsl
         {
             m_call_stack.pop();
         }
+
+        execution_context& executor::get_ctx()
+        {
+            return m_exec_ctx;
+        }
     }
 }
