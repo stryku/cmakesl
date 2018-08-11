@@ -21,8 +21,6 @@ namespace cmsl
             virtual ~ast_node()
             {}
 
-            virtual void execute(exec::executor& executor) {};
-
             ast_node_type get_type() const
             {
                 return m_type;
