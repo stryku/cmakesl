@@ -19,7 +19,7 @@ namespace cmsl
         {};
 
         template <typename Container, typename Value>
-        auto contains_impl(Container&& container, Value&& value, contains_helper<1>) -> decltype(std::declval<Container>().find(value))
+        auto contains_impl(Container&& container, Value&& value, contains_helper<1>) -> decltype(std::declval<Container>().find(value) != std::declval<Container>().end())
         {
             return container.find(value) != container.cend();
         }

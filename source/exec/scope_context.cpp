@@ -1,0 +1,24 @@
+#include "exec/scope_context.hpp"
+
+#include "common/algorithm.hpp"
+
+namespace cmsl
+{
+    namespace exec
+    {
+        void scope_context::add_variable(cmsl::string_view name, int value)
+        {
+            m_variables[name] = value;
+        }
+
+        int& scope_context::get_variable(cmsl::string_view name)
+        {
+            return m_variables[name];
+        }
+
+        bool scope_context::variable_exists(cmsl::string_view name) const
+        {
+            return cmsl::contains(m_variables, name);
+        }
+    }
+}

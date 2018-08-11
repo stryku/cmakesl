@@ -11,7 +11,7 @@ namespace cmsl
             , m_tokens{ std::move(tokens) }
         {}
 
-        int infix_node::evaluate()
+        int infix_node::evaluate() const
         {
             std::stack<int> stack;
 

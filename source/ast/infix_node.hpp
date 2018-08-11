@@ -15,7 +15,7 @@ namespace cmsl
         public:
             explicit infix_node(lexer::token::token_container_t tokens);
 
-            int evaluate();
+            int evaluate() const;
 
         private:
             lexer::token::token_container_t to_onp() const;
