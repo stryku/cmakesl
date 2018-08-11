@@ -4,6 +4,8 @@
 #include "ast/infix_expression.hpp"
 #include "ast/block_expression.hpp"
 #include "ast/function.hpp"
+#include "ast/return_expression.hpp"
+#include "ast/infix_expression.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -230,7 +232,7 @@ namespace cmsl
             return m_token->get_type() == token_type;
         }
 
-        std::unique_ptr<ast_node> parser::get_infix_expression()
+        std::unique_ptr<infix_expression> parser::get_infix_expression()
         {
             token_container_t infix_tokens;
 
@@ -269,7 +271,7 @@ namespace cmsl
             return cmsl::contains(allowed_tokens, m_token->get_type());
         }
 
-        std::unique_ptr<ast_node> parser::get_block_expression()
+        std::unique_ptr<block_expression> parser::get_block_expression()
         {
             if (!eat(token_type_t::open_brace))
             {
@@ -280,13 +282,26 @@ namespace cmsl
 
             while (!is_at_end() && !current_is(token_type_t::close_brace))
             {
-                auto infix_expr = get_infix_expression();
-                if (!infix_expr)
+                std::unique_ptr<ast_node> expr;
+
+                if (current_is(token_type_t::return_keyword))
                 {
-                    return nullptr;
+                    expr = get_return_expression();
+                    if (!expr)
+                    {
+                        return nullptr;
+                    }
+                }
+                else
+                {
+                    expr = get_infix_expression();
+                    if (!expr)
+                    {
+                        return nullptr;
+                    }
                 }
 
-                expressions.emplace_back(std::move(infix_expr));
+                expressions.emplace_back(std::move(expr));
             }
 
             if (!eat(token_type_t::close_brace))
@@ -344,6 +359,23 @@ namespace cmsl
             eat();
 
             return id;
+        }
+
+        std::unique_ptr<return_expression> parser::get_return_expression()
+        {
+            if (!eat(token_type_t::return_keyword))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            auto infix_expr = get_infix_expression();
+            if (!infix_expr)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<return_expression>(std::move(infix_expr));
         }
     }
 }

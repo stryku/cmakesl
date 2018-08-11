@@ -32,9 +32,9 @@ namespace cmsl
                                                const tokens_container_t& tokens);
 
         private:
-            bool is_constant_expression_token(const token_t& token);
-            bool is_binary_operator_token(const token_t& token);
-            bool is_infix_token(const token_t& token);
+            //bool is_constant_expression_token(const token_t& token);
+            //bool is_binary_operator_token(const token_t& token);
+            //bool is_infix_token(const token_t& token);
 
         private:
             ast_context* m_current_ast_ctx;
