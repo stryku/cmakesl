@@ -204,6 +204,7 @@ namespace cmsl
                 {
                     std::string source;
                     std::vector<token_type_t> expected_tokens;
+                    std::vector<std::string> expected_tokens_values;
                 };
 
                 struct Lex_Whitespaces : public testing::Test, testing::WithParamInterface<Lex_Whitespaces_State>
@@ -224,8 +225,8 @@ namespace cmsl
                 }
 
                 const auto values = testing::Values(Lex_Whitespaces_State{ " \t\n\r\n", {} },
-                                                    Lex_Whitespaces_State{ " \t\n123\r\n", { token_type_t::integer } },
-                                                    Lex_Whitespaces_State{ "123 \t\n123\r\n", { token_type_t::integer, token_type_t::integer } });
+                                                    Lex_Whitespaces_State{ " \t\n123\r\n", { token_type_t::integer }, { "123" } },
+                                                    Lex_Whitespaces_State{ "123 \t\n123\r\n", { token_type_t::integer, token_type_t::integer }, { "123", "123" } });
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Whitespaces, values);
             }
 
