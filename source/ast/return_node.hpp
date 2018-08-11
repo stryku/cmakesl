@@ -19,6 +19,8 @@ namespace cmsl
         public:
             explicit return_node(std::unique_ptr<infix_node> expr);
 
+            infix_node& get_expression();
+
         private:
             std::unique_ptr<infix_node> m_expression;
         };

@@ -15,9 +15,9 @@ namespace cmsl
         {
             std::stack<int> stack;
 
-            for (const auto& token : m_tokens)
+            for (const auto& token : to_onp())
             {
-                if (token.get_type() == lexer::token::token_type::integer)
+                if (token.get_type() == token_type_t::integer)
                 {
                     const auto val = std::stoi(token.str().to_string());
                     stack.push(val);
@@ -31,10 +31,10 @@ namespace cmsl
 
                     switch (token.get_type())
                     {
-                        case lexer::token::token_type::plus:
+                        case token_type_t::plus:
                             stack.push(b + a);
                             break;
-                        case lexer::token::token_type::minus:
+                        case token_type_t::minus:
                             stack.push(b - a);
                             break;
                     }
@@ -42,6 +42,55 @@ namespace cmsl
             }
 
             return stack.top();
+        }
+
+        lexer::token::token_container_t infix_node::to_onp() const
+        {
+            lexer::token::token_container_t result;
+            std::stack<lexer::token::token> stack;
+
+            for (const auto& token : m_tokens)
+            {
+                if (token.get_type() == token_type_t::integer)
+                {
+                    result.emplace_back(token);
+                }
+                else if (token.get_type() == token_type_t::plus)
+                {
+                    while (!stack.empty())
+                    {
+                        const auto op = stack.top();
+                        stack.pop();
+                        result.emplace_back(op);
+                    }
+
+                    stack.push(token);
+                }
+                else if (token.get_type() == token_type_t::open_paren)
+                {
+                    stack.push(token);
+                }
+                else if (token.get_type() == token_type_t::close_paren)
+                {
+                    while (!stack.empty() && stack.top().get_type() != token_type_t::open_paren)
+                    {
+                        const auto op = stack.top();
+                        stack.pop();
+                        result.emplace_back(op);
+                    }
+
+                    stack.pop();
+                }
+            }
+
+            while (!stack.empty())
+            {
+                const auto tok = stack.top();
+                stack.pop();
+                result.emplace_back(tok);
+            }
+
+            return result;
         }
     }
 }
