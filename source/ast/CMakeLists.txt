@@ -10,6 +10,8 @@ set(AST_SOURCES
     ast_node_type.hpp
     ast_node.cpp
     ast_node.hpp 
+    declaration_node.cpp
+    declaration_node.hpp
     function_node.cpp
     function_node.hpp
     integral_constant.hpp
