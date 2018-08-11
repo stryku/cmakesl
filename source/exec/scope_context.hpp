@@ -13,6 +13,8 @@ namespace cmsl
         class scope_context
         {
         public:
+            explicit scope_context(const scope_context* parent);
+
             void add_variable(cmsl::string_view name, int value);
             int& get_variable(cmsl::string_view name);
 
@@ -28,6 +30,8 @@ namespace cmsl
             };
 
             std::unordered_map<cmsl::string_view, int, hasher> m_variables;
+
+            const scope_context* m_parent;
         };
     }
 }

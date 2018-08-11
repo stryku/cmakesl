@@ -21,6 +21,7 @@ namespace cmsl
             int execute(cmsl::string_view source);
 
             void set_function_return_value(int value);
+            execution_context& get_ctx();
 
         private:
             void function_call(ast::function& fun);
