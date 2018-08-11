@@ -2,10 +2,14 @@ set(EXEC_SOURCES
     exec.cpp
     exec.hpp
     execution_context.hpp
+    scope_context.cpp
+    scope_context.hpp
     
-    stmt/statement.hpp
+    stmt/declaration_statement.cpp
+    stmt/declaration_statement.hpp
     stmt/return_statement.cpp
     stmt/return_statement.hpp
+    stmt/statement.hpp
 ) 
 
 add_library(exec ${EXEC_SOURCES})
