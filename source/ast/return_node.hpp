@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ast/ast_node.hpp"
-#include "ast/infix_expression.hpp"
+#include "ast/infix_node.hpp"
 
 #include <memory>
 
@@ -14,15 +14,15 @@ namespace cmsl
 
     namespace ast
     {
-        class return_expression : public ast_node
+        class return_node : public ast_node
         {
         public:
-            explicit return_expression(std::unique_ptr<infix_expression> expr);
+            explicit return_node(std::unique_ptr<infix_node> expr);
 
             void execute(exec::executor& executor);
 
         private:
-            std::unique_ptr<infix_expression> m_expression;
+            std::unique_ptr<infix_node> m_expression;
         };
     }
 }

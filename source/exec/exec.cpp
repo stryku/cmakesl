@@ -4,9 +4,8 @@
 #include "lexer/lexer.hpp"
 #include "errors/errors_observer.hpp"
 #include "ast/ast_builder.hpp"
-#include "ast/expr/expression.hpp"
 #include "ast/builtin_ast_context.hpp"
-#include "ast/block_expression.hpp"
+#include "ast/block_node.hpp"
 
 #include <iostream>
 
@@ -50,7 +49,7 @@ namespace cmsl
         {
             switch (expr.get_type())
             {
-                case ast::expression_type::ret:
+                case ast::ast_node_type::ret:
                 {
                     expr.execute(*this);
                     return_from_function();

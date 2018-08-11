@@ -1,4 +1,4 @@
-#include "ast/return_expression.hpp"
+#include "ast/return_node.hpp"
 
 #include "exec/exec.hpp"
 
@@ -6,12 +6,12 @@ namespace cmsl
 {
     namespace ast
     {
-        return_expression::return_expression(std::unique_ptr<infix_expression> expr)
-            : ast_node(expression_type::ret)
+        return_node::return_node(std::unique_ptr<infix_node> expr)
+            : ast_node(ast_node_type::ret)
             , m_expression{ std::move(expr) }
         {}
 
-        void return_expression::execute(exec::executor& executor)
+        void return_node::execute(exec::executor& executor)
         {
             auto val = m_expression->evaluate();
             executor.set_function_return_value(val);

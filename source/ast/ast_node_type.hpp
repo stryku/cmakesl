@@ -4,7 +4,7 @@ namespace cmsl
 {
     namespace ast
     {
-        enum class expression_type
+        enum class ast_node_type
         {
             infix,
             declaration,

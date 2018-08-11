@@ -1,4 +1,4 @@
-#include "ast/function.hpp"
+#include "ast/function_node.hpp"
 
 namespace cmsl
 {
@@ -7,8 +7,8 @@ namespace cmsl
         function::function(type return_type,
                            cmsl::string_view name,
                            std::vector<parameter_declaration> params,
-                           std::unique_ptr<block_expression> body)
-            : ast_node(expression_type::function)
+                           std::unique_ptr<block_node> body)
+            : ast_node(ast_node_type::function)
             , m_return_type{ return_type }
             , m_name{ name }
             , m_params{ std::move(params) }
@@ -20,7 +20,7 @@ namespace cmsl
             return m_name;
         }
 
-        block_expression& function::get_body()
+        block_node& function::get_body()
         {
             return *m_body;
         }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ast/type.hpp"
-#include "ast/function.hpp"
+#include "ast/function_node.hpp"
 #include "common/string.hpp"
 
 #include <memory>

@@ -3,7 +3,7 @@
 #include "ast/ast_node.hpp"
 #include "ast/parameter_declaration.hpp"
 #include "ast/type.hpp"
-#include "ast/block_expression.hpp"
+#include "ast/block_node.hpp"
 
 #include "lexer/token/token.hpp"
 
@@ -16,16 +16,16 @@ namespace cmsl
         class function : public ast_node
         {
         public:
-            function(type return_type, cmsl::string_view name, std::vector<parameter_declaration> params, std::unique_ptr<block_expression> body);
+            function(type return_type, cmsl::string_view name, std::vector<parameter_declaration> params, std::unique_ptr<block_node> body);
 
             cmsl::string_view get_name() const;
-            block_expression& get_body();
+            block_node& get_body();
 
         private:
             type m_return_type;
             cmsl::string_view m_name;
             std::vector<parameter_declaration> m_params;
-            std::unique_ptr<block_expression> m_body;
+            std::unique_ptr<block_node> m_body;
         };
     }
 }
