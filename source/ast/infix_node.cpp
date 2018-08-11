@@ -1,4 +1,4 @@
-#include "ast/expr/infix_expression.hpp"
+#include "ast/infix_node.hpp"
 
 #include <stack>
 
@@ -6,11 +6,12 @@ namespace cmsl
 {
     namespace ast
     {
-        /*infix_expression::infix_expression(lexer::token::token_container_t tokens)
-            : m_tokens{ std::move(tokens) }
+        infix_node::infix_node(lexer::token::token_container_t tokens)
+            : ast_node{ ast_node_type::infix }
+            , m_tokens{ std::move(tokens) }
         {}
 
-        infix_expression::result_t infix_expression::evaluate()
+        int infix_node::evaluate()
         {
             std::stack<int> stack;
 
@@ -41,6 +42,6 @@ namespace cmsl
             }
 
             return stack.top();
-        }*/
+        }
     }
 }

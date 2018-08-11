@@ -182,7 +182,7 @@ namespace cmsl
                 }
             }
 
-            namespace get_infix_expression
+            namespace get_infix_node
             {
                 namespace unexpected_token
                 {
@@ -192,7 +192,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_infix_expression();
+                            (void)parser.get_infix_node();
                         });
                     }
 
@@ -212,7 +212,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_infix_expression();
+                            (void)parser.get_infix_node();
                         });
                     }
 
@@ -224,9 +224,9 @@ namespace cmsl
                 }
             }
 
-            namespace get_block_expression
+            namespace get_block_node
             {
-                namespace wrong_infix_expression
+                namespace wrong_infix_node
                 {
                     using GetBlockExpression_WrongOnpExpression = testing::TestWithParam<token_container_t>;
 
@@ -234,7 +234,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_block_expression();
+                            (void)parser.get_block_node();
                         });
                     }
 
@@ -254,7 +254,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_block_expression();
+                            (void)parser.get_block_node();
                         });
                     }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ast/expression_type.hpp"
+#include "ast/ast_node_type.hpp"
 
 namespace cmsl
 {
@@ -14,7 +14,7 @@ namespace cmsl
         class ast_node
         {
         public:
-            ast_node(expression_type type)
+            ast_node(ast_node_type type)
                 : m_type{ type }
             {}
 
@@ -23,13 +23,13 @@ namespace cmsl
 
             virtual void execute(exec::executor& executor) {};
 
-            expression_type get_type() const
+            ast_node_type get_type() const
             {
                 return m_type;
             }
 
         private:
-            expression_type m_type;
+            ast_node_type m_type;
         };
     }
 }

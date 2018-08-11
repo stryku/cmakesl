@@ -1,11 +1,11 @@
 #include "ast/parser.hpp"
 #include "ast/ast_context.hpp"
 #include "ast/type.hpp"
-#include "ast/infix_expression.hpp"
-#include "ast/block_expression.hpp"
-#include "ast/function.hpp"
-#include "ast/return_expression.hpp"
-#include "ast/infix_expression.hpp"
+#include "ast/infix_node.hpp"
+#include "ast/block_node.hpp"
+#include "ast/function_node.hpp"
+#include "ast/return_node.hpp"
+#include "ast/infix_node.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -232,7 +232,7 @@ namespace cmsl
             return m_token->get_type() == token_type;
         }
 
-        std::unique_ptr<infix_expression> parser::get_infix_expression()
+        std::unique_ptr<infix_node> parser::get_infix_node()
         {
             token_container_t infix_tokens;
 
@@ -249,7 +249,7 @@ namespace cmsl
 
             eat(token_type_t::semicolon);
 
-            return std::make_unique<infix_expression>(std::move(infix_tokens));
+            return std::make_unique<infix_node>(std::move(infix_tokens));
         }
 
         bool parser::current_is_infix_token() const
@@ -271,7 +271,7 @@ namespace cmsl
             return cmsl::contains(allowed_tokens, m_token->get_type());
         }
 
-        std::unique_ptr<block_expression> parser::get_block_expression()
+        std::unique_ptr<block_node> parser::get_block_node()
         {
             if (!eat(token_type_t::open_brace))
             {
@@ -286,7 +286,7 @@ namespace cmsl
 
                 if (current_is(token_type_t::return_keyword))
                 {
-                    expr = get_return_expression();
+                    expr = get_return_node();
                     if (!expr)
                     {
                         return nullptr;
@@ -294,7 +294,7 @@ namespace cmsl
                 }
                 else
                 {
-                    expr = get_infix_expression();
+                    expr = get_infix_node();
                     if (!expr)
                     {
                         return nullptr;
@@ -309,7 +309,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<block_expression>(std::move(expressions));
+            return std::make_unique<block_node>(std::move(expressions));
         }
 
         std::unique_ptr<function> parser::get_function(ast_context& ctx)
@@ -332,7 +332,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            auto block_expr = get_block_expression();
+            auto block_expr = get_block_node();
 
             if (!block_expr)
             {
@@ -361,7 +361,7 @@ namespace cmsl
             return id;
         }
 
-        std::unique_ptr<return_expression> parser::get_return_expression()
+        std::unique_ptr<return_node> parser::get_return_node()
         {
             if (!eat(token_type_t::return_keyword))
             {
@@ -369,13 +369,13 @@ namespace cmsl
                 return nullptr;
             }
 
-            auto infix_expr = get_infix_expression();
+            auto infix_expr = get_infix_node();
             if (!infix_expr)
             {
                 return nullptr;
             }
 
-            return std::make_unique<return_expression>(std::move(infix_expr));
+            return std::make_unique<return_node>(std::move(infix_expr));
         }
     }
 }

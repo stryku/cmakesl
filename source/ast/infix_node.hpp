@@ -7,10 +7,10 @@ namespace cmsl
 {
     namespace ast
     {
-        class infix_expression : public ast_node
+        class infix_node : public ast_node
         {
         public:
-            explicit infix_expression(lexer::token::token_container_t tokens);
+            explicit infix_node(lexer::token::token_container_t tokens);
 
             int evaluate();
 

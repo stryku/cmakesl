@@ -9,10 +9,10 @@ namespace cmsl
 {
     namespace ast
     {
-        class block_expression : public ast_node
+        class block_node : public ast_node
         {
         public:
-            block_expression(std::vector<std::unique_ptr<ast_node>> expressions);
+            block_node(std::vector<std::unique_ptr<ast_node>> expressions);
 
             std::vector<ast_node*> get_expressions();
 
