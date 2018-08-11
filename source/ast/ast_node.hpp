@@ -4,11 +4,6 @@
 
 namespace cmsl
 {
-    namespace exec
-    {
-        class executor;
-    }
-
     namespace ast
     {
         class ast_node
