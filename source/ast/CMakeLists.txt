@@ -14,6 +14,7 @@ set(AST_SOURCES
     declaration_node.hpp
     function_node.cpp
     function_node.hpp
+    integer_constant.hpp
     integral_constant.hpp
     infix_node.cpp
     infix_node.hpp

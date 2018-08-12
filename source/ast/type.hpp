@@ -11,7 +11,6 @@ namespace cmsl
         class type
         {
         public:
-
             using token_type_t = lexer::token::token_type;
 
             explicit type(lexer::token::token token);

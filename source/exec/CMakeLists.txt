@@ -3,11 +3,17 @@ set(EXEC_SOURCES
     exec.hpp
     execution_context.cpp
     execution_context.hpp
+    instance.cpp
+    instance.hpp
+    named_instance.cpp
+    named_instance.hpp
     scope_context.cpp
     scope_context.hpp
     
     stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp
+    stmt/infix_statement.cpp
+    stmt/infix_statement.hpp
     stmt/return_statement.cpp
     stmt/return_statement.hpp
     stmt/statement.hpp

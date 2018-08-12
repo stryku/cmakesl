@@ -18,7 +18,7 @@ namespace cmsl
             virtual ~ast_context() {}
 
             void add_type(std::unique_ptr<type> t);
-            type* find_type(cmsl::string_view name);
+            const type* find_type(cmsl::string_view name) const;
 
             void add_function(std::unique_ptr<function> fun);
             function* find_function(cmsl::string_view name);

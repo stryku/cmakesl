@@ -20,7 +20,7 @@ namespace cmsl
             m_types.emplace_back(std::move(t));
         }
 
-        type* ast_context::find_type(cmsl::string_view name)
+        const type* ast_context::find_type(cmsl::string_view name) const
         {
             const auto it = std::find_if(std::begin(m_types), std::end(m_types),
                                          [name](const auto& t)
