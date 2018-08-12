@@ -235,7 +235,8 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_block_node();
+                            builtin_ctx_t ctx;
+                            (void)parser.get_block_node(ctx);
                         });
                     }
 
@@ -255,7 +256,8 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_block_node();
+                            builtin_ctx_t ctx;
+                            (void)parser.get_block_node(ctx);
                         });
                     }
 

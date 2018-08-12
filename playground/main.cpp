@@ -7,7 +7,8 @@ int main()
 {
     const auto source = "int main()"
                         "{"
-                        "    return 4+2;"
+                        "    int a = 4+2;"
+                        "    return a + 10 - (40 + 2);"
                         "}";
 
     cmsl::exec::executor exec;

@@ -16,7 +16,7 @@ namespace cmsl
             explicit scope_context(const scope_context* parent);
 
             void add_variable(cmsl::string_view name, int value);
-            int& get_variable(cmsl::string_view name);
+            int* get_variable(cmsl::string_view name);
 
             bool variable_exists(cmsl::string_view name) const;
 

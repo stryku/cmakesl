@@ -6,8 +6,12 @@
 #include "ast/ast_builder.hpp"
 #include "ast/builtin_ast_context.hpp"
 #include "ast/block_node.hpp"
-#include "exec/stmt/return_statement.hpp"
 #include "ast/return_node.hpp"
+#include "ast/declaration_node.hpp"
+
+#include "exec/stmt/return_statement.hpp"
+#include "exec/stmt/declaration_statement.hpp"
+
 
 #include <iostream>
 
@@ -33,7 +37,9 @@ namespace cmsl
 
         void executor::function_call(ast::function& fun)
         {
+            m_ast_context = &fun.get_ast_context();
             m_call_stack.push(&fun);
+            m_exec_ctx.enter_scope();
             auto& fun_body = fun.get_body();
             const auto expressions = fun_body.get_expressions();
 
@@ -45,6 +51,7 @@ namespace cmsl
                     return;
                 }
             }
+            m_exec_ctx.leave_scope();
         }
 
         bool executor::execute_function_expression(ast::ast_node& expr)
@@ -57,6 +64,13 @@ namespace cmsl
                     ret_stmt.execute(*this);
                     return_from_function();
                     return true;
+                }
+                break;
+
+                case ast::ast_node_type::declaration:
+                {
+                    stmt::declaration_statement decl_stmt{ dynamic_cast<ast::declaration_node&>(expr) };
+                    decl_stmt.execute(*this);
                 }
                 break;
             }
@@ -77,6 +91,11 @@ namespace cmsl
         execution_context& executor::get_ctx()
         {
             return m_exec_ctx;
+        }
+
+        const ast::ast_context& executor::get_ast_ctx() const
+        {
+            return *m_ast_context;
         }
     }
 }

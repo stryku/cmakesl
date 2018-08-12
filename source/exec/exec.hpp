@@ -11,6 +11,7 @@ namespace cmsl
     {
         class ast_node;
         class function;
+        class ast_context;
     }
 
     namespace exec
@@ -22,6 +23,7 @@ namespace cmsl
 
             void set_function_return_value(int value);
             execution_context& get_ctx();
+            const ast::ast_context& get_ast_ctx() const;
 
         private:
             void function_call(ast::function& fun);
@@ -29,6 +31,7 @@ namespace cmsl
             bool execute_function_expression(ast::ast_node& expr);
 
         private:
+            const ast::ast_context* m_ast_context;
             execution_context m_exec_ctx;
             int m_function_return_value;
             std::stack<ast::function*> m_call_stack;

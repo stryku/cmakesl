@@ -2,6 +2,7 @@
 
 #include "ast/declaration_node.hpp"
 #include "exec/exec.hpp"
+#include "exec/stmt/infix_statement.hpp"
 
 namespace cmsl
 {
@@ -15,13 +16,12 @@ namespace cmsl
 
             void declaration_statement::execute(executor& e)
             {
-                auto& expr = m_node.get_expression();
-                const auto result = expr.evaluate();
+                const auto& expr = m_node.get_expression();
+                int infix_result;
+                auto infix = infix_statement{ expr, infix_result };
+                infix.execute(e);
                 auto& ctx = e.get_ctx();
-
-
-
-                e.set_function_return_value(result);
+                ctx.add_variable(m_node.get_name(), infix_result);
             }
         }
     }

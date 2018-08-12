@@ -9,7 +9,7 @@ namespace cmsl
             current_scope->add_variable(name, value);
         }
 
-        int& execution_context::get_variable(cmsl::string_view name)
+        int* execution_context::get_variable(cmsl::string_view name)
         {
             return current_scope->get_variable(name);
         }

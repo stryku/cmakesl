@@ -6,6 +6,7 @@
 #include "ast/function_node.hpp"
 #include "ast/return_node.hpp"
 #include "ast/infix_node.hpp"
+#include "ast/declaration_node.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -73,7 +74,7 @@ namespace cmsl
             return cmsl::contains(builtin_types, token_type);
         }
 
-        type* parser::get_type(ast_context& ctx)
+        const type* parser::get_type(ast_context& ctx) 
         {
             const auto t = *m_token;
 
@@ -265,13 +266,14 @@ namespace cmsl
                 token_type_t::plus,
                 token_type_t::minus,
                 token_type_t::open_paren,
-                token_type_t::close_paren
+                token_type_t::close_paren,
+                token_type_t::identifier
             };
 
             return cmsl::contains(allowed_tokens, m_token->get_type());
         }
 
-        std::unique_ptr<block_node> parser::get_block_node()
+        std::unique_ptr<block_node> parser::get_block_node(ast_context& ctx)
         {
             if (!eat(token_type_t::open_brace))
             {
@@ -287,20 +289,20 @@ namespace cmsl
                 if (current_is(token_type_t::return_keyword))
                 {
                     expr = get_return_node();
-                    if (!expr)
-                    {
-                        return nullptr;
-                    }
+                }
+                else if (declaration_starts())
+                {
+                    expr = get_declaration_node(ctx);
                 }
                 else
                 {
                     expr = get_infix_node();
-                    if (!expr)
-                    {
-                        return nullptr;
-                    }
                 }
 
+                if (!expr)
+                {
+                    return nullptr;
+                }
                 expressions.emplace_back(std::move(expr));
             }
 
@@ -332,14 +334,14 @@ namespace cmsl
                 return nullptr;
             }
 
-            auto block_expr = get_block_node();
+            auto block_expr = get_block_node(ctx);
 
             if (!block_expr)
             {
                 return nullptr;
             }
 
-            return std::make_unique<function>(*type, name->str(), std::move(*parameters), std::move(block_expr));
+            return std::make_unique<function>(ctx, *type, name->str(), std::move(*parameters), std::move(block_expr));
         }
 
         boost::optional<lexer::token::token> parser::get_identifier()
@@ -376,6 +378,53 @@ namespace cmsl
             }
 
             return std::make_unique<return_node>(std::move(infix_expr));
+        }
+
+        parser::token_type_t parser::peek(size_t n) const
+        {
+            if (std::distance(m_token, m_end) <= n)
+            {
+                return token_type_t::undef;
+            }
+
+            return std::next(m_token, n)->get_type();
+        }
+
+
+        bool parser::declaration_starts() const
+        {
+            // 2 because 
+            // type name =
+            return peek(2u) == token_type_t::equal;
+        }
+
+        std::unique_ptr<declaration_node> parser::get_declaration_node(ast_context& ctx)
+        {
+            auto type = get_type(ctx);
+            if (!type)
+            {
+                return nullptr;
+            }
+
+            auto name = get_identifier();
+            if (!name)
+            {
+                return nullptr;
+            }
+
+            if (!eat(token_type_t::equal))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            auto infix = get_infix_node();
+            if (!infix)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<declaration_node>(*type, name->str(), std::move(infix));
         }
     }
 }
