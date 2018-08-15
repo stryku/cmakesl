@@ -9,6 +9,8 @@ set(AST_SOURCES
     builtin_ast_context.hpp
     class_node.cpp
     class_node.hpp
+    class_type.cpp
+    class_type.hpp
     ast_node_type.hpp
     ast_node.cpp
     ast_node.hpp 

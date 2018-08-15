@@ -14,7 +14,10 @@ namespace cmsl
         public:
             class_node(cmsl::string_view name, std::vector<member_declaration> m_members);
 
+            cmsl::string_view get_name() const;
+
         private:
+            cmsl::string_view m_name;
             std::vector<member_declaration> m_members;
         };
     }

@@ -6,6 +6,12 @@
 int main()
 {
     const auto source =
+        "class cl_foo"
+        "{"
+        "    int foo_member = 5;"
+        "    int foo_member_2 = 30;"
+        "};"
+        ""
         "int foo(int a, int b)"
         "{"
         "    return a + b;"

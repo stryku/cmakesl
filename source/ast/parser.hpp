@@ -38,13 +38,15 @@ namespace cmsl
 
             const type* get_type(ast_context& ctx);
             boost::optional<std::vector<parameter_declaration>> get_parameters_declaration(ast_context& ctx);
-            std::unique_ptr<infix_node> get_infix_node();
-            std::unique_ptr<block_node> get_block_node(ast_context& ctx);
+            std::unique_ptr<infix_node> get_infix();
+            std::unique_ptr<block_node> get_block(ast_context& ctx);
             std::unique_ptr<function_node> get_function(ast_context& ctx);
             std::unique_ptr<return_node> get_return_node();
-            std::unique_ptr<declaration_node> get_declaration_node(ast_context& ctx);
-            std::unique_ptr<class_node> get_class_node(ast_context& ctx);
+            std::unique_ptr<declaration_node> get_declaration(ast_context& ctx);
+            std::unique_ptr<class_node> get_class(ast_context& ctx);
             boost::optional<member_declaration> get_class_member_declaration(ast_context& ctx);
+
+            std::unique_ptr<class_node> try_get_class_node(ast_context& ctx);
 
             bool is_at_end() const;
 
