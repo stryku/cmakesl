@@ -5,11 +5,11 @@ namespace cmsl
 {
     namespace ast
     {
-        function::function(ast_context& ctx,
-                           type return_type,
-                           cmsl::string_view name,
-                           std::vector<parameter_declaration> params,
-                           std::unique_ptr<block_node> body)
+        function_node::function_node(ast_context& ctx,
+                                     type return_type,
+                                     cmsl::string_view name,
+                                     std::vector<parameter_declaration> params,
+                                     std::unique_ptr<block_node> body)
             : ast_node(ast_node_type::function)
             , m_ast_context{ ctx }
             , m_return_type{ return_type }
@@ -18,19 +18,24 @@ namespace cmsl
             , m_body{ std::move(body) }
         {}
 
-        cmsl::string_view function::get_name() const
+        cmsl::string_view function_node::get_name() const
         {
             return m_name;
         }
 
-        const block_node& function::get_body() const 
+        const block_node& function_node::get_body() const
         {
             return *m_body;
         }
 
-        const ast_context& function::get_ast_context() const
+        const ast_context& function_node::get_ast_context() const
         {
             return m_ast_context;
+        }
+
+        const std::vector<parameter_declaration>& function_node::get_params_declarations() const
+        {
+            return m_params;
         }
     }
 }

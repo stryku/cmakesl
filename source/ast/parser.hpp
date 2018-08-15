@@ -19,7 +19,7 @@ namespace cmsl
         class ast_context;
         class ast_node;
         class type;
-        class function;
+        class function_node;
         class block_node;
         class return_node;
         class infix_node;
@@ -38,7 +38,7 @@ namespace cmsl
             boost::optional<std::vector<parameter_declaration>> get_parameters_declaration(ast_context& ctx);
             std::unique_ptr<infix_node> get_infix_node();
             std::unique_ptr<block_node> get_block_node(ast_context& ctx);
-            std::unique_ptr<function> get_function(ast_context& ctx);
+            std::unique_ptr<function_node> get_function(ast_context& ctx);
             std::unique_ptr<return_node> get_return_node();
             std::unique_ptr<declaration_node> get_declaration_node(ast_context& ctx);
 

@@ -50,7 +50,7 @@ namespace cmsl
 
                 while (m_token != m_end && m_token->get_type() != token_type_t::close_paren)
                 {
-                    handle_token(*m_token);
+                    handle_token(*m_token++);
                 }
 
                 if (!eat(token_type_t::close_paren))

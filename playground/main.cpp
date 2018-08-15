@@ -14,7 +14,7 @@ int main()
         "int main()"
         "{"
         "    int a = 4+2;"
-        "    return a + foo();"
+        "    return a + foo(16, 4);"
         "}";
 
     cmsl::exec::executor exec;
