@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ast/type.hpp"
-#include "ast/function.hpp"
+#include "ast/function_node.hpp"
 #include "common/string.hpp"
 
 #include <memory>
@@ -18,15 +18,15 @@ namespace cmsl
             virtual ~ast_context() {}
 
             void add_type(std::unique_ptr<type> t);
-            type* find_type(cmsl::string_view name);
+            const type* find_type(cmsl::string_view name) const;
 
-            void add_function(std::unique_ptr<function> fun);
-            function* find_function(cmsl::string_view name);
+            void add_function(std::unique_ptr<function_node> fun);
+            const function_node* find_function(cmsl::string_view name) const;
 
         private:
             ast_context* m_parent;
             std::vector<std::unique_ptr<type>> m_types;
-            std::vector<std::unique_ptr<function>> m_functions;
+            std::vector<std::unique_ptr<function_node>> m_functions;
         };
     }
 }

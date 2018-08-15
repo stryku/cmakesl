@@ -1,4 +1,4 @@
-#include "ast/block_expression.hpp"
+#include "ast/block_node.hpp"
 
 #include <algorithm>
 #include <iterator>
@@ -7,12 +7,12 @@ namespace cmsl
 {
     namespace ast
     {
-        block_expression::block_expression(std::vector<std::unique_ptr<ast_node>> expressions)
-            : ast_node{ expression_type::block }
+        block_node::block_node(std::vector<std::unique_ptr<ast_node>> expressions)
+            : ast_node{ ast_node_type::block }
             , m_expressions{ std::move(expressions) }
         {}
 
-        std::vector<ast_node*> block_expression::get_expressions()
+        std::vector<ast_node*> block_node::get_expressions() const
         {
             std::vector<ast_node*> result;
 

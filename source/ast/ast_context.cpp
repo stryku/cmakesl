@@ -20,7 +20,7 @@ namespace cmsl
             m_types.emplace_back(std::move(t));
         }
 
-        type* ast_context::find_type(cmsl::string_view name)
+        const type* ast_context::find_type(cmsl::string_view name) const
         {
             const auto it = std::find_if(std::begin(m_types), std::end(m_types),
                                          [name](const auto& t)
@@ -41,12 +41,12 @@ namespace cmsl
             return it->get();
         }
 
-        void ast_context::add_function(std::unique_ptr<function> fun)
+        void ast_context::add_function(std::unique_ptr<function_node> fun)
         {
             m_functions.emplace_back(std::move(fun));
         }
 
-        function* ast_context::find_function(cmsl::string_view name)
+        const function_node* ast_context::find_function(cmsl::string_view name) const
         {
             const auto it = std::find_if(std::begin(m_functions), std::end(m_functions),
                                          [name](const auto& t)

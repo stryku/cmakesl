@@ -9,7 +9,7 @@ namespace cmsl
     {
         struct parameter_declaration
         {
-            type param_type;
+            const type* param_type;
             lexer::token::token name;
         };
     }

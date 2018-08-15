@@ -302,6 +302,7 @@ namespace cmsl
             tokens['['] = token_t::token_type_t::open_square;
             tokens[']'] = token_t::token_type_t::close_square;
             tokens[';'] = token_t::token_type_t::semicolon;
+            tokens[','] = token_t::token_type_t::comma;
 
             return tokens;
         }
@@ -314,7 +315,7 @@ namespace cmsl
 
         bool lexer::is_one_char_token(char c) const
         {
-            const auto chars = cmsl::string_view{ "{}[]();" };
+            const auto chars = cmsl::string_view{ "{}[]();," };
             return chars.find(c) != cmsl::string_view::npos;
         }
 

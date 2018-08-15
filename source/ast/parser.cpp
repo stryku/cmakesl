@@ -1,11 +1,12 @@
 #include "ast/parser.hpp"
 #include "ast/ast_context.hpp"
 #include "ast/type.hpp"
-#include "ast/infix_expression.hpp"
-#include "ast/block_expression.hpp"
-#include "ast/function.hpp"
-#include "ast/return_expression.hpp"
-#include "ast/infix_expression.hpp"
+#include "ast/infix_node.hpp"
+#include "ast/block_node.hpp"
+#include "ast/function_node.hpp"
+#include "ast/return_node.hpp"
+#include "ast/infix_node.hpp"
+#include "ast/declaration_node.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -73,7 +74,7 @@ namespace cmsl
             return cmsl::contains(builtin_types, token_type);
         }
 
-        type* parser::get_type(ast_context& ctx)
+        const type* parser::get_type(ast_context& ctx) 
         {
             const auto t = *m_token;
 
@@ -145,14 +146,14 @@ namespace cmsl
                 return false;
             }
 
-            if (!current_is(token_type_t::semicolon))
+            if (!current_is(token_type_t::comma))
             {
                 return true;
             }
 
-            // At this point we have semicolon, so we expect next parameter
+            // At this point we have comma, so we expect next parameter
 
-            if (!eat(token_type_t::semicolon))
+            if (!eat(token_type_t::comma))
             {
                 return false;
             }
@@ -187,7 +188,7 @@ namespace cmsl
                 return{};
             }
             
-            return parameter_declaration{ *t, name };
+            return parameter_declaration{ t, name };
         }
 
         bool parser::is_at_end() const
@@ -232,7 +233,7 @@ namespace cmsl
             return m_token->get_type() == token_type;
         }
 
-        std::unique_ptr<infix_expression> parser::get_infix_expression()
+        std::unique_ptr<infix_node> parser::get_infix_node()
         {
             token_container_t infix_tokens;
 
@@ -249,7 +250,7 @@ namespace cmsl
 
             eat(token_type_t::semicolon);
 
-            return std::make_unique<infix_expression>(std::move(infix_tokens));
+            return std::make_unique<infix_node>(std::move(infix_tokens));
         }
 
         bool parser::current_is_infix_token() const
@@ -265,13 +266,15 @@ namespace cmsl
                 token_type_t::plus,
                 token_type_t::minus,
                 token_type_t::open_paren,
-                token_type_t::close_paren
+                token_type_t::close_paren,
+                token_type_t::identifier,
+                token_type_t::comma
             };
 
             return cmsl::contains(allowed_tokens, m_token->get_type());
         }
 
-        std::unique_ptr<block_expression> parser::get_block_expression()
+        std::unique_ptr<block_node> parser::get_block_node(ast_context& ctx)
         {
             if (!eat(token_type_t::open_brace))
             {
@@ -286,21 +289,21 @@ namespace cmsl
 
                 if (current_is(token_type_t::return_keyword))
                 {
-                    expr = get_return_expression();
-                    if (!expr)
-                    {
-                        return nullptr;
-                    }
+                    expr = get_return_node();
+                }
+                else if (declaration_starts())
+                {
+                    expr = get_declaration_node(ctx);
                 }
                 else
                 {
-                    expr = get_infix_expression();
-                    if (!expr)
-                    {
-                        return nullptr;
-                    }
+                    expr = get_infix_node();
                 }
 
+                if (!expr)
+                {
+                    return nullptr;
+                }
                 expressions.emplace_back(std::move(expr));
             }
 
@@ -309,10 +312,10 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<block_expression>(std::move(expressions));
+            return std::make_unique<block_node>(std::move(expressions));
         }
 
-        std::unique_ptr<function> parser::get_function(ast_context& ctx)
+        std::unique_ptr<function_node> parser::get_function(ast_context& ctx)
         {
             const auto type = get_type(ctx);
             if (!type)
@@ -332,14 +335,14 @@ namespace cmsl
                 return nullptr;
             }
 
-            auto block_expr = get_block_expression();
+            auto block_expr = get_block_node(ctx);
 
             if (!block_expr)
             {
                 return nullptr;
             }
 
-            return std::make_unique<function>(*type, name->str(), std::move(*parameters), std::move(block_expr));
+            return std::make_unique<function_node>(ctx, *type, name->str(), std::move(*parameters), std::move(block_expr));
         }
 
         boost::optional<lexer::token::token> parser::get_identifier()
@@ -361,7 +364,7 @@ namespace cmsl
             return id;
         }
 
-        std::unique_ptr<return_expression> parser::get_return_expression()
+        std::unique_ptr<return_node> parser::get_return_node()
         {
             if (!eat(token_type_t::return_keyword))
             {
@@ -369,13 +372,60 @@ namespace cmsl
                 return nullptr;
             }
 
-            auto infix_expr = get_infix_expression();
+            auto infix_expr = get_infix_node();
             if (!infix_expr)
             {
                 return nullptr;
             }
 
-            return std::make_unique<return_expression>(std::move(infix_expr));
+            return std::make_unique<return_node>(std::move(infix_expr));
+        }
+
+        parser::token_type_t parser::peek(size_t n) const
+        {
+            if (std::distance(m_token, m_end) <= n)
+            {
+                return token_type_t::undef;
+            }
+
+            return std::next(m_token, n)->get_type();
+        }
+
+
+        bool parser::declaration_starts() const
+        {
+            // 2 because 
+            // type name =
+            return peek(2u) == token_type_t::equal;
+        }
+
+        std::unique_ptr<declaration_node> parser::get_declaration_node(ast_context& ctx)
+        {
+            auto type = get_type(ctx);
+            if (!type)
+            {
+                return nullptr;
+            }
+
+            auto name = get_identifier();
+            if (!name)
+            {
+                return nullptr;
+            }
+
+            if (!eat(token_type_t::equal))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            auto infix = get_infix_node();
+            if (!infix)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<declaration_node>(*type, name->str(), std::move(infix));
         }
     }
 }

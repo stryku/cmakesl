@@ -102,7 +102,9 @@ namespace cmsl
                     TokenTestState{ "[", token_type_t::open_square },
                     TokenTestState{ "]", token_type_t::close_square },
                     TokenTestState{ "(", token_type_t::open_paren },
-                    TokenTestState{ ")", token_type_t::close_paren }
+                    TokenTestState{ ")", token_type_t::close_paren },
+                    TokenTestState{ ";", token_type_t::semicolon },
+                    TokenTestState{ ",", token_type_t::comma }
                 );
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_OneChar, values);
             }

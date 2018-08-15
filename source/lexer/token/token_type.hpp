@@ -45,6 +45,7 @@ namespace cmsl
                 xorequal,
                 string,
                 semicolon,
+                comma,
                 return_keyword,
 
                 // builtin types

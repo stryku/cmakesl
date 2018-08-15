@@ -1,8 +1,27 @@
 set(EXEC_SOURCES
     exec.cpp
     exec.hpp
+    execution_context.cpp
     execution_context.hpp
-)
+    instance.cpp
+    instance.hpp
+    named_instance.cpp
+    named_instance.hpp
+    scope_context.cpp
+    scope_context.hpp
+    
+    stmt/declaration_statement.cpp
+    stmt/declaration_statement.hpp
+    stmt/infix_statement.cpp
+    stmt/infix_statement.hpp
+    stmt/onp_executor.cpp
+    stmt/onp_executor.hpp
+    stmt/infix_to_onp.cpp
+    stmt/infix_to_onp.hpp
+    stmt/return_statement.cpp
+    stmt/return_statement.hpp
+    stmt/statement.hpp
+) 
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR})
