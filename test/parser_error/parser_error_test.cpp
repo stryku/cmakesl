@@ -5,6 +5,7 @@
 #include "ast/parser.hpp"
 #include "ast/ast_node.hpp"
 #include "ast/infix_node.hpp"
+#include "ast/member_declaration.hpp"
 
 #include "test/common/tokens.hpp"
 
@@ -311,6 +312,61 @@ namespace cmsl
                     {
                         builtin_ctx_t ctx;
                         (void)parser.get_function(ctx);
+                    });
+                }
+            }
+
+            namespace get_class_member_declaration
+            {
+                TEST(ParserError, GetClassMemberDeclaration_MissingType_ReportError)
+                {
+                    const auto tokens = token_container_t{ token_identifier(), token_semicolon() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_class_member_declaration(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetClassMemberDeclaration_MissingName_ReportError)
+                {
+                    const auto tokens = token_container_t{ token_t_int(), token_semicolon() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_class_member_declaration(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetClassMemberDeclaration_MissingSemicolon_ReportError)
+                {
+                    const auto tokens = token_container_t{
+                        token_t_int(), token_identifier(),
+                        token_t_int(), token_identifier(), token_semicolon() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_class_member_declaration(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetClassMemberDeclaration_WithIninMissingEqual_ReportError)
+                {
+                    const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_integer(), token_semicolon() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_class_member_declaration(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetClassMemberDeclaration_WithEqualMissingExpr_ReportError)
+                {
+                    const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_equal(), token_semicolon() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_class_member_declaration(ctx);
                     });
                 }
             }
