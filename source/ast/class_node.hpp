@@ -3,8 +3,7 @@
 #include "ast/ast_node.hpp"
 #include "ast/type.hpp"
 #include "common/string.hpp"
-
-#include <unordered_map>
+#include "ast/member_declaration.hpp"
 
 namespace cmsl
 {
@@ -13,10 +12,10 @@ namespace cmsl
         class class_node : public ast_node
         {
         public:
-            class_node(string_view_map<const type*> m_members);
+            class_node(cmsl::string_view name, std::vector<member_declaration> m_members);
 
         private:
-            string_view_map<const type*> m_members;
+            std::vector<member_declaration> m_members;
         };
     }
 }

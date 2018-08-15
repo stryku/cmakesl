@@ -7,6 +7,8 @@
 #include "ast/return_node.hpp"
 #include "ast/infix_node.hpp"
 #include "ast/declaration_node.hpp"
+#include "ast/class_node.hpp"
+#include "ast/member_declaration.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -426,6 +428,83 @@ namespace cmsl
             }
 
             return std::make_unique<declaration_node>(*type, name->str(), std::move(infix));
+        }
+
+        std::unique_ptr<class_node> parser::get_class_node(ast_context& ctx)
+        {
+            if (!eat(token_type_t::kw_class))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            auto name = get_identifier();
+            if (!name)
+            {
+                return nullptr;
+            }
+
+            if (!eat(token_type_t::open_brace))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+
+            std::vector<member_declaration> members;
+
+            while (!current_is(token_type_t::close_brace))
+            {
+                auto member = get_class_member_declaration(ctx);
+                if (!member)
+                {
+                    return nullptr;
+                }
+
+                members.emplace_back(std::move(*member));
+            }
+
+            if (!eat(token_type_t::close_brace))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            if (!eat(token_type_t::semicolon))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            return std::make_unique<class_node>(name->str(), std::move(members));
+        }
+
+        boost::optional<member_declaration> parser::get_class_member_declaration(ast_context& ctx)
+        {
+            auto type = get_type(ctx);
+            if (!type)
+            {
+                return boost::none;
+            }
+
+            auto name = get_identifier();
+            if (!name)
+            {
+                return boost::none;
+            }
+
+            std::unique_ptr<infix_node> init;
+
+            if (!current_is(token_type_t::semicolon))
+            {
+                init = get_infix_node();
+                if (!init)
+                {
+                    return boost::none;
+                }
+            }
+
+            return member_declaration{ type, *name, std::move(init) };
         }
     }
 }
