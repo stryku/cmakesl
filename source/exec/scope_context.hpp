@@ -2,8 +2,6 @@
 
 #include "common/string.hpp"
 
-#include <boost/functional/hash.hpp>
-
 #include <unordered_map>
 
 namespace cmsl
@@ -21,16 +19,7 @@ namespace cmsl
             bool variable_exists(cmsl::string_view name) const;
 
         private:
-            struct hasher
-            {
-                auto operator()(cmsl::string_view str) const
-                {
-                    return boost::hash_range(str.begin(), str.end());
-                }
-            };
-
-            std::unordered_map<cmsl::string_view, int, hasher> m_variables;
-
+            string_view_map<int> m_variables;
             const scope_context* m_parent;
         };
     }
