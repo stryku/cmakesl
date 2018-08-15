@@ -6,10 +6,8 @@
 int main()
 {
     const auto source =
-        "int foo()"
+        "int foo(int a, int b)"
         "{"
-        "    int a = 4;"
-        "    int b = 16;"
         "    return a + b;"
         "}"
         ""
