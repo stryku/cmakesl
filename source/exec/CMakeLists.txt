@@ -14,6 +14,8 @@ set(EXEC_SOURCES
     stmt/declaration_statement.hpp
     stmt/infix_statement.cpp
     stmt/infix_statement.hpp
+    stmt/infix_to_onp.cpp
+    stmt/infix_to_onp.hpp
     stmt/return_statement.cpp
     stmt/return_statement.hpp
     stmt/statement.hpp

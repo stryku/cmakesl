@@ -12,7 +12,7 @@ namespace cmsl
             , m_expressions{ std::move(expressions) }
         {}
 
-        std::vector<ast_node*> block_node::get_expressions()
+        std::vector<ast_node*> block_node::get_expressions() const
         {
             std::vector<ast_node*> result;
 

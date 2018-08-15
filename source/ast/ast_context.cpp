@@ -46,7 +46,7 @@ namespace cmsl
             m_functions.emplace_back(std::move(fun));
         }
 
-        function* ast_context::find_function(cmsl::string_view name)
+        const function* ast_context::find_function(cmsl::string_view name) const
         {
             const auto it = std::find_if(std::begin(m_functions), std::end(m_functions),
                                          [name](const auto& t)

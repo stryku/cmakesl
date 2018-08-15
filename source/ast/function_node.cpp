@@ -23,7 +23,7 @@ namespace cmsl
             return m_name;
         }
 
-        block_node& function::get_body()
+        const block_node& function::get_body() const 
         {
             return *m_body;
         }

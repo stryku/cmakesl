@@ -21,7 +21,7 @@ namespace cmsl
             const type* find_type(cmsl::string_view name) const;
 
             void add_function(std::unique_ptr<function> fun);
-            function* find_function(cmsl::string_view name);
+            const function* find_function(cmsl::string_view name) const;
 
         private:
             ast_context* m_parent;

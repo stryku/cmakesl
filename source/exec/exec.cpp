@@ -35,7 +35,7 @@ namespace cmsl
             return 0;
         }
 
-        void executor::function_call(ast::function& fun)
+        void executor::function_call(const ast::function& fun)
         {
             m_ast_context = &fun.get_ast_context();
             m_call_stack.push(&fun);

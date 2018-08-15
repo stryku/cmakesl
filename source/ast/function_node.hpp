@@ -25,7 +25,7 @@ namespace cmsl
                      std::unique_ptr<block_node> body);
 
             cmsl::string_view get_name() const;
-            block_node& get_body();
+            const block_node& get_body() const;
 
             const ast_context& get_ast_context() const;
 
