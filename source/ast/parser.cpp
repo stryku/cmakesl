@@ -499,7 +499,6 @@ namespace cmsl
             {
                 if (!eat(token_type_t::equal))
                 {
-                    raise_error();
                     return boost::none;
                 }
 
@@ -508,6 +507,11 @@ namespace cmsl
                 {
                     return boost::none;
                 }
+            }
+
+            if (!eat(token_type_t::semicolon))
+            {
+                return boost::none;
             }
 
             return member_declaration{ type, *name, std::move(init) };
