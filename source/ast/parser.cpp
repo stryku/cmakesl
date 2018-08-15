@@ -497,6 +497,12 @@ namespace cmsl
 
             if (!current_is(token_type_t::semicolon))
             {
+                if (!eat(token_type_t::equal))
+                {
+                    raise_error();
+                    return boost::none;
+                }
+
                 init = get_infix_node();
                 if (!init)
                 {

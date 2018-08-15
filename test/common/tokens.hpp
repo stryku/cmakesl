@@ -47,6 +47,7 @@ namespace cmsl
             token_t token_xorequal();
             token_t token_string();
             token_t token_semicolon();
+            token_t token_comma();
             token_t token_t_int();
             token_t token_t_real();
         }

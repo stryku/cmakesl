@@ -62,6 +62,7 @@ namespace cmsl
             token_t token_xorequal() { return token_t{ token_type_t::xorequal }; }
             token_t token_string() { return token_t{ token_type_t::string }; }
             token_t token_semicolon() { return token_t{ token_type_t::semicolon }; }
+            token_t token_comma() { return token_t{ token_type_t::comma }; }
 
             token_t token_t_int() 
             {
