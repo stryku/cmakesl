@@ -19,10 +19,11 @@ namespace cmsl
         class ast_context;
         class ast_node;
         class type;
-        class function;
-        class block_expression;
-        class return_expression;
-        class infix_expression;
+        class function_node;
+        class block_node;
+        class return_node;
+        class infix_node;
+        class declaration_node;
 
         class parser
         {
@@ -33,12 +34,15 @@ namespace cmsl
 
             parser(errors::errors_observer& err_observer, const token_container_t& tokens);
 
-            type* get_type(ast_context& ctx);
+            const type* get_type(ast_context& ctx);
             boost::optional<std::vector<parameter_declaration>> get_parameters_declaration(ast_context& ctx);
-            std::unique_ptr<infix_expression> get_infix_expression();
-            std::unique_ptr<block_expression> get_block_expression();
-            std::unique_ptr<function> get_function(ast_context& ctx);
-            std::unique_ptr<return_expression> get_return_expression();
+            std::unique_ptr<infix_node> get_infix_node();
+            std::unique_ptr<block_node> get_block_node(ast_context& ctx);
+            std::unique_ptr<function_node> get_function(ast_context& ctx);
+            std::unique_ptr<return_node> get_return_node();
+            std::unique_ptr<declaration_node> get_declaration_node(ast_context& ctx);
+
+            bool is_at_end() const;
 
         private:
             bool eat(boost::optional<token_type_t> type = {});
@@ -52,13 +56,14 @@ namespace cmsl
             bool current_is_infix_token() const;
             bool current_is(token_type_t token_type) const;
 
+            token_type_t peek(size_t n) const;
+            bool declaration_starts() const;
+
             void raise_error();
 
             boost::optional<parameter_declaration> get_parameter_declaration(ast_context& ctx);
             // Returns true on success, false otherwise
             bool prepare_for_next_parameter_declaration();
-
-            bool is_at_end() const;
 
             boost::optional<lexer::token::token> get_identifier();
 

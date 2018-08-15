@@ -3,38 +3,30 @@ set(AST_SOURCES
     ast_builder.hpp 
     ast_context.cpp
     ast_context.hpp
-    block_expression.cpp
-    block_expression.hpp
+    block_node.cpp
+    block_node.hpp
     builtin_ast_context.cpp
     builtin_ast_context.hpp
-    expression_type.hpp
+    ast_node_type.hpp
     ast_node.cpp
     ast_node.hpp 
-    function.cpp
-    function.hpp
+    declaration_node.cpp
+    declaration_node.hpp
+    function_node.cpp
+    function_node.hpp
+    integer_constant.hpp
     integral_constant.hpp
-    infix_expression.cpp
-    infix_expression.hpp
+    infix_node.cpp
+    infix_node.hpp
     parameter_declaration.hpp
     parser.cpp
     parser.hpp
-    return_expression.cpp
-    return_expression.hpp
+    return_node.cpp
+    return_node.hpp
     type.cpp
     type.hpp
     type_kind.cpp
     type_kind.hpp
-    
-    expr/binary_operator_expression.cpp
-    expr/binary_operator_expression.hpp
-    expr/block_expression.cpp
-    expr/block_expression.hpp
-    expr/constant_expression.cpp
-    expr/constant_expression.hpp
-    expr/expression.cpp
-    expr/expression.hpp 
-    expr/infix_expression.cpp
-    expr/infix_expression.hpp 
 )
 
 add_library(ast ${AST_SOURCES})

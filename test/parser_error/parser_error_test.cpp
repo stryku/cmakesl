@@ -4,6 +4,7 @@
 #include "errors_observer_mock/errors_observer_mock.hpp"
 #include "ast/parser.hpp"
 #include "ast/ast_node.hpp"
+#include "ast/infix_node.hpp"
 
 #include "test/common/tokens.hpp"
 
@@ -182,7 +183,7 @@ namespace cmsl
                 }
             }
 
-            namespace get_infix_expression
+            namespace get_infix_node
             {
                 namespace unexpected_token
                 {
@@ -192,7 +193,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_infix_expression();
+                            (void)parser.get_infix_node();
                         });
                     }
 
@@ -212,7 +213,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_infix_expression();
+                            (void)parser.get_infix_node();
                         });
                     }
 
@@ -224,9 +225,9 @@ namespace cmsl
                 }
             }
 
-            namespace get_block_expression
+            namespace get_block_node
             {
-                namespace wrong_infix_expression
+                namespace wrong_infix_node
                 {
                     using GetBlockExpression_WrongOnpExpression = testing::TestWithParam<token_container_t>;
 
@@ -234,7 +235,8 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_block_expression();
+                            builtin_ctx_t ctx;
+                            (void)parser.get_block_node(ctx);
                         });
                     }
 
@@ -254,7 +256,8 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_block_expression();
+                            builtin_ctx_t ctx;
+                            (void)parser.get_block_node(ctx);
                         });
                     }
 
