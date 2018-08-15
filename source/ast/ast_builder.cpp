@@ -30,12 +30,11 @@ namespace cmsl
             auto ctx = std::make_unique<ast_context>(&builtin_ast_ctx);
             m_parser = std::make_unique<parser>(err_observer, tokens);
 
-            auto fun = m_parser->get_function(*ctx);
 
-            while(fun)
+            while(!m_parser->is_at_end())
             {
+                auto fun = m_parser->get_function(*ctx);
                 ctx->add_function(std::move(fun));
-                fun = m_parser->get_function(*ctx);
             }
 
             return std::move(ctx);

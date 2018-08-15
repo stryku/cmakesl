@@ -42,6 +42,8 @@ namespace cmsl
             std::unique_ptr<return_node> get_return_node();
             std::unique_ptr<declaration_node> get_declaration_node(ast_context& ctx);
 
+            bool is_at_end() const;
+
         private:
             bool eat(boost::optional<token_type_t> type = {});
             bool eat_type();
@@ -62,8 +64,6 @@ namespace cmsl
             boost::optional<parameter_declaration> get_parameter_declaration(ast_context& ctx);
             // Returns true on success, false otherwise
             bool prepare_for_next_parameter_declaration();
-
-            bool is_at_end() const;
 
             boost::optional<lexer::token::token> get_identifier();
 

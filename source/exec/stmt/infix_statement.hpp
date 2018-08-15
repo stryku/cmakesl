@@ -36,7 +36,8 @@ namespace cmsl
                 virtual void execute(executor& e) override;
 
             private:
-                tokens_container_t to_onp() const;
+                tokens_container_t to_onp(executor& e) const;
+                tokens_container_t function_call_to_onp(executor& e, const tokens_container_t& tokens) const;
                 int execute_onp(const tokens_container_t& onp_tokens, executor& e);
 
             private:

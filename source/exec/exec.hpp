@@ -26,7 +26,7 @@ namespace cmsl
             const ast::ast_context& get_ast_ctx() const;
 
         private:
-            void function_call(ast::function& fun);
+            void function_call(const ast::function& fun);
             void return_from_function();
             bool execute_function_expression(ast::ast_node& expr);
 
@@ -34,7 +34,7 @@ namespace cmsl
             const ast::ast_context* m_ast_context;
             execution_context m_exec_ctx;
             int m_function_return_value;
-            std::stack<ast::function*> m_call_stack;
+            std::stack<const ast::function*> m_call_stack;
         };
     }
 }
