@@ -48,6 +48,9 @@ namespace cmsl
             using one_char_tokens_t = std::unordered_map<char, token_t::token_type_t>;
             one_char_tokens_t create_one_char_tokens() const;
 
+            using keyword_tokens_t = std::unordered_map<std::string, token_t::token_type_t>; // todo change std::string to string_view
+            keyword_tokens_t create_keyword_tokens() const;
+
             token_t get_next_token();
             token_t::token_type_t get_next_token_type();
             token_t::token_type_t get_numeric_token_type();
@@ -78,6 +81,7 @@ namespace cmsl
             source_location_manipulator m_source_loc;
             const aritmetical_token_definition_t m_aritmetical_token_definitions;
             const one_char_tokens_t m_one_char_tokens;
+            const keyword_tokens_t m_keyword_tokens;
         };
     }
 }

@@ -16,6 +16,7 @@ namespace cmsl
             , m_source_loc{ m_source }
             , m_aritmetical_token_definitions{ create_arithmetical_token_definitions() }
             , m_one_char_tokens{ create_one_char_tokens() }
+            , m_keyword_tokens{ create_keyword_tokens() }
         {}
 
         std::vector<token::token> lexer::lex()
@@ -171,20 +172,16 @@ namespace cmsl
                 consume_char();
             }
 
-            if (token_val == "int")
+            auto found = m_keyword_tokens.find(token_val);
+
+            if (found != m_keyword_tokens.end())
             {
-                return token_t::token_type_t::t_int;
-            }
-            else if (token_val == "real")
-            {
-                return token_t::token_type_t::t_real;
-            }
-            else if (token_val == "return")
-            {
-                return token_t::token_type_t::kw_return;
+                return found->second;
             }
 
-            return token_t::token_type_t::identifier;
+            return found != m_keyword_tokens.end()
+                ? found->second
+                : token_t::token_type_t::identifier;
         }
 
         bool lexer::is_identifier_char(char c) const
@@ -334,6 +331,18 @@ namespace cmsl
 
             const auto token_type = found->second;
             return token_type;
+        }
+
+        lexer::keyword_tokens_t lexer::create_keyword_tokens() const
+        {
+            keyword_tokens_t tokens;
+
+            tokens["int"] = token_t::token_type_t::t_int;
+            tokens["real"] = token_t::token_type_t::t_real;
+            tokens["return"] = token_t::token_type_t::kw_return;
+            tokens["class"] = token_t::token_type_t::kw_class;
+
+            return tokens;
         }
     }
 }
