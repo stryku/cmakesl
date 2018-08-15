@@ -123,17 +123,31 @@ namespace cmsl
                     }
                     else if (token_type == token_type_t::identifier)
                     {
-                        const auto var = e.get_ctx().get_variable(token.str());
-
-                        if (!var)
+                        const auto var = e.get_exec_ctx().get_variable(token.str());
+                        if (var)
                         {
-                            // todo raise identifier not found error
-                            return 0;
+                            const auto& type = *e.get_ast_ctx().find_type("int");
+                            auto inst = std::make_unique<named_instance>(type, token.str(), e.get_exec_ctx());
+                            stack.push(std::move(inst));
                         }
-
-                        const auto& type = *e.get_ast_ctx().find_type("int");
-                        auto inst = std::make_unique<named_instance>(type, token.str(), e.get_ctx());
-                        stack.push(std::move(inst));
+                        else 
+                        {
+                            const auto fun = e.get_ast_ctx().find_function(token.str());
+                            if (fun)
+                            {
+                                e.function_call(*fun);
+                                const auto ret_val = e.get_function_return_value();
+                                const auto& type = *e.get_ast_ctx().find_type("int");
+                                auto inst = std::make_unique<instance>(type, ret_val);
+                                stack.push(std::move(inst));
+                            }
+                            else
+                            {
+                                // todo raise identifier not found error
+                                return 0;
+                            }
+                        }
+                        
                     }
                     else
                     {

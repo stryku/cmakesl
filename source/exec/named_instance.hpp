@@ -13,8 +13,8 @@ namespace cmsl
         public:
             named_instance(const ast::type& t, cmsl::string_view name, execution_context& ctx);
 
-            virtual int get_value() const;
-            virtual void assign(int val);
+            virtual int get_value() const override;
+            virtual void assign(int val) override;
 
         private:
             cmsl::string_view m_name;

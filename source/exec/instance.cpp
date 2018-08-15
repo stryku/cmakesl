@@ -9,6 +9,11 @@ namespace cmsl
             , m_value{ 0u }
         {}
 
+        instance::instance(const ast::type& type, int value)
+            : m_type{ type }
+            , m_value{ value }
+        {}
+
         int instance::get_value() const
         {
             return m_value;
