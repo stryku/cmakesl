@@ -6,29 +6,37 @@ namespace cmsl
     {
         void execution_context::add_variable(cmsl::string_view name, int value)
         {
-            current_scope->add_variable(name, value);
+            current_scope()->add_variable(name, value);
         }
 
         int* execution_context::get_variable(cmsl::string_view name)
         {
-            return current_scope->get_variable(name);
+            return current_scope()->get_variable(name);
         }
 
         bool execution_context::variable_exists(cmsl::string_view name) const
         {
-            return current_scope->variable_exists(name);
+            return current_scope()->variable_exists(name);
         }
 
         void execution_context::enter_scope()
         {
-            m_scopes.push(scope_context{ current_scope });
-            current_scope = &m_scopes.top();
+            m_scopes.push(scope_context{ current_scope() });
         }
 
         void execution_context::leave_scope()
         {
             m_scopes.pop();
-            current_scope = &m_scopes.top();
+        }
+
+        scope_context* execution_context::current_scope()
+        {
+            return m_scopes.empty() ? nullptr : &m_scopes.top();
+        }
+
+        const scope_context* execution_context::current_scope() const
+        {
+            return m_scopes.empty() ? nullptr : &m_scopes.top();
         }
     }
 }
