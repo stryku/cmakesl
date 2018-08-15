@@ -10,7 +10,8 @@ namespace cmsl
             declaration,
             ret,
             function,
-            block
+            block,
+            class_type
         };
     }
 }
