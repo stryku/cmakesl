@@ -194,7 +194,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_infix_node();
+                            (void)parser.get_infix();
                         });
                     }
 
@@ -214,7 +214,7 @@ namespace cmsl
                     {
                         report_error_test(GetParam(), [](auto& parser)
                         {
-                            (void)parser.get_infix_node();
+                            (void)parser.get_infix();
                         });
                     }
 
@@ -237,7 +237,7 @@ namespace cmsl
                         report_error_test(GetParam(), [](auto& parser)
                         {
                             builtin_ctx_t ctx;
-                            (void)parser.get_block_node(ctx);
+                            (void)parser.get_block(ctx);
                         });
                     }
 
@@ -258,7 +258,7 @@ namespace cmsl
                         report_error_test(GetParam(), [](auto& parser)
                         {
                             builtin_ctx_t ctx;
-                            (void)parser.get_block_node(ctx);
+                            (void)parser.get_block(ctx);
                         });
                     }
 
