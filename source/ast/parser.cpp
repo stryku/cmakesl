@@ -188,7 +188,7 @@ namespace cmsl
                 return{};
             }
             
-            return parameter_declaration{ *t, name };
+            return parameter_declaration{ t, name };
         }
 
         bool parser::is_at_end() const
