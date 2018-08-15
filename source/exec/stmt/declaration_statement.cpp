@@ -20,7 +20,7 @@ namespace cmsl
                 int infix_result;
                 auto infix = infix_statement{ expr, infix_result };
                 infix.execute(e);
-                auto& ctx = e.get_ctx();
+                auto& ctx = e.get_exec_ctx();
                 ctx.add_variable(m_node.get_name(), infix_result);
             }
         }

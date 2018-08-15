@@ -10,6 +10,7 @@ namespace cmsl
         {
         public:
             explicit instance(const ast::type& type);
+            explicit instance(const ast::type& type, int value);
 
             virtual int get_value() const;
             virtual void assign(int val);

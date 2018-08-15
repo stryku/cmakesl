@@ -17,7 +17,8 @@ namespace cmsl
 
         int* scope_context::get_variable(cmsl::string_view name)
         {
-            return &m_variables[name];
+            const auto it = m_variables.find(name);
+            return it != m_variables.cend() ? &it->second : nullptr;
         }
 
         bool scope_context::variable_exists(cmsl::string_view name) const

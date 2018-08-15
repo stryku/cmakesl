@@ -12,7 +12,7 @@
 #include "exec/stmt/return_statement.hpp"
 #include "exec/stmt/declaration_statement.hpp"
 
-
+#include <cassert>
 #include <iostream>
 
 namespace cmsl
@@ -38,8 +38,8 @@ namespace cmsl
         void executor::function_call(const ast::function& fun)
         {
             m_ast_context = &fun.get_ast_context();
-            m_call_stack.push(&fun);
-            m_exec_ctx.enter_scope();
+            m_callstack.push({ &fun, execution_context{} });
+            get_exec_ctx().enter_scope();
             auto& fun_body = fun.get_body();
             const auto expressions = fun_body.get_expressions();
 
@@ -51,7 +51,7 @@ namespace cmsl
                     return;
                 }
             }
-            m_exec_ctx.leave_scope();
+            get_exec_ctx().leave_scope();
         }
 
         bool executor::execute_function_expression(ast::ast_node& expr)
@@ -85,17 +85,24 @@ namespace cmsl
 
         void executor::return_from_function()
         {
-            m_call_stack.pop();
+            m_callstack.pop();
         }
 
-        execution_context& executor::get_ctx()
+        execution_context& executor::get_exec_ctx()
         {
-            return m_exec_ctx;
+            assert(!m_callstack.empty());
+            return m_callstack.top().exec_ctx;
         }
 
         const ast::ast_context& executor::get_ast_ctx() const
         {
             return *m_ast_context;
         }
+
+        int executor::get_function_return_value() const
+        {
+            return m_function_return_value;
+        }
+
     }
 }
