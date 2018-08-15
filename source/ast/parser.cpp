@@ -287,7 +287,7 @@ namespace cmsl
             {
                 std::unique_ptr<ast_node> expr;
 
-                if (current_is(token_type_t::return_keyword))
+                if (current_is(token_type_t::kw_return))
                 {
                     expr = get_return_node();
                 }
@@ -366,7 +366,7 @@ namespace cmsl
 
         std::unique_ptr<return_node> parser::get_return_node()
         {
-            if (!eat(token_type_t::return_keyword))
+            if (!eat(token_type_t::kw_return))
             {
                 raise_error();
                 return nullptr;
