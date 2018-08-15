@@ -46,11 +46,13 @@ namespace cmsl
                 string,
                 semicolon,
                 comma,
-                return_keyword,
 
                 // builtin types
                 t_int,
-                t_real
+                t_real,
+
+                kw_return,
+                kw_class
             };
         }
     }
