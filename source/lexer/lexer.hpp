@@ -48,7 +48,7 @@ namespace cmsl
             using one_char_tokens_t = std::unordered_map<char, token_t::token_type_t>;
             one_char_tokens_t create_one_char_tokens() const;
 
-            using keyword_tokens_t = std::unordered_map<std::string, token_t::token_type_t>; // todo change std::string to string_view
+            using keyword_tokens_t = string_view_map<token_t::token_type_t>;
             keyword_tokens_t create_keyword_tokens() const;
 
             token_t get_next_token();
