@@ -10,12 +10,14 @@ namespace cmsl
     namespace ast
     {
         class ast_node;
-        class function;
+        class function_node;
         class ast_context;
     }
 
     namespace exec
     {
+        class instance;
+
         class executor
         {
         public:
@@ -24,7 +26,7 @@ namespace cmsl
             void set_function_return_value(int value);
             execution_context& get_exec_ctx();
             const ast::ast_context& get_ast_ctx() const;
-            void function_call(const ast::function& fun);
+            void function_call(const ast::function_node& fun, std::vector<std::unique_ptr<instance>> parameters);
             int get_function_return_value() const;
 
         private:
@@ -34,7 +36,7 @@ namespace cmsl
         private:
             struct callstack_frame
             {
-                const ast::function* fun;
+                const ast::function_node* fun;
                 execution_context exec_ctx;
             };
 

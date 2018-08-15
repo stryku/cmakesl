@@ -15,10 +15,10 @@ namespace cmsl
     {
         class ast_context;
 
-        class function : public ast_node
+        class function_node : public ast_node
         {
         public:
-            function(ast_context& ctx,
+            function_node(ast_context& ctx,
                      type return_type,
                      cmsl::string_view name,
                      std::vector<parameter_declaration> params,
@@ -28,6 +28,8 @@ namespace cmsl
             const block_node& get_body() const;
 
             const ast_context& get_ast_context() const;
+
+            const std::vector<parameter_declaration>& get_params_declarations() const;
 
         private:
             ast_context& m_ast_context;

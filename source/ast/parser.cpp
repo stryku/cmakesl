@@ -146,14 +146,14 @@ namespace cmsl
                 return false;
             }
 
-            if (!current_is(token_type_t::semicolon))
+            if (!current_is(token_type_t::comma))
             {
                 return true;
             }
 
-            // At this point we have semicolon, so we expect next parameter
+            // At this point we have comma, so we expect next parameter
 
-            if (!eat(token_type_t::semicolon))
+            if (!eat(token_type_t::comma))
             {
                 return false;
             }
@@ -267,7 +267,8 @@ namespace cmsl
                 token_type_t::minus,
                 token_type_t::open_paren,
                 token_type_t::close_paren,
-                token_type_t::identifier
+                token_type_t::identifier,
+                token_type_t::comma
             };
 
             return cmsl::contains(allowed_tokens, m_token->get_type());
@@ -314,7 +315,7 @@ namespace cmsl
             return std::make_unique<block_node>(std::move(expressions));
         }
 
-        std::unique_ptr<function> parser::get_function(ast_context& ctx)
+        std::unique_ptr<function_node> parser::get_function(ast_context& ctx)
         {
             const auto type = get_type(ctx);
             if (!type)
@@ -341,7 +342,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<function>(ctx, *type, name->str(), std::move(*parameters), std::move(block_expr));
+            return std::make_unique<function_node>(ctx, *type, name->str(), std::move(*parameters), std::move(block_expr));
         }
 
         boost::optional<lexer::token::token> parser::get_identifier()
