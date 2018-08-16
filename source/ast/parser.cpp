@@ -255,6 +255,13 @@ namespace cmsl
             return std::make_unique<infix_node>(std::move(infix_tokens));
         }
 
+        bool parser::current_is_type() const
+        {
+            const auto token_type = m_token->get_type();
+            return is_builtin_type(token_type) ||
+                token_type == token_type_t::identifier;
+        }
+
         bool parser::current_is_infix_token() const
         {
             if (is_at_end())
@@ -270,7 +277,8 @@ namespace cmsl
                 token_type_t::open_paren,
                 token_type_t::close_paren,
                 token_type_t::identifier,
-                token_type_t::comma
+                token_type_t::comma,
+                token_type_t::dot
             };
 
             return cmsl::contains(allowed_tokens, m_token->get_type());
@@ -396,9 +404,7 @@ namespace cmsl
 
         bool parser::declaration_starts() const
         {
-            // 2 because 
-            // type name =
-            return peek(2u) == token_type_t::equal;
+            return current_is_type();
         }
 
         std::unique_ptr<declaration_node> parser::get_declaration(ast_context& ctx)
@@ -415,16 +421,28 @@ namespace cmsl
                 return nullptr;
             }
 
-            if (!eat(token_type_t::equal))
-            {
-                raise_error();
-                return nullptr;
-            }
+            std::unique_ptr<infix_node> infix;
 
-            auto infix = get_infix();
-            if (!infix)
+            if (current_is(token_type_t::equal))
             {
-                return nullptr;
+                if (!eat(token_type_t::equal))
+                {
+                    raise_error();
+                    return nullptr;
+                }
+
+                infix = get_infix();
+                if (!infix)
+                {
+                    return nullptr;
+                }
+            }
+            else
+            {
+                if (!eat(token_type_t::semicolon))
+                {
+                    return nullptr;
+                }
             }
 
             return std::make_unique<declaration_node>(*type, name->str(), std::move(infix));
