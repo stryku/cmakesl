@@ -2,6 +2,7 @@
 
 #include "ast/ast_context.hpp"
 #include "lexer/token/token.hpp"
+#include "common/algorithm.hpp"
 
 #include <stack>
 
@@ -15,6 +16,7 @@ namespace cmsl
                 : m_token{ std::cbegin(infix_tokens) }
                 , m_end{ std::cend(infix_tokens) }
                 , m_ast_ctx{ ctx }
+                , m_op_precedences{ get_operator_precedences() }
             {}
 
             infix_to_onp::tokens_container_t infix_to_onp::convert() 
@@ -83,13 +85,19 @@ namespace cmsl
                         convert_function_call();
                     }
                 }
-                else if (token_type == token_type_t::plus)
+                else if (is_operator(token_type))
                 {
-                    while (!m_stack.empty())
+                    const auto o1 = token_type;
+                    auto o2 = m_stack.top().get_type();
+
+                    while (m_op_precedences[o1] <= m_op_precedences[o2])
                     {
-                        const auto op = m_stack.top();
-                        m_stack.pop();
-                        m_out.emplace_back(op);
+                        m_out.emplace_back(get_top_and_pop());
+                        if (m_stack.empty())
+                        {
+                            break;
+                        }
+                        o2 = m_stack.top().get_type();
                     }
 
                     m_stack.push(token);
@@ -120,6 +128,39 @@ namespace cmsl
 
                 ++m_token;
                 return true;
+            }
+
+            bool infix_to_onp::is_operator(token_type_t token_type) const
+            {
+                const auto operators = {
+                    token_type_t::dot,
+                    token_type_t::plus,
+                    token_type_t::minus
+                    // todo add rest of operators
+                };
+
+                return contains(operators, token_type);
+            }
+
+            infix_to_onp::operator_precedences_t infix_to_onp::get_operator_precedences() const
+            {
+                operator_precedences_t prec;
+
+                prec[token_type_t::dot] = 2;
+                prec[token_type_t::plus] = 6;
+                prec[token_type_t::minus] = 6;
+                // todo add rest of operators
+
+                return prec;
+            }
+
+            lexer::token::token infix_to_onp::get_top_and_pop()
+            {
+                assert(!m_stack.empty());
+
+                auto val = m_stack.top();
+                m_stack.pop();
+                return val;
             }
         }
     }

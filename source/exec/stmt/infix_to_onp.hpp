@@ -31,6 +31,12 @@ namespace cmsl
                 void convert_function_call();
                 void handle_token(const lexer::token::token& t);
                 bool eat(token_type_t token_type);
+                bool is_operator(token_type_t token_type) const;
+
+                using operator_precedences_t = std::unordered_map<token_type_t, size_t>;
+                operator_precedences_t get_operator_precedences() const;
+
+                lexer::token::token get_top_and_pop();
 
             private:
                 tokens_container_t::const_iterator m_token;
@@ -38,6 +44,7 @@ namespace cmsl
                 const ast::ast_context& m_ast_ctx;
                 tokens_container_t m_out;
                 std::stack<lexer::token::token> m_stack;
+                operator_precedences_t m_op_precedences;
             };
         }
     }
