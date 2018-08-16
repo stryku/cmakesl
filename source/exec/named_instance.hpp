@@ -11,7 +11,10 @@ namespace cmsl
         class named_instance : public instance
         {
         public:
-            named_instance(const ast::type& t, cmsl::string_view name, execution_context& ctx);
+            named_instance(kind k,
+                           const ast::type& t,
+                           cmsl::string_view name,
+                           execution_context& ctx);
 
             virtual int get_value() const override;
             virtual void assign(int val) override;

@@ -3,8 +3,12 @@ set(EXEC_SOURCES
     exec.hpp
     execution_context.cpp
     execution_context.hpp
+    fundamental_instance.cpp
+    fundamental_instance.hpp
     instance.cpp
     instance.hpp
+    instance_factory.cpp
+    instance_factory.hpp
     named_instance.cpp
     named_instance.hpp
     scope_context.cpp

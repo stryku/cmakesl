@@ -1,10 +1,12 @@
 #include "exec/stmt/onp_executor.hpp"
 #include "exec/exec.hpp"
-#include "exec/instance.hpp"
+#include "exec/fundamental_instance.hpp"
 #include "exec/named_instance.hpp"
 #include "lexer/token/token.hpp"
 #include "ast/ast_context.hpp"
 #include "ast/function_node.hpp"
+#include "exec/fundamental_instance.hpp"
+#include "exec/instance_factory.hpp"
 
 namespace cmsl
 {
@@ -25,18 +27,15 @@ namespace cmsl
                     const auto token_type = token.get_type();
                     if (token_type == token_type_t::integer)
                     {
-                        const auto& type = *m_exec.get_ast_ctx().find_type("int");
-                        auto inst = std::make_unique<instance>(type);
                         const auto val = std::stoi(token.str().to_string());
-                        inst->assign(val);
+                        auto inst = get_factory().create(val);
                         m_stack.push(std::move(inst));
                     }
                     else if (token_type == token_type_t::identifier)
                     {
                         if (const auto var = m_exec.get_exec_ctx().get_variable(token.str()))
                         {
-                            const auto& type = *m_exec.get_ast_ctx().find_type("int");
-                            auto inst = std::make_unique<named_instance>(type, token.str(), m_exec.get_exec_ctx());
+                            auto inst = get_factory().create(token.str());
                             m_stack.push(std::move(inst));
                         }
                         else if(const auto fun = m_exec.get_ast_ctx().find_function(token.str()))
@@ -54,25 +53,8 @@ namespace cmsl
                         const auto a = get_top_and_pop();
                         const auto b = get_top_and_pop();
 
-                        switch (token_type)
-                        {
-                            case token_type_t::plus:
-                            {
-                                const auto& type = *m_exec.get_ast_ctx().find_type("int");
-                                auto inst = std::make_unique<instance>(type);
-                                inst->assign(b->get_value() + a->get_value());
-                                m_stack.push(std::move(inst));
-                            }
-                            break;
-                            case token_type_t::minus:
-                            {
-                                const auto& type = *m_exec.get_ast_ctx().find_type("int");
-                                auto inst = std::make_unique<instance>(type);
-                                inst->assign(b->get_value() - a->get_value());
-                                m_stack.push(std::move(inst));
-                            }
-                            break;
-                        }
+                        auto result = apply_operator(b.get(), token_type, b.get());
+                        m_stack.push(std::move(result));
                     }
                 }
 
@@ -95,8 +77,7 @@ namespace cmsl
                 m_exec.function_call(fun, std::move(params));
 
                 const auto ret_val = m_exec.get_function_return_value();
-                const auto& type = *m_exec.get_ast_ctx().find_type("int");
-                auto inst = std::make_unique<instance>(type, ret_val);
+                auto inst = get_factory().create(ret_val);
                 m_stack.push(std::move(inst));
             }
 
@@ -105,6 +86,17 @@ namespace cmsl
                 auto inst = std::move(m_stack.top());
                 m_stack.pop();
                 return std::move(inst);
+            }
+
+            std::unique_ptr<instance> onp_executor::apply_operator(instance* lhs, token_type_t op, instance* rhs)
+            {
+                auto result = lhs->get_value() + rhs->get_value();
+                return get_factory().create(result);
+            }
+
+            instance_factory onp_executor::get_factory()
+            {
+                return instance_factory{ m_exec.get_ast_ctx(), m_exec.get_exec_ctx() };
             }
         }
     }
