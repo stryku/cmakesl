@@ -23,5 +23,14 @@ namespace cmsl
         {
             m_value = val;
         }
+
+        instance* instance::get_member(cmsl::string_view name)
+        {
+            auto found = m_members.find(name);
+
+            return found != std::end(m_members)
+                ? found->second.get()
+                : nullptr;
+        }
     }
 }
