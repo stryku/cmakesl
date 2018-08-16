@@ -15,9 +15,12 @@ namespace cmsl
             virtual int get_value() const;
             virtual void assign(int val);
 
+            instance* get_member(cmsl::string_view name);
+
         private:
             const ast::type& m_type;
             int m_value;
+            string_view_map<std::unique_ptr<instance>> m_members;
         };
     }
 }
