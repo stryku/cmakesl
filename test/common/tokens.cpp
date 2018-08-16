@@ -28,20 +28,17 @@ namespace cmsl
             token_t token_undef() { return token_t{ token_type_t::undef }; }
             token_t token_integer() { return token_t{ token_type_t::integer }; }
             token_t token_real() { return token_t{ token_type_t::real }; }
-            token_t token_dot() { return token_t{ token_type_t::dot }; }
             token_t token_open_brace() { return token_t{ token_type_t::open_brace }; }
             token_t token_close_brace() { return token_t{ token_type_t::close_brace }; }
             token_t token_open_square() { return token_t{ token_type_t::open_square }; }
             token_t token_close_square() { return token_t{ token_type_t::close_square }; }
             token_t token_open_paren() { return token_t{ token_type_t::open_paren }; }
             token_t token_close_paren() { return token_t{ token_type_t::close_paren }; }
-            token_t token_identifier() { return token_t{ token_type_t::identifier }; }
             token_t token_equal() { return token_t{ token_type_t::equal }; }
             token_t token_equalequal() { return token_t{ token_type_t::equalequal }; }
             token_t token_minus() { return token_t{ token_type_t::minus }; }
             token_t token_minusminus() { return token_t{ token_type_t::minusminus }; }
             token_t token_minusequal() { return token_t{ token_type_t::minusequal }; }
-            token_t token_plus() { return token_t{ token_type_t::plus }; }
             token_t token_plusplus() { return token_t{ token_type_t::plusplus }; }
             token_t token_plusequal() { return token_t{ token_type_t::plusequal }; }
             token_t token_amp() { return token_t{ token_type_t::amp }; }
@@ -74,6 +71,28 @@ namespace cmsl
             {
                 static const auto source = "real";
                 return details::token_from_source(token_type_t::t_real, source);
+            }
+
+            token_t token_integer(cmsl::string_view str)
+            { 
+                return details::token_from_source(token_type_t::integer, str);
+            }
+
+            token_t token_plus()
+            {
+                static const auto source = "+";
+                return details::token_from_source(token_type_t::plus, source);
+            }
+
+            token_t token_identifier(cmsl::string_view str)
+            {
+                return details::token_from_source(token_type_t::identifier, str);
+            }
+
+            token_t token_dot()
+            {
+                static const auto source = ".";
+                return details::token_from_source(token_type_t::dot, source);
             }
         }
     }

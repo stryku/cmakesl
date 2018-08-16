@@ -11,7 +11,7 @@ namespace cmsl
             using token_t = lexer::token::token;
 
             token_t token_undef();
-            token_t token_integer();
+            token_t token_integer(cmsl::string_view str = "");
             token_t token_real();
             token_t token_dot();
             token_t token_open_brace();
@@ -20,7 +20,7 @@ namespace cmsl
             token_t token_close_square();
             token_t token_open_paren();
             token_t token_close_paren();
-            token_t token_identifier();
+            token_t token_identifier(cmsl::string_view str = "");
             token_t token_equal();
             token_t token_equalequal();
             token_t token_minus();
