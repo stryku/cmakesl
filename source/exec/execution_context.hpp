@@ -11,8 +11,8 @@ namespace cmsl
         class execution_context
         {
         public:
-            void add_variable(cmsl::string_view name, int value);
-            int* get_variable(cmsl::string_view name);
+            void add_variable(cmsl::string_view name, std::unique_ptr<instance> inst);
+            instance* get_variable(cmsl::string_view name);
 
             bool variable_exists(cmsl::string_view name) const;
 
