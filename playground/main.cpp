@@ -8,14 +8,15 @@ int main()
     const auto source =
         "class cl_foo"
         "{"
-        "    int foo_member = 5;"
-        "    int foo_member_2 = 30;"
+        "    int foo_a = 5;"
+        "    int foo_b = 30;"
         "};"
         ""
         "int main()"
         "{"
         "    int a = 4+2;"
-        "    return a + foo(16, 4);"
+        "    cl_foo foo;"
+        "    return a + foo.a;"
         "}";
 
     cmsl::exec::executor exec;

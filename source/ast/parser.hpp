@@ -60,6 +60,7 @@ namespace cmsl
 
             bool is_builtin_type(token_type_t token_type) const;
             bool current_is_infix_token() const;
+            bool current_is_type() const;
             bool current_is(token_type_t token_type) const;
 
             token_type_t peek(size_t n) const;
