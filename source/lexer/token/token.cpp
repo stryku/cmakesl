@@ -38,6 +38,19 @@ namespace cmsl
                     m_source_range.size()
                 };
             }
+
+            bool token::operator==(const token& rhs) const
+            {
+                return get_type() == rhs.get_type() &&
+                    str() == rhs.str();
+            }
+
+            std::ostream& operator<<(std::ostream& out, const token& t)
+            {
+                out << '(' << static_cast<int>(t.get_type()) << ')' << t.str().to_string();
+                return out;
+            }
+
         }
     }
 }

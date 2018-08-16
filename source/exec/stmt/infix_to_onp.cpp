@@ -88,16 +88,20 @@ namespace cmsl
                 else if (is_operator(token_type))
                 {
                     const auto o1 = token_type;
-                    auto o2 = m_stack.top().get_type();
 
-                    while (m_op_precedences[o1] <= m_op_precedences[o2])
+                    if (!m_stack.empty())
                     {
-                        m_out.emplace_back(get_top_and_pop());
-                        if (m_stack.empty())
+                        auto o2 = m_stack.top().get_type();
+
+                        while (m_op_precedences[o1] > m_op_precedences[o2])
                         {
-                            break;
+                            m_out.emplace_back(get_top_and_pop());
+                            if (m_stack.empty())
+                            {
+                                break;
+                            }
+                            o2 = m_stack.top().get_type();
                         }
-                        o2 = m_stack.top().get_type();
                     }
 
                     m_stack.push(token);
