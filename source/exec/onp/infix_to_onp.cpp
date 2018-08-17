@@ -10,7 +10,7 @@ namespace cmsl
 {
     namespace exec
     {
-        namespace stmt
+        namespace onp
         {
             infix_to_onp::infix_to_onp(const tokens_container_t& infix_tokens, const ast::ast_context& ctx)
                 : m_token{ std::cbegin(infix_tokens) }
@@ -19,7 +19,7 @@ namespace cmsl
                 , m_op_precedences{ get_operator_precedences() }
             {}
 
-            infix_to_onp::tokens_container_t infix_to_onp::convert() 
+            std::vector<onp::onp_entry> infix_to_onp::convert()
             {
                 while (m_token != m_end)
                 {
@@ -34,7 +34,7 @@ namespace cmsl
                 {
                     const auto tok = m_stack.top();
                     m_stack.pop();
-                    m_out.emplace_back(tok);
+                    m_out.emplace_back(onp_entry::kind::oper, tok);
                 }
 
                 return m_out;
@@ -67,7 +67,7 @@ namespace cmsl
 
                 if (token_type == token_type_t::integer)
                 {
-                    m_out.emplace_back(token);
+                    m_out.push_back( onp_entry{ onp_entry::kind::constant, token });
                 }
                 else if (token_type == token_type_t::semicolon)
                 {
@@ -78,7 +78,7 @@ namespace cmsl
                     const auto fun = m_ast_ctx.find_function(token.str());
                     if (!fun)
                     {
-                        m_out.emplace_back(token);
+                        m_out.emplace_back(onp_entry::kind::identifier, token);
                     }
                     else
                     {
@@ -95,7 +95,7 @@ namespace cmsl
 
                         while (m_op_precedences[o1] > m_op_precedences[o2])
                         {
-                            m_out.emplace_back(get_top_and_pop());
+                            m_out.emplace_back(onp_entry::kind::oper, get_top_and_pop());
                             if (m_stack.empty())
                             {
                                 break;
@@ -116,7 +116,7 @@ namespace cmsl
                     {
                         const auto op = m_stack.top();
                         m_stack.pop();
-                        m_out.emplace_back(op);
+                        m_out.emplace_back(onp_entry::kind::oper, op);
                     }
 
                     m_stack.pop();

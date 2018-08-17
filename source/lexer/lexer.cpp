@@ -68,7 +68,6 @@ namespace cmsl
 
         lexer::token_t::token_type_t lexer::get_next_token_type()
         {
-
             if (is_end())
             {
                 // in such case, there are whitespaces at the end of source. No other chars

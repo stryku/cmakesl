@@ -29,6 +29,8 @@ namespace cmsl
 
         namespace onp
         {
+            struct onp_entry;
+
             class onp_executor
             {
             private:
@@ -36,7 +38,7 @@ namespace cmsl
                 using token_type_t = lexer::token::token_type;
 
             public:
-                explicit onp_executor(const tokens_container_t& onp_tokens, executor& e, int& result);
+                explicit onp_executor(const std::vector<onp_entry>& onp_tokens, executor& e, int& result);
 
                 void execute();
 
@@ -48,7 +50,7 @@ namespace cmsl
                 std::unique_ptr<instance> apply_dot_operator(instance* lhs, instance* rhs);
 
             private:
-                const tokens_container_t& m_tokens;
+                const std::vector<onp_entry>& m_tokens;
                 executor& m_exec;
                 int& m_result;
                 std::stack<std::unique_ptr<instance>> m_stack;

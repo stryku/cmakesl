@@ -14,10 +14,11 @@ set(EXEC_SOURCES
     scope_context.cpp
     scope_context.hpp
 
-    onp/onp_executor.cpp
-    onp/onp_executor.hpp
     onp/infix_to_onp.cpp
     onp/infix_to_onp.hpp
+    onp/onp_entry.hpp
+    onp/onp_executor.cpp
+    onp/onp_executor.hpp
     
     stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp

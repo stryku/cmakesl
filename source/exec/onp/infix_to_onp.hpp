@@ -2,6 +2,7 @@
 
 #include "lexer/token/token.hpp"
 #include "common/enum_class_map.hpp"
+#include "exec/onp/onp_entry.hpp"
 
 #include <stack>
 #include <vector>
@@ -15,7 +16,7 @@ namespace cmsl
 
     namespace exec
     {
-        namespace stmt
+        namespace onp
         {
             class infix_to_onp
             {
@@ -26,7 +27,7 @@ namespace cmsl
             public:
                 infix_to_onp(const tokens_container_t& infix_tokens, const ast::ast_context& ctx);
 
-                tokens_container_t convert();
+                std::vector<onp::onp_entry> convert();
 
             private:
                 void convert_function_call();
@@ -43,7 +44,7 @@ namespace cmsl
                 tokens_container_t::const_iterator m_token;
                 tokens_container_t::const_iterator m_end;
                 const ast::ast_context& m_ast_ctx;
-                tokens_container_t m_out;
+                std::vector<onp::onp_entry> m_out;
                 std::stack<lexer::token::token> m_stack;
                 operator_precedences_t m_op_precedences;
             };

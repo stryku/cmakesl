@@ -23,10 +23,10 @@ namespace cmsl
                 onp::onp_executor{ onp_tokens, e, m_result }.execute();
             }
 
-            infix_statement::tokens_container_t infix_statement::to_onp(executor& e) const
+            std::vector<onp::onp_entry> infix_statement::to_onp(executor& e) const
             {
                 const auto& tokens = m_node.get_tokens();
-                return infix_to_onp{ tokens, e.get_ast_ctx() }.convert();
+                return onp::infix_to_onp{ tokens, e.get_ast_ctx() }.convert();
             }
         }
     }
