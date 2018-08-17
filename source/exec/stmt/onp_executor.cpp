@@ -98,6 +98,10 @@ namespace cmsl
             {
                 return instance_factory{ m_exec.get_ast_ctx(), m_exec.get_exec_ctx() };
             }
+
+            std::unique_ptr<instance> onp_executor::apply_dot_operator(instance* lhs, instance* rhs)
+            {
+            }
         }
     }
 }
