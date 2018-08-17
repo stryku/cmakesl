@@ -3,6 +3,7 @@
 #include "exec/named_instance.hpp"
 #include "ast/ast_context.hpp"
 #include "exec/instance_factory.hpp"
+#include "exec/onp/onp_entry.hpp"
 
 namespace cmsl
 {
@@ -10,7 +11,7 @@ namespace cmsl
     {
         namespace onp
         {
-            onp_executor::onp_executor(const tokens_container_t& onp_tokens, executor& e, int& result)
+            onp_executor::onp_executor(const std::vector<onp_entry>& onp_tokens, executor& e, int& result)
                 : m_tokens{ onp_tokens }
                 , m_exec{ e }
                 , m_result{ result }
@@ -18,8 +19,9 @@ namespace cmsl
 
             void onp_executor::execute()
             {
-                for (const auto& token : m_tokens)
+                for (const auto& entry : m_tokens)
                 {
+                    const auto& token = entry.tokens[0];
                     const auto token_type = token.get_type();
                     if (token_type == token_type_t::integer)
                     {

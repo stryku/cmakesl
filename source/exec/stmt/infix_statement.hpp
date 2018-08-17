@@ -23,6 +23,11 @@ namespace cmsl
 
     namespace exec
     {
+        namespace onp
+        {
+            struct onp_entry;
+        }
+
         namespace stmt
         {
             class infix_statement : public statement
@@ -37,7 +42,7 @@ namespace cmsl
                 virtual void execute(executor& e) override;
 
             private:
-                tokens_container_t to_onp(executor& e) const;
+                std::vector<onp::onp_entry> to_onp(executor& e) const;
 
             private:
                 const ast::infix_node& m_node;
