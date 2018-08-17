@@ -1,7 +1,8 @@
 set(COMMON_SOURCES
     algorithm.hpp
-    string.hpp
     source_location.hpp
+    enum_class_map.hpp
+    string.hpp
 )
 
 add_library(common ${COMMON_SOURCES})

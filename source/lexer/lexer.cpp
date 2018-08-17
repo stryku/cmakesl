@@ -283,7 +283,7 @@ namespace cmsl
             definitions['*'] = def_t{ token_t::token_type_t::star, token_t::token_type_t::starequal };
             definitions['%'] = def_t{ token_t::token_type_t::percent, token_t::token_type_t::percentequal };
             definitions['!'] = def_t{ token_t::token_type_t::exclaim, token_t::token_type_t::exclaimequal };
-            definitions['^'] = def_t{ token_t::token_type_t::xor, token_t::token_type_t::xorequal };
+            definitions['^'] = def_t{ token_t::token_type_t::xor_, token_t::token_type_t::xorequal };
 
             return definitions;
         }

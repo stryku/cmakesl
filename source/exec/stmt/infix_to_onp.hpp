@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lexer/token/token.hpp"
+#include "common/enum_class_map.hpp"
 
 #include <stack>
 #include <vector>
@@ -33,7 +34,7 @@ namespace cmsl
                 bool eat(token_type_t token_type);
                 bool is_operator(token_type_t token_type) const;
 
-                using operator_precedences_t = std::unordered_map<token_type_t, size_t>;
+                using operator_precedences_t = enum_unordered_map<token_type_t, size_t>;
                 operator_precedences_t get_operator_precedences() const;
 
                 lexer::token::token get_top_and_pop();
