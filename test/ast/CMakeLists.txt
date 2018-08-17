@@ -3,7 +3,11 @@ set(AST_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ast_context.cpp 
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${AST_TEST_SOURCES})
+
+if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${AST_TEST_SOURCES})
+endif()
+
 
 set(TEST_NAME ast_test)
 
