@@ -1,13 +1,14 @@
 #pragma once
 
 #include <boost/functional/hash.hpp>
-#include <boost/utility/string_view.hpp>
+
+#include <experimental/string_view>
 
 #include <unordered_map>
 
 namespace cmsl
 {
-    using string_view = boost::string_view;
+    using string_view = std::experimental::string_view;
 
     namespace details
     {

@@ -41,7 +41,7 @@ namespace cmsl
                 percentequal,
                 exclaim,
                 exclaimequal,
-                xor,
+                xor_,
                 xorequal,
                 string,
                 semicolon,

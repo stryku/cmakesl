@@ -13,12 +13,12 @@ namespace cmsl
         struct member_declaration
         {
             member_declaration(const type* t, lexer::token::token name, std::unique_ptr<infix_node> init_expression = nullptr)
-                : type{ t }
+                : ty{ t }
                 , name{ name }
                 , init_expr{ std::move(init_expression) }
             {}
 
-            const type* type;
+            const type* ty;
             lexer::token::token name;
             std::unique_ptr<infix_node> init_expr;
         };
