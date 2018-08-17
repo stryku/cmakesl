@@ -13,15 +13,16 @@ set(EXEC_SOURCES
     named_instance.hpp
     scope_context.cpp
     scope_context.hpp
+
+    onp/onp_executor.cpp
+    onp/onp_executor.hpp
+    onp/infix_to_onp.cpp
+    onp/infix_to_onp.hpp
     
     stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp
     stmt/infix_statement.cpp
     stmt/infix_statement.hpp
-    stmt/onp_executor.cpp
-    stmt/onp_executor.hpp
-    stmt/infix_to_onp.cpp
-    stmt/infix_to_onp.hpp
     stmt/return_statement.cpp
     stmt/return_statement.hpp
     stmt/statement.hpp

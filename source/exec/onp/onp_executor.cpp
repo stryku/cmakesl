@@ -1,18 +1,14 @@
-#include "exec/stmt/onp_executor.hpp"
+#include "exec/onp/onp_executor.hpp"
 #include "exec/exec.hpp"
-#include "exec/fundamental_instance.hpp"
 #include "exec/named_instance.hpp"
-#include "lexer/token/token.hpp"
 #include "ast/ast_context.hpp"
-#include "ast/function_node.hpp"
-#include "exec/fundamental_instance.hpp"
 #include "exec/instance_factory.hpp"
 
 namespace cmsl
 {
     namespace exec
     {
-        namespace stmt
+        namespace onp
         {
             onp_executor::onp_executor(const tokens_container_t& onp_tokens, executor& e, int& result)
                 : m_tokens{ onp_tokens }

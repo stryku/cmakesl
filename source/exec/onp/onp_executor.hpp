@@ -27,9 +27,9 @@ namespace cmsl
         class instance;
         class instance_factory;
 
-        namespace stmt
+        namespace onp
         {
-            class onp_executor : public statement
+            class onp_executor
             {
             private:
                 using tokens_container_t = std::vector<lexer::token::token>;
