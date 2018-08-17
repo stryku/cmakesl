@@ -3,7 +3,11 @@ set(CMAKESL_LEXER_ERROR_TEST_SOURCES
     lexer_error_test.cpp
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${CMAKESL_LEXER_ERROR_TEST_SOURCES})
+
+if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${CMAKESL_LEXER_ERROR_TEST_SOURCES})
+endif()
+
 
 add_executable(cmakesl_lexer_error_test ${CMAKESL_LEXER_ERROR_TEST_SOURCES})
 target_link_libraries(cmakesl_lexer_error_test gmock_main lexer errors_observer_mock)

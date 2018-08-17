@@ -5,7 +5,11 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/infix_to_onp_test.cpp 
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES} )
+
+if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES} )
+endif()
+
 
 add_executable(${TESTS_NAME} ${SOURCES} )
 target_link_libraries(${TESTS_NAME} gmock_main lexer errors ast exec tests_common)
