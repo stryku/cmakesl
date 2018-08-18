@@ -26,7 +26,7 @@ namespace cmsl
 
                 onp_entry(kind k, lexer::token::token token)
                         : k{ k }
-                        , tokens{ tokens }
+                        , tokens{ token }
                 {}
 
                 kind k;
