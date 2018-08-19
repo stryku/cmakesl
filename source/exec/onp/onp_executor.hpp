@@ -46,8 +46,8 @@ namespace cmsl
                 void execute_function_call(const ast::function_node& fun);
                 instance* get_top_and_pop();
                 instance_factory get_factory();
-                std::unique_ptr<instance> apply_operator(instance* lhs, token_type_t op, instance* rhs);
-                std::unique_ptr<instance> apply_dot_operator(instance* lhs, instance* rhs);
+                instance* apply_operator(instance* lhs, token_type_t op, instance* rhs);
+                instance* apply_dot_operator(instance* lhs, instance* rhs);
 
                 instance* create_instance(int value);
 

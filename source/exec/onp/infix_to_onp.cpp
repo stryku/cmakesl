@@ -93,7 +93,7 @@ namespace cmsl
                     {
                         auto o2 = m_stack.top().get_type();
 
-                        while (m_op_precedences[o1] > m_op_precedences[o2])
+                        while (m_op_precedences[o1] >= m_op_precedences[o2])
                         {
                             m_out.emplace_back(get_top_and_pop());
                             if (m_stack.empty())

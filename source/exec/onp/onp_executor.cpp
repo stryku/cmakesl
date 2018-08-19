@@ -50,9 +50,7 @@ namespace cmsl
                         const auto b = get_top_and_pop();
 
                         auto result = apply_operator(b, token_type, a);
-                        auto ptr = result.get();
-                        m_instances.emplace_back(std::move(result));
-                        m_stack.push(ptr);
+                        m_stack.push(result);
                     }
                 }
 
@@ -86,12 +84,12 @@ namespace cmsl
                 return inst;
             }
 
-            std::unique_ptr<instance> onp_executor::apply_operator(instance* lhs, token_type_t op, instance* rhs)
+            instance* onp_executor::apply_operator(instance* lhs, token_type_t op, instance* rhs)
             {
                 auto l = lhs->get_value();
                 auto r = rhs->get_value();
                 auto result = lhs->get_value() + rhs->get_value();
-                return get_factory().create(result);
+                return create_instance(result);
             }
 
             instance_factory onp_executor::get_factory()
@@ -99,8 +97,9 @@ namespace cmsl
                 return instance_factory{ m_exec.get_ast_ctx(), m_exec.get_exec_ctx() };
             }
 
-            std::unique_ptr<instance> onp_executor::apply_dot_operator(instance* lhs, instance* rhs)
+            instance* onp_executor::apply_dot_operator(instance* lhs, instance* rhs)
             {
+                return nullptr;
             }
 
             instance* onp_executor::create_instance(int value)
