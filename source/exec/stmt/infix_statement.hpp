@@ -42,7 +42,7 @@ namespace cmsl
                 virtual void execute(executor& e) override;
 
             private:
-                std::vector<onp::onp_entry> to_onp(executor& e) const;
+                tokens_container_t to_onp(executor& e) const;
 
             private:
                 const ast::infix_node& m_node;

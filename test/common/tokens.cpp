@@ -55,7 +55,7 @@ namespace cmsl
             token_t token_percentequal() { return token_t{ token_type_t::percentequal }; }
             token_t token_exclaim() { return token_t{ token_type_t::exclaim }; }
             token_t token_exclaimequal() { return token_t{ token_type_t::exclaimequal }; }
-            token_t token_xor() { return token_t{ token_type_t::xor }; }
+            token_t token_xor() { return token_t{ token_type_t::xor_ }; }
             token_t token_xorequal() { return token_t{ token_type_t::xorequal }; }
             token_t token_string() { return token_t{ token_type_t::string }; }
             token_t token_semicolon() { return token_t{ token_type_t::semicolon }; }

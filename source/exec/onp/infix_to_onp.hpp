@@ -27,7 +27,7 @@ namespace cmsl
             public:
                 infix_to_onp(const tokens_container_t& infix_tokens, const ast::ast_context& ctx);
 
-                std::vector<onp::onp_entry> convert();
+                tokens_container_t convert();
 
             private:
                 void convert_function_call();
@@ -44,7 +44,7 @@ namespace cmsl
                 tokens_container_t::const_iterator m_token;
                 tokens_container_t::const_iterator m_end;
                 const ast::ast_context& m_ast_ctx;
-                std::vector<onp::onp_entry> m_out;
+                tokens_container_t m_out;
                 std::stack<lexer::token::token> m_stack;
                 operator_precedences_t m_op_precedences;
             };
