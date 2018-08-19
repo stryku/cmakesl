@@ -32,7 +32,7 @@ namespace cmsl
                 case kind::user: return members_t{};
             }
 
-            return {};
+            BOOST_ASSERT_MSG(false, "Unknown instance kind provided");
         }
 
         instance::data_t instance::get_init_data(int val) const
