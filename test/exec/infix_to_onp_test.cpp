@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 
 #include "ast/builtin_ast_context.hpp"
-#include "exec/stmt/infix_to_onp.hpp"
+#include "exec/onp/infix_to_onp.hpp"
 #include "lexer/token/token.hpp"
 
 #include "test/common/tokens.hpp"
@@ -15,7 +15,7 @@ namespace cmsl
             namespace infix_to_onp
             {
                 using tokens_container_t = cmsl::lexer::token::token_container_t;
-                using inf_to_onp_t = cmsl::exec::stmt::infix_to_onp;
+                using inf_to_onp_t = cmsl::exec::onp::infix_to_onp;
 
                 using namespace cmsl::test::common;
 
@@ -45,8 +45,12 @@ namespace cmsl
                         { token_integer("4"), token_integer("5"), token_plus() } // 4 5 +
                     },
                     InfixToOnpState{
-                        { token_integer("4"), token_plus(), token_identifier("foo"), token_dot(), token_identifier("bar") }, // 4 + foo.bar
-                        { token_integer("4"), token_identifier("foo"), token_identifier("bar"), token_dot(), token_plus() } // 4 foo bar . +
+                            { token_integer("4"), token_plus(), token_identifier("foo"), token_dot(), token_identifier("bar") }, // 4 + foo.bar
+                            { token_integer("4"), token_identifier("foo"), token_identifier("bar"), token_dot(), token_plus() } // 4 foo bar . +
+                    },
+                    InfixToOnpState{
+                            { token_integer("4"), token_plus(), token_identifier("foo"), token_dot(), token_identifier("bar"), token_dot(), token_identifier("baz") }, // 4 + foo.bar.baz
+                            { token_integer("4"), token_identifier("foo"), token_identifier("bar"), token_identifier("baz"), token_dot(), token_dot(), token_plus() } // 4 foo bar baz . . +
                     }
                 );
 

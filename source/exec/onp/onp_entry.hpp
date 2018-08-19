@@ -29,6 +29,11 @@ namespace cmsl
                         , tokens{ token }
                 {}
 
+                bool operator==(const onp_entry& rhs) const
+                {
+                    return k == rhs.k && tokens == rhs.tokens;
+                }
+
                 kind k;
                 lexer::token::token_container_t tokens; //todo consider using kind of small vector
             };

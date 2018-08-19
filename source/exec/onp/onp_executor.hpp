@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/string.hpp"
 #include "exec/stmt/statement.hpp"
 
 #include <memory>
@@ -30,7 +31,6 @@ namespace cmsl
         namespace onp
         {
             struct onp_entry;
-
             class onp_executor
             {
             private:
@@ -38,22 +38,25 @@ namespace cmsl
                 using token_type_t = lexer::token::token_type;
 
             public:
-                explicit onp_executor(const std::vector<onp_entry>& onp_tokens, executor& e, int& result);
+                explicit onp_executor(const tokens_container_t& onp_tokens, executor& e, int& result);
 
                 void execute();
 
             private:
                 void execute_function_call(const ast::function_node& fun);
-                std::unique_ptr<instance> get_top_and_pop();
+                instance* get_top_and_pop();
                 instance_factory get_factory();
                 std::unique_ptr<instance> apply_operator(instance* lhs, token_type_t op, instance* rhs);
                 std::unique_ptr<instance> apply_dot_operator(instance* lhs, instance* rhs);
 
+                instance* create_instance(int value);
+
             private:
-                const std::vector<onp_entry>& m_tokens;
+                const tokens_container_t& m_tokens;
                 executor& m_exec;
                 int& m_result;
-                std::stack<std::unique_ptr<instance>> m_stack;
+                std::stack<instance*> m_stack;
+                std::vector<std::unique_ptr<instance>> m_instances;
             };
         }
     }
