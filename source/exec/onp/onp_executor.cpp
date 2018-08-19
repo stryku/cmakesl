@@ -88,6 +88,8 @@ namespace cmsl
 
             std::unique_ptr<instance> onp_executor::apply_operator(instance* lhs, token_type_t op, instance* rhs)
             {
+                auto l = lhs->get_value();
+                auto r = rhs->get_value();
                 auto result = lhs->get_value() + rhs->get_value();
                 return get_factory().create(result);
             }

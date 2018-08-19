@@ -24,7 +24,7 @@ namespace cmsl
 
             explicit instance(kind k, const ast::type& type);
             explicit instance(const ast::type& type, int value);
-            explicit instance(const ast::type& type, members_t m_members);
+            explicit instance(const ast::type& type, members_t members);
             virtual ~instance() {}
 
             virtual int get_value() const;
@@ -36,6 +36,8 @@ namespace cmsl
 
         private:
             data_t get_init_data() const;
+            data_t get_init_data(int val) const;
+            data_t get_init_data(members_t m_members) const;
             void expect_fundamental() const;
             void expect_user() const;
 
