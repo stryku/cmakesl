@@ -15,13 +15,13 @@ namespace cmsl
         instance::instance(const ast::type& type, int value)
             : m_kind{ kind::fundamental }
             , m_type{ type }
-            , m_data{ get_init_data() }
+            , m_data{ get_init_data(value) }
         {}
 
-        instance::instance(const ast::type& type, string_view_map<std::unique_ptr<instance>> m_members)
+        instance::instance(const ast::type& type, string_view_map<std::unique_ptr<instance>> members)
             : m_kind{ kind::user }
             , m_type{ type }
-            , m_data{ get_init_data() }
+            , m_data{ get_init_data(std::move(members)) }
         {}
 
         instance::data_t instance::get_init_data() const
@@ -33,6 +33,16 @@ namespace cmsl
             }
 
             return {};
+        }
+
+        instance::data_t instance::get_init_data(int val) const
+        {
+            return val;
+        }
+
+        instance::data_t instance::get_init_data(members_t members) const
+        {
+            return std::move(members);
         }
 
         int instance::get_value() const
