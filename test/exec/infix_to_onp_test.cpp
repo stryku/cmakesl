@@ -41,8 +41,12 @@ namespace cmsl
                         { token_integer("4") } // 4
                     },
                     InfixToOnpState{
-                        { token_integer("4"), token_plus(), token_integer("5") }, // 4 + 5
-                        { token_integer("4"), token_integer("5"), token_plus() } // 4 5 +
+                            { token_integer("4"), token_plus(), token_integer("5") }, // 4 + 5
+                            { token_integer("4"), token_integer("5"), token_plus() } // 4 5 +
+                    },
+                    InfixToOnpState{
+                            { token_integer("4"), token_plus(), token_integer("5"), token_plus(), token_integer("6") }, // 4 + 5 + 6
+                            { token_integer("4"), token_integer("5"), token_plus(), token_integer("6"), token_plus() } // 4 5 + 6 +
                     },
                     InfixToOnpState{
                             { token_integer("4"), token_plus(), token_identifier("foo"), token_dot(), token_identifier("bar") }, // 4 + foo.bar
@@ -50,7 +54,7 @@ namespace cmsl
                     },
                     InfixToOnpState{
                             { token_integer("4"), token_plus(), token_identifier("foo"), token_dot(), token_identifier("bar"), token_dot(), token_identifier("baz") }, // 4 + foo.bar.baz
-                            { token_integer("4"), token_identifier("foo"), token_identifier("bar"), token_identifier("baz"), token_dot(), token_dot(), token_plus() } // 4 foo bar baz . . +
+                            { token_integer("4"), token_identifier("foo"), token_identifier("bar"), token_dot(), token_identifier("baz"), token_dot(), token_plus() } // 4 foo bar . baz . +
                     }
                 );
 
