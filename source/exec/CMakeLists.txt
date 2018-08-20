@@ -23,6 +23,8 @@ set(EXEC_SOURCES
     onp/onp_entry.hpp
     onp/onp_executor.cpp
     onp/onp_executor.hpp
+    onp/operator_visitor.cpp
+    onp/operator_visitor.hpp
     
     stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp

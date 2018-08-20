@@ -3,62 +3,7 @@
 #include "exec/instance/named_instance.hpp"
 #include "ast/ast_context.hpp"
 #include "exec/instance/instance_factory.hpp"
-#include "exec/onp/onp_entry.hpp"
-
-namespace
-{
-    using instance_t = cmsl::exec::inst::instance;
-    using token_t = cmsl::lexer::token::token;
-    using token_type_t = cmsl::lexer::token::token_type;
-    using execution_context_t = cmsl::exec::execution_context;
-    using instance_factory_t = cmsl::exec::inst::instance_factory;
-    using instances_holder_t = cmsl::exec::inst::instances_holder;
-
-    class operator_visitor
-    {
-    public:
-        explicit operator_visitor(token_type_t op,
-                                  execution_context_t& exec_ctx,
-                                  instances_holder_t& instances)
-            : m_operator{ op }
-            , m_exec_ctx{ exec_ctx }
-            , m_instances{ instances }
-        {}
-
-        auto operator()(instance_t* lhs, instance_t* rhs)
-        {
-            // todo handle all operators
-            const auto val = lhs->get_value() + rhs->get_value();
-            return m_instances.create(val);
-        };
-
-        auto operator() (instance_t* lhs, const token_t& token)
-        {
-            // todo handle all operators
-            return lhs->get_member(token.str());
-        };
-
-        auto operator()(const token_t& lhs, const token_t& rhs)
-        {
-            // todo handle all operators
-            auto lhs_instance = m_exec_ctx.get_variable(lhs.str());
-            return lhs_instance->get_member(rhs.str());
-        };
-
-        instance_t* operator()(const token_t& lhs, instance_t* rhs)
-        {
-            // todo handle all operators
-            auto lhs_instance = m_exec_ctx.get_variable(lhs.str());
-            const auto val = lhs_instance->get_value() + rhs->get_value();
-            return m_instances.create(val);
-        };
-
-    private:
-        token_type_t m_operator;
-        execution_context_t& m_exec_ctx;
-        instances_holder_t& m_instances;
-    };
-}
+#include "exec/onp/operator_visitor.hpp"
 
 namespace cmsl
 {
@@ -148,9 +93,7 @@ namespace cmsl
             inst::instance* onp_executor::apply_operator(const stack_entry_t& lhs, token_type_t op, const stack_entry_t& rhs)
             {
                 auto visitor = operator_visitor{ op, m_exec.get_exec_ctx(), m_instances };
-                auto result = boost::apply_visitor(visitor, lhs, rhs);
-
-                return result;
+                return boost::apply_visitor(visitor, lhs, rhs);
             }
 
             inst::instance_factory onp_executor::get_factory()
