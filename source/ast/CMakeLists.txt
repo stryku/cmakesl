@@ -7,6 +7,10 @@ set(AST_SOURCES
     block_node.hpp
     builtin_ast_context.cpp
     builtin_ast_context.hpp
+    class_node.cpp
+    class_node.hpp
+    class_type.cpp
+    class_type.hpp
     ast_node_type.hpp
     ast_node.cpp
     ast_node.hpp 
@@ -16,6 +20,7 @@ set(AST_SOURCES
     function_node.hpp
     integer_constant.hpp
     integral_constant.hpp
+    member_declaration.hpp
     infix_node.cpp
     infix_node.hpp
     parameter_declaration.hpp
@@ -32,4 +37,6 @@ set(AST_SOURCES
 add_library(ast ${AST_SOURCES})
 target_include_directories(ast PRIVATE ${CMAKESL_SOURCES_DIR})
 
+if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX ast FILES ${AST_SOURCES})
+endif()

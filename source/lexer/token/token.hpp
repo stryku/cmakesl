@@ -33,6 +33,10 @@ namespace cmsl
 
                 cmsl::string_view str() const;
 
+                bool operator==(const token& rhs) const;
+
+                friend std::ostream& operator<<(std::ostream& out, const token& t);
+
             private:
                 token_type_t m_type;
                 source_range m_source_range;

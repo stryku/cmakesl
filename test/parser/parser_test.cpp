@@ -4,6 +4,7 @@
 #include "errors/errors_observer.hpp"
 #include "lexer/lexer.hpp"
 #include "lexer/token/token.hpp"
+#include "ast/member_declaration.hpp"
 
 #include "test/common/tokens.hpp"
 
@@ -77,7 +78,7 @@ namespace cmsl
                         
                         token_t_int(),
                         token_identifier(),
-                        token_semicolon(),
+                        token_comma(),
                         
                         token_t_real(),
                         token_identifier(),
@@ -92,6 +93,43 @@ namespace cmsl
 
                     ASSERT_THAT(parameters[0].param_type->is_builtin(), true);
                     ASSERT_THAT(parameters[1].param_type->is_builtin(), true);
+                }
+            }
+
+            namespace get_class_member_declaration
+            {
+                TEST(Parser_GetClassMemberDeclaration, NoInit_GetWithoutInit)
+                {
+                    const auto tokens = tokens_container_t{
+                        token_t_int(),
+                        token_identifier(),
+                        token_semicolon()
+                    };
+
+                    auto p = parser_t{ dummy_err_observer, tokens };
+                    builtin_ctx_t ctx;
+                    const auto member = p.get_class_member_declaration(ctx);
+                    const auto member_initialized = static_cast<bool>(member);
+                    ASSERT_THAT(member_initialized, true);
+                    ASSERT_THAT(member->init_expr.get(), nullptr);
+                }
+
+                TEST(Parser_GetClassMemberDeclaration, WithInit_GetWithInit)
+                {
+                    const auto tokens = tokens_container_t{
+                        token_t_int(),
+                        token_identifier(),
+                        token_equal(),
+                        token_integer(),
+                        token_semicolon()
+                    };
+
+                    auto p = parser_t{ dummy_err_observer, tokens };
+                    builtin_ctx_t ctx;
+                    const auto member = p.get_class_member_declaration(ctx);
+                    const auto member_initialized = static_cast<bool>(member);
+                    ASSERT_THAT(member_initialized, true);
+                    ASSERT_NE(member->init_expr.get(), nullptr);
                 }
             }
         }

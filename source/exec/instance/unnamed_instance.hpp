@@ -1,0 +1,54 @@
+#pragma once
+
+#include "ast/type.hpp"
+#include "exec/instance/instance.hpp"
+
+#include <boost/variant.hpp>
+
+namespace cmsl
+{
+    namespace exec
+    {
+        namespace inst
+        {
+            class unnamed_instance : public instance
+            {
+            private:
+                using members_t = string_view_map<std::unique_ptr<instance>>;
+                using value_t = int;
+                using data_t = boost::variant<members_t,
+                                              value_t>;
+
+            public:
+
+                explicit unnamed_instance(const ast::type &type);
+                explicit unnamed_instance(kind k, const ast::type &type);
+                explicit unnamed_instance(const ast::type &type, int value);
+                explicit unnamed_instance(const ast::type &type, members_t members);
+                virtual ~unnamed_instance()
+                {}
+
+                int get_value() const override;
+                void assign(int val) override;
+                std::unique_ptr<instance> copy() const override;
+                instance *get_member(cmsl::string_view name) override;
+                bool is_fundamental() const;
+
+            private:
+                data_t get_init_data() const;
+                data_t get_init_data(int val) const;
+                data_t get_init_data(members_t m_members) const;
+                void expect_fundamental() const;
+                void expect_user() const;
+
+                members_t copy_members() const;
+                members_t create_init_members() const;
+
+            private:
+                kind m_kind;
+                const ast::type &m_type;
+                data_t m_data;
+            };
+        }
+    }
+}

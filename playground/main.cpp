@@ -6,15 +6,18 @@
 int main()
 {
     const auto source =
-        "int foo(int a, int b)"
+        "class cl_foo"
         "{"
-        "    return a + b;"
-        "}"
+        "    int foo_a = 5;"
+        "    int foo_b = 30;"
+        "};"
         ""
         "int main()"
         "{"
+        "    cl_foo foo;"
         "    int a = 4+2;"
-        "    return a + foo(16, 4);"
+        "    foo.foo_a = 14;"
+        "    return a + foo.foo_a;"
         "}";
 
     cmsl::exec::executor exec;
