@@ -1,12 +1,12 @@
 //#pragma once
 //
-//#include "exec/instance.hpp"
+//#include "exec/unnamed_instance.hpp"
 //
 //namespace cmsl
 //{
 //    namespace exec
 //    {
-//        class fundamental_instance : public instance
+//        class fundamental_instance : public unnamed_instance
 //        {
 //        public:
 //            explicit fundamental_instance(const ast::type& type);

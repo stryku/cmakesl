@@ -5,12 +5,12 @@
 //    namespace exec
 //    {
 //        fundamental_instance::fundamental_instance(const ast::type& type)
-//            : instance{ type }
+//            : unnamed_instance{ type }
 //            , m_value{ 0u }
 //        {}
 //
 //        fundamental_instance::fundamental_instance(const ast::type& type, int value)
-//            : instance{ type }
+//            : unnamed_instance{ type }
 //            , m_value{ value }
 //        {}
 //

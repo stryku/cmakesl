@@ -2,6 +2,9 @@
 
 #include "common/string.hpp"
 #include "exec/stmt/statement.hpp"
+#include "exec/instance/instances_holder.hpp"
+
+#include <boost/variant.hpp>
 
 #include <memory>
 #include <vector>
@@ -25,8 +28,11 @@ namespace cmsl
 
     namespace exec
     {
-        class instance;
-        class instance_factory;
+        namespace inst
+        {
+            class instance;
+            class instance_factory;
+        }
 
         namespace onp
         {
@@ -34,8 +40,10 @@ namespace cmsl
             class onp_executor
             {
             private:
-                using tokens_container_t = std::vector<lexer::token::token>;
+                using token_t = lexer::token::token;
+                using tokens_container_t = std::vector<token_t>;
                 using token_type_t = lexer::token::token_type;
+                using stack_entry_t = boost::variant<inst::instance*, const token_t&>;
 
             public:
                 explicit onp_executor(const tokens_container_t& onp_tokens, executor& e, int& result);
@@ -44,19 +52,17 @@ namespace cmsl
 
             private:
                 void execute_function_call(const ast::function_node& fun);
-                instance* get_top_and_pop();
-                instance_factory get_factory();
-                instance* apply_operator(instance* lhs, token_type_t op, instance* rhs);
-                instance* apply_dot_operator(instance* lhs, instance* rhs);
-
-                instance* create_instance(int value);
+                stack_entry_t get_top_and_pop();
+                inst::instance_factory get_factory();
+                inst::instance* apply_operator(const stack_entry_t& lhs, token_type_t op, const stack_entry_t& rhs);
+                inst::instance* apply_dot_operator(inst::instance* lhs, inst::instance* rhs);
 
             private:
                 const tokens_container_t& m_tokens;
                 executor& m_exec;
                 int& m_result;
-                std::stack<instance*> m_stack;
-                std::vector<std::unique_ptr<instance>> m_instances;
+                std::stack<stack_entry_t> m_stack;
+                inst::instances_holder m_instances;
             };
         }
     }

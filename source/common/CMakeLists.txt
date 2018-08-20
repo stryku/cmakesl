@@ -1,5 +1,6 @@
 set(COMMON_SOURCES
     algorithm.hpp
+    assert.hpp
     source_location.hpp
     enum_class_map.hpp
     string.hpp

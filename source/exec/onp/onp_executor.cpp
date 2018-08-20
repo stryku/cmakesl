@@ -1,9 +1,64 @@
 #include "exec/onp/onp_executor.hpp"
 #include "exec/exec.hpp"
-#include "exec/named_instance.hpp"
+#include "exec/instance/named_instance.hpp"
 #include "ast/ast_context.hpp"
-#include "exec/instance_factory.hpp"
+#include "exec/instance/instance_factory.hpp"
 #include "exec/onp/onp_entry.hpp"
+
+namespace
+{
+    using instance_t = cmsl::exec::inst::instance;
+    using token_t = cmsl::lexer::token::token;
+    using token_type_t = cmsl::lexer::token::token_type;
+    using execution_context_t = cmsl::exec::execution_context;
+    using instance_factory_t = cmsl::exec::inst::instance_factory;
+    using instances_holder_t = cmsl::exec::inst::instances_holder;
+
+    class operator_visitor
+    {
+    public:
+        explicit operator_visitor(token_type_t op,
+                                  execution_context_t& exec_ctx,
+                                  instances_holder_t& instances)
+            : m_operator{ op }
+            , m_exec_ctx{ exec_ctx }
+            , m_instances{ instances }
+        {}
+
+        auto operator()(instance_t* lhs, instance_t* rhs)
+        {
+            // todo handle all operators
+            const auto val = lhs->get_value() + rhs->get_value();
+            return m_instances.create(val);
+        };
+
+        auto operator() (instance_t* lhs, const token_t& token)
+        {
+            // todo handle all operators
+            return lhs->get_member(token.str());
+        };
+
+        auto operator()(const token_t& lhs, const token_t& rhs)
+        {
+            // todo handle all operators
+            auto lhs_instance = m_exec_ctx.get_variable(lhs.str());
+            return lhs_instance->get_member(rhs.str());
+        };
+
+        instance_t* operator()(const token_t& lhs, instance_t* rhs)
+        {
+            // todo handle all operators
+            auto lhs_instance = m_exec_ctx.get_variable(lhs.str());
+            const auto val = lhs_instance->get_value() + rhs->get_value();
+            return m_instances.create(val);
+        };
+
+    private:
+        token_type_t m_operator;
+        execution_context_t& m_exec_ctx;
+        instances_holder_t& m_instances;
+    };
+}
 
 namespace cmsl
 {
@@ -15,6 +70,7 @@ namespace cmsl
                 : m_tokens{ onp_tokens }
                 , m_exec{ e }
                 , m_result{ result }
+                , m_instances{ m_exec }
             {}
 
             void onp_executor::execute()
@@ -25,14 +81,16 @@ namespace cmsl
                     if (token_type == token_type_t::integer)
                     {
                         const auto val = std::stoi(token.str().to_string());
-                        auto inst = create_instance(val);
-                        m_stack.push(inst);
+                        auto inst = m_instances.create(val);
+                        m_stack.push(stack_entry_t{ inst });
                     }
                     else if (token_type == token_type_t::identifier)
                     {
-                        if (const auto var_instance = m_exec.get_exec_ctx().get_variable(token.str()))
+                        m_stack.push(stack_entry_t{ token });
+
+                        /*if (const auto var_instance = m_exec.get_exec_ctx().get_variable(token.str()))
                         {
-                            m_stack.push(var_instance);
+                            m_stack.push(stack_entry_t{ var_instance });
                         }
                         else if(const auto fun = m_exec.get_ast_ctx().find_function(token.str()))
                         {
@@ -42,7 +100,7 @@ namespace cmsl
                         {
                             // todo raise identifier not found error
                             return;
-                        }
+                        }*/
                     }
                     else
                     {
@@ -50,21 +108,24 @@ namespace cmsl
                         const auto b = get_top_and_pop();
 
                         auto result = apply_operator(b, token_type, a);
-                        m_stack.push(result);
+                        m_stack.push(stack_entry_t{ result });
                     }
                 }
 
-                m_result = m_stack.top()->get_value();
+                auto instance = boost::get<inst::instance*>(get_top_and_pop());
+
+                m_result = instance->get_value();
             }
 
             void onp_executor::execute_function_call(const ast::function_node& fun)
             {
                 auto& exec_ctx = m_exec.get_exec_ctx();
-                std::vector<std::unique_ptr<instance>> params;
+                std::vector<inst::instance*> params;
 
                 for (const auto& param_decl : fun.get_params_declarations())
                 {
-                    params.emplace_back(get_top_and_pop());
+                    auto inst = boost::get<inst::instance*>(get_top_and_pop());
+                    params.emplace_back(inst);
                 }
 
                 // Parameters are on stack in reverese order
@@ -73,42 +134,35 @@ namespace cmsl
                 m_exec.function_call(fun, std::move(params));
 
                 const auto ret_val = m_exec.get_function_return_value();
-                auto inst = create_instance(ret_val);
+                auto inst = m_instances.create(ret_val);
                 m_stack.push(inst);
             }
 
-            instance* onp_executor::get_top_and_pop()
+            onp_executor::stack_entry_t onp_executor::get_top_and_pop()
             {
-                auto inst = m_stack.top();
+                auto entry = std::move(m_stack.top());
                 m_stack.pop();
-                return inst;
+                return std::move(entry);
             }
 
-            instance* onp_executor::apply_operator(instance* lhs, token_type_t op, instance* rhs)
+            inst::instance* onp_executor::apply_operator(const stack_entry_t& lhs, token_type_t op, const stack_entry_t& rhs)
             {
-                auto l = lhs->get_value();
-                auto r = rhs->get_value();
-                auto result = lhs->get_value() + rhs->get_value();
-                return create_instance(result);
+                auto visitor = operator_visitor{ op, m_exec.get_exec_ctx(), m_instances };
+                auto result = boost::apply_visitor(visitor, lhs, rhs);
+
+                return result;
             }
 
-            instance_factory onp_executor::get_factory()
+            inst::instance_factory onp_executor::get_factory()
             {
-                return instance_factory{ m_exec.get_ast_ctx(), m_exec.get_exec_ctx() };
+                return inst::instance_factory{ m_exec.get_ast_ctx(), m_exec.get_exec_ctx() };
             }
 
-            instance* onp_executor::apply_dot_operator(instance* lhs, instance* rhs)
+            inst::instance* onp_executor::apply_dot_operator(inst::instance* lhs, inst::instance* rhs)
             {
                 return nullptr;
             }
 
-            instance* onp_executor::create_instance(int value)
-            {
-                auto inst = get_factory().create(value);
-                auto ptr = inst.get();
-                m_instances.emplace_back(std::move(inst));
-                return ptr;
-            }
         }
     }
 }

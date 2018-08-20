@@ -4,12 +4,12 @@ namespace cmsl
 {
     namespace exec
     {
-        void execution_context::add_variable(cmsl::string_view name, std::unique_ptr<instance> inst)
+        void execution_context::add_variable(cmsl::string_view name, std::unique_ptr<instance_t> inst)
         {
             current_scope()->add_variable(name, std::move(inst));
         }
 
-        instance* execution_context::get_variable(cmsl::string_view name)
+        execution_context::instance_t* execution_context::get_variable(cmsl::string_view name)
         {
             return current_scope()->get_variable(name);
         }
