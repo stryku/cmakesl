@@ -245,21 +245,25 @@ namespace cmsl
                 eat();
             }
 
-            if (!expect_token(token_type_t::semicolon))
+            if (!eat(token_type_t::semicolon))
             {
                 return nullptr;
             }
 
-            eat(token_type_t::semicolon);
-
             return std::make_unique<infix_node>(std::move(infix_tokens));
         }
 
-        bool parser::current_is_type() const
+        bool parser::current_is_type(ast_context& ctx) const
         {
             const auto token_type = m_token->get_type();
-            return is_builtin_type(token_type) ||
-                token_type == token_type_t::identifier;
+            if(is_builtin_type(token_type))
+            {
+                return true;
+            }
+            else if(token_type == token_type_t::identifier)
+            {
+                return ctx.find_type(m_token->str()) != nullptr;
+            }
         }
 
         bool parser::current_is_infix_token() const
@@ -278,7 +282,8 @@ namespace cmsl
                 token_type_t::close_paren,
                 token_type_t::identifier,
                 token_type_t::comma,
-                token_type_t::dot
+                token_type_t::dot,
+                token_type_t::equal
             };
 
             return cmsl::contains(allowed_tokens, m_token->get_type());
@@ -301,7 +306,7 @@ namespace cmsl
                 {
                     expr = get_return_node();
                 }
-                else if (declaration_starts())
+                else if (declaration_starts(ctx))
                 {
                     expr = get_declaration(ctx);
                 }
@@ -402,9 +407,9 @@ namespace cmsl
         }
 
 
-        bool parser::declaration_starts() const
+        bool parser::declaration_starts(ast_context& ctx) const
         {
-            return current_is_type();
+            return current_is_type(ctx);
         }
 
         std::unique_ptr<declaration_node> parser::get_declaration(ast_context& ctx)

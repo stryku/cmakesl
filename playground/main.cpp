@@ -16,6 +16,7 @@ int main()
         "{"
         "    cl_foo foo;"
         "    int a = 4+2;"
+        "    foo.foo_a = 14;"
         "    return a + foo.foo_a;"
         "}";
 

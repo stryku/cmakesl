@@ -2,6 +2,9 @@
 
 #include "lexer/token/token_type.hpp"
 
+#include <functional>
+#include <unordered_map>
+
 namespace cmsl
 {
     namespace lexer
@@ -25,6 +28,20 @@ namespace cmsl
 
         namespace onp
         {
+            namespace details
+            {
+                class operator_handler
+                {
+                public:
+                    template <typename... Args>
+                    auto operator()(Args&&... args)
+                    {
+
+                    }
+                private:
+                };
+            }
+
             class operator_visitor
             {
             private:
@@ -49,6 +66,7 @@ namespace cmsl
                 instance_t* get_instance(const token_t& token);
                 instance_t* handle_plus_operator(instance_t* lhs, instance_t* rhs);
                 instance_t* handle_dot_operator(instance_t* lhs, const token_t& rhs);
+                instance_t* handle_equal_operator(instance_t* lhs, instance_t* rhs);
 
             private:
                 token_type_t m_operator;

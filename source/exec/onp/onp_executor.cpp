@@ -32,20 +32,6 @@ namespace cmsl
                     else if (token_type == token_type_t::identifier)
                     {
                         m_stack.push(stack_entry_t{ token });
-
-                        /*if (const auto var_instance = m_exec.get_exec_ctx().get_variable(token.str()))
-                        {
-                            m_stack.push(stack_entry_t{ var_instance });
-                        }
-                        else if(const auto fun = m_exec.get_ast_ctx().find_function(token.str()))
-                        {
-                            execute_function_call(*fun);
-                        }
-                        else
-                        {
-                            // todo raise identifier not found error
-                            return;
-                        }*/
                     }
                     else
                     {
@@ -57,9 +43,11 @@ namespace cmsl
                     }
                 }
 
-                auto instance = boost::get<inst::instance*>(get_top_and_pop());
-
-                m_result = instance->get_value();
+                if(!m_stack.empty())
+                {
+                    auto instance = boost::get<inst::instance*>(get_top_and_pop());
+                    m_result = instance->get_value();
+                }
             }
 
             void onp_executor::execute_function_call(const ast::function_node& fun)

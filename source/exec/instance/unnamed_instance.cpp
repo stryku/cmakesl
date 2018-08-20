@@ -16,21 +16,21 @@ namespace cmsl
             {}
 
             unnamed_instance::unnamed_instance(kind k, const ast::type &type)
-                : m_kind{k}
-                , m_type{type}
-                , m_data{get_init_data()}
+                : m_kind{ k }
+                , m_type{ type }
+                , m_data{ get_init_data() }
             {}
 
             unnamed_instance::unnamed_instance(const ast::type &type, int value)
-                : m_kind{kind::fundamental}
-                , m_type{type}
-                , m_data{get_init_data(value)}
+                : m_kind{ kind::fundamental }
+                , m_type{ type }
+                , m_data{ get_init_data(value) }
             {}
 
             unnamed_instance::unnamed_instance(const ast::type &type, members_t members)
-                : m_kind{kind::user}
-                , m_type{type}
-                , m_data{get_init_data(std::move(members))}
+                : m_kind{ kind::user }
+                , m_type{ type }
+                , m_data{ get_init_data(std::move(members)) }
             {}
 
             unnamed_instance::data_t unnamed_instance::get_init_data() const
