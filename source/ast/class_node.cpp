@@ -14,5 +14,10 @@ namespace cmsl
         {
             return m_name;
         }
+
+        const std::vector<member_declaration>& class_node::get_members() const
+        {
+            return m_members;
+        }
     }
 }

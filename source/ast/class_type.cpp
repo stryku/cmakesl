@@ -10,5 +10,10 @@ namespace cmsl
             : type{ node->get_name(), type_kind::k_user }
             , m_node{ std::move(node) }
         {}
+
+        const std::vector<member_declaration>& class_type::get_members_decl() const
+        {
+            return m_node->get_members();
+        }
     }
 }

@@ -15,8 +15,9 @@ namespace cmsl
 
             explicit type(lexer::token::token token);
             explicit type(cmsl::string_view name, type_kind kind);
+            virtual ~type() {}
 
-            bool is_builtin() const;
+            bool is_builtin() const; // todo consider rename to is_fundamental
 
             cmsl::string_view get_name() const;
 

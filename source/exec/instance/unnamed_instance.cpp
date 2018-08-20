@@ -1,5 +1,6 @@
 #include "exec/instance/unnamed_instance.hpp"
 
+#include "ast/class_type.hpp"
 #include "common/assert.hpp"
 
 namespace cmsl
@@ -8,22 +9,28 @@ namespace cmsl
     {
         namespace inst
         {
+            unnamed_instance::unnamed_instance(const ast::type &type)
+                : m_kind{ type.is_builtin() ? kind::fundamental : kind::user }
+                , m_type{type}
+                , m_data{get_init_data()}
+            {}
+
             unnamed_instance::unnamed_instance(kind k, const ast::type &type)
-                    : m_kind{k}
-                    , m_type{type}
-                    , m_data{get_init_data()}
+                : m_kind{k}
+                , m_type{type}
+                , m_data{get_init_data()}
             {}
 
             unnamed_instance::unnamed_instance(const ast::type &type, int value)
-                    : m_kind{kind::fundamental}
-                    , m_type{type}
-                    , m_data{get_init_data(value)}
+                : m_kind{kind::fundamental}
+                , m_type{type}
+                , m_data{get_init_data(value)}
             {}
 
             unnamed_instance::unnamed_instance(const ast::type &type, members_t members)
-                    : m_kind{kind::user}
-                    , m_type{type}
-                    , m_data{get_init_data(std::move(members))}
+                : m_kind{kind::user}
+                , m_type{type}
+                , m_data{get_init_data(std::move(members))}
             {}
 
             unnamed_instance::data_t unnamed_instance::get_init_data() const
@@ -33,7 +40,7 @@ namespace cmsl
                     case kind::fundamental:
                         return int{};
                     case kind::user:
-                        return members_t{};
+                        return create_init_members();
                 }
 
                 CMSL_UNREACHABLE("Unknown unnamed_instance kind provided");
@@ -117,6 +124,26 @@ namespace cmsl
                                });
 
                 return std::move(m);
+            }
+
+            unnamed_instance::members_t unnamed_instance::create_init_members() const
+            {
+                expect_user();
+
+                members_t members;
+
+                const auto& class_type = dynamic_cast<const ast::class_type&>(m_type);
+                const auto& members_decl = class_type.get_members_decl();
+
+                std::transform(std::cbegin(members_decl), std::cend(members_decl),
+                               std::inserter(members, std::end(members)),
+                               [this](const auto& member_decl)
+                               {
+                                   auto member_inst = std::make_unique<unnamed_instance>(*member_decl.ty);
+                                   return std::make_pair(member_decl.name.str(), std::move(member_inst));
+                               });
+
+                return members;
             }
         }
     }
