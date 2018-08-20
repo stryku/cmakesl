@@ -19,11 +19,14 @@ namespace cmsl
 
             operator_visitor::instance_t* operator_visitor::operator()(instance_t* lhs, instance_t* rhs)
             {
-                // todo handle all operators
                 switch(m_operator)
                 {
-                    case token_type_t::plus: return handle_plus_operator(lhs, rhs);
-                    case token_type_t::dot: return nullptr; //todo raise error
+                    case token_type_t::plus:
+                        return handle_plus_operator(lhs, rhs);
+                    case token_type_t::dot:
+                        return nullptr; //todo raise error
+                    case token_type_t::equal:
+                        return handle_equal_operator(lhs, rhs);
                 }
             }
 
@@ -31,17 +34,26 @@ namespace cmsl
             {
                 switch(m_operator)
                 {
-                    case token_type_t::plus: return handle_plus_operator(lhs, get_instance(rhs));
-                    case token_type_t::dot: return handle_dot_operator(lhs, rhs);
+                    case token_type_t::plus:
+                        return handle_plus_operator(lhs, get_instance(rhs));
+                    case token_type_t::dot:
+                        return handle_dot_operator(lhs, rhs);
+                    case token_type_t::equal:
+                        return handle_equal_operator(lhs, get_instance(rhs));
                 }
+
             }
 
             operator_visitor::instance_t* operator_visitor::operator()(const token_t& lhs, const token_t& rhs)
             {
                 switch(m_operator)
                 {
-                    case token_type_t::plus: return handle_plus_operator(get_instance(lhs), get_instance(rhs));
-                    case token_type_t::dot: return handle_dot_operator(get_instance(lhs), rhs);
+                    case token_type_t::plus:
+                        return handle_plus_operator(get_instance(lhs), get_instance(rhs));
+                    case token_type_t::dot:
+                        return handle_dot_operator(get_instance(lhs), rhs);
+                    case token_type_t::equal:
+                        return handle_equal_operator(get_instance(lhs), get_instance(rhs));
                 }
             }
 
@@ -49,8 +61,12 @@ namespace cmsl
             {
                 switch(m_operator)
                 {
-                    case token_type_t::plus: return handle_plus_operator(get_instance(lhs), rhs);
-                    case token_type_t::dot: return nullptr; // todo raise error
+                    case token_type_t::plus:
+                        return handle_plus_operator(get_instance(lhs), rhs);
+                    case token_type_t::dot:
+                        return nullptr; // todo raise error
+                    case token_type_t::equal:
+                        return handle_equal_operator(get_instance(lhs), rhs);
                 }
             }
 
@@ -68,6 +84,12 @@ namespace cmsl
             operator_visitor::instance_t* operator_visitor::get_instance(const token_t& token)
             {
                 return m_exec_ctx.get_variable(token.str());
+            }
+
+            operator_visitor::instance_t* operator_visitor::handle_equal_operator(instance_t* lhs, instance_t* rhs)
+            {
+                lhs->assign(rhs->get_value());
+                return lhs;
             }
         }
     }

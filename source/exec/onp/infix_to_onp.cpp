@@ -139,7 +139,8 @@ namespace cmsl
                 const auto operators = {
                     token_type_t::dot,
                     token_type_t::plus,
-                    token_type_t::minus
+                    token_type_t::minus,
+                    token_type_t::equal
                     // todo add rest of operators
                 };
 
@@ -150,9 +151,11 @@ namespace cmsl
             {
                 operator_precedences_t prec;
 
+                // From https://en.cppreference.com/w/cpp/language/operator_precedence
                 prec[token_type_t::dot] = 2;
                 prec[token_type_t::plus] = 6;
                 prec[token_type_t::minus] = 6;
+                prec[token_type_t::equal] = 16;
                 // todo add rest of operators
 
                 return prec;

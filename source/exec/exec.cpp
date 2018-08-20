@@ -1,5 +1,6 @@
 #include "exec/exec.hpp"
 
+#include "common/assert.hpp"
 #include "ast/ast_node.hpp"
 #include "lexer/lexer.hpp"
 #include "errors/errors_observer.hpp"
@@ -12,6 +13,7 @@
 #include "exec/stmt/declaration_statement.hpp"
 
 #include <iostream>
+#include <exec/stmt/infix_statement.hpp>
 
 namespace cmsl
 {
@@ -79,6 +81,17 @@ namespace cmsl
                     decl_stmt.execute(*this);
                 }
                 break;
+
+                case ast::ast_node_type::infix:
+                {
+                    int result;
+                    stmt::infix_statement infix_stmt{ dynamic_cast<ast::infix_node&>(expr), result };
+                    infix_stmt.execute(*this);
+                }
+                break;
+
+                default:
+                    CMSL_UNREACHABLE("Executing not implemented statement.");
             }
 
             return false;
