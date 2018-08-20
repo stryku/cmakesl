@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/string.hpp"
+
 #include <memory>
 
 namespace cmsl
