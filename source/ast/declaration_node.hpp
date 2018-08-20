@@ -13,14 +13,14 @@ namespace cmsl
         class declaration_node : public ast_node
         {
         public:
-            declaration_node(type t, cmsl::string_view name, std::unique_ptr<infix_node> expr);
+            declaration_node(const type& t, cmsl::string_view name, std::unique_ptr<infix_node> expr);
 
-            const type& get_type() const;
+            const type& get_declared_type() const;
             cmsl::string_view get_name() const;
-            const infix_node& get_expression() const;
+            const infix_node* get_expression() const;
 
         private:
-            type m_type;
+            const type& m_type;
             cmsl::string_view m_name;
             std::unique_ptr<infix_node> m_expression;
         };

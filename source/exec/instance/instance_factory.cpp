@@ -37,6 +37,11 @@ namespace cmsl
                 inst->assign(value);
                 return std::move(inst);
             }
+
+            std::unique_ptr<instance> instance_factory::create(const ast::type& type) const
+            {
+                return std::make_unique<unnamed_instance>(type);
+            }
         }
     }
 }

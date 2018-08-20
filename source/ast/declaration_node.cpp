@@ -4,14 +4,14 @@ namespace cmsl
 {
     namespace ast
     {
-        declaration_node::declaration_node(type t, cmsl::string_view name, std::unique_ptr<infix_node> expr)
+        declaration_node::declaration_node(const type& t, cmsl::string_view name, std::unique_ptr<infix_node> expr)
             : ast_node{ ast_node_type::declaration }
             , m_type{ t }
             , m_name{ name }
             , m_expression{ std::move(expr) }
         {}
 
-        const type& declaration_node::get_type() const
+        const type& declaration_node::get_declared_type() const
         {
             return m_type;
         }
@@ -21,9 +21,9 @@ namespace cmsl
             return m_name;
         }
 
-        const infix_node& declaration_node::get_expression() const
+        const infix_node* declaration_node::get_expression() const
         {
-            return *m_expression;
+            return m_expression.get();
         }
     }
 }

@@ -17,14 +17,24 @@ namespace cmsl
 
             void declaration_statement::execute(executor& e)
             {
-                const auto& expr = m_node.get_expression();
-                int infix_result;
-                auto infix = infix_statement{ expr, infix_result };
-                infix.execute(e);
-                auto& ctx = e.get_exec_ctx();
+                const auto expr = m_node.get_expression();
+                std::unique_ptr<inst::instance> instance;
+                auto factory = inst::instance_factory{ e.get_ast_ctx(), e.get_exec_ctx() };
 
-                auto inst = inst::instance_factory{ e.get_ast_ctx(), e.get_exec_ctx() }.create(infix_result);
-                ctx.add_variable(m_node.get_name(), std::move(inst));
+                if(expr)
+                {
+                    int infix_result;
+                    auto infix = infix_statement{ *expr, infix_result };
+                    infix.execute(e);
+                    instance = factory.create(infix_result);
+                }
+                else
+                {
+                    instance = factory.create(m_node.get_declared_type());
+                }
+
+                auto& ctx = e.get_exec_ctx();
+                ctx.add_variable(m_node.get_name(), std::move(instance));
             }
         }
     }
