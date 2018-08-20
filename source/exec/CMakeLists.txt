@@ -5,14 +5,18 @@ set(EXEC_SOURCES
     execution_context.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
-    instance.cpp
-    instance.hpp
-    instance_factory.cpp
-    instance_factory.hpp
-    named_instance.cpp
-    named_instance.hpp
     scope_context.cpp
     scope_context.hpp
+
+    instance/instance.hpp
+    instance/unnamed_instance.cpp
+    instance/unnamed_instance.hpp
+    instance/instances_holder.cpp
+    instance/instances_holder.hpp
+    instance/instance_factory.cpp
+    instance/instance_factory.hpp
+    instance/named_instance.cpp
+    instance/named_instance.hpp
 
     onp/infix_to_onp.cpp
     onp/infix_to_onp.hpp

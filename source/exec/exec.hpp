@@ -16,7 +16,10 @@ namespace cmsl
 
     namespace exec
     {
-        class instance;
+        namespace inst
+        {
+            class instance;
+        }
 
         class executor
         {
@@ -26,7 +29,7 @@ namespace cmsl
             void set_function_return_value(int value);
             execution_context& get_exec_ctx();
             const ast::ast_context& get_ast_ctx() const;
-            void function_call(const ast::function_node& fun, std::vector<std::unique_ptr<instance>> parameters);
+            void function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters);
             int get_function_return_value() const;
 
         private:

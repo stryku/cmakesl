@@ -5,15 +5,12 @@
 #include "errors/errors_observer.hpp"
 #include "ast/ast_builder.hpp"
 #include "ast/builtin_ast_context.hpp"
-#include "ast/block_node.hpp"
 #include "ast/return_node.hpp"
 #include "ast/declaration_node.hpp"
-#include "exec/instance.hpp"
 
 #include "exec/stmt/return_statement.hpp"
 #include "exec/stmt/declaration_statement.hpp"
 
-#include <cassert>
 #include <iostream>
 
 namespace cmsl
@@ -33,10 +30,9 @@ namespace cmsl
             function_call(*main_function, {});
             const auto main_result = m_function_return_value;
             return main_result;
-            return 0;
         }
 
-        void executor::function_call(const ast::function_node& fun, std::vector<std::unique_ptr<instance>> parameters)
+        void executor::function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters)
         {
             m_ast_context = &fun.get_ast_context();
             m_callstack.push({ &fun, execution_context{} });
@@ -50,7 +46,7 @@ namespace cmsl
             for (auto i = 0u; i < params_count; ++i)
             {
                 get_exec_ctx().add_variable(params_decl[i].name.str(),
-                                            std::move(parameters[i]));
+                                            parameters[i]->copy());
 
             }
 
@@ -76,7 +72,6 @@ namespace cmsl
                     return_from_function();
                     return true;
                 }
-                break;
 
                 case ast::ast_node_type::declaration:
                 {
