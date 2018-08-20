@@ -53,9 +53,7 @@ namespace cmsl
             private:
                 void execute_function_call(const ast::function_node& fun);
                 stack_entry_t get_top_and_pop();
-                inst::instance_factory get_factory();
                 inst::instance* apply_operator(const stack_entry_t& lhs, token_type_t op, const stack_entry_t& rhs);
-                inst::instance* apply_dot_operator(inst::instance* lhs, inst::instance* rhs);
 
             private:
                 const tokens_container_t& m_tokens;

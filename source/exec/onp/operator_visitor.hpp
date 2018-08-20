@@ -41,9 +41,14 @@ namespace cmsl
                                           instances_holder_t& instances);
 
                 instance_t* operator()(instance_t* lhs, instance_t* rhs);
-                instance_t* operator() (instance_t* lhs, const token_t& token);
+                instance_t* operator()(instance_t* lhs, const token_t& rhs);
                 instance_t* operator()(const token_t& lhs, const token_t& rhs);
                 instance_t* operator()(const token_t& lhs, instance_t* rhs);
+
+            private:
+                instance_t* get_instance(const token_t& token);
+                instance_t* handle_plus_operator(instance_t* lhs, instance_t* rhs);
+                instance_t* handle_dot_operator(instance_t* lhs, const token_t& rhs);
 
             private:
                 token_type_t m_operator;

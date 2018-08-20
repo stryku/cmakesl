@@ -95,17 +95,6 @@ namespace cmsl
                 auto visitor = operator_visitor{ op, m_exec.get_exec_ctx(), m_instances };
                 return boost::apply_visitor(visitor, lhs, rhs);
             }
-
-            inst::instance_factory onp_executor::get_factory()
-            {
-                return inst::instance_factory{ m_exec.get_ast_ctx(), m_exec.get_exec_ctx() };
-            }
-
-            inst::instance* onp_executor::apply_dot_operator(inst::instance* lhs, inst::instance* rhs)
-            {
-                return nullptr;
-            }
-
         }
     }
 }
