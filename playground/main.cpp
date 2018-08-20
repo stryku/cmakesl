@@ -14,8 +14,9 @@ int main()
         ""
         "int main()"
         "{"
+        "    cl_foo foo;"
         "    int a = 4+2;"
-        "    return a + 4;"
+        "    return a + foo.foo_a;"
         "}";
 
     cmsl::exec::executor exec;

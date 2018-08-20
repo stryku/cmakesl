@@ -11,8 +11,8 @@ namespace cmsl
         {
             unnamed_instance::unnamed_instance(const ast::type &type)
                 : m_kind{ type.is_builtin() ? kind::fundamental : kind::user }
-                , m_type{type}
-                , m_data{get_init_data()}
+                , m_type{ type }
+                , m_data{ get_init_data() }
             {}
 
             unnamed_instance::unnamed_instance(kind k, const ast::type &type)
