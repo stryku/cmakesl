@@ -4,6 +4,7 @@
 //#include "ast/expr/constant_expression.hpp"
 //#include "ast/expr/infix_node.hpp"
 #include "lexer/token/token.hpp"
+#include "ast/class_type.hpp"
 
 //#include "ast/binary_operator.hpp"
 //#include "ast/integral_constant.hpp"
@@ -33,8 +34,16 @@ namespace cmsl
 
             while(!m_parser->is_at_end())
             {
-                auto fun = m_parser->get_function(*ctx);
-                ctx->add_function(std::move(fun));
+                if (auto cl = m_parser->try_get_class_node(*ctx))
+                {
+                    auto cl_type = std::make_unique<class_type>(std::move(cl));
+                    ctx->add_type(std::move(cl_type));
+                }
+                else if (auto fun = m_parser->get_function(*ctx))
+                {
+                    ctx->add_function(std::move(fun));
+                }
+
             }
 
             return std::move(ctx);

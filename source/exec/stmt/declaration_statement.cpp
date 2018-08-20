@@ -3,6 +3,7 @@
 #include "ast/declaration_node.hpp"
 #include "exec/exec.hpp"
 #include "exec/stmt/infix_statement.hpp"
+#include "exec/instance/instance_factory.hpp"
 
 namespace cmsl
 {
@@ -16,12 +17,24 @@ namespace cmsl
 
             void declaration_statement::execute(executor& e)
             {
-                const auto& expr = m_node.get_expression();
-                int infix_result;
-                auto infix = infix_statement{ expr, infix_result };
-                infix.execute(e);
+                const auto expr = m_node.get_expression();
+                std::unique_ptr<inst::instance> instance;
+                auto factory = inst::instance_factory{ e.get_ast_ctx(), e.get_exec_ctx() };
+
+                if(expr)
+                {
+                    int infix_result;
+                    auto infix = infix_statement{ *expr, infix_result };
+                    infix.execute(e);
+                    instance = factory.create(infix_result);
+                }
+                else
+                {
+                    instance = factory.create(m_node.get_declared_type());
+                }
+
                 auto& ctx = e.get_exec_ctx();
-                ctx.add_variable(m_node.get_name(), infix_result);
+                ctx.add_variable(m_node.get_name(), std::move(instance));
             }
         }
     }

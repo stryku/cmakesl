@@ -10,15 +10,15 @@ namespace cmsl
             : m_parent{ parent }
         {}
 
-        void scope_context::add_variable(cmsl::string_view name, int value)
+        void scope_context::add_variable(cmsl::string_view name, std::unique_ptr<inst::instance> inst)
         {
-            m_variables[name] = value;
+            m_variables[name] = std::move(inst);
         }
 
-        int* scope_context::get_variable(cmsl::string_view name)
+        inst::instance* scope_context::get_variable(cmsl::string_view name)
         {
             const auto it = m_variables.find(name);
-            return it != m_variables.cend() ? &it->second : nullptr;
+            return it != m_variables.cend() ? it->second.get() : nullptr;
         }
 
         bool scope_context::variable_exists(cmsl::string_view name) const

@@ -19,10 +19,10 @@ namespace cmsl
         {
         public:
             function_node(ast_context& ctx,
-                     type return_type,
-                     cmsl::string_view name,
-                     std::vector<parameter_declaration> params,
-                     std::unique_ptr<block_node> body);
+                          type return_type,
+                          cmsl::string_view name,
+                          std::vector<parameter_declaration> params,
+                          std::unique_ptr<block_node> body);
 
             cmsl::string_view get_name() const;
             const block_node& get_body() const;

@@ -23,6 +23,11 @@ namespace cmsl
 
     namespace exec
     {
+        namespace onp
+        {
+            struct onp_entry;
+        }
+
         namespace stmt
         {
             class infix_statement : public statement
