@@ -75,14 +75,15 @@ namespace cmsl
                 }
                 else if (token_type == token_type_t::identifier)
                 {
-                    const auto fun = m_ast_ctx.find_function(token.str());
-                    if (!fun)
+                    if(is_next(token_type_t::open_paren))
                     {
-                        m_out.emplace_back(token);
+                        // Assume function call
+                        convert_function_call();
                     }
                     else
                     {
-                        convert_function_call();
+                        // Assume variable access
+                        m_out.emplace_back(token);
                     }
                 }
                 else if (is_operator(token_type))
@@ -168,6 +169,12 @@ namespace cmsl
                 auto val = m_stack.top();
                 m_stack.pop();
                 return val;
+            }
+
+            bool infix_to_onp::is_next(token_type_t token_type) const
+            {
+                auto next_it = std::next(m_token);
+                return next_it != m_end && next_it->get_type() == token_type;
             }
         }
     }

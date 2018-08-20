@@ -40,6 +40,8 @@ namespace cmsl
 
                 lexer::token::token get_top_and_pop();
 
+                bool is_next(token_type_t token_type) const;
+
             private:
                 tokens_container_t::const_iterator m_token;
                 tokens_container_t::const_iterator m_end;
