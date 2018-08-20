@@ -21,6 +21,7 @@ namespace cmsl
 
             public:
 
+                explicit unnamed_instance(const ast::type &type);
                 explicit unnamed_instance(kind k, const ast::type &type);
                 explicit unnamed_instance(const ast::type &type, int value);
                 explicit unnamed_instance(const ast::type &type, members_t members);
@@ -34,12 +35,14 @@ namespace cmsl
                 bool is_fundamental() const;
 
             private:
-                members_t copy_members() const;
                 data_t get_init_data() const;
                 data_t get_init_data(int val) const;
                 data_t get_init_data(members_t m_members) const;
                 void expect_fundamental() const;
                 void expect_user() const;
+
+                members_t copy_members() const;
+                members_t create_init_members() const;
 
             private:
                 kind m_kind;

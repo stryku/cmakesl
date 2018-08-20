@@ -14,6 +14,8 @@ namespace cmsl
         public:
             class_type(std::unique_ptr<class_node> node);
 
+            const std::vector<member_declaration>& get_members_decl() const;
+
         private:
             std::unique_ptr<class_node> m_node;
         };
