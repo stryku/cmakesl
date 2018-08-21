@@ -475,16 +475,26 @@ namespace cmsl
 
 
             std::vector<member_declaration> members;
+            type::functions_t functions;
 
             while (!current_is(token_type_t::close_brace))
             {
-                auto member = get_class_member_declaration(ctx);
-                if (!member)
+                if(class_function_starts())
                 {
-                    return nullptr;
+                    auto fun = get_function(ctx);
+                    const auto name = fun->get_name();
+                    functions[name] = std::move(fun);
                 }
+                else
+                {
+                    auto member = get_class_member_declaration(ctx);
+                    if (!member)
+                    {
+                        return nullptr;
+                    }
 
-                members.emplace_back(std::move(*member));
+                    members.emplace_back(std::move(*member));
+                }
             }
 
             if (!eat(token_type_t::close_brace))
@@ -500,6 +510,13 @@ namespace cmsl
             }
 
             return std::make_unique<class_node>(name->str(), std::move(members));
+        }
+
+        bool parser::class_function_starts() const
+        {
+            // type name (
+            //           ^
+            return peek(2u) == token_type_t::open_paren;
         }
 
         boost::optional<member_declaration> parser::get_class_member_declaration(ast_context& ctx)

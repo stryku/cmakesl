@@ -8,6 +8,11 @@ int main()
     const auto source =
         "class cl_foo"
         "{"
+        "    int sum()"
+        "    {"
+        "        return foo_a + foo_b;"
+        "    }"
+        ""
         "    int foo_a = 5;"
         "    int foo_b = 30;"
         "};"
