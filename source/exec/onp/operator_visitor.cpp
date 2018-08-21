@@ -3,6 +3,7 @@
 #include "exec/instance/instances_holder.hpp"
 #include "exec/execution_context.hpp"
 #include "exec/onp/id_access.hpp"
+#include "exec/onp/onp_executor.hpp"
 
 namespace cmsl
 {
@@ -83,7 +84,7 @@ namespace cmsl
             {
                 if(lhs->has_function(rhs.name))
                 {
-                    return nullptr;
+                    return m_function_caller.execute_function_call(*lhs->get_function(rhs.name));
                 }
                 else
                 {
