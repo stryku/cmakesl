@@ -28,7 +28,15 @@ namespace cmsl
 
         bool type::has_function(cmsl::string_view name) const
         {
-            return false; // todo store methods
+            return get_function(name) != nullptr;
+        }
+
+        const function_node* type::get_function(cmsl::string_view name) const
+        {
+            auto found = m_functions.find(name);
+            return found != m_functions.cend()
+                   ? found->second.get()
+                   : nullptr;
         }
     }
 }

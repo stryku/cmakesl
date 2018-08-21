@@ -2,7 +2,6 @@
 
 #include "ast/ast_node.hpp"
 #include "ast/parameter_declaration.hpp"
-#include "ast/type.hpp"
 #include "ast/block_node.hpp"
 
 #include "lexer/token/token.hpp"
@@ -14,12 +13,13 @@ namespace cmsl
     namespace ast
     {
         class ast_context;
+        class type;
 
         class function_node : public ast_node
         {
         public:
             function_node(ast_context& ctx,
-                          type return_type,
+                          const type& return_type,
                           cmsl::string_view name,
                           std::vector<parameter_declaration> params,
                           std::unique_ptr<block_node> body);
@@ -33,7 +33,7 @@ namespace cmsl
 
         private:
             ast_context& m_ast_context;
-            type m_return_type;
+            const type& m_return_type;
             cmsl::string_view m_name;
             std::vector<parameter_declaration> m_params;
             std::unique_ptr<block_node> m_body;

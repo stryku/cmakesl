@@ -6,7 +6,7 @@ namespace cmsl
     namespace ast
     {
         function_node::function_node(ast_context& ctx,
-                                     type return_type,
+                                     const type& return_type,
                                      cmsl::string_view name,
                                      std::vector<parameter_declaration> params,
                                      std::unique_ptr<block_node> body)
