@@ -11,11 +11,9 @@ namespace cmsl
 
         class type
         {
-        private:
-            using functions_t = string_view_map<std::unique_ptr<function_node>>;
-
         public:
             using token_type_t = lexer::token::token_type;
+            using functions_t = string_view_map<std::unique_ptr<function_node>>;
 
             explicit type(lexer::token::token token);
             explicit type(cmsl::string_view name, type_kind kind);

@@ -31,7 +31,6 @@ namespace cmsl
             auto ctx = std::make_unique<ast_context>(&builtin_ast_ctx);
             m_parser = std::make_unique<parser>(err_observer, tokens);
 
-
             while(!m_parser->is_at_end())
             {
                 if (auto cl = m_parser->try_get_class_node(*ctx))
