@@ -25,5 +25,10 @@ namespace cmsl
         {
             return m_name;
         }
+
+        bool type::has_function(cmsl::string_view name) const
+        {
+            return false; // todo store methods
+        }
     }
 }

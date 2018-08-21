@@ -145,6 +145,11 @@ namespace cmsl
 
                 return members;
             }
+
+            bool unnamed_instance::has_function(cmsl::string_view name) const
+            {
+                return m_type.has_function(name);
+            }
         }
     }
 }
