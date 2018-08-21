@@ -28,19 +28,8 @@ namespace cmsl
 
         namespace onp
         {
-            namespace details
-            {
-                class operator_handler
-                {
-                public:
-                    template <typename... Args>
-                    auto operator()(Args&&... args)
-                    {
-
-                    }
-                private:
-                };
-            }
+            class id_access;
+            class onp_executor;
 
             class operator_visitor
             {
@@ -55,23 +44,25 @@ namespace cmsl
             public:
                 explicit operator_visitor(token_type_t op,
                                           execution_context_t& exec_ctx,
-                                          instances_holder_t& instances);
+                                          instances_holder_t& instances,
+                                          onp_executor& function_caller);
 
                 instance_t* operator()(instance_t* lhs, instance_t* rhs);
-                instance_t* operator()(instance_t* lhs, const token_t& rhs);
-                instance_t* operator()(const token_t& lhs, const token_t& rhs);
-                instance_t* operator()(const token_t& lhs, instance_t* rhs);
+                instance_t* operator()(instance_t* lhs, id_access& rhs);
+                instance_t* operator()(id_access& lhs, id_access& rhs);
+                instance_t* operator()(id_access& lhs, instance_t* rhs);
 
             private:
-                instance_t* get_instance(const token_t& token);
+                instance_t* get_instance(id_access& token);
                 instance_t* handle_plus_operator(instance_t* lhs, instance_t* rhs);
-                instance_t* handle_dot_operator(instance_t* lhs, const token_t& rhs);
+                instance_t* handle_dot_operator(instance_t* lhs, id_access& rhs);
                 instance_t* handle_equal_operator(instance_t* lhs, instance_t* rhs);
 
             private:
                 token_type_t m_operator;
                 execution_context_t& m_exec_ctx;
                 instances_holder_t& m_instances;
+                onp_executor& m_function_caller;
             };
         }
     }
