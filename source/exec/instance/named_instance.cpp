@@ -39,6 +39,11 @@ namespace cmsl
             {
                 return m_instance->has_function(name);
             }
+
+            const ast::function_node* named_instance::get_function(cmsl::string_view name) const
+            {
+                return m_instance->get_function(name);
+            }
         }
     }
 }

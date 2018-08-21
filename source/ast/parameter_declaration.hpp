@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ast/type.hpp"
 #include "lexer/token/token.hpp"
 
 namespace cmsl
 {
     namespace ast
     {
+        class type;
         struct parameter_declaration
         {
             const type* param_type;

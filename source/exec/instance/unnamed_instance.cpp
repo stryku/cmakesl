@@ -150,6 +150,11 @@ namespace cmsl
             {
                 return m_type.has_function(name);
             }
+
+            const ast::function_node* unnamed_instance::get_function(cmsl::string_view name) const
+            {
+                return m_type.get_function(name);
+            }
         }
     }
 }
