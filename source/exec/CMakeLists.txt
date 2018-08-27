@@ -5,8 +5,8 @@ set(EXEC_SOURCES
     execution_context.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
-    scope_context.cpp
-    scope_context.hpp
+        scope_context.cpp
+        scope_context.hpp
 
     instance/instance.hpp
     instance/unnamed_instance.cpp

@@ -50,7 +50,7 @@ namespace cmsl
                 }
             }
 
-            inst::instance* onp_executor::execute_function_call(const ast::function_node& fun)
+            std::vector<inst::instance*> onp_executor::prepare_parameters_for_call(const ast::function_node& fun)
             {
                 auto& exec_ctx = m_exec.get_exec_ctx();
                 std::vector<inst::instance*> params;
@@ -64,6 +64,21 @@ namespace cmsl
                 // Parameters are popped from stack in reverse order
                 std::reverse(std::begin(params), std::end(params));
 
+                return params;
+            }
+
+            inst::instance* onp_executor::execute_member_function_call(const ast::function_node& fun, inst::instance* class_instance)
+            {
+                auto params = prepare_parameters_for_call(fun);
+                m_exec.member_function_call(fun, std::move(params), class_instance);
+
+                const auto ret_val = m_exec.get_function_return_value();
+                return m_instances.create(ret_val);
+            }
+
+            inst::instance* onp_executor::execute_function_call(const ast::function_node& fun)
+            {
+                auto params = prepare_parameters_for_call(fun);
                 m_exec.function_call(fun, std::move(params));
 
                 const auto ret_val = m_exec.get_function_return_value();

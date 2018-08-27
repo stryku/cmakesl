@@ -51,10 +51,12 @@ namespace cmsl
 
                 void execute();
                 inst::instance* execute_function_call(const ast::function_node& fun);
+                inst::instance* execute_member_function_call(const ast::function_node& fun, inst::instance* class_instance);
 
             private:
                 stack_entry_t get_top_and_pop();
                 inst::instance* apply_operator(stack_entry_t& lhs, token_type_t op, stack_entry_t& rhs);
+                std::vector<inst::instance*> prepare_parameters_for_call(const ast::function_node& fun);
 
             private:
                 const tokens_container_t& m_tokens;

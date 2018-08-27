@@ -30,11 +30,13 @@ namespace cmsl
             execution_context& get_exec_ctx();
             const ast::ast_context& get_ast_ctx() const;
             void function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters);
+            void member_function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters, inst::instance* class_instance);
             int get_function_return_value() const;
 
         private:
             void return_from_function();
             bool execute_function_expression(ast::ast_node& expr);
+            void execute_function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters);
 
         private:
             struct callstack_frame

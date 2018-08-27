@@ -1,6 +1,7 @@
 #include "ast/type.hpp"
 #include "ast/type_kind.hpp"
 #include "common/algorithm.hpp"
+#include "ast/ast_context.hpp"
 
 namespace cmsl
 {
@@ -9,11 +10,13 @@ namespace cmsl
         type::type(lexer::token::token token)
             : m_name{ token.str() }
             , m_kind{ type_kind_from_string(m_name) }
+            , m_ast_ctx{ nullptr }
         {}
 
-        type::type(cmsl::string_view name, type_kind kind)
+        type::type(cmsl::string_view name, type_kind kind, const ast_context* ast_ctx)
             : m_name{ name }
             , m_kind{ kind }
+            , m_ast_ctx{ ast_ctx }
         {}
 
         bool type::is_builtin() const
@@ -33,10 +36,7 @@ namespace cmsl
 
         const function_node* type::get_function(cmsl::string_view name) const
         {
-            auto found = m_functions.find(name);
-            return found != m_functions.cend()
-                   ? found->second.get()
-                   : nullptr;
+            return m_ast_ctx->find_function(name);
         }
     }
 }
