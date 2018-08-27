@@ -20,6 +20,7 @@ namespace cmsl
             bool variable_exists(cmsl::string_view name) const;
 
             void enter_scope();
+            void enter_member_function_scope(instance_t* class_instance);
             void leave_scope();
 
         private:

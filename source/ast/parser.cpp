@@ -457,7 +457,6 @@ namespace cmsl
         {
             if (!eat(token_type_t::kw_class))
             {
-                raise_error();
                 return nullptr;
             }
 
@@ -469,21 +468,19 @@ namespace cmsl
 
             if (!eat(token_type_t::open_brace))
             {
-                raise_error();
                 return nullptr;
             }
 
 
             std::vector<member_declaration> members;
-            type::functions_t functions;
+            auto class_ast_ctx = std::make_unique<ast_context>(&ctx);
 
             while (!current_is(token_type_t::close_brace))
             {
                 if(class_function_starts())
                 {
                     auto fun = get_function(ctx);
-                    const auto name = fun->get_name();
-                    functions[name] = std::move(fun);
+                    class_ast_ctx->add_function(std::move(fun));
                 }
                 else
                 {
@@ -509,12 +506,12 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<class_node>(name->str(), std::move(members));
+            return std::make_unique<class_node>(std::move(class_ast_ctx), name->str(), std::move(members));
         }
 
         bool parser::class_function_starts() const
         {
-            // type name (
+            // return_type name (
             //           ^
             return peek(2u) == token_type_t::open_paren;
         }

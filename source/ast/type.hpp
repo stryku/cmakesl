@@ -8,15 +8,15 @@ namespace cmsl
     namespace ast
     {
         enum class type_kind;
+        class ast_context;
 
         class type
         {
         public:
             using token_type_t = lexer::token::token_type;
-            using functions_t = string_view_map<std::unique_ptr<function_node>>;
 
             explicit type(lexer::token::token token);
-            explicit type(cmsl::string_view name, type_kind kind);
+            explicit type(cmsl::string_view name, type_kind kind, const ast_context* ast_ctx);
             virtual ~type() {}
 
             bool is_builtin() const; // todo consider rename to is_fundamental
@@ -29,7 +29,7 @@ namespace cmsl
         private:
             cmsl::string_view m_name;
             type_kind m_kind;
-            functions_t m_functions;
+            const ast_context* m_ast_ctx;
         };
     }
 }

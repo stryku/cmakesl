@@ -34,11 +34,8 @@ namespace cmsl
             return main_result;
         }
 
-        void executor::function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters)
+        void executor::execute_function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters)
         {
-            m_ast_context = &fun.get_ast_context();
-            m_callstack.push({ &fun, execution_context{} });
-            get_exec_ctx().enter_scope();
             auto& fun_body = fun.get_body();
             const auto expressions = fun_body.get_expressions();
 
@@ -49,7 +46,6 @@ namespace cmsl
             {
                 get_exec_ctx().add_variable(params_decl[i].name.str(),
                                             parameters[i]->copy());
-
             }
 
             for (auto expr : expressions)
@@ -60,7 +56,25 @@ namespace cmsl
                     return;
                 }
             }
-            get_exec_ctx().leave_scope();
+        }
+
+
+        void executor::member_function_call(const ast::function_node& fun,
+                                            std::vector<inst::instance*> parameters,
+                                            inst::instance* class_instance)
+        {
+            m_ast_context = &fun.get_ast_context();
+            m_callstack.push({ &fun, execution_context{} });
+            get_exec_ctx().enter_member_function_scope(class_instance);
+            execute_function_call(fun, std::move(parameters));
+        }
+
+        void executor::function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters)
+        {
+            m_ast_context = &fun.get_ast_context();
+            m_callstack.push({ &fun, execution_context{} });
+            get_exec_ctx().enter_scope();
+            execute_function_call(fun, std::move(parameters));
         }
 
         bool executor::execute_function_expression(ast::ast_node& expr)
@@ -104,6 +118,7 @@ namespace cmsl
 
         void executor::return_from_function()
         {
+            get_exec_ctx().leave_scope();
             m_callstack.pop();
         }
 
