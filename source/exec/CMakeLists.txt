@@ -37,6 +37,8 @@ set(EXEC_SOURCES
     stmt/return_statement.cpp
     stmt/return_statement.hpp
     stmt/statement.hpp
+    stmt/while_statement.cpp
+    stmt/while_statement.hpp
 ) 
 
 add_library(exec ${EXEC_SOURCES})
