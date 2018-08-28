@@ -1,11 +1,10 @@
 #include "ast/builtin_ast_context.hpp"
-#include "lexer/token/token.hpp"
 #include "errors/errors_observer.hpp"
 #include "errors_observer_mock/errors_observer_mock.hpp"
 #include "ast/parser.hpp"
-#include "ast/ast_node.hpp"
 #include "ast/infix_node.hpp"
 #include "ast/member_declaration.hpp"
+#include "ast/if_else_node.hpp"
 
 #include "test/common/tokens.hpp"
 
@@ -367,6 +366,53 @@ namespace cmsl
                     {
                         builtin_ctx_t ctx;
                         (void)parser.get_class_member_declaration(ctx);
+                    });
+                }
+            }
+
+            namespace get_if_else_node
+            {
+                TEST(ParserError, GetIfElseNode_MissingConditionOpenParen_ReportError)
+                {
+                    // if 1) {}
+                    const auto tokens = token_container_t{ token_kw_if(), token_integer("1"), token_close_paren(), token_open_brace(), token_close_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_if_else_node(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetIfElseNode_MissingConditionCloseParen_ReportError)
+                {
+                    // if (1 {}
+                    const auto tokens = token_container_t{ token_kw_if(), token_open_paren(), token_integer("1"), token_open_brace(), token_close_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_if_else_node(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetIfElseNode_MissingBlockOpenBrace_ReportError)
+                {
+                    // if (1) }
+                    const auto tokens = token_container_t{ token_kw_if(), token_open_paren(), token_integer("1"), token_close_paren(), token_close_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_if_else_node(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetIfElseNode_MissingBlockCloseBrace_ReportError)
+                {
+                    // if (1) {
+                    const auto tokens = token_container_t{ token_kw_if(), token_open_paren(), token_integer("1"), token_close_paren(), token_open_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_if_else_node(ctx);
                     });
                 }
             }

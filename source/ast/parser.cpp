@@ -9,6 +9,8 @@
 #include "ast/declaration_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/member_declaration.hpp"
+#include "ast/if_else_node.hpp"
+#include "ast/conditional_node.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -245,6 +247,12 @@ namespace cmsl
                 eat();
             }
 
+            if(infix_tokens.empty())
+            {
+                raise_error(); // todo raise missing infix expression error
+                return nullptr;
+            }
+
             if (!eat(token_type_t::semicolon))
             {
                 return nullptr;
@@ -309,6 +317,10 @@ namespace cmsl
                 else if (declaration_starts(ctx))
                 {
                     expr = get_declaration(ctx);
+                }
+                else if(current_is(token_type_t::kw_if))
+                {
+                    expr = get_if_else_node(ctx);
                 }
                 else
                 {
@@ -558,6 +570,129 @@ namespace cmsl
             return current_is(token_type_t::kw_class)
                 ? get_class(ctx)
                 : nullptr;
+        }
+
+        std::unique_ptr<if_else_node> parser::get_if_else_node(ast_context& ctx)
+        {
+            if(!expect_token(token_type_t::kw_if))
+            {
+                return nullptr;
+            }
+
+            std::vector<std::unique_ptr<conditional_node>> ifs;
+
+            while(current_is(token_type_t::kw_if))
+            {
+                if(!eat(token_type_t::kw_if))
+                {
+                    return nullptr;
+                }
+
+                auto condition = get_condition_infix_node();
+                if(!condition)
+                {
+                    return nullptr;
+                }
+
+                auto block = get_block(ctx);
+                if(!block)
+                {
+                    return nullptr;
+                }
+
+                auto if_node = std::make_unique<conditional_node>(std::move(condition), std::move(block));
+                ifs.emplace_back(std::move(if_node));
+
+                if(current_is(token_type_t::kw_else))
+                {
+                    const auto next_type = peek(1);
+                    if(next_type == token_type_t::kw_if)
+                    {
+                        eat(token_type_t::kw_else);
+                    }
+                }
+            }
+
+            std::unique_ptr<block_node> else_node;
+            if(current_is(token_type_t::kw_else))
+            {
+                eat(token_type_t::kw_else);
+                else_node = get_block(ctx);
+            }
+
+            return std::make_unique<if_else_node>(std::move(ifs), std::move(else_node));
+        }
+
+        boost::optional<parser::token_it> parser::find_matching_close_paren(const std::vector<parser::token_type_t> &forbidden_tokens) const
+        {
+            // todo handle comments
+
+            // Assume starting on open paren that we want to match.
+            int counter{};
+            auto current = m_token;
+
+            do
+            {
+                if(current == m_end)
+                {
+                    return boost::none;
+                }
+
+                const auto type = current->get_type();
+                if(type == token_type_t::open_paren)
+                {
+                    ++counter;
+                }
+                else if(type == token_type_t::close_paren)
+                {
+                    --counter;
+                }
+                else if(contains(forbidden_tokens, type))
+                {
+                    return boost::none;
+                }
+
+                if(counter == 0)
+                {
+                    return current;
+                }
+
+                ++current;
+            }while(counter != 0);
+
+            return current;
+        }
+
+        std::unique_ptr<infix_node> parser::get_condition_infix_node()
+        {
+            if(!expect_token(token_type_t::open_paren))
+            {
+                return nullptr;
+            }
+
+            const auto forbidden_tokens = std::vector<parser::token_type_t>{
+                    token_type_t::open_brace,
+                    token_type_t::close_brace,
+                    token_type_t::semicolon };
+
+            auto condition_close_paren = find_matching_close_paren(forbidden_tokens);
+
+            if(!condition_close_paren)
+            {
+                raise_error(); // todo raise paren match not found error
+                return nullptr;
+            }
+
+            // m_token points at open paren, let's eat it
+            eat(token_type_t::open_paren);
+
+            auto condition_tokens = token_container_t{ m_token, *condition_close_paren };
+            auto infix = std::make_unique<infix_node>(std::move(condition_tokens));
+
+            // Point to token after the condition
+            m_token = std::next(*condition_close_paren);
+
+            return std::move(infix);
         }
     }
 }

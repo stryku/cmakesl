@@ -1,16 +1,13 @@
 #include "ast/builtin_ast_context.hpp"
-#include "ast/type.hpp"
 #include "ast/parser.hpp"
 #include "errors/errors_observer.hpp"
 #include "lexer/lexer.hpp"
-#include "lexer/token/token.hpp"
 #include "ast/member_declaration.hpp"
+#include "ast/if_else_node.hpp"
 
 #include "test/common/tokens.hpp"
 
 #include <gmock/gmock.h>
-
-#include <sstream>
 
 namespace cmsl
 {
@@ -130,6 +127,113 @@ namespace cmsl
                     const auto member_initialized = static_cast<bool>(member);
                     ASSERT_THAT(member_initialized, true);
                     ASSERT_NE(member->init_expr.get(), nullptr);
+                }
+            }
+
+            namespace get_if_else_node
+            {
+                TEST(Parser_GetIfElseNode, OnlyIf_GetOneConditionalAndWithoutElse)
+                {
+                    // if(1) {}
+                    const auto tokens = tokens_container_t{
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace()
+                    };
+
+                    auto p = parser_t{ dummy_err_observer, tokens };
+                    builtin_ctx_t ctx;
+                    auto if_node = p.get_if_else_node(ctx);
+                    ASSERT_NE(if_node.get(), nullptr);
+
+                    ASSERT_THAT(if_node->get_ifs().size(), 1u);
+                    ASSERT_THAT(if_node->get_else(), nullptr);
+                }
+
+                TEST(Parser_GetIfElseNode, IfWithElse_GetOneConditionalAndWithElse)
+                {
+                    // if(1) {} else {}
+                    const auto tokens = tokens_container_t{
+                            token_kw_if(),
+                            token_open_paren(),
+                            token_integer("1"),
+                            token_close_paren(),
+                            token_open_brace(),
+                            token_close_brace(),
+                            token_kw_else(),
+                            token_open_brace(),
+                            token_close_brace(),
+                    };
+
+                    auto p = parser_t{ dummy_err_observer, tokens };
+                    builtin_ctx_t ctx;
+                    const auto if_node = p.get_if_else_node(ctx);
+                    ASSERT_NE(if_node.get(), nullptr);
+
+                    ASSERT_THAT(if_node->get_ifs().size(), 1u);
+                    ASSERT_NE(if_node->get_else(), nullptr);
+                }
+
+                TEST(Parser_GetIfElseNode, IfElseIfWithoutElse_GetTwoConditionalsAndWithoutElse)
+                {
+                    // if(1) {} else if(1) {}
+                    const auto tokens = tokens_container_t{
+                            token_kw_if(),
+                            token_open_paren(),
+                            token_integer("1"),
+                            token_close_paren(),
+                            token_open_brace(),
+                            token_close_brace(),
+                            token_kw_else(),
+                            token_kw_if(),
+                            token_open_paren(),
+                            token_integer("1"),
+                            token_close_paren(),
+                            token_open_brace(),
+                            token_close_brace()
+                    };
+
+                    auto p = parser_t{ dummy_err_observer, tokens };
+                    builtin_ctx_t ctx;
+                    const auto if_node = p.get_if_else_node(ctx);
+                    ASSERT_NE(if_node.get(), nullptr);
+
+                    ASSERT_THAT(if_node->get_ifs().size(), 2u);
+                    ASSERT_THAT(if_node->get_else(), nullptr);
+                }
+
+                TEST(Parser_GetIfElseNode, IfElseIfWithElse_GetTwoConditionalsAndWithElse)
+                {
+                    // if(1) {} else if(1) {} else {}
+                    const auto tokens = tokens_container_t{
+                            token_kw_if(),
+                            token_open_paren(),
+                            token_integer("1"),
+                            token_close_paren(),
+                            token_open_brace(),
+                            token_close_brace(),
+                            token_kw_else(),
+                            token_kw_if(),
+                            token_open_paren(),
+                            token_integer("1"),
+                            token_close_paren(),
+                            token_open_brace(),
+                            token_close_brace(),
+                            token_kw_else(),
+                            token_open_brace(),
+                            token_close_brace()
+                    };
+
+                    auto p = parser_t{ dummy_err_observer, tokens };
+                    builtin_ctx_t ctx;
+                    const auto if_node = p.get_if_else_node(ctx);
+                    ASSERT_NE(if_node.get(), nullptr);
+
+                    ASSERT_THAT(if_node->get_ifs().size(), 2u);
+                    ASSERT_NE(if_node->get_else(), nullptr);
                 }
             }
         }

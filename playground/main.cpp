@@ -23,7 +23,8 @@ int main()
         "    int a = 4+2;"
         "    foo.foo_a = 14;"
         "    foo.foo_b = 100;"
-        "    return a + foo.sum(a, a + foo.foo_a);"
+        "    if(0) { return 2; }"
+        "    else { return a + foo.sum(a, a + foo.foo_a); }"
         "}";
 
     cmsl::exec::executor exec;

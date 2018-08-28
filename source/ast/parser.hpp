@@ -26,6 +26,7 @@ namespace cmsl
         class declaration_node;
         class class_node;
         class member_declaration;
+        class if_else_node;
 
         class parser
         {
@@ -45,6 +46,7 @@ namespace cmsl
             std::unique_ptr<declaration_node> get_declaration(ast_context& ctx);
             std::unique_ptr<class_node> get_class(ast_context& ctx);
             boost::optional<member_declaration> get_class_member_declaration(ast_context& ctx);
+            std::unique_ptr<if_else_node> get_if_else_node(ast_context& ctx);
 
             std::unique_ptr<class_node> try_get_class_node(ast_context& ctx);
 
@@ -74,6 +76,10 @@ namespace cmsl
             bool prepare_for_next_parameter_declaration();
 
             boost::optional<lexer::token::token> get_identifier();
+
+            boost::optional<token_it> find_matching_close_paren(const std::vector<token_type_t>& forbidden_tokens) const;
+
+            std::unique_ptr<infix_node> get_condition_infix_node();
 
         private:
             errors::errors_observer& m_err_observer;

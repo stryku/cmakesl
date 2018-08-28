@@ -11,6 +11,8 @@ set(AST_SOURCES
     class_node.hpp
     class_type.cpp
     class_type.hpp
+    conditional_node.cpp
+    conditional_node.hpp
     ast_node_type.hpp
     ast_node.cpp
     ast_node.hpp 
@@ -18,6 +20,8 @@ set(AST_SOURCES
     declaration_node.hpp
     function_node.cpp
     function_node.hpp
+    if_else_node.cpp
+    if_else_node.hpp
     integer_constant.hpp
     integral_constant.hpp
     member_declaration.hpp
