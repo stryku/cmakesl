@@ -164,7 +164,7 @@ namespace cmsl
                     TokenTestState{ "%=", token_type_t::percentequal },
                     TokenTestState{ "!", token_type_t::exclaim },
                     TokenTestState{ "!=", token_type_t::exclaimequal },
-                    TokenTestState{ "^", token_type_t::xor },
+                    TokenTestState{ "^", token_type_t::xor_ },
                     TokenTestState{ "^=", token_type_t::xorequal }
                 );
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Operator, values);
@@ -256,7 +256,11 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(PureKeywordState{ "int", token_type_t::t_int },
-                                                        PureKeywordState{ "real", token_type_t::t_real });
+                                                        PureKeywordState{ "real", token_type_t::t_real },
+                                                        PureKeywordState{ "class", token_type_t::kw_class },
+                                                        PureKeywordState{ "return", token_type_t::kw_return },
+                                                        PureKeywordState{ "if", token_type_t::kw_if },
+                                                        PureKeywordState{ "else", token_type_t::kw_else });
                     INSTANTIATE_TEST_CASE_P(Lexer, PureKeyword, values);
                 }
 
