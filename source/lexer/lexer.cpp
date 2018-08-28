@@ -340,6 +340,8 @@ namespace cmsl
             tokens["real"] = token_t::token_type_t::t_real;
             tokens["return"] = token_t::token_type_t::kw_return;
             tokens["class"] = token_t::token_type_t::kw_class;
+            tokens["if"] = token_t::token_type_t::kw_if;
+            tokens["else"] = token_t::token_type_t::kw_else;
 
             return tokens;
         }
