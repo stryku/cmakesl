@@ -10,6 +10,7 @@
 #include "ast/class_node.hpp"
 #include "ast/member_declaration.hpp"
 #include "ast/if_else_node.hpp"
+#include "ast/conditional_node.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -568,9 +569,39 @@ namespace cmsl
                 return nullptr;
             }
 
+            std::vector<std::unique_ptr<conditional_node>> ifs;
 
+            while(current_is(token_type_t::kw_if))
+            {
+                if(!eat(token_type_t::kw_if))
+                {
+                    return nullptr;
+                }
 
+                // Condition infix expression will be parsed with sorrounding parens. KISS.
+                auto condition = get_infix();
+                auto block = get_block(ctx);
 
+                auto if_node = std::make_unique<conditional_node>(std::move(condition), std::move(block));
+                ifs.emplace_back(std::move(if_node));
+
+                if(current_is(token_type_t::kw_else))
+                {
+                    const auto next_type = peek(1);
+                    if(next_type == token_type_t::kw_if)
+                    {
+                        eat(token_type_t::kw_else);
+                    }
+                }
+            }
+
+            std::unique_ptr<block_node> else_node;
+            if(current_is(token_type_t::kw_else))
+            {
+                else_node = get_block(ctx);
+            }
+
+            return std::make_unique<if_else_node>(std::move(ifs), std::move(else_node));
         }
     }
 }
