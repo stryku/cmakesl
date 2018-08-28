@@ -5,6 +5,7 @@
 #include "ast/infix_node.hpp"
 #include "ast/member_declaration.hpp"
 #include "ast/if_else_node.hpp"
+#include "ast/while_node.hpp"
 
 #include "test/common/tokens.hpp"
 
