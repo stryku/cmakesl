@@ -11,6 +11,8 @@ set(AST_SOURCES
     class_node.hpp
     class_type.cpp
     class_type.hpp
+    conditional_node.cpp
+    conditional_node.hpp
     ast_node_type.hpp
     ast_node.cpp
     ast_node.hpp 

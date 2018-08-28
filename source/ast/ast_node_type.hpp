@@ -11,7 +11,9 @@ namespace cmsl
             ret,
             function,
             block,
-            class_type
+            class_type,
+            if_else,
+            conditional
         };
     }
 }

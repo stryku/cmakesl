@@ -52,7 +52,9 @@ namespace cmsl
                 t_real,
 
                 kw_return,
-                kw_class
+                kw_class,
+                kw_if,
+                kw_else
             };
         }
     }

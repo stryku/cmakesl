@@ -9,6 +9,7 @@
 #include "ast/declaration_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/member_declaration.hpp"
+#include "ast/if_else_node.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -558,6 +559,18 @@ namespace cmsl
             return current_is(token_type_t::kw_class)
                 ? get_class(ctx)
                 : nullptr;
+        }
+
+        std::unique_ptr<if_else_node> parser::get_if_else_node(ast_context& ctx)
+        {
+            if(!expect_token(token_type_t::kw_if))
+            {
+                return nullptr;
+            }
+
+
+
+
         }
     }
 }
