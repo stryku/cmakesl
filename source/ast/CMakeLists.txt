@@ -36,6 +36,8 @@ set(AST_SOURCES
     type.hpp
     type_kind.cpp
     type_kind.hpp
+    while_node.cpp
+    while_node.hpp
 )
 
 add_library(ast ${AST_SOURCES})
