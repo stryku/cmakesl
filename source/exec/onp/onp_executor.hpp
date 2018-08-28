@@ -57,6 +57,7 @@ namespace cmsl
                 stack_entry_t get_top_and_pop();
                 inst::instance* apply_operator(stack_entry_t& lhs, token_type_t op, stack_entry_t& rhs);
                 std::vector<inst::instance*> prepare_parameters_for_call(const ast::function_node& fun);
+                inst::instance* get_instance_from_stack_top();
 
             private:
                 const tokens_container_t& m_tokens;
