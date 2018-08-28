@@ -323,6 +323,10 @@ namespace cmsl
                 {
                     expr = get_if_else_node(ctx);
                 }
+                else if(current_is(token_type_t::kw_while))
+                {
+                    expr = get_while_node(ctx);
+                }
                 else
                 {
                     expr = get_infix();
