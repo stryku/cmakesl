@@ -18,6 +18,8 @@ set(AST_SOURCES
     declaration_node.hpp
     function_node.cpp
     function_node.hpp
+    if_else_node.cpp
+    if_else_node.hpp
     integer_constant.hpp
     integral_constant.hpp
     member_declaration.hpp
