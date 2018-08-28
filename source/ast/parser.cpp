@@ -318,6 +318,10 @@ namespace cmsl
                 {
                     expr = get_declaration(ctx);
                 }
+                else if(current_is(token_type_t::kw_if))
+                {
+                    expr = get_if_else_node(ctx);
+                }
                 else
                 {
                     expr = get_infix();
@@ -646,6 +650,11 @@ namespace cmsl
                 else if(contains(forbidden_tokens, type))
                 {
                     return boost::none;
+                }
+
+                if(counter == 0)
+                {
+                    return current;
                 }
 
                 ++current;
