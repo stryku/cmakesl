@@ -40,25 +40,110 @@ namespace cmsl
                 return m_out;
             }
 
+            lexer::token::token infix_to_onp::get_out_back_and_pop()
+            {
+                const auto tok = m_out.back();
+                m_out.pop_back();
+                return tok;
+            }
+
+            infix_to_onp::tokens_container_t infix_to_onp::extract_access_tokens_from_out()
+            {
+                tokens_container_t access_tokens;
+
+                // Access tokens in onp are e.g.
+                // id id .
+                // id id . id .
+                // id id . id . id . etc...
+
+
+                // Gather them from back of out
+                while(!m_out.empty())
+                {
+                    const auto& back_token = m_out.back();
+                    if(back_token.get_type() == token_type_t::identifier)
+                    {
+                        access_tokens.push_back(get_out_back_and_pop());
+                    }
+                    else if (back_token.get_type() == token_type_t::dot)
+                    {
+                        access_tokens.push_back(get_out_back_and_pop());
+
+                        // After dot there is always one or two identifier tokens. If there are two, this is the end of access tokens
+                        access_tokens.push_back(get_out_back_and_pop());
+
+                        if(m_out.back().get_type() == token_type_t::identifier)
+                        {
+                            // End of access tokens
+                            access_tokens.push_back(get_out_back_and_pop());
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // If we are on constant or operator other than dot, that's the end of access tokens
+                        break;
+                    }
+                }
+
+                // Tokens popped from back are in reverse order
+                std::reverse(std::begin(access_tokens), std::end(access_tokens));
+
+                return access_tokens;
+            }
+
             void infix_to_onp::convert_function_call()
             {
                 const auto fun = *m_token++;
-                m_stack.push(fun);
+                m_out.push_back(fun);
+                if(top_is(token_type_t::dot))
+                {
+                    m_out.push_back(get_top_and_pop());
+                }
+
+                const auto function_access_tokens = extract_access_tokens_from_out();
 
                 if (!eat(token_type_t::open_paren))
                 {
                     // todo raise error
                 }
 
+                // Threat every parameter as separate infix expression
                 while (m_token != m_end && m_token->get_type() != token_type_t::close_paren)
                 {
-                    handle_token(*m_token++);
+                    tokens_container_t param_tokens;
+                    while(m_token != m_end
+                          && m_token->get_type() != token_type_t::close_paren)
+                    {
+                        if(m_token->get_type() == token_type_t::comma)
+                        {
+                            // End of parameter tokens
+                            ++m_token;
+                            break;
+                        }
+                        else
+                        {
+                            param_tokens.push_back(*m_token++);
+                        }
+                    }
+
+                    auto inf_to_onp = infix_to_onp{ param_tokens, m_ast_ctx };
+                    auto param_onp_tokens = inf_to_onp.convert();
+                    copy_tokens_to_out(param_onp_tokens);
                 }
+
+                copy_tokens_to_out(function_access_tokens);
 
                 if (!eat(token_type_t::close_paren))
                 {
                     // todo raise error
                 }
+            }
+
+            void infix_to_onp::copy_tokens_to_out(const tokens_container_t& tokens)
+            {
+                std::copy(std::cbegin(tokens), std::cend(tokens),
+                          std::back_inserter(m_out));
             }
 
             void infix_to_onp::handle_token(const lexer::token::token& token)
@@ -175,6 +260,11 @@ namespace cmsl
             {
                 auto next_it = std::next(m_token);
                 return next_it != m_end && next_it->get_type() == token_type;
+            }
+
+            bool infix_to_onp::top_is(token_type_t token_type) const
+            {
+                return m_stack.empty() ? false : m_stack.top().get_type() == token_type;
             }
         }
     }

@@ -55,6 +55,22 @@ namespace cmsl
                     InfixToOnpState{
                             { token_integer("4"), token_plus(), token_identifier("foo"), token_dot(), token_identifier("bar"), token_dot(), token_identifier("baz") }, // 4 + foo.bar.baz
                             { token_integer("4"), token_identifier("foo"), token_identifier("bar"), token_dot(), token_identifier("baz"), token_dot(), token_plus() } // 4 foo bar . baz . +
+                    },
+                    InfixToOnpState{
+                            { token_identifier("a"), token_plus(), token_identifier("foo"), token_dot(), token_identifier("bar"), token_open_paren(), token_identifier("b"), token_close_paren() }, // a + foo.bar(b)
+                            { token_identifier("a"), token_identifier("b"), token_identifier("foo"), token_identifier("bar"), token_dot(), token_plus() } // a b foo bar . +
+                    },
+                    InfixToOnpState{
+                            { token_identifier("a"), token_plus(),
+                              token_identifier("foo"), token_dot(), token_identifier("bar"),
+                              token_open_paren(),
+                              token_identifier("b"), token_plus(), token_identifier("c"), token_comma(),
+                              token_identifier("d"), token_plus(), token_identifier("e"),
+                              token_close_paren() }, // a + foo.bar(b + c, d + e)
+                            { token_identifier("a"),
+                              token_identifier("b"), token_identifier("c"), token_plus(),
+                              token_identifier("d"), token_identifier("e"), token_plus(),
+                              token_identifier("foo"), token_identifier("bar"), token_dot(), token_plus() } // a b c + d e + foo bar . +
                     }
                 );
 
