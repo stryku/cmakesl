@@ -9,13 +9,15 @@
 #include "ast/return_node.hpp"
 #include "ast/declaration_node.hpp"
 #include "ast/if_else_node.hpp"
+#include "ast/while_node.hpp"
 
 #include "exec/stmt/return_statement.hpp"
 #include "exec/stmt/declaration_statement.hpp"
 #include "exec/stmt/if_else_statement.hpp"
+#include "exec/stmt/infix_statement.hpp"
+#include "exec/stmt/while_statement.hpp"
 
 #include <iostream>
-#include <exec/stmt/infix_statement.hpp>
 
 namespace cmsl
 {
@@ -102,6 +104,13 @@ namespace cmsl
                 {
                     stmt::if_else_statement if_else{ dynamic_cast<ast::if_else_node&>(expr) };
                     if_else.execute(*this);
+                }
+                break;
+
+                case ast::ast_node_type::while_:
+                {
+                    stmt::while_statement while_stmt{ dynamic_cast<ast::while_node&>(expr) };
+                    while_stmt.execute(*this);
                 }
                 break;
 
