@@ -342,6 +342,7 @@ namespace cmsl
             tokens["class"] = token_t::token_type_t::kw_class;
             tokens["if"] = token_t::token_type_t::kw_if;
             tokens["else"] = token_t::token_type_t::kw_else;
+            tokens["while"] = token_t::token_type_t::kw_while;
 
             return tokens;
         }
