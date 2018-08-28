@@ -77,6 +77,10 @@ namespace cmsl
 
             boost::optional<lexer::token::token> get_identifier();
 
+            boost::optional<token_it> find_matching_close_paren(const std::vector<token_type_t>& forbidden_tokens) const;
+
+            std::unique_ptr<infix_node> get_condition_infix_node();
+
         private:
             errors::errors_observer& m_err_observer;
             token_it m_token;
