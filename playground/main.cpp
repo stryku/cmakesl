@@ -8,9 +8,9 @@ int main()
     const auto source =
         "class cl_foo"
         "{"
-        "    int sum()"
+        "    int sum(int param)"
         "    {"
-        "        return foo_a + foo_b;"
+        "        return foo_a + foo_b + param;"
         "    }"
         ""
         "    int foo_a = 5;"
@@ -23,7 +23,7 @@ int main()
         "    int a = 4+2;"
         "    foo.foo_a = 14;"
         "    foo.foo_b = 100;"
-        "    return a + foo.sum();"
+        "    return a + foo.sum(a);"
         "}";
 
     cmsl::exec::executor exec;
