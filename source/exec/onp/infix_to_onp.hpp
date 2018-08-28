@@ -40,6 +40,15 @@ namespace cmsl
 
                 lexer::token::token get_top_and_pop();
 
+                bool is_next(token_type_t token_type) const;
+                bool top_is(token_type_t token_type) const;
+
+                tokens_container_t extract_access_tokens_from_out();
+
+                lexer::token::token get_out_back_and_pop();
+
+                void copy_tokens_to_out(const tokens_container_t& tokens);
+
             private:
                 tokens_container_t::const_iterator m_token;
                 tokens_container_t::const_iterator m_end;

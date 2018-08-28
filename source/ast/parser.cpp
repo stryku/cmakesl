@@ -457,7 +457,6 @@ namespace cmsl
         {
             if (!eat(token_type_t::kw_class))
             {
-                raise_error();
                 return nullptr;
             }
 
@@ -469,22 +468,30 @@ namespace cmsl
 
             if (!eat(token_type_t::open_brace))
             {
-                raise_error();
                 return nullptr;
             }
 
 
             std::vector<member_declaration> members;
+            auto class_ast_ctx = std::make_unique<ast_context>(&ctx);
 
             while (!current_is(token_type_t::close_brace))
             {
-                auto member = get_class_member_declaration(ctx);
-                if (!member)
+                if(class_function_starts())
                 {
-                    return nullptr;
+                    auto fun = get_function(ctx);
+                    class_ast_ctx->add_function(std::move(fun));
                 }
+                else
+                {
+                    auto member = get_class_member_declaration(ctx);
+                    if (!member)
+                    {
+                        return nullptr;
+                    }
 
-                members.emplace_back(std::move(*member));
+                    members.emplace_back(std::move(*member));
+                }
             }
 
             if (!eat(token_type_t::close_brace))
@@ -499,7 +506,14 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<class_node>(name->str(), std::move(members));
+            return std::make_unique<class_node>(std::move(class_ast_ctx), name->str(), std::move(members));
+        }
+
+        bool parser::class_function_starts() const
+        {
+            // return_type name (
+            //           ^
+            return peek(2u) == token_type_t::open_paren;
         }
 
         boost::optional<member_declaration> parser::get_class_member_declaration(ast_context& ctx)

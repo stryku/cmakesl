@@ -32,7 +32,9 @@ namespace cmsl
                 void assign(int val) override;
                 std::unique_ptr<instance> copy() const override;
                 instance *get_member(cmsl::string_view name) override;
+                bool has_function(cmsl::string_view name) const override;
                 bool is_fundamental() const;
+                const ast::function_node* get_function(cmsl::string_view name) const override;
 
             private:
                 data_t get_init_data() const;
