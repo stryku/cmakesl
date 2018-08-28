@@ -598,6 +598,7 @@ namespace cmsl
             std::unique_ptr<block_node> else_node;
             if(current_is(token_type_t::kw_else))
             {
+                eat(token_type_t::kw_else);
                 else_node = get_block(ctx);
             }
 
