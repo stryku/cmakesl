@@ -17,7 +17,7 @@ namespace cmsl
 
             for (const auto pair : builtin_types_kind)
             {
-                add_type(std::make_unique<type>(pair.first, pair.second));
+                add_type(std::make_unique<type>(pair.first, pair.second, nullptr));
             }
         }
     }

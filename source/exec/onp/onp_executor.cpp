@@ -31,12 +31,12 @@ namespace cmsl
                     }
                     else if (token_type == token_type_t::identifier)
                     {
-                        m_stack.push(stack_entry_t{ token });
+                        m_stack.push(stack_entry_t{ id_access{nullptr, token.str() } });
                     }
                     else
                     {
-                        const auto a = get_top_and_pop();
-                        const auto b = get_top_and_pop();
+                        auto a = get_top_and_pop();
+                        auto b = get_top_and_pop();
 
                         auto result = apply_operator(b, token_type, a);
                         m_stack.push(stack_entry_t{ result });
@@ -50,25 +50,66 @@ namespace cmsl
                 }
             }
 
-            void onp_executor::execute_function_call(const ast::function_node& fun)
+            inst::instance* onp_executor::get_instance_from_stack_top()
+            {
+                class visitor : public boost::static_visitor<inst::instance*>
+                {
+                public:
+                    visitor(execution_context& exec_ctx)
+                        : m_exec_ctx{ exec_ctx }
+                    {}
+
+                    inst::instance* operator()(inst::instance* i) const
+                    {
+                        return i;
+                    }
+
+                    inst::instance* operator()(id_access& access) const
+                    {
+                        return access.get_instance(m_exec_ctx);
+                    }
+
+                private:
+                    execution_context& m_exec_ctx;
+                };
+
+                auto top = get_top_and_pop();
+                return boost::apply_visitor(visitor{ m_exec.get_exec_ctx() }, top);
+            }
+
+            std::vector<inst::instance*> onp_executor::prepare_parameters_for_call(const ast::function_node& fun)
             {
                 auto& exec_ctx = m_exec.get_exec_ctx();
                 std::vector<inst::instance*> params;
 
                 for (const auto& param_decl : fun.get_params_declarations())
                 {
-                    auto inst = boost::get<inst::instance*>(get_top_and_pop());
+                    auto inst = get_instance_from_stack_top();
                     params.emplace_back(inst);
                 }
 
-                // Parameters are on stack in reverese order
+                // Parameters are popped from stack in reverse order
                 std::reverse(std::begin(params), std::end(params));
 
+                return params;
+            }
+
+            inst::instance* onp_executor::execute_member_function_call(const ast::function_node& fun, inst::instance* class_instance)
+            {
+                auto params = prepare_parameters_for_call(fun);
+                m_exec.member_function_call(fun, std::move(params), class_instance);
+
+                const auto ret_val = m_exec.get_function_return_value();
+                return m_instances.create(ret_val);
+            }
+
+            inst::instance* onp_executor::execute_function_call(const ast::function_node& fun)
+            {
+                auto params = prepare_parameters_for_call(fun);
                 m_exec.function_call(fun, std::move(params));
 
                 const auto ret_val = m_exec.get_function_return_value();
-                auto inst = m_instances.create(ret_val);
-                m_stack.push(inst);
+                return m_instances.create(ret_val);
             }
 
             onp_executor::stack_entry_t onp_executor::get_top_and_pop()
@@ -78,9 +119,9 @@ namespace cmsl
                 return std::move(entry);
             }
 
-            inst::instance* onp_executor::apply_operator(const stack_entry_t& lhs, token_type_t op, const stack_entry_t& rhs)
+            inst::instance* onp_executor::apply_operator(stack_entry_t& lhs, token_type_t op, stack_entry_t& rhs)
             {
-                auto visitor = operator_visitor{ op, m_exec.get_exec_ctx(), m_instances };
+                auto visitor = operator_visitor{ op, m_exec.get_exec_ctx(), m_instances, *this };
                 return boost::apply_visitor(visitor, lhs, rhs);
             }
         }

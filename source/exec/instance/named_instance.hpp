@@ -21,6 +21,8 @@ namespace cmsl
                 void assign(int val) override;
                 std::unique_ptr<instance> copy() const override;
                 instance* get_member(cmsl::string_view name) override;
+                bool has_function(cmsl::string_view name) const override;
+                const ast::function_node* get_function(cmsl::string_view name) const override;
 
             private:
                 cmsl::string_view m_name;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/function_node.hpp"
 #include "lexer/token/token.hpp"
 
 namespace cmsl
@@ -7,6 +8,7 @@ namespace cmsl
     namespace ast
     {
         enum class type_kind;
+        class ast_context;
 
         class type
         {
@@ -14,16 +16,20 @@ namespace cmsl
             using token_type_t = lexer::token::token_type;
 
             explicit type(lexer::token::token token);
-            explicit type(cmsl::string_view name, type_kind kind);
+            explicit type(cmsl::string_view name, type_kind kind, const ast_context* ast_ctx);
             virtual ~type() {}
 
             bool is_builtin() const; // todo consider rename to is_fundamental
 
             cmsl::string_view get_name() const;
 
+            const function_node* get_function(cmsl::string_view name) const;
+            bool has_function(cmsl::string_view name) const;
+
         private:
             cmsl::string_view m_name;
             type_kind m_kind;
+            const ast_context* m_ast_ctx;
         };
     }
 }

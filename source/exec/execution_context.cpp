@@ -38,5 +38,10 @@ namespace cmsl
         {
             return m_scopes.empty() ? nullptr : &m_scopes.top();
         }
+
+        void execution_context::enter_member_function_scope(instance_t* class_instance)
+        {
+            m_scopes.push(scope_context{ class_instance });
+        }
     }
 }

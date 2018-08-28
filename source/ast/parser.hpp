@@ -65,6 +65,7 @@ namespace cmsl
 
             token_type_t peek(size_t n) const;
             bool declaration_starts(ast_context& ctx) const;
+            bool class_function_starts() const;
 
             void raise_error();
 

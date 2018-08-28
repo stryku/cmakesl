@@ -5,8 +5,8 @@ set(EXEC_SOURCES
     execution_context.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
-    scope_context.cpp
-    scope_context.hpp
+        scope_context.cpp
+        scope_context.hpp
 
     instance/instance.hpp
     instance/unnamed_instance.cpp
@@ -18,6 +18,8 @@ set(EXEC_SOURCES
     instance/named_instance.cpp
     instance/named_instance.hpp
 
+    onp/id_access.cpp
+    onp/id_access.hpp
     onp/infix_to_onp.cpp
     onp/infix_to_onp.hpp
     onp/onp_entry.hpp
