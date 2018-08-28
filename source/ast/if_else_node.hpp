@@ -18,7 +18,7 @@ namespace cmsl
             using ifs_t = std::vector<std::unique_ptr<conditional_node>>;
 
         public:
-            explicit if_else_node();
+            explicit if_else_node(ifs_t m_ifs, std::unique_ptr<block_node> m_else);
             ~if_else_node();
 
             const ifs_t& get_ifs() const;

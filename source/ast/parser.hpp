@@ -46,7 +46,6 @@ namespace cmsl
             std::unique_ptr<declaration_node> get_declaration(ast_context& ctx);
             std::unique_ptr<class_node> get_class(ast_context& ctx);
             boost::optional<member_declaration> get_class_member_declaration(ast_context& ctx);
-
             std::unique_ptr<if_else_node> get_if_else_node(ast_context& ctx);
 
             std::unique_ptr<class_node> try_get_class_node(ast_context& ctx);

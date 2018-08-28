@@ -7,8 +7,10 @@ namespace cmsl
 {
     namespace ast
     {
-        if_else_node::if_else_node()
+        if_else_node::if_else_node(ifs_t ifs, std::unique_ptr<block_node> else_block)
             : ast_node{ ast_node_type::if_else }
+            , m_ifs{ std::move(ifs) }
+            , m_else{ std::move(else_block) }
         {}
 
         if_else_node::~if_else_node()
