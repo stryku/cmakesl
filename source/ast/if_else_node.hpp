@@ -22,7 +22,7 @@ namespace cmsl
             ~if_else_node();
 
             const ifs_t& get_ifs() const;
-            const block_node& get_else() const;
+            const block_node* get_else() const;
 
         private:
             ifs_t m_ifs;

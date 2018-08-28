@@ -10,7 +10,7 @@ namespace cmsl
         conditional_node::conditional_node(std::unique_ptr<infix_node> condition, std::unique_ptr<block_node> block)
             : ast_node{ ast_node_type::class_type }
             , m_condition{ std::move(condition) }
-            , m_block{ std::move(m_block) }
+            , m_block{ std::move(block) }
         {}
 
         conditional_node::~conditional_node()

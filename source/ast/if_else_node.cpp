@@ -21,9 +21,9 @@ namespace cmsl
             return m_ifs;
         }
 
-        const block_node &if_else_node::get_else() const
+        const block_node* if_else_node::get_else() const
         {
-            return *m_else;
+            return m_else.get();
         }
     }
 }

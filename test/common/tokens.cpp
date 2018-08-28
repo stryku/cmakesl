@@ -61,6 +61,9 @@ namespace cmsl
             token_t token_semicolon() { return token_t{ token_type_t::semicolon }; }
             token_t token_comma() { return token_t{ token_type_t::comma }; }
 
+            token_t token_kw_if() { return token_t{ token_type_t::kw_if }; }
+            token_t token_kw_else() { return token_t{ token_type_t::kw_else }; }
+
             token_t token_t_int() 
             {
                 static const cmsl::string_view source = "int";
