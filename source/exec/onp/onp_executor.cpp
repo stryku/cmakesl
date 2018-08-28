@@ -50,6 +50,33 @@ namespace cmsl
                 }
             }
 
+            inst::instance* onp_executor::get_instance_from_stack_top()
+            {
+                class visitor : public boost::static_visitor<inst::instance*>
+                {
+                public:
+                    visitor(execution_context& exec_ctx)
+                        : m_exec_ctx{ exec_ctx }
+                    {}
+
+                    inst::instance* operator()(inst::instance* i) const
+                    {
+                        return i;
+                    }
+
+                    inst::instance* operator()(id_access& access) const
+                    {
+                        return access.get_instance(m_exec_ctx);
+                    }
+
+                private:
+                    execution_context& m_exec_ctx;
+                };
+
+                auto top = get_top_and_pop();
+                return boost::apply_visitor(visitor{ m_exec.get_exec_ctx() }, top);
+            }
+
             std::vector<inst::instance*> onp_executor::prepare_parameters_for_call(const ast::function_node& fun)
             {
                 auto& exec_ctx = m_exec.get_exec_ctx();
@@ -57,7 +84,7 @@ namespace cmsl
 
                 for (const auto& param_decl : fun.get_params_declarations())
                 {
-                    auto inst = boost::get<inst::instance*>(get_top_and_pop());
+                    auto inst = get_instance_from_stack_top();
                     params.emplace_back(inst);
                 }
 
