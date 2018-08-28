@@ -5,8 +5,8 @@ set(EXEC_SOURCES
     execution_context.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
-        scope_context.cpp
-        scope_context.hpp
+    scope_context.cpp
+    scope_context.hpp
 
     instance/instance.hpp
     instance/unnamed_instance.cpp
@@ -30,6 +30,8 @@ set(EXEC_SOURCES
     
     stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp
+    stmt/if_else_statement.cpp
+    stmt/if_else_statement.hpp
     stmt/infix_statement.cpp
     stmt/infix_statement.hpp
     stmt/return_statement.cpp
