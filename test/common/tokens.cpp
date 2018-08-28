@@ -63,6 +63,7 @@ namespace cmsl
 
             token_t token_kw_if() { return token_t{ token_type_t::kw_if }; }
             token_t token_kw_else() { return token_t{ token_type_t::kw_else }; }
+            token_t token_kw_while() { return token_t{ token_type_t::kw_while }; }
 
             token_t token_t_int() 
             {
