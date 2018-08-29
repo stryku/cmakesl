@@ -27,6 +27,8 @@ namespace cmsl
         class class_node;
         class member_declaration;
         class if_else_node;
+        class while_node;
+        class conditional_node;
 
         class parser
         {
@@ -47,6 +49,7 @@ namespace cmsl
             std::unique_ptr<class_node> get_class(ast_context& ctx);
             boost::optional<member_declaration> get_class_member_declaration(ast_context& ctx);
             std::unique_ptr<if_else_node> get_if_else_node(ast_context& ctx);
+            std::unique_ptr<while_node> get_while_node(ast_context& ctx);
 
             std::unique_ptr<class_node> try_get_class_node(ast_context& ctx);
 
@@ -80,6 +83,7 @@ namespace cmsl
             boost::optional<token_it> find_matching_close_paren(const std::vector<token_type_t>& forbidden_tokens) const;
 
             std::unique_ptr<infix_node> get_condition_infix_node();
+            std::unique_ptr<conditional_node> get_conditional_node(ast_context &ctx);
 
         private:
             errors::errors_observer& m_err_observer;

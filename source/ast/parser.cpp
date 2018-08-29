@@ -11,6 +11,7 @@
 #include "ast/member_declaration.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/while_node.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -322,6 +323,10 @@ namespace cmsl
                 {
                     expr = get_if_else_node(ctx);
                 }
+                else if(current_is(token_type_t::kw_while))
+                {
+                    expr = get_while_node(ctx);
+                }
                 else
                 {
                     expr = get_infix();
@@ -588,19 +593,12 @@ namespace cmsl
                     return nullptr;
                 }
 
-                auto condition = get_condition_infix_node();
-                if(!condition)
+                auto if_node = get_conditional_node(ctx);
+                if(!if_node)
                 {
                     return nullptr;
                 }
 
-                auto block = get_block(ctx);
-                if(!block)
-                {
-                    return nullptr;
-                }
-
-                auto if_node = std::make_unique<conditional_node>(std::move(condition), std::move(block));
                 ifs.emplace_back(std::move(if_node));
 
                 if(current_is(token_type_t::kw_else))
@@ -693,6 +691,39 @@ namespace cmsl
             m_token = std::next(*condition_close_paren);
 
             return std::move(infix);
+        }
+
+        std::unique_ptr<while_node> parser::get_while_node(ast_context &ctx)
+        {
+            if(!eat(token_type_t::kw_while))
+            {
+                return nullptr;
+            }
+
+            auto conditional_node = get_conditional_node(ctx);
+            if(!conditional_node)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<while_node>(std::move(conditional_node));
+        }
+
+        std::unique_ptr<conditional_node> parser::get_conditional_node(ast_context &ctx)
+        {
+            auto condition = get_condition_infix_node();
+            if(!condition)
+            {
+                return nullptr;
+            }
+
+            auto block = get_block(ctx);
+            if(!block)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<conditional_node>(std::move(condition), std::move(block));
         }
     }
 }

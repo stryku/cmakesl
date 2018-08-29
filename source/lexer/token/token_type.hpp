@@ -54,7 +54,8 @@ namespace cmsl
                 kw_return,
                 kw_class,
                 kw_if,
-                kw_else
+                kw_else,
+                kw_while
             };
         }
     }
