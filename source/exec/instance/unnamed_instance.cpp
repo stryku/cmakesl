@@ -10,7 +10,7 @@ namespace cmsl
         namespace inst
         {
             unnamed_instance::unnamed_instance(const ast::type &type)
-                : m_kind{ type.is_builtin() ? kind::fundamental : kind::user }
+                : m_kind{type.is_fundamental() ? kind::fundamental : kind::user }
                 , m_type{ type }
                 , m_data{ get_init_data() }
             {}
