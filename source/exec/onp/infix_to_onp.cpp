@@ -56,6 +56,8 @@ namespace cmsl
                 // id id . id .
                 // id id . id . id . etc...
 
+                // todo handle e.g. (4 + 2).to_string()
+
 
                 // Gather them from back of out
                 while(!m_out.empty())
@@ -224,9 +226,35 @@ namespace cmsl
             {
                 const auto operators = {
                     token_type_t::dot,
-                    token_type_t::plus,
+                    token_type_t::equal,
+                    token_type_t::equalequal,
                     token_type_t::minus,
-                    token_type_t::equal
+                    token_type_t::minusminus,
+                    token_type_t::minusequal,
+                    token_type_t::plus,
+                    token_type_t::plusplus,
+                    token_type_t::plusequal,
+                    token_type_t::amp,
+                    token_type_t::ampamp,
+                    token_type_t::ampequal,
+                    token_type_t::pipe,
+                    token_type_t::pipepipe,
+                    token_type_t::pipeequal,
+                    token_type_t::slash,
+                    token_type_t::slashequal,
+                    token_type_t::star,
+                    token_type_t::starequal,
+                    token_type_t::percent,
+                    token_type_t::percentequal,
+                    token_type_t::exclaim,
+                    token_type_t::exclaimequal,
+                    token_type_t::xor_,
+                    token_type_t::xorequal,
+                    token_type_t::less,
+                    token_type_t::lessequal,
+                    token_type_t::greater,
+                    token_type_t::greaterequal,
+                    token_type_t::comma,
                     // todo add rest of operators
                 };
 
@@ -239,9 +267,40 @@ namespace cmsl
 
                 // From https://en.cppreference.com/w/cpp/language/operator_precedence
                 prec[token_type_t::dot] = 2;
+
+                prec[token_type_t::exclaim] = 3;
+
+                prec[token_type_t::star] = 5;
+                prec[token_type_t::slash] = 5;
+                prec[token_type_t::percent] = 5;
+
                 prec[token_type_t::plus] = 6;
                 prec[token_type_t::minus] = 6;
+
+                prec[token_type_t::less] = 9;
+                prec[token_type_t::lessequal] = 9;
+                prec[token_type_t::greater] = 9;
+                prec[token_type_t::greaterequal] = 9;
+
+                prec[token_type_t::equalequal] = 10;
+                prec[token_type_t::exclaimequal] = 10;
+
+                prec[token_type_t::amp] = 11;
+                prec[token_type_t::xor_] = 12;
+                prec[token_type_t::pipe] = 13;
+                prec[token_type_t::ampamp] = 14;
+                prec[token_type_t::pipepipe] = 15;
+
                 prec[token_type_t::equal] = 16;
+                prec[token_type_t::plusequal] = 16;
+                prec[token_type_t::minusequal] = 16;
+                prec[token_type_t::starequal] = 16;
+                prec[token_type_t::slashequal] = 16;
+                prec[token_type_t::slashequal] = 16;
+                prec[token_type_t::ampequal] = 16;
+                prec[token_type_t::xorequal] = 16;
+                prec[token_type_t::pipeequal] = 16;
+
                 // todo add rest of operators
 
                 return prec;

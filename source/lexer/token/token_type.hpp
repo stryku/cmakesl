@@ -10,7 +10,7 @@ namespace cmsl
             {
                 undef,
                 integer,
-                real,
+                real, // todo rename to double
                 dot,
                 open_brace,
                 close_brace,
@@ -43,12 +43,16 @@ namespace cmsl
                 exclaimequal,
                 xor_,
                 xorequal,
+                less,
+                lessequal,
+                greater,
+                greaterequal,
                 string,
                 semicolon,
                 comma,
 
                 // builtin types
-                t_int,
+                t_int, // todo rename to kw_*
                 t_real,
 
                 kw_return,

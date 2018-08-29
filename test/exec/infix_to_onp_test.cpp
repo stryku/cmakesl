@@ -45,6 +45,10 @@ namespace cmsl
                             { token_integer("4"), token_integer("5"), token_plus() } // 4 5 +
                     },
                     InfixToOnpState{
+                            { token_integer("4"), token_plus(), token_integer("5"), token_star(), token_integer("6") }, // 4 + 5 * 6
+                            { token_integer("4"), token_integer("5"), token_integer("6"), token_star(), token_plus() } // 4 5 6 * +
+                    },
+                    InfixToOnpState{
                             { token_integer("4"), token_plus(), token_integer("5"), token_plus(), token_integer("6") }, // 4 + 5 + 6
                             { token_integer("4"), token_integer("5"), token_plus(), token_integer("6"), token_plus() } // 4 5 + 6 +
                     },

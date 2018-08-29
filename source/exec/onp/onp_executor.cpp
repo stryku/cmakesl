@@ -45,7 +45,7 @@ namespace cmsl
 
                 if(!m_stack.empty())
                 {
-                    auto instance = boost::get<inst::instance*>(get_top_and_pop());
+                    auto instance = get_instance_from_stack_top();
                     m_result = instance->get_value();
                 }
             }

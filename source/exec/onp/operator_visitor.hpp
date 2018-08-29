@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lexer/token/token_type.hpp"
+#include "common/enum_class_map.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -41,6 +42,9 @@ namespace cmsl
                 using instance_factory_t = exec::inst::instance_factory;
                 using instances_holder_t = exec::inst::instances_holder;
 
+                using arith_operator_handler_t = std::function<instance_t*(instance_t*, instance_t*)>;
+                using arith_operators_handlers_t = enum_unordered_map<token_type_t, arith_operator_handler_t>;
+
             public:
                 explicit operator_visitor(token_type_t op,
                                           execution_context_t& exec_ctx,
@@ -54,15 +58,17 @@ namespace cmsl
 
             private:
                 instance_t* get_instance(id_access& token);
-                instance_t* handle_plus_operator(instance_t* lhs, instance_t* rhs);
                 instance_t* handle_dot_operator(instance_t* lhs, id_access& rhs);
-                instance_t* handle_equal_operator(instance_t* lhs, instance_t* rhs);
+                instance_t* handle_arith_operator(instance_t* lhs, token_type_t  op, instance_t* rhs);
+
+                arith_operators_handlers_t get_arith_operators_handlers();
 
             private:
                 token_type_t m_operator;
                 execution_context_t& m_exec_ctx;
                 instances_holder_t& m_instances;
                 onp_executor& m_function_caller;
+                arith_operators_handlers_t m_arith_op_handlers;
             };
         }
     }
