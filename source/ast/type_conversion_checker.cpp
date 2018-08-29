@@ -1,5 +1,4 @@
 #include "ast/type_conversion_checker.hpp"
-#include "ast/type.hpp"
 #include "ast/type_kind.hpp"
 #include "common/algorithm.hpp"
 
@@ -27,7 +26,7 @@ namespace cmsl
             {
                 for(const auto kind : group)
                 {
-                    map[kind] = group;
+                    map.emplace(kind, conversion_group_ref_t{ group });
                 }
             }
 
@@ -47,16 +46,16 @@ namespace cmsl
         }
 
 
-        bool type_conversion_checker::can_convert(const type &from, const type &to) const
+        bool type_conversion_checker::can_convert(type_kind from, type_kind to) const
         {
-            const auto group = get_group_for_type(from.get_kind());
+            const auto group = get_group_for_type(from);
 
             if(group == nullptr)
             {
                 return false;
             }
 
-            return contains(*group, to.get_kind());
+            return contains(*group, to);
         }
     }
 }
