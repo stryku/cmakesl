@@ -56,7 +56,7 @@ namespace cmsl
                             { token_type_t::semicolon, ";" },
                             { token_type_t::comma, "," },
                             { token_type_t::kw_int, "int" },
-                            { token_type_t::kw_real, "real" },
+                            { token_type_t::kw_double, "double_" },
                             { token_type_t::kw_return, "return" },
                             { token_type_t::kw_class, "class" },
                             { token_type_t::kw_if, "if" },
@@ -125,7 +125,7 @@ namespace cmsl
             token_t token_semicolon() { return details::simple_token(token_type_t::semicolon); }
             token_t token_comma() { return details::simple_token(token_type_t::comma); }
             token_t token_t_int() { return details::simple_token(token_type_t::kw_int); }
-            token_t token_t_real() { return details::simple_token(token_type_t::kw_real); }
+            token_t token_t_real() { return details::simple_token(token_type_t::kw_double); }
             token_t token_kw_return() { return details::simple_token(token_type_t::kw_return); }
             token_t token_kw_class() { return details::simple_token(token_type_t::kw_class); }
             token_t token_kw_if() { return details::simple_token(token_type_t::kw_if); }
@@ -134,7 +134,7 @@ namespace cmsl
 
 
             token_t token_undef() { return token_t{ token_type_t::undef }; }
-            token_t token_real() { return token_t{ token_type_t::real }; }
+            token_t token_real() { return token_t{ token_type_t::double_ }; }
             token_t token_string() { return token_t{ token_type_t::string }; }
             token_t token_integer(cmsl::string_view str)
             { 

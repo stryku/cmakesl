@@ -72,7 +72,7 @@ namespace cmsl
                     auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
-                    ASSERT_THAT(tokens.front().get_type(), token_type_t::real);
+                    ASSERT_THAT(tokens.front().get_type(), token_type_t::double_);
                 }
 
                 const auto values = testing::Values("1.0", "123.0", "123.012", "000123.123000",
@@ -260,7 +260,7 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(PureKeywordState{ "int", token_type_t::kw_int },
-                                                        PureKeywordState{ "real", token_type_t::kw_real },
+                                                        PureKeywordState{ "double", token_type_t::kw_double },
                                                         PureKeywordState{ "class", token_type_t::kw_class },
                                                         PureKeywordState{ "return", token_type_t::kw_return },
                                                         PureKeywordState{ "if", token_type_t::kw_if },
@@ -284,7 +284,7 @@ namespace cmsl
                         ASSERT_THAT(tokens[0].get_type(), token_type_t::identifier);
                     }
 
-                    const auto values = testing::Values( "int123", "_real");
+                    const auto values = testing::Values( "int123", "_double");
                     INSTANTIATE_TEST_CASE_P(Lexer, PollutedKeyword, values);
                 }
             }

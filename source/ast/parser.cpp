@@ -73,7 +73,7 @@ namespace cmsl
         {
             const auto builtin_types = {
                 token_type_t::kw_int,
-                token_type_t::kw_real
+                token_type_t::kw_double
             };
 
             return cmsl::contains(builtin_types, token_type);
@@ -284,7 +284,7 @@ namespace cmsl
 
             const auto allowed_tokens = {
                 token_type_t::integer,
-                token_type_t::real,
+                token_type_t::double_,
                 token_type_t::dot,
                 token_type_t::open_square,
                 token_type_t::close_square,

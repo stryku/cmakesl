@@ -125,12 +125,12 @@ namespace cmsl
                 return token_t::token_type_t::integer;
             }
 
-            // Handle real e.g. 123.
+            // Handle double_ e.g. 123.
             if (current() == '.')
             {
                 m_source_loc.consume_char();
                 consume_integer();
-                return token_t::token_type_t::real;
+                return token_t::token_type_t::double_;
             }
 
             // TODO: handle hex, oct and bin
@@ -339,7 +339,7 @@ namespace cmsl
             keyword_tokens_t tokens;
 
             tokens["int"] = token_t::token_type_t::kw_int;
-            tokens["real"] = token_t::token_type_t::kw_real;
+            tokens["double_"] = token_t::token_type_t::kw_double;
             tokens["return"] = token_t::token_type_t::kw_return;
             tokens["class"] = token_t::token_type_t::kw_class;
             tokens["if"] = token_t::token_type_t::kw_if;
