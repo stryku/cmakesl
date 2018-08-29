@@ -1,5 +1,5 @@
 #include "test/common/tokens.hpp"
-#include "common/enum_class_map.hpp"
+#include "common/enum_class_utils.hpp"
 
 
 namespace cmsl
