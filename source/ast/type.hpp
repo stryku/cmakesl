@@ -26,6 +26,8 @@ namespace cmsl
             const function_node* get_function(cmsl::string_view name) const;
             bool has_function(cmsl::string_view name) const;
 
+            type_kind get_kind() const;
+
         private:
             cmsl::string_view m_name;
             type_kind m_kind;
