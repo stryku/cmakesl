@@ -245,7 +245,7 @@ namespace cmsl
                 prec[token_type_t::exclaim] = 3;
 
                 prec[token_type_t::star] = 5;
-                prec[token_type_t::slash = 5;
+                prec[token_type_t::slash] = 5;
                 prec[token_type_t::percent] = 5;
 
                 prec[token_type_t::plus] = 6;
