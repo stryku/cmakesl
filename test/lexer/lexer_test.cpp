@@ -165,7 +165,11 @@ namespace cmsl
                     TokenTestState{ "!", token_type_t::exclaim },
                     TokenTestState{ "!=", token_type_t::exclaimequal },
                     TokenTestState{ "^", token_type_t::xor_ },
-                    TokenTestState{ "^=", token_type_t::xorequal }
+                    TokenTestState{ "^=", token_type_t::xorequal },
+                    TokenTestState{ "<", token_type_t::less },
+                    TokenTestState{ "<=", token_type_t::lessequal },
+                    TokenTestState{ ">", token_type_t::greater },
+                    TokenTestState{ ">=", token_type_t::greaterequal }
                 );
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Operator, values);
             }
