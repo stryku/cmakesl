@@ -339,12 +339,15 @@ namespace cmsl
             keyword_tokens_t tokens;
 
             tokens["int"] = token_t::token_type_t::kw_int;
-            tokens["double_"] = token_t::token_type_t::kw_double;
+            tokens["double"] = token_t::token_type_t::kw_double;
             tokens["return"] = token_t::token_type_t::kw_return;
             tokens["class"] = token_t::token_type_t::kw_class;
             tokens["if"] = token_t::token_type_t::kw_if;
             tokens["else"] = token_t::token_type_t::kw_else;
             tokens["while"] = token_t::token_type_t::kw_while;
+            tokens["bool"] = token_t::token_type_t::kw_bool;
+            tokens["true"] = token_t::token_type_t::kw_true;
+            tokens["false"] = token_t::token_type_t::kw_false;
 
             return tokens;
         }
