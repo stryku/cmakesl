@@ -34,8 +34,8 @@ set(AST_SOURCES
     return_node.hpp
     type.cpp
     type.hpp
-    type_conversion_chacker.cpp
-    type_conversion_chacker.hpp
+        type_conversion_checker.cpp
+        type_conversion_checker.hpp
     type_kind.cpp
     type_kind.hpp
     while_node.cpp

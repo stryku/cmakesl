@@ -38,5 +38,11 @@ namespace cmsl
         {
             return m_ast_ctx->find_function(name);
         }
+
+        type_kind type::get_kind() const
+        {
+            return m_kind;
+
+        }
     }
 }
