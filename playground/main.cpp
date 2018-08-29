@@ -23,7 +23,9 @@ int main()
         "    int a = 4+2;"
         "    foo.foo_a = 14;"
         "    foo.foo_b = 100;"
-        "    if(0) { return 2; }"
+        "    int i = 100;"
+        "    while( i > 0 ) { i -= 1; }"
+        "    if(1) { return i; }"
         "    else { return a + foo.sum(a, a + foo.foo_a); }"
         "}";
 
