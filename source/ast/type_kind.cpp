@@ -10,7 +10,7 @@ namespace cmsl
         {
             const auto map = {
                 std::make_pair("int", type_kind::k_int),
-                std::make_pair("real", type_kind::k_real)
+                std::make_pair("double_", type_kind::k_real)
             };
 
             const auto it = std::find_if(std::cbegin(map), std::cend(map),
