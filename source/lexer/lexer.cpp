@@ -283,6 +283,8 @@ namespace cmsl
             definitions['%'] = def_t{ token_t::token_type_t::percent, token_t::token_type_t::percentequal };
             definitions['!'] = def_t{ token_t::token_type_t::exclaim, token_t::token_type_t::exclaimequal };
             definitions['^'] = def_t{ token_t::token_type_t::xor_, token_t::token_type_t::xorequal };
+            definitions['<'] = def_t{ token_t::token_type_t::less, token_t::token_type_t::lessequal };
+            definitions['>'] = def_t{ token_t::token_type_t::greater, token_t::token_type_t::greaterequal };
 
             return definitions;
         }
@@ -305,7 +307,7 @@ namespace cmsl
 
         bool lexer::is_arithmetical_operator(char c) const
         {
-            const auto arith_operators = cmsl::string_view{ "-+&|/*%!^" };
+            const auto arith_operators = cmsl::string_view{ "-+&|/*%!^<>" };
             return arith_operators.find(c) != cmsl::string_view::npos;
         }
 
