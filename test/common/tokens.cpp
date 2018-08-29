@@ -55,8 +55,8 @@ namespace cmsl
                             { token_type_t::greaterequal, ">=" },
                             { token_type_t::semicolon, ";" },
                             { token_type_t::comma, "," },
-                            { token_type_t::t_int, "int" },
-                            { token_type_t::t_real, "real" },
+                            { token_type_t::kw_int, "int" },
+                            { token_type_t::kw_real, "real" },
                             { token_type_t::kw_return, "return" },
                             { token_type_t::kw_class, "class" },
                             { token_type_t::kw_if, "if" },
@@ -116,7 +116,7 @@ namespace cmsl
             token_t token_percentequal() { return details::simple_token(token_type_t::percentequal); }
             token_t token_exclaim() { return details::simple_token(token_type_t::exclaim); }
             token_t token_exclaimequal() { return details::simple_token(token_type_t::exclaimequal); }
-            token_t token_xor_() { return details::simple_token(token_type_t::xor_); }
+            token_t token_xor() { return details::simple_token(token_type_t::xor_); }
             token_t token_xorequal() { return details::simple_token(token_type_t::xorequal); }
             token_t token_less() { return details::simple_token(token_type_t::less); }
             token_t token_lessequal() { return details::simple_token(token_type_t::lessequal); }
@@ -124,8 +124,8 @@ namespace cmsl
             token_t token_greaterequal() { return details::simple_token(token_type_t::greaterequal); }
             token_t token_semicolon() { return details::simple_token(token_type_t::semicolon); }
             token_t token_comma() { return details::simple_token(token_type_t::comma); }
-            token_t token_t_int() { return details::simple_token(token_type_t::t_int); }
-            token_t token_t_real() { return details::simple_token(token_type_t::t_real); }
+            token_t token_t_int() { return details::simple_token(token_type_t::kw_int); }
+            token_t token_t_real() { return details::simple_token(token_type_t::kw_real); }
             token_t token_kw_return() { return details::simple_token(token_type_t::kw_return); }
             token_t token_kw_class() { return details::simple_token(token_type_t::kw_class); }
             token_t token_kw_if() { return details::simple_token(token_type_t::kw_if); }

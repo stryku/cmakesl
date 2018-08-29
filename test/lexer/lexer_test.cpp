@@ -259,8 +259,8 @@ namespace cmsl
                         ASSERT_THAT(tokens[0].get_type(), state.expected_keyword);
                     }
 
-                    const auto values = testing::Values(PureKeywordState{ "int", token_type_t::t_int },
-                                                        PureKeywordState{ "real", token_type_t::t_real },
+                    const auto values = testing::Values(PureKeywordState{ "int", token_type_t::kw_int },
+                                                        PureKeywordState{ "real", token_type_t::kw_real },
                                                         PureKeywordState{ "class", token_type_t::kw_class },
                                                         PureKeywordState{ "return", token_type_t::kw_return },
                                                         PureKeywordState{ "if", token_type_t::kw_if },
