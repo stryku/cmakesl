@@ -251,6 +251,11 @@ namespace cmsl
                 prec[token_type_t::plus] = 6;
                 prec[token_type_t::minus] = 6;
 
+                prec[token_type_t::less] = 9;
+                prec[token_type_t::lessequal] = 9;
+                prec[token_type_t::greater] = 9;
+                prec[token_type_t::greaterequal] = 9;
+
                 prec[token_type_t::equalequal] = 10;
                 prec[token_type_t::exclaimequal] = 10;
 
