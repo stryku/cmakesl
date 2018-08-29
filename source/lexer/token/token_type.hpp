@@ -51,10 +51,8 @@ namespace cmsl
                 semicolon,
                 comma,
 
-                // builtin types
-                t_int, // todo rename to kw_*
-                t_real,
-
+                kw_int,
+                kw_real,
                 kw_return,
                 kw_class,
                 kw_if,

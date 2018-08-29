@@ -338,8 +338,8 @@ namespace cmsl
         {
             keyword_tokens_t tokens;
 
-            tokens["int"] = token_t::token_type_t::t_int;
-            tokens["real"] = token_t::token_type_t::t_real;
+            tokens["int"] = token_t::token_type_t::kw_int;
+            tokens["real"] = token_t::token_type_t::kw_real;
             tokens["return"] = token_t::token_type_t::kw_return;
             tokens["class"] = token_t::token_type_t::kw_class;
             tokens["if"] = token_t::token_type_t::kw_if;

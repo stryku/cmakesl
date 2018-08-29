@@ -72,8 +72,8 @@ namespace cmsl
         bool parser::is_builtin_type(token_type_t token_type) const
         {
             const auto builtin_types = {
-                token_type_t::t_int,
-                token_type_t::t_real
+                token_type_t::kw_int,
+                token_type_t::kw_real
             };
 
             return cmsl::contains(builtin_types, token_type);
