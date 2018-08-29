@@ -56,6 +56,8 @@ namespace cmsl
                 // id id . id .
                 // id id . id . id . etc...
 
+                // todo handle e.g. (4 + 2).to_string()
+
 
                 // Gather them from back of out
                 while(!m_out.empty())
@@ -239,9 +241,35 @@ namespace cmsl
 
                 // From https://en.cppreference.com/w/cpp/language/operator_precedence
                 prec[token_type_t::dot] = 2;
+
+                prec[token_type_t::exclaim] = 3;
+
+                prec[token_type_t::star] = 5;
+                prec[token_type_t::slash = 5;
+                prec[token_type_t::percent] = 5;
+
                 prec[token_type_t::plus] = 6;
                 prec[token_type_t::minus] = 6;
+
+                prec[token_type_t::equalequal] = 10;
+                prec[token_type_t::exclaimequal] = 10;
+
+                prec[token_type_t::amp] = 11;
+                prec[token_type_t::xor_] = 12;
+                prec[token_type_t::pipe] = 13;
+                prec[token_type_t::ampamp] = 14;
+                prec[token_type_t::pipepipe] = 15;
+
                 prec[token_type_t::equal] = 16;
+                prec[token_type_t::plusequal] = 16;
+                prec[token_type_t::minusequal] = 16;
+                prec[token_type_t::starequal] = 16;
+                prec[token_type_t::slashequal] = 16;
+                prec[token_type_t::slashequal] = 16;
+                prec[token_type_t::ampequal] = 16;
+                prec[token_type_t::xorequal] = 16;
+                prec[token_type_t::pipeequal] = 16;
+
                 // todo add rest of operators
 
                 return prec;
