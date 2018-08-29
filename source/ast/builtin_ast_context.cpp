@@ -12,7 +12,8 @@ namespace cmsl
         {
             const auto builtin_types_kind = {
                 std::make_pair("int", type_kind::k_int),
-                std::make_pair("double_", type_kind::k_real)
+                std::make_pair("double", type_kind::k_double),
+                std::make_pair("bool", type_kind::k_bool)
             };
 
             for (const auto pair : builtin_types_kind)
