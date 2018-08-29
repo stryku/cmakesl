@@ -53,6 +53,10 @@ namespace cmsl
 
                 kw_int,
                 kw_double,
+                kw_bool,
+                kw_true,
+                kw_false,
+                
                 kw_return,
                 kw_class,
                 kw_if,
