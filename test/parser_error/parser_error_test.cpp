@@ -5,6 +5,7 @@
 #include "ast/infix_node.hpp"
 #include "ast/member_declaration.hpp"
 #include "ast/if_else_node.hpp"
+#include "ast/while_node.hpp"
 
 #include "test/common/tokens.hpp"
 
@@ -413,6 +414,53 @@ namespace cmsl
                     {
                         builtin_ctx_t ctx;
                         (void)parser.get_if_else_node(ctx);
+                    });
+                }
+            }
+
+            namespace get_while_node
+            {
+                TEST(ParserError, GetWhileNode_MissingConditionOpenParen_ReportError)
+                {
+                    // while 1) {}
+                    const auto tokens = token_container_t{ token_kw_while(), token_integer("1"), token_close_paren(), token_open_brace(), token_close_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_while_node(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetWhileNode_MissingConditionCloseParen_ReportError)
+                {
+                    // while (1 {}
+                    const auto tokens = token_container_t{ token_kw_while(), token_open_paren(), token_integer("1"), token_open_brace(), token_close_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_while_node(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetWhileNode_MissingBlockOpenBrace_ReportError)
+                {
+                    // while (1) }
+                    const auto tokens = token_container_t{ token_kw_while(), token_open_paren(), token_integer("1"), token_close_paren(), token_close_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_while_node(ctx);
+                    });
+                }
+
+                TEST(ParserError, GetWhileNode_MissingBlockCloseBrace_ReportError)
+                {
+                    // while (1) {
+                    const auto tokens = token_container_t{ token_kw_while(), token_open_paren(), token_integer("1"), token_close_paren(), token_open_brace() };
+                    report_error_test(tokens, [](auto& parser)
+                    {
+                        builtin_ctx_t ctx;
+                        (void)parser.get_while_node(ctx);
                     });
                 }
             }
