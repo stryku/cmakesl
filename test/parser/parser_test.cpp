@@ -38,7 +38,7 @@ namespace cmsl
                         auto p = parser_t{ dummy_err_observer, tokens };
                         builtin_ctx_t ctx;
                         const auto type = p.get_type(ctx);
-                        ASSERT_THAT(type->is_builtin(), true);
+                        ASSERT_THAT(type->is_fundamental(), true);
                     }
 
                     const auto values = testing::Values(
@@ -88,8 +88,10 @@ namespace cmsl
                     const auto parameters = *p.get_parameters_declaration(ctx);
                     ASSERT_THAT(parameters.size(), 2u);
 
-                    ASSERT_THAT(parameters[0].param_type->is_builtin(), true);
-                    ASSERT_THAT(parameters[1].param_type->is_builtin(), true);
+                    ASSERT_THAT(parameters[0].param_type
+                                             ->is_fundamental(), true);
+                    ASSERT_THAT(parameters[1].param_type
+                                             ->is_fundamental(), true);
                 }
             }
 

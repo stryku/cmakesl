@@ -19,7 +19,7 @@ namespace cmsl
             , m_ast_ctx{ ast_ctx }
         {}
 
-        bool type::is_builtin() const
+        bool type::is_fundamental() const
         {
             return m_kind != type_kind::k_user;
         }

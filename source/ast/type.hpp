@@ -19,7 +19,7 @@ namespace cmsl
             explicit type(cmsl::string_view name, type_kind kind, const ast_context* ast_ctx);
             virtual ~type() {}
 
-            bool is_builtin() const; // todo consider rename to is_fundamental
+            bool is_fundamental() const;
 
             cmsl::string_view get_name() const;
 

@@ -16,7 +16,7 @@
 //            explicit integer_constant(lexer::token::token token);
 //            explicit integer_constant(cmsl::string_view name, type_kind kind);
 //
-//            bool is_builtin() const;
+//            bool is_fundamental() const;
 //
 //            cmsl::string_view get_name() const;
 //
