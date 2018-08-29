@@ -226,9 +226,35 @@ namespace cmsl
             {
                 const auto operators = {
                     token_type_t::dot,
-                    token_type_t::plus,
+                    token_type_t::equal,
+                    token_type_t::equalequal,
                     token_type_t::minus,
-                    token_type_t::equal
+                    token_type_t::minusminus,
+                    token_type_t::minusequal,
+                    token_type_t::plus,
+                    token_type_t::plusplus,
+                    token_type_t::plusequal,
+                    token_type_t::amp,
+                    token_type_t::ampamp,
+                    token_type_t::ampequal,
+                    token_type_t::pipe,
+                    token_type_t::pipepipe,
+                    token_type_t::pipeequal,
+                    token_type_t::slash,
+                    token_type_t::slashequal,
+                    token_type_t::star,
+                    token_type_t::starequal,
+                    token_type_t::percent,
+                    token_type_t::percentequal,
+                    token_type_t::exclaim,
+                    token_type_t::exclaimequal,
+                    token_type_t::xor_,
+                    token_type_t::xorequal,
+                    token_type_t::less,
+                    token_type_t::lessequal,
+                    token_type_t::greater,
+                    token_type_t::greaterequal,
+                    token_type_t::comma,
                     // todo add rest of operators
                 };
 
