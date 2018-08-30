@@ -62,6 +62,7 @@ namespace cmsl
                 instance_t* handle_arith_operator(instance_t* lhs, token_type_t  op, instance_t* rhs);
 
                 arith_operators_handlers_t get_arith_operators_handlers();
+                arith_operator_handler_t get_arith_operator_handler(token_type_t op);
 
             private:
                 token_type_t m_operator;

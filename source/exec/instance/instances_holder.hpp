@@ -1,5 +1,7 @@
 #pragma once
 
+#include "exec/instance/instance_value.hpp"
+
 #include <memory>
 #include <vector>
 
@@ -20,7 +22,7 @@ namespace cmsl
             public:
                 explicit instances_holder(executor& e);
 
-                inst::instance* create(int value);
+                inst::instance* create(instance_value_t value);
 
             private:
                 inst::instance_factory get_factory();

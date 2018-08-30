@@ -15,12 +15,12 @@ namespace cmsl
                 , m_instance{ m_ctx.get_variable(m_name) }
             {}
 
-            int named_instance::get_value() const
+            instance_value_t named_instance::get_value() const
             {
                 return m_instance->get_value();
             }
 
-            void named_instance::assign(int val)
+            void named_instance::assign(instance_value_t val)
             {
                 m_instance->assign(val);
             }
@@ -43,6 +43,11 @@ namespace cmsl
             const ast::function_node* named_instance::get_function(cmsl::string_view name) const
             {
                 return m_instance->get_function(name);
+            }
+
+            const ast::type &named_instance::get_type() const
+            {
+                return m_instance->get_type();
             }
         }
     }

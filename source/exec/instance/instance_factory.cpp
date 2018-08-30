@@ -21,7 +21,7 @@ namespace cmsl
                 return *m_ast_ctx.find_type("int");
             }
 
-            std::unique_ptr<instance> instance_factory::create(int value) const
+            std::unique_ptr<instance> instance_factory::create(instance_value_t value) const
             {
                 return std::make_unique<unnamed_instance>(get_int_type(), value);
             }
@@ -31,7 +31,7 @@ namespace cmsl
                 return std::make_unique<named_instance>(name, m_exec_ctx);
             }
 
-            std::unique_ptr<instance> instance_factory::create(cmsl::string_view name, int value) const
+            std::unique_ptr<instance> instance_factory::create(cmsl::string_view name, instance_value_t value) const
             {
                 auto inst = create(name);
                 inst->assign(value);

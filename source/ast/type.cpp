@@ -44,5 +44,15 @@ namespace cmsl
             return m_kind;
 
         }
+
+        bool type::operator==(const type &other) const
+        {
+            return this == &other;
+        }
+
+        bool type::operator!=(const type &other) const
+        {
+            return !(*this == other);
+        }
     }
 }

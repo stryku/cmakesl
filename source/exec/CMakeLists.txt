@@ -9,12 +9,15 @@ set(EXEC_SOURCES
     scope_context.hpp
 
     instance/instance.hpp
+    instance/instance_converter.cpp
+    instance/instance_converter.hpp
     instance/unnamed_instance.cpp
     instance/unnamed_instance.hpp
     instance/instances_holder.cpp
     instance/instances_holder.hpp
     instance/instance_factory.cpp
     instance/instance_factory.hpp
+    instance/instance_value.hpp
     instance/named_instance.cpp
     instance/named_instance.hpp
 
