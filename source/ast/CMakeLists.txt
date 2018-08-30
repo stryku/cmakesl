@@ -36,10 +36,12 @@ set(AST_SOURCES
     return_node.hpp
     type.cpp
     type.hpp
-        type_conversion_check.cpp
-        type_conversion_check.hpp
+    type_conversion_check.cpp
+    type_conversion_check.hpp
     type_kind.cpp
     type_kind.hpp
+    type_operator_support_check.cpp
+    type_operator_support_check.hpp
     while_node.cpp
     while_node.hpp
 )
