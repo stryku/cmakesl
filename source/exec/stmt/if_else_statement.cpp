@@ -20,11 +20,12 @@ namespace cmsl
                 for(const auto& cond_node : m_node.get_ifs())
                 {
                     const auto& condition = cond_node->get_condition();
-                    int infix_result{};
+                    inst::instance_value_t infix_result{};
                     auto infix = infix_statement{ condition, infix_result };
                     infix.execute(e);
 
-                    if(infix_result != 0)
+                    // todo convert result to bool
+                    if(boost::get<int>(infix_result) != 0)
                     {
                         e.block(cond_node->get_block());
                         return;

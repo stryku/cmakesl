@@ -35,7 +35,8 @@ namespace cmsl
             auto main_function = global_ast_ctx->find_function("main");
             function_call(*main_function, {});
             const auto main_result = *m_function_return_value;
-            return main_result;
+            const auto int_result = boost::get<int>(main_result);
+            return int_result;
         }
 
         void executor::execute_function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters)
@@ -94,7 +95,7 @@ namespace cmsl
 
                 case ast::ast_node_type::infix:
                 {
-                    int result;
+                    inst::instance_value_t result;
                     stmt::infix_statement infix_stmt{ dynamic_cast<ast::infix_node&>(expr), result };
                     infix_stmt.execute(*this);
                 }
@@ -138,7 +139,7 @@ namespace cmsl
             return *m_ast_context;
         }
 
-        int executor::get_function_return_value() const
+        inst::instance_value_t executor::get_function_return_value() const
         {
             return *m_function_return_value;
         }
@@ -163,7 +164,7 @@ namespace cmsl
             }
         }
 
-        void executor::return_from_function(int value)
+        void executor::return_from_function(inst::instance_value_t value)
         {
             m_function_return_value = value;
         }

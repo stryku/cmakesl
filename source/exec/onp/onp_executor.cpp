@@ -11,7 +11,7 @@ namespace cmsl
     {
         namespace onp
         {
-            onp_executor::onp_executor(const tokens_container_t& onp_tokens, executor& e, int& result)
+            onp_executor::onp_executor(const tokens_container_t& onp_tokens, executor& e, inst::instance_value_t& result)
                 : m_tokens{ onp_tokens }
                 , m_exec{ e }
                 , m_result{ result }
@@ -46,9 +46,7 @@ namespace cmsl
                 if(!m_stack.empty())
                 {
                     auto instance = get_instance_from_stack_top();
-                    // todo
-//                    m_result = instance->get_value();
-                    m_result = 0;
+                    m_result = instance->get_value();
                 }
             }
 
