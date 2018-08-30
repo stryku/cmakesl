@@ -1,4 +1,4 @@
-#include "ast/type_conversion_checker.hpp"
+#include "ast/type_conversion_check.hpp"
 #include "ast/type_kind.hpp"
 
 
@@ -12,11 +12,11 @@ namespace cmsl
         {
             using type_kind_t = ast::type_kind;
 
-            TEST(TypeConversionChecker_CanConvert, FundamentalArithmetical_ConversionPossible)
+            TEST(TypeConversionCheck_CanConvert, FundamentalArithmetical_ConversionPossible)
             {
                 const auto kinds = { type_kind_t::k_bool, type_kind_t::k_int, type_kind_t::k_double };
 
-                ast::type_conversion_checker tcc;
+                ast::type_conversion_check tcc;
 
                 for(const auto from : kinds)
                 {
@@ -28,11 +28,11 @@ namespace cmsl
                 }
             }
 
-            TEST(TypeConversionChecker_CanConvert, FundamentalToFromUser_ConversionNotPossible)
+            TEST(TypeConversionCheck_CanConvert, FundamentalToFromUser_ConversionNotPossible)
             {
                 const auto kinds = { type_kind_t::k_bool, type_kind_t::k_int, type_kind_t::k_double };
 
-                ast::type_conversion_checker tcc;
+                ast::type_conversion_check tcc;
 
                 for(const auto kind : kinds)
                 {

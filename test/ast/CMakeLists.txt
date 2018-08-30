@@ -1,7 +1,7 @@
 set(AST_TEST_SOURCES 
     main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ast_context.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/type_conversion_checker_test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/type_conversion_check_test.cpp
 )
 
 

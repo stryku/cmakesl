@@ -10,7 +10,7 @@ namespace cmsl
 {
     namespace ast
     {
-        class type_conversion_checker
+        class type_conversion_check
         {
         private:
             using conversion_group_t = enum_unordered_set<type_kind>;
@@ -18,7 +18,7 @@ namespace cmsl
             using conversion_map_t = enum_unordered_map<type_kind, conversion_group_ref_t>;
 
         public:
-            explicit type_conversion_checker();
+            explicit type_conversion_check();
 
             bool can_convert(type_kind from, type_kind to) const;
 

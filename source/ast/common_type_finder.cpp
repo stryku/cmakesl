@@ -26,7 +26,7 @@ namespace cmsl
                 // user user
                 // user fundamental
                 // fundamental user
-                // In any case conversion is not possible => there is no common type
+                // In any of these cases conversion is not possible => there is no common type
                 return nullptr;
             }
             else

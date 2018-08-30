@@ -1,4 +1,4 @@
-#include "ast/type_conversion_checker.hpp"
+#include "ast/type_conversion_check.hpp"
 #include "ast/type_kind.hpp"
 #include "common/algorithm.hpp"
 
@@ -6,19 +6,19 @@ namespace cmsl
 {
     namespace ast
     {
-        type_conversion_checker::type_conversion_checker()
+        type_conversion_check::type_conversion_check()
             : m_conversion_groups{ get_conversion_groups() }
             , m_conversion_map{ get_conversion_map() }
         {}
 
-        std::vector<type_conversion_checker::conversion_group_t> type_conversion_checker::get_conversion_groups() const
+        std::vector<type_conversion_check::conversion_group_t> type_conversion_check::get_conversion_groups() const
         {
             return {
                 conversion_group_t{ type_kind::k_bool, type_kind ::k_int, type_kind::k_double}
             };
         }
 
-        type_conversion_checker::conversion_map_t type_conversion_checker::get_conversion_map() const
+        type_conversion_check::conversion_map_t type_conversion_check::get_conversion_map() const
         {
             conversion_map_t map;
 
@@ -33,7 +33,7 @@ namespace cmsl
             return map;
         }
 
-        const type_conversion_checker::conversion_group_t* type_conversion_checker::get_group_for_type(type_kind kind) const
+        const type_conversion_check::conversion_group_t* type_conversion_check::get_group_for_type(type_kind kind) const
         {
             const auto found = m_conversion_map.find(kind);
 
@@ -46,7 +46,7 @@ namespace cmsl
         }
 
 
-        bool type_conversion_checker::can_convert(type_kind from, type_kind to) const
+        bool type_conversion_check::can_convert(type_kind from, type_kind to) const
         {
             const auto group = get_group_for_type(from);
 

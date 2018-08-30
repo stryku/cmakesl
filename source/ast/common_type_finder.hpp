@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ast/type_kind.hpp"
-#include "ast/type_conversion_checker.hpp"
+#include "ast/type_conversion_check.hpp"
 #include "common/enum_class_utils.hpp"
 
 namespace cmsl
@@ -26,7 +26,7 @@ namespace cmsl
 
         private:
             type_ranks_t m_type_ranks;
-            type_conversion_checker m_conversion_check;
+            type_conversion_check m_conversion_check;
         };
     }
 }
