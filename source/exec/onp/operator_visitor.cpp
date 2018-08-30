@@ -5,6 +5,7 @@
 #include "exec/onp/id_access.hpp"
 #include "exec/onp/onp_executor.hpp"
 #include "common/assert.hpp"
+#include "exec/onp/operator_evaluation_visitor.hpp"
 
 namespace cmsl
 {
@@ -12,71 +13,20 @@ namespace cmsl
     {
         namespace onp
         {
-            namespace details
-            {
-                struct operator_evaluation_visitor : public boost::static_visitor<inst::instance_value_t>
-                {
-                    operator_evaluation_visitor(lexer::token::token_type op)
-                        : m_operator{ op }
-                    {}
-
-                    template <typename ValuesType,
-                              typename = std::enable_if_t<std::is_arithmetic<std::decay_t<ValuesType>>::value &&
-                                                          std::is_arithmetic<std::decay_t<ValuesType>>::value, int>>
-                    inst::instance_value_t operator()(ValuesType&& lhs, ValuesType&& rhs)
-                    {
-                        // At this point, lhs and rhs instances are already converted to the same type,
-                        // in other words std::is_same_v<Lhs, Rhs> == true
-
-                        switch(m_operator)
-                        {
-                            case lexer::token::token_type::equalequal: return lhs == rhs;
-                            case lexer::token::token_type::minus: return lhs - rhs;
-                            case lexer::token::token_type::plus: return lhs + rhs;
-                            case lexer::token::token_type::amp: return lhs & rhs;
-                            case lexer::token::token_type::ampamp: return lhs && rhs;
-                            case lexer::token::token_type::pipe: return lhs | rhs;
-                            case lexer::token::token_type::pipepipe: return lhs || rhs;
-                            case lexer::token::token_type::slash: return lhs / rhs;
-                            case lexer::token::token_type::star: return lhs * rhs;
-                            case lexer::token::token_type::percent: return lhs % rhs;
-                            case lexer::token::token_type::xor_: return lhs ^ rhs;
-                            case lexer::token::token_type::less: return lhs < rhs;
-                            case lexer::token::token_type::lessequal: return lhs <= rhs;
-                            case lexer::token::token_type::greater: return lhs > rhs;
-                            case lexer::token::token_type::greaterequal: return lhs >= rhs;
-
-                            default:
-                                CMSL_UNREACHABLE("Unsupported operator");
-                        }
-                    }
-
-                    template <typename T, typename T2>
-                    inst::instance_value_t operator()(T&&, T2&&)
-                    {
-                        // This one should never be called
-                        return 1;
-                    };
-
-                private:
-                    lexer::token::token_type m_operator;
-                };
-            }
-
             operator_visitor::operator_visitor(token_type_t op,
-                                               execution_context_t& exec_ctx,
-                                               instances_holder_t& instances,
-                                               onp_executor& function_caller)
-                : m_operator{ op }
-                , m_exec_ctx{ exec_ctx }
-                , m_instances{ instances }
-                , m_function_caller{ function_caller }
-                , m_arith_op_handlers {  get_arith_operators_handlers() }
+                                               execution_context_t &exec_ctx,
+                                               instances_holder_t &instances,
+                                               onp_executor &function_caller)
+                    : m_operator{op}
+                    , m_exec_ctx{exec_ctx}
+                    , m_instances{instances}
+                    , m_function_caller{function_caller}
+                    , m_arith_op_handlers{get_arith_operators_handlers()}
             {}
 
-            operator_visitor::instance_t* operator_visitor::operator()(instance_t* lhs, instance_t* rhs)
+            operator_visitor::instance_t *operator_visitor::operator()(instance_t *lhs, instance_t *rhs)
             {
-                switch(m_operator)
+                switch (m_operator)
                 {
                     case token_type_t::dot:
                         return nullptr; //todo raise error, e.g. (4+2).(2+2)
@@ -86,9 +36,9 @@ namespace cmsl
                 }
             }
 
-            operator_visitor::instance_t* operator_visitor::operator() (instance_t* lhs, id_access& rhs)
+            operator_visitor::instance_t *operator_visitor::operator()(instance_t *lhs, id_access &rhs)
             {
-                switch(m_operator)
+                switch (m_operator)
                 {
                     case token_type_t::dot:
                         return handle_dot_operator(lhs, rhs);
@@ -99,9 +49,9 @@ namespace cmsl
 
             }
 
-            operator_visitor::instance_t* operator_visitor::operator()(id_access& lhs, id_access& rhs)
+            operator_visitor::instance_t *operator_visitor::operator()(id_access &lhs, id_access &rhs)
             {
-                switch(m_operator)
+                switch (m_operator)
                 {
                     case token_type_t::dot:
                         return handle_dot_operator(get_instance(lhs), rhs);
@@ -111,9 +61,9 @@ namespace cmsl
                 }
             }
 
-            operator_visitor::instance_t* operator_visitor::operator()(id_access& lhs, instance_t* rhs)
+            operator_visitor::instance_t *operator_visitor::operator()(id_access &lhs, instance_t *rhs)
             {
-                switch(m_operator)
+                switch (m_operator)
                 {
                     case token_type_t::dot:
                         return nullptr; // todo raise error, e.g. foo.(bar + baz)
@@ -123,9 +73,9 @@ namespace cmsl
                 }
             }
 
-            operator_visitor::instance_t* operator_visitor::handle_dot_operator(instance_t* lhs, id_access& rhs)
+            operator_visitor::instance_t *operator_visitor::handle_dot_operator(instance_t *lhs, id_access &rhs)
             {
-                if(lhs->has_function(rhs.name))
+                if (lhs->has_function(rhs.name))
                 {
                     return m_function_caller.execute_member_function_call(*lhs->get_function(rhs.name), lhs);
                 }
@@ -135,149 +85,62 @@ namespace cmsl
                 }
             }
 
-            operator_visitor::instance_t* operator_visitor::get_instance(id_access& access)
+            operator_visitor::instance_t *operator_visitor::get_instance(id_access &access)
             {
                 return access.get_instance(m_exec_ctx);
             }
 
             operator_visitor::arith_operators_handlers_t operator_visitor::get_arith_operators_handlers()
             {
-                return arith_operators_handlers_t{
-//                        { token_type_t::equal, [](auto lhs, auto rhs)
-//                                               {
-//                                                   lhs->assign(rhs->get_value());
-//                                                   return lhs;
-//                                               }},
-//                        { token_type_t::equalequal, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() == rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::minus, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() - rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::minusequal, [](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() - rhs->get_value();
-//                                                   lhs->assign(val);
-//                                                   return lhs;
-//                                               }},
-//                        { token_type_t::plus, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() + rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::plusequal, [](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() + rhs->get_value();
-//                                                   lhs->assign(val);
-//                                                   return lhs;
-//                                               }},
-//                        { token_type_t::amp, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() & rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::ampamp, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() && rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::ampequal, [](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() & rhs->get_value();
-//                                                   lhs->assign(val);
-//                                                   return lhs;
-//                                               }},
-//                        { token_type_t::pipe, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() | rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::pipepipe, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() || rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::pipeequal, [](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() | rhs->get_value();
-//                                                   lhs->assign(val);
-//                                                   return lhs;
-//                                               }},
-//                        { token_type_t::slash, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() / rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::slashequal, [](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() / rhs->get_value();
-//                                                   lhs->assign(val);
-//                                                   return lhs;
-//                                               }},
-//                        { token_type_t::star, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() * rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::starequal, [](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() * rhs->get_value();
-//                                                   lhs->assign(val);
-//                                                   return lhs;
-//                                               }},
-//                        { token_type_t::percent, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() % rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::percentequal, [](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() % rhs->get_value();
-//                                                   lhs->assign(val);
-//                                                   return lhs;
-//                                               }},
-//                        { token_type_t::exclaimequal, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() != rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::xor_, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() ^ rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::xorequal, [](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() ^ rhs->get_value();
-//                                                   lhs->assign(val);
-//                                                   return lhs;
-//                                               }},
-//                        { token_type_t::less, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() < rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::lessequal, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() <= rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::greater, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() > rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }},
-//                        { token_type_t::greaterequal, [&instances = m_instances](auto lhs, auto rhs)
-//                                               {
-//                                                   const auto val = lhs->get_value() >= rhs->get_value();
-//                                                   return instances.create(val);
-//                                               }}
-                    };
+                const auto simple_operators = {
+                        token_type_t::minus,
+                        token_type_t::plus,
+                        token_type_t::amp,
+                        token_type_t::ampamp,
+                        token_type_t::pipe,
+                        token_type_t::pipepipe,
+                        token_type_t::slash,
+                        token_type_t::star,
+                        token_type_t::percent,
+                        token_type_t::exclaimequal,
+                        token_type_t::xor_,
+                        token_type_t::less,
+                        token_type_t::lessequal,
+                        token_type_t::greater,
+                        token_type_t::greaterequal
+                };
+
+                const auto compound_assignment_operators = {
+                        token_type_t::minusequal,
+                        token_type_t::plusequal,
+                        token_type_t::ampequal,
+                        token_type_t::pipeequal,
+                        token_type_t::slashequal,
+                        token_type_t::starequal,
+                        token_type_t::percentequal,
+                        token_type_t::xorequal
+                };
+
+                arith_operators_handlers_t handlers;
+
+                for (const auto op : simple_operators)
+                {
+                    handlers.emplace(op, get_arith_operator_handler(op));
                 }
+
+                for (const auto op : compound_assignment_operators)
+                {
+                    handlers.emplace(op, get_compound_assignment_handler(op));
+                }
+
+                handlers.emplace(token_type_t::equal, [](auto lhs, auto rhs)
+                {
+                    lhs->assign(rhs->get_value());
+                    return lhs;
+                });
+
+                return handlers;
+            }
 
             operator_visitor::instance_t * operator_visitor::handle_arith_operator(instance_t *lhs, token_type_t  op, instance_t *rhs)
             {
@@ -295,14 +158,73 @@ namespace cmsl
 
             operator_visitor::arith_operator_handler_t operator_visitor::get_arith_operator_handler(token_type_t op)
             {
-                return [&instances = m_instances, op](auto lhs, auto rhs)
+                return [&, op](auto lhs, auto rhs)
                 {
-                    auto lhs_val = lhs->get_value();
-                    auto rhs_val = rhs->get_value();
-                    auto visitor = details::operator_evaluation_visitor{ op };
-                    auto result = boost::apply_visitor(visitor, lhs_val, rhs_val);
-                    return instances.create(result);
+                    auto result = apply_operator_visitor(lhs, op, rhs);
+                    return m_instances.create(result);
                 };
+            }
+
+            operator_visitor::arith_operator_handler_t
+            operator_visitor::get_compound_assignment_handler(operator_visitor::token_type_t op)
+            {
+                return [&, op](auto lhs, auto rhs)
+                {
+                    const auto result = apply_operator_visitor(lhs, op, rhs);
+                    lhs->assign(result);
+                    return lhs;
+                };
+            }
+
+            inst::instance_value_t operator_visitor::apply_operator_visitor(instance_t *lhs, token_type_t op, instance_t *rhs)
+            {
+                auto lhs_val = lhs->get_value();
+                auto rhs_val = rhs->get_value();
+
+                switch(op)
+                {
+
+                    case lexer::token::token_type::minus:
+                    case lexer::token::token_type::plus:
+                    {
+                        auto visitor = additive_operator_evaluation_visitor{ op };
+                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                    }
+
+                    case lexer::token::token_type::amp:
+                    case lexer::token::token_type::pipe:
+                    case lexer::token::token_type::xor_:
+                    {
+                        auto visitor = bitwise_operator_evaluation_visitor{ op };
+                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                    }
+
+                    case lexer::token::token_type::slash:
+                    case lexer::token::token_type::star:
+                    {
+                        auto visitor = multiplicative_operator_evaluation_visitor{ op };
+                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                    }
+
+                    case lexer::token::token_type::percent:
+                    {
+                        auto visitor = reminder_operator_evaluation_visitor{ op };
+                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                    }
+
+                    case lexer::token::token_type::ampamp:
+                    case lexer::token::token_type::pipepipe:
+                    case lexer::token::token_type::equalequal:
+                    case lexer::token::token_type::exclaimequal:
+                    case lexer::token::token_type::less:
+                    case lexer::token::token_type::lessequal:
+                    case lexer::token::token_type::greater:
+                    case lexer::token::token_type::greaterequal:
+                    {
+                        auto visitor = logical_operator_evaluation_visitor{ op };
+                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                    }
+                }
             }
         }
     }

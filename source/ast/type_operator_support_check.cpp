@@ -44,7 +44,11 @@ namespace cmsl
                     token_type_t::less,
                     token_type_t::lessequal,
                     token_type_t::greater,
-                    token_type_t::greaterequal
+                    token_type_t::greaterequal,
+                    token_type_t::ampamp,
+                    token_type_t::pipepipe,
+                    token_type_t::equalequal,
+                    token_type_t::exclaimequal
             };
 
             return types_operators_support_t{
