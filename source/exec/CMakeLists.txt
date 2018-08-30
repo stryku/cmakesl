@@ -28,6 +28,8 @@ set(EXEC_SOURCES
     onp/onp_entry.hpp
     onp/onp_executor.cpp
     onp/onp_executor.hpp
+    onp/operator_evaluation_visitor.cpp
+    onp/operator_evaluation_visitor.hpp
     onp/operator_visitor.cpp
     onp/operator_visitor.hpp
     
