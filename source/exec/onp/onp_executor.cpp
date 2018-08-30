@@ -46,7 +46,9 @@ namespace cmsl
                 if(!m_stack.empty())
                 {
                     auto instance = get_instance_from_stack_top();
-                    m_result = instance->get_value();
+                    // todo
+//                    m_result = instance->get_value();
+                    m_result = 0;
                 }
             }
 

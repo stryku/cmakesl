@@ -13,7 +13,7 @@ namespace cmsl
                 : m_exec{e}
             {}
 
-            inst::instance *instances_holder::create(int value)
+            inst::instance *instances_holder::create(instance_value_t value)
             {
                 auto inst = get_factory().create(value);
                 auto ptr = inst.get();

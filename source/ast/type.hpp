@@ -28,6 +28,9 @@ namespace cmsl
 
             type_kind get_kind() const;
 
+            bool operator==(const type& other) const;
+            bool operator!=(const type& other) const;
+
         private:
             cmsl::string_view m_name;
             type_kind m_kind;
