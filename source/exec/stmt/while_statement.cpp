@@ -27,11 +27,12 @@ namespace cmsl
             bool while_statement::condition_passed(executor &e)
             {
                 const auto& condition = m_node.get_node().get_condition();
-                int infix_result{};
+                inst::instance_value_t infix_result{};
                 auto infix = infix_statement{ condition, infix_result };
                 infix.execute(e);
 
-                return infix_result != 0;
+                // todo convert result to bool
+                return boost::get<int>(infix_result) != 0;
             }
         }
     }

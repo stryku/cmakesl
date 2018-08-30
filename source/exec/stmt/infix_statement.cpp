@@ -12,7 +12,7 @@ namespace cmsl
     {
         namespace stmt
         {
-            infix_statement::infix_statement(const ast::infix_node& node, int& result)
+            infix_statement::infix_statement(const ast::infix_node& node, inst::instance_value_t& result)
                 : m_node{ node }
                 , m_result{ result }
             {}

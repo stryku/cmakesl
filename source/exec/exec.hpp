@@ -29,12 +29,12 @@ namespace cmsl
         public:
             int execute(cmsl::string_view source);
 
-            void return_from_function(int value);
+            void return_from_function(inst::instance_value_t value);
             execution_context& get_exec_ctx();
             const ast::ast_context& get_ast_ctx() const;
             void function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters);
             void member_function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters, inst::instance* class_instance);
-            int get_function_return_value() const;
+            inst::instance_value_t get_function_return_value() const;
             void block(const ast::block_node& block_node);
 
         private:
@@ -53,7 +53,7 @@ namespace cmsl
             };
 
             const ast::ast_context* m_ast_context;
-            boost::optional<int> m_function_return_value;
+            boost::optional<inst::instance_value_t> m_function_return_value;
             std::stack<callstack_frame> m_callstack;
         };
     }
