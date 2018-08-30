@@ -74,6 +74,16 @@ namespace cmsl
                     return { lhs, converted_rhs };
                 }
             }
+
+            instance *instance_converter::convert_to_type(instance *from, const ast::type &desired_type)
+            {
+                auto result_instance = m_instances.create(desired_type);
+                auto from_val = from->get_value();
+                auto result_val = result_instance->get_value();
+                const auto converted_value = boost::apply_visitor(details::convert_visitor{}, from_val, result_val);
+                result_instance->assign(result_val);
+                return result_instance;
+            }
         }
     }
 }

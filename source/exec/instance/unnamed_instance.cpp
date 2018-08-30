@@ -1,6 +1,7 @@
 #include "exec/instance/unnamed_instance.hpp"
 
 #include "ast/class_type.hpp"
+#include "ast/type_kind.hpp"
 #include "common/assert.hpp"
 
 namespace cmsl
@@ -10,7 +11,7 @@ namespace cmsl
         namespace inst
         {
             unnamed_instance::unnamed_instance(const ast::type &type)
-                : m_kind{type.is_fundamental() ? kind::fundamental : kind::user }
+                : m_kind{ type.is_fundamental() ? kind::fundamental : kind::user }
                 , m_type{ type }
                 , m_data{ get_init_data() }
             {}
@@ -38,7 +39,7 @@ namespace cmsl
                 switch (m_kind)
                 {
                     case kind::fundamental:
-                        return int{};
+                        return get_fundamental_init_data();
                     case kind::user:
                         return create_init_members();
                 }
@@ -87,8 +88,7 @@ namespace cmsl
                 auto found = members.find(name);
 
                 return found != std::end(members)
-                       ? found->second
-                              .get()
+                       ? found->second.get()
                        : nullptr;
             }
 
@@ -108,6 +108,18 @@ namespace cmsl
                 }
 
                 CMSL_UNREACHABLE("Cloning unnamed_instance with unknown kind");
+            }
+
+            unnamed_instance::data_t unnamed_instance::get_fundamental_init_data() const
+            {
+                switch(m_type.get_kind())
+                {
+                    case ast::type_kind::k_bool: return bool{};
+                    case ast::type_kind::k_int: return int{};
+                    case ast::type_kind::k_double: return double{};
+                }
+
+                CMSL_UNREACHABLE("Unknown fundamental type kind");
             }
 
             unnamed_instance::members_t unnamed_instance::copy_members() const

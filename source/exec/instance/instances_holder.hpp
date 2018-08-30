@@ -7,6 +7,11 @@
 
 namespace cmsl
 {
+    namespace ast
+    {
+        class type;
+    }
+
     namespace exec
     {
         class executor;
@@ -23,6 +28,7 @@ namespace cmsl
                 explicit instances_holder(executor& e);
 
                 inst::instance* create(instance_value_t value);
+                inst::instance* create(const ast::type& t);
 
             private:
                 inst::instance_factory get_factory();
