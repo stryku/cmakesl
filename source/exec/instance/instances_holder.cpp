@@ -26,6 +26,14 @@ namespace cmsl
                 return instance_factory{m_exec.get_ast_ctx(),
                                         m_exec.get_exec_ctx()};
             }
+
+            inst::instance *instances_holder::create(const ast::type& t)
+            {
+                auto inst = get_factory().create(t);;
+                auto ptr = inst.get();
+                m_instances.emplace_back(std::move(inst));
+                return ptr;
+            }
         }
     }
 }

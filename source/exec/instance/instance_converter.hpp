@@ -4,6 +4,11 @@
 
 namespace cmsl
 {
+    namespace ast
+    {
+        class type;
+    }
+
     namespace exec
     {
         namespace inst
@@ -15,6 +20,8 @@ namespace cmsl
             {
             public:
                 explicit instance_converter(instances_holder& instances);
+
+                instance* convert_to_type(instance* from, const ast::type& desired_type);
 
                 std::pair<instance*, instance*> prepare_for_operator(instance* lhs, instance* rhs);
 
