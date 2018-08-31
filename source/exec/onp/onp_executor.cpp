@@ -29,6 +29,12 @@ namespace cmsl
                         auto inst = m_instances.create(val);
                         m_stack.push(stack_entry_t{ inst });
                     }
+                    else if(token_type == token_type_t::string)
+                    {
+                        const auto val = token.str().to_string();
+                        auto inst = m_instances.create(val);
+                        m_stack.push(stack_entry_t{ inst });
+                    }
                     else if (token_type == token_type_t::identifier)
                     {
                         m_stack.push(stack_entry_t{ id_access{nullptr, token.str() } });
