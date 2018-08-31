@@ -25,6 +25,7 @@ int main()
         "    foo.foo_b = 100;"
         "    int i = 100;"
         "    while( i > 0 ) { i -= 1; }"
+                "return i;"
         "    if(1) { return i; }"
         "    else { return a + foo.sum(a, a + foo.foo_a); }"
         "}";

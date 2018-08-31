@@ -1,4 +1,5 @@
 set(EXEC_SOURCES
+    context_provider.hpp
     exec.cpp
     exec.hpp
     execution_context.cpp
