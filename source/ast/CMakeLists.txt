@@ -11,6 +11,8 @@ set(AST_SOURCES
     class_node.hpp
     class_type.cpp
     class_type.hpp
+    class_builder.cpp
+    class_builder.hpp
     common_type_finder.cpp
     common_type_finder.hpp
     conditional_node.cpp

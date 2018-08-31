@@ -19,15 +19,8 @@ int main()
         ""
         "int main()"
         "{"
-        "    cl_foo foo;"
-        "    int a = 4+2;"
-        "    foo.foo_a = 14;"
-        "    foo.foo_b = 100;"
-        "    int i = 100;"
-        "    while( i > 0 ) { i -= 1; }"
-                "return i;"
-        "    if(1) { return i; }"
-        "    else { return a + foo.sum(a, a + foo.foo_a); }"
+        "    string s = \"str\""
+        "    return s.size();"
         "}";
 
     cmsl::exec::executor exec;

@@ -12,12 +12,12 @@
 #include "ast/if_else_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/while_node.hpp"
+#include "ast/class_builder.hpp"
 
 #include "common/algorithm.hpp"
 
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
-
 
 namespace cmsl
 {
@@ -236,6 +236,11 @@ namespace cmsl
 
         bool parser::current_is(token_type_t token_type) const
         {
+            if(is_at_end())
+            {
+                return false;
+            }
+
             return m_token->get_type() == token_type;
         }
 
@@ -513,16 +518,14 @@ namespace cmsl
                 return nullptr;
             }
 
-
-            std::vector<member_declaration> members;
-            auto class_ast_ctx = std::make_unique<ast_context>(&ctx);
+            class_builder builder{ ctx, name->str() };
 
             while (!current_is(token_type_t::close_brace))
             {
                 if(class_function_starts())
                 {
                     auto fun = get_function(ctx);
-                    class_ast_ctx->add_function(std::move(fun));
+                    builder.with_function(std::move(fun));
                 }
                 else
                 {
@@ -532,7 +535,7 @@ namespace cmsl
                         return nullptr;
                     }
 
-                    members.emplace_back(std::move(*member));
+                    builder.with_member(std::move(*member));
                 }
             }
 
@@ -548,7 +551,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<class_node>(std::move(class_ast_ctx), name->str(), std::move(members));
+            return builder.build();
         }
 
         bool parser::class_function_starts() const

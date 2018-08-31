@@ -31,6 +31,9 @@ namespace cmsl
             bool operator==(const type& other) const;
             bool operator!=(const type& other) const;
 
+        protected:
+            void add_function();
+
         private:
             cmsl::string_view m_name;
             type_kind m_kind;

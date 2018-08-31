@@ -11,7 +11,7 @@ namespace cmsl
             class statement
             {
             public:
-                virtual void execute(executor& e) {}
+                virtual void execute(executor& e) = 0;
             };
         }
     }
