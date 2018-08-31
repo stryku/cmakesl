@@ -34,7 +34,9 @@ set(EXEC_SOURCES
     onp/operator_evaluation_visitor.hpp
     onp/operator_visitor.cpp
     onp/operator_visitor.hpp
-    
+
+    stmt/builtin_call_size_statement.cpp
+    stmt/builtin_call_size_statement.hpp
     stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp
     stmt/if_else_statement.cpp
