@@ -68,7 +68,7 @@ namespace cmsl
 
                 // Todo remove static
                 static inst::instance_value_t apply_operator_visitor(instance_t* lhs, token_type_t  op, instance_t* rhs);
-
+                static token_type_t map_compound_assignment_op(token_type_t op);
 
             private:
                 token_type_t m_operator;
