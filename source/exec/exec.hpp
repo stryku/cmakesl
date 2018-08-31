@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/string.hpp"
+#include "exec/context_provider.hpp"
 #include "exec/execution_context.hpp"
 
 #include <boost/optional.hpp>
@@ -24,14 +25,14 @@ namespace cmsl
             class instance;
         }
 
-        class executor
+        class executor : public context_provider
         {
         public:
             int execute(cmsl::string_view source);
 
             void return_from_function(inst::instance_value_t value);
-            execution_context& get_exec_ctx();
-            const ast::ast_context& get_ast_ctx() const;
+            execution_context& get_exec_ctx() override;
+            const ast::ast_context& get_ast_ctx() const override;
             void function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters);
             void member_function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters, inst::instance* class_instance);
             inst::instance_value_t get_function_return_value() const;

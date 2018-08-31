@@ -168,9 +168,10 @@ namespace cmsl
             operator_visitor::arith_operator_handler_t
             operator_visitor::get_compound_assignment_handler(operator_visitor::token_type_t op)
             {
-                return [&, op](auto lhs, auto rhs)
+                const auto eval_operator = map_compound_assignment_op(op);
+                return [&, eval_operator](auto lhs, auto rhs)
                 {
-                    const auto result = apply_operator_visitor(lhs, op, rhs);
+                    const auto result = apply_operator_visitor(lhs, eval_operator, rhs);
                     lhs->assign(result);
                     return lhs;
                 };
@@ -184,46 +185,67 @@ namespace cmsl
                 switch(op)
                 {
 
-                    case lexer::token::token_type::minus:
-                    case lexer::token::token_type::plus:
+                    case token_type_t::minus:
+                    case token_type_t::plus:
                     {
                         auto visitor = additive_operator_evaluation_visitor{ op };
                         return boost::apply_visitor(visitor, lhs_val, rhs_val);
                     }
 
-                    case lexer::token::token_type::amp:
-                    case lexer::token::token_type::pipe:
-                    case lexer::token::token_type::xor_:
+                    case token_type_t::amp:
+                    case token_type_t::pipe:
+                    case token_type_t::xor_:
                     {
                         auto visitor = bitwise_operator_evaluation_visitor{ op };
                         return boost::apply_visitor(visitor, lhs_val, rhs_val);
                     }
 
-                    case lexer::token::token_type::slash:
-                    case lexer::token::token_type::star:
+                    case token_type_t::slash:
+                    case token_type_t::star:
                     {
                         auto visitor = multiplicative_operator_evaluation_visitor{ op };
                         return boost::apply_visitor(visitor, lhs_val, rhs_val);
                     }
 
-                    case lexer::token::token_type::percent:
+                    case token_type_t::percent:
                     {
                         auto visitor = reminder_operator_evaluation_visitor{ op };
                         return boost::apply_visitor(visitor, lhs_val, rhs_val);
                     }
 
-                    case lexer::token::token_type::ampamp:
-                    case lexer::token::token_type::pipepipe:
-                    case lexer::token::token_type::equalequal:
-                    case lexer::token::token_type::exclaimequal:
-                    case lexer::token::token_type::less:
-                    case lexer::token::token_type::lessequal:
-                    case lexer::token::token_type::greater:
-                    case lexer::token::token_type::greaterequal:
+                    case token_type_t::ampamp:
+                    case token_type_t::pipepipe:
+                    case token_type_t::equalequal:
+                    case token_type_t::exclaimequal:
+                    case token_type_t::less:
+                    case token_type_t::lessequal:
+                    case token_type_t::greater:
+                    case token_type_t::greaterequal:
                     {
                         auto visitor = logical_operator_evaluation_visitor{ op };
                         return boost::apply_visitor(visitor, lhs_val, rhs_val);
                     }
+                }
+            }
+
+            operator_visitor::token_type_t
+            operator_visitor::map_compound_assignment_op(operator_visitor::token_type_t op)
+            {
+                switch(op)
+                {
+
+                    case token_type_t::minusequal: return token_type_t::minus ;
+                    case token_type_t::plusequal: return token_type_t::plus;
+                    case token_type_t::ampequal: return token_type_t::amp;
+                    case token_type_t::pipeequal: return token_type_t::pipe;
+                    case token_type_t::slashequal: return token_type_t::slash;
+                    case token_type_t::starequal: return token_type_t::star;
+                    case token_type_t::percentequal: return token_type_t::percent;
+                    case token_type_t::xorequal: return token_type_t::xor_;
+
+                    default:
+                        CMSL_UNREACHABLE("op is not a compound assignment operator");
+                        return op;
                 }
             }
         }
