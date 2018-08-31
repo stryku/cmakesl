@@ -9,6 +9,7 @@ set(EXEC_SOURCES
     scope_context.cpp
     scope_context.hpp
 
+    instance/conversion_visitor.hpp
     instance/instance.hpp
     instance/instance_converter.cpp
     instance/instance_converter.hpp
