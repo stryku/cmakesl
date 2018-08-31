@@ -1,7 +1,7 @@
 #include "instances_holder.hpp"
 #include "unnamed_instance.hpp"
 #include "instance_factory.hpp"
-#include "exec/exec.hpp"
+#include "exec/context_provider.hpp"
 
 namespace cmsl
 {
@@ -9,8 +9,8 @@ namespace cmsl
     {
         namespace inst
         {
-            instances_holder::instances_holder(executor &e)
-                : m_exec{e}
+            instances_holder::instances_holder(context_provider &e)
+                : m_ctx_provider{ e }
             {}
 
             inst::instance *instances_holder::create(instance_value_t value)
@@ -23,8 +23,8 @@ namespace cmsl
 
             instance_factory instances_holder::get_factory()
             {
-                return instance_factory{m_exec.get_ast_ctx(),
-                                        m_exec.get_exec_ctx()};
+                return instance_factory{ m_ctx_provider.get_ast_ctx(),
+                                         m_ctx_provider.get_exec_ctx() };
             }
 
             inst::instance *instances_holder::create(const ast::type& t)
