@@ -19,7 +19,7 @@ namespace cmsl
                 {
                     template<typename ValueToConvert,
                              typename DesiredType,
-                             typename DecayedDesiredType = std::decay_t<ValueToConvert>,
+                             typename DecayedDesiredType = std::decay_t<DesiredType>,
                              typename = std::enable_if_t<std::is_arithmetic<DecayedDesiredType>::value,
                                                          void>>
                     instance_value_t operator()(ValueToConvert &&val, DesiredType &&) const
@@ -81,7 +81,7 @@ namespace cmsl
                 auto from_val = from->get_value();
                 auto result_val = result_instance->get_value();
                 const auto converted_value = boost::apply_visitor(details::convert_visitor{}, from_val, result_val);
-                result_instance->assign(result_val);
+                result_instance->assign(converted_value);
                 return result_instance;
             }
         }
