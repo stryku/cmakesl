@@ -61,7 +61,8 @@ namespace cmsl
                 kw_class,
                 kw_if,
                 kw_else,
-                kw_while
+                kw_while,
+                kw_string
             };
         }
     }

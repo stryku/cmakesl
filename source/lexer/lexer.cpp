@@ -348,6 +348,7 @@ namespace cmsl
             tokens["bool"] = token_t::token_type_t::kw_bool;
             tokens["true"] = token_t::token_type_t::kw_true;
             tokens["false"] = token_t::token_type_t::kw_false;
+            tokens["string"] = token_t::token_type_t::kw_string;
 
             return tokens;
         }
