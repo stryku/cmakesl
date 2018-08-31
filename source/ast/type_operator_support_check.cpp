@@ -73,7 +73,26 @@ namespace cmsl
                         make_group(arithmetic_multiplicative_operators,
                                    additive_operators,
                                    logical_operators)
+                    },
+                    {
+                        type_kind::k_string,
+                        get_string_operators_support()
                     }
+            };
+        }
+
+        type_operator_support_check::operators_group_t type_operator_support_check::get_string_operators_support() const
+        {
+            return operators_group_t {
+                    token_type_t::plus,
+                    token_type_t::plusequal,
+
+                    token_type_t::less,
+                    token_type_t::lessequal,
+                    token_type_t::greater,
+                    token_type_t::greaterequal,
+                    token_type_t::equalequal,
+                    token_type_t::exclaimequal
             };
         }
     }
