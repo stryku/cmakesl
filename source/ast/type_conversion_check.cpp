@@ -14,7 +14,8 @@ namespace cmsl
         std::vector<type_conversion_check::conversion_group_t> type_conversion_check::get_conversion_groups() const
         {
             return {
-                conversion_group_t{ type_kind::k_bool, type_kind ::k_int, type_kind::k_double}
+                conversion_group_t{ type_kind::k_bool, type_kind ::k_int, type_kind::k_double },
+                conversion_group_t{ type_kind::k_string }
             };
         }
 
