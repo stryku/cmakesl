@@ -14,7 +14,8 @@ namespace cmsl
             class_type,
             if_else,
             conditional,
-            while_
+            while_,
+            builtin_call
         };
     }
 }

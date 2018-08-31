@@ -77,6 +77,7 @@ namespace cmsl
 
         bool executor::execute_function_expression(ast::ast_node& expr)
         {
+            // todo change type to dynamic casts
             switch (expr.get_type())
             {
                 case ast::ast_node_type::ret:
@@ -113,7 +114,14 @@ namespace cmsl
                     stmt::while_statement while_stmt{ dynamic_cast<ast::while_node&>(expr) };
                     while_stmt.execute(*this);
                 }
-                break;
+                    break;
+
+                case ast::ast_node_type::builtin_call:
+                {
+                    stmt::while_statement while_stmt{ dynamic_cast<ast::while_node&>(expr) };
+                    while_stmt.execute(*this);
+                }
+                    break;
 
                 default:
                     CMSL_UNREACHABLE("Executing not implemented statement.");
@@ -156,7 +164,7 @@ namespace cmsl
             const auto expressions = block_node.get_expressions();
             for (auto expr : expressions)
             {
-                const auto returned_from_function = execute_function_expression(*expr);
+                execute_function_expression(*expr);
                 if (returning_from_function())
                 {
                     return;

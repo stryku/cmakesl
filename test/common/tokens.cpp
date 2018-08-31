@@ -56,7 +56,7 @@ namespace cmsl
                             { token_type_t::semicolon, ";" },
                             { token_type_t::comma, "," },
                             { token_type_t::kw_int, "int" },
-                            { token_type_t::kw_double, "double_" },
+                            { token_type_t::kw_double, "double" },
                             { token_type_t::kw_return, "return" },
                             { token_type_t::kw_class, "class" },
                             { token_type_t::kw_if, "if" },

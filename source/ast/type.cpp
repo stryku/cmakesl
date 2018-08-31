@@ -42,11 +42,11 @@ namespace cmsl
         type_kind type::get_kind() const
         {
             return m_kind;
-
         }
 
         bool type::operator==(const type &other) const
         {
+            // For every type, there only one instance during runtime. Pointers comparison is enough
             return this == &other;
         }
 
