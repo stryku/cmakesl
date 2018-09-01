@@ -6,20 +6,9 @@
 int main()
 {
     const auto source =
-        "class cl_foo"
-        "{"
-        "    int sum(int param, int param2)"
-        "    {"
-        "        return foo_a + foo_b + param + param2;"
-        "    }"
-        ""
-        "    int foo_a = 5;"
-        "    int foo_b = 30;"
-        "};"
-        ""
         "int main()"
         "{"
-        "    string s = \"str\""
+        "    string s = \"test\";"
         "    return s.size();"
         "}";
 

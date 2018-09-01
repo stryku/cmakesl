@@ -7,7 +7,7 @@ set(AST_SOURCES
     block_node.hpp
     builtin_ast_context.cpp
     builtin_ast_context.hpp
-    class_node.cpp
+        class_node.cpp
     class_node.hpp
     class_type.cpp
     class_type.hpp
@@ -22,8 +22,10 @@ set(AST_SOURCES
     ast_node.hpp 
     declaration_node.cpp
     declaration_node.hpp
-    function_node.cpp
-    function_node.hpp
+    user_function_node.cpp
+    user_function_node.hpp
+    function.hpp
+    fundamental_function.hpp
     if_else_node.cpp
     if_else_node.hpp
     integer_constant.hpp

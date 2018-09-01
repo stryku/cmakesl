@@ -28,7 +28,7 @@ namespace cmsl
                 instance *get_member(cmsl::string_view name) override;
                 bool has_function(cmsl::string_view name) const override;
                 bool is_fundamental() const;
-                const ast::function_node* get_function(cmsl::string_view name) const override;
+                const ast::function* get_function(cmsl::string_view name) const override;
                 const ast::type& get_type() const override;
 
             private:

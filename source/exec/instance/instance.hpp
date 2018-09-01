@@ -11,7 +11,7 @@ namespace cmsl
 {
     namespace ast
     {
-        class function_node;
+        class function;
         class type;
     }
 
@@ -35,7 +35,7 @@ namespace cmsl
                 virtual void assign(instance_value_t val) = 0;
                 virtual instance* get_member(cmsl::string_view name) = 0;
                 virtual bool has_function(cmsl::string_view name) const = 0;
-                virtual const ast::function_node* get_function(cmsl::string_view name) const = 0;
+                virtual const ast::function* get_function(cmsl::string_view name) const = 0;
                 virtual const ast::type& get_type() const = 0;
             };
         }

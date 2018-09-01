@@ -11,6 +11,10 @@
 #include "ast/if_else_node.hpp"
 #include "ast/while_node.hpp"
 
+#include "ast/fundamental_function.hpp"
+#include "common/type_traits.hpp"
+
+#include "exec/fundamental_function_visitors.hpp"
 #include "exec/stmt/return_statement.hpp"
 #include "exec/stmt/declaration_statement.hpp"
 #include "exec/stmt/if_else_statement.hpp"
@@ -32,14 +36,16 @@ namespace cmsl
             ast::ast_builder builder;
             ast::builtin_ast_context ctx;
             auto global_ast_ctx = builder.build(ctx, err_observer, tokens);
-            auto main_function = global_ast_ctx->find_function("main");
-            function_call(*main_function, {});
+            const auto &tt = ctx.find_type("string");
+            const auto main_function = global_ast_ctx->find_function("main");
+            const auto casted = dynamic_cast<const ast::user_function_node*>(main_function);
+            function_call(*casted, {});
             const auto main_result = *m_function_return_value;
             const auto int_result = boost::get<int>(main_result);
             return int_result;
         }
 
-        void executor::execute_function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters)
+        void executor::execute_function_call(const ast::user_function_node& fun, std::vector<inst::instance*> parameters)
         {
             m_function_return_value = boost::none;
 
@@ -57,7 +63,7 @@ namespace cmsl
         }
 
 
-        void executor::member_function_call(const ast::function_node& fun,
+        void executor::member_function_call(const ast::user_function_node& fun,
                                             std::vector<inst::instance*> parameters,
                                             inst::instance* class_instance)
         {
@@ -67,7 +73,7 @@ namespace cmsl
             execute_function_call(fun, std::move(parameters));
         }
 
-        void executor::function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters)
+        void executor::function_call(const ast::user_function_node& fun, std::vector<inst::instance*> parameters)
         {
             m_ast_context = &fun.get_ast_context();
             m_callstack.push({ &fun, execution_context{} });
@@ -114,14 +120,7 @@ namespace cmsl
                     stmt::while_statement while_stmt{ dynamic_cast<ast::while_node&>(expr) };
                     while_stmt.execute(*this);
                 }
-                    break;
-
-                case ast::ast_node_type::builtin_call:
-                {
-                    stmt::while_statement while_stmt{ dynamic_cast<ast::while_node&>(expr) };
-                    while_stmt.execute(*this);
-                }
-                    break;
+                break;
 
                 default:
                     CMSL_UNREACHABLE("Executing not implemented statement.");
@@ -180,6 +179,23 @@ namespace cmsl
         bool executor::returning_from_function() const
         {
             return m_function_return_value.is_initialized();
+        }
+
+        inst::instance_value_t executor::fundamental_member_function_call(inst::instance *class_instance, cmsl::string_view fun_name)
+        {
+            const auto fun_ptr = class_instance->get_function(fun_name);
+
+            if(auto fun = dynamic_cast<const ast::fundamental_function*>(fun_ptr))
+            {
+                auto val = class_instance->get_value();
+                switch(fun->get_fundamental_fun_kind())
+                {
+                    case ast::fundamental_function::fundamental_function_kind::size:
+                    {
+                        return boost::apply_visitor(size_visitor{}, val);
+                    };
+                }
+            }
         }
     }
 }
