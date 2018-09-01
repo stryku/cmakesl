@@ -27,10 +27,15 @@ namespace cmsl
             return *this;
         }
 
-        class_builder &class_builder::with_function(std::unique_ptr<function_node> fun)
+        class_builder &class_builder::with_function(std::unique_ptr<function> fun)
         {
             m_ast_ctx->add_function(std::move(fun));
             return *this;
+        }
+
+        ast_context &class_builder::get_ast_ctx()
+        {
+            return *m_ast_ctx;
         }
     }
 }

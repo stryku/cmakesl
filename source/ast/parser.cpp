@@ -3,7 +3,7 @@
 #include "ast/type.hpp"
 #include "ast/infix_node.hpp"
 #include "ast/block_node.hpp"
-#include "ast/function_node.hpp"
+#include "ast/user_function_node.hpp"
 #include "ast/return_node.hpp"
 #include "ast/infix_node.hpp"
 #include "ast/declaration_node.hpp"
@@ -74,7 +74,8 @@ namespace cmsl
             const auto builtin_types = {
                 token_type_t::kw_int,
                 token_type_t::kw_double,
-                token_type_t::kw_bool
+                token_type_t::kw_bool,
+                token_type_t::kw_string
             };
 
             return cmsl::contains(builtin_types, token_type);
@@ -377,7 +378,7 @@ namespace cmsl
             return std::make_unique<block_node>(std::move(expressions));
         }
 
-        std::unique_ptr<function_node> parser::get_function(ast_context& ctx)
+        std::unique_ptr<user_function_node> parser::get_function(ast_context& ctx)
         {
             const auto type = get_type(ctx);
             if (!type)
@@ -404,7 +405,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<function_node>(ctx, *type, name->str(), std::move(*parameters), std::move(block_expr));
+            return std::make_unique<user_function_node>(ctx, *type, name->str(), std::move(*parameters), std::move(block_expr));
         }
 
         boost::optional<lexer::token::token> parser::get_identifier()
@@ -519,11 +520,13 @@ namespace cmsl
             }
 
             class_builder builder{ ctx, name->str() };
+            auto& class_ast_ctx = builder.get_ast_ctx();
 
             while (!current_is(token_type_t::close_brace))
             {
                 if(class_function_starts())
                 {
+                    // pass context from builder
                     auto fun = get_function(ctx);
                     builder.with_function(std::move(fun));
                 }

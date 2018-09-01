@@ -34,7 +34,7 @@ namespace cmsl
             return get_function(name) != nullptr;
         }
 
-        const function_node* type::get_function(cmsl::string_view name) const
+        const function* type::get_function(cmsl::string_view name) const
         {
             return m_ast_ctx->find_function(name);
         }

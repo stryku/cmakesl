@@ -10,7 +10,7 @@ namespace cmsl
     namespace ast
     {
         class infix_node;
-        class function_node;
+        class user_function_node;
     }
 
     namespace lexer

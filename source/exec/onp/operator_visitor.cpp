@@ -77,7 +77,7 @@ namespace cmsl
             {
                 if (lhs->has_function(rhs.name))
                 {
-                    return m_function_caller.execute_member_function_call(*lhs->get_function(rhs.name), lhs);
+                    return m_function_caller.execute_member_function_call(lhs, rhs.name);
                 }
                 else
                 {

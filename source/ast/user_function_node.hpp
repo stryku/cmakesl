@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ast/ast_node.hpp"
+#include "ast/function.hpp"
 #include "ast/parameter_declaration.hpp"
 #include "ast/block_node.hpp"
 
@@ -15,14 +15,14 @@ namespace cmsl
         class ast_context;
         class type;
 
-        class function_node : public ast_node
+        class user_function_node : public function
         {
         public:
-            function_node(ast_context& ctx,
-                          const type& return_type,
-                          cmsl::string_view name,
-                          std::vector<parameter_declaration> params,
-                          std::unique_ptr<block_node> body);
+            user_function_node(ast_context& ctx,
+                               const type& return_type,
+                               cmsl::string_view name,
+                               std::vector<parameter_declaration> params,
+                               std::unique_ptr<block_node> body);
 
             cmsl::string_view get_name() const;
             const block_node& get_body() const;

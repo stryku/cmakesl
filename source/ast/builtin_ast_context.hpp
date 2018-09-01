@@ -10,6 +10,9 @@ namespace cmsl
         {
         public:
             builtin_ast_context();
+
+        private:
+            void add_string_type();
         };
     }
 }
