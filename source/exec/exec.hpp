@@ -48,6 +48,8 @@ namespace cmsl
 
             bool returning_from_function() const;
 
+            const ast::type& get_current_function_return_type() const;
+
         private:
             struct callstack_frame
             {

@@ -11,7 +11,8 @@ namespace cmsl
         public:
             enum class fundamental_function_kind
             {
-                size
+                size,
+                empty
             };
 
             explicit fundamental_function(fundamental_function_kind k)
@@ -23,6 +24,7 @@ namespace cmsl
                 switch(m_kind)
                 {
                     case fundamental_function_kind::size: return "size";
+                    case fundamental_function_kind::empty: return "empty";
                 }
             }
 

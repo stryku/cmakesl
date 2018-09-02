@@ -61,10 +61,14 @@ namespace cmsl
 
             instance *instance_converter::convert_to_type(instance *from, const ast::type &desired_type)
             {
+                return convert_to_type(from->get_value(), desired_type);
+            }
+
+            instance *instance_converter::convert_to_type(instance_value_t from, const ast::type &desired_type)
+            {
                 auto result_instance = m_instances.create(desired_type);
-                auto from_val = from->get_value();
                 auto result_val = result_instance->get_value();
-                const auto converted_value = boost::apply_visitor(conversion_visitor{}, from_val, result_val);
+                const auto converted_value = boost::apply_visitor(conversion_visitor{}, from, result_val);
                 result_instance->assign(converted_value);
                 return result_instance;
             }

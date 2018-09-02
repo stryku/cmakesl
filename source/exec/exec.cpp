@@ -13,6 +13,8 @@
 
 #include "ast/fundamental_function.hpp"
 #include "common/type_traits.hpp"
+#include "exec/instance/instance_converter.hpp"
+#include "exec/instance/instances_holder.hpp"
 
 #include "exec/fundamental_function_visitors.hpp"
 #include "exec/stmt/return_statement.hpp"
@@ -173,7 +175,11 @@ namespace cmsl
 
         void executor::return_from_function(inst::instance_value_t value)
         {
-            m_function_return_value = value;
+            const auto& fun_ret_type = get_current_function_return_type();
+            inst::instances_holder instances{ *this };
+            inst::instance_converter converter{ instances };
+            auto inst = converter.convert_to_type(value, fun_ret_type);
+            m_function_return_value = inst->get_value();
         }
 
         bool executor::returning_from_function() const
@@ -194,8 +200,17 @@ namespace cmsl
                     {
                         return boost::apply_visitor(size_visitor{}, val);
                     };
+                    case ast::fundamental_function::fundamental_function_kind::empty:
+                    {
+                        return boost::apply_visitor(empty_visitor{}, val);
+                    };
                 }
             }
+        }
+
+        const ast::type &executor::get_current_function_return_type() const
+        {
+            return m_callstack.top().fun->get_return_type();
         }
     }
 }

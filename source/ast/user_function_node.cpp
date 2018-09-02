@@ -36,5 +36,10 @@ namespace cmsl
         {
             return m_params;
         }
+
+        const type &user_function_node::get_return_type() const
+        {
+            return m_return_type;
+        }
     }
 }
