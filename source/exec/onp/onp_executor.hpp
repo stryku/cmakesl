@@ -48,7 +48,7 @@ namespace cmsl
                 using stack_entry_t = boost::variant<inst::instance*, id_access>;
 
             public:
-                explicit onp_executor(const tokens_container_t& onp_tokens, source_executor& e, inst::instance_value_t& result);
+                explicit onp_executor(const tokens_container_t& onp_tokens, execution& e, inst::instance_value_t& result);
 
                 void execute();
                 inst::instance* execute_function_call(const ast::user_function_node& fun);
@@ -62,7 +62,7 @@ namespace cmsl
 
             private:
                 const tokens_container_t& m_tokens;
-                source_executor& m_exec;
+                execution& m_exec;
                 inst::instance_value_t& m_result;
                 std::stack<stack_entry_t> m_stack;
                 inst::instances_holder m_instances;
