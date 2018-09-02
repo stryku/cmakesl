@@ -18,10 +18,10 @@ namespace cmsl
             public:
                 explicit while_statement(const ast::while_node& node);
 
-                virtual void execute(source_executor& e) override;
+                virtual void execute(execution& e) override;
 
             private:
-                bool condition_passed(source_executor &e);
+                bool condition_passed(execution &e);
 
             private:
                 const ast::while_node& m_node;
