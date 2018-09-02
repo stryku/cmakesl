@@ -34,7 +34,7 @@ namespace cmsl
             return get_function(name) != nullptr;
         }
 
-        const function_node* type::get_function(cmsl::string_view name) const
+        const function* type::get_function(cmsl::string_view name) const
         {
             return m_ast_ctx->find_function(name);
         }
@@ -42,11 +42,11 @@ namespace cmsl
         type_kind type::get_kind() const
         {
             return m_kind;
-
         }
 
         bool type::operator==(const type &other) const
         {
+            // For every type, there only one instance during runtime. Pointers comparison is enough
             return this == &other;
         }
 

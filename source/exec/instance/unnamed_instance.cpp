@@ -117,6 +117,7 @@ namespace cmsl
                     case ast::type_kind::k_bool: return bool{};
                     case ast::type_kind::k_int: return int{};
                     case ast::type_kind::k_double: return double{};
+                    case ast::type_kind::k_string: return std::string{};
                 }
 
                 CMSL_UNREACHABLE("Unknown fundamental type kind");
@@ -163,7 +164,7 @@ namespace cmsl
                 return m_type.has_function(name);
             }
 
-            const ast::function_node* unnamed_instance::get_function(cmsl::string_view name) const
+            const ast::function* unnamed_instance::get_function(cmsl::string_view name) const
             {
                 return m_type.get_function(name);
             }

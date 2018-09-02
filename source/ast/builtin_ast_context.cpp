@@ -2,6 +2,9 @@
 
 #include "ast/type.hpp"
 #include "ast/type_kind.hpp"
+#include "ast/class_builder.hpp"
+#include "ast/class_type.hpp"
+#include "ast/fundamental_function.hpp"
 
 namespace cmsl
 {
@@ -20,6 +23,29 @@ namespace cmsl
             {
                 add_type(std::make_unique<type>(pair.first, pair.second, nullptr));
             }
+
+            add_string_type();
+        }
+
+        void builtin_ast_context::add_string_type()
+        {
+            class_builder builder{ *this, "string" };
+
+            const auto string_functions = {
+                fundamental_function::fundamental_function_kind::size,
+                fundamental_function::fundamental_function_kind::empty
+            };
+
+            for(const auto fun_kind : string_functions)
+            {
+                auto fun = std::make_unique<fundamental_function>(fun_kind);
+                builder.with_function(std::move(fun));
+            }
+
+            auto string_class_node = builder.build();
+            auto string_type = std::make_unique<class_type>(std::move(string_class_node), type_kind::k_string);
+
+            add_type(std::move(string_type));
         }
     }
 }

@@ -13,7 +13,6 @@ namespace cmsl
             block,
             class_type,
             if_else,
-            conditional,
             while_
         };
     }

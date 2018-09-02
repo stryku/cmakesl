@@ -43,5 +43,10 @@ namespace cmsl
         {
             m_scopes.push(scope_context{ class_instance });
         }
+
+        execution_context::instance_t *execution_context::get_this()
+        {
+            return get_variable("this");
+        }
     }
 }

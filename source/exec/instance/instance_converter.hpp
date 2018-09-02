@@ -1,5 +1,7 @@
 #pragma once
 
+#include "exec/instance/instance_value.hpp"
+
 #include <utility>
 
 namespace cmsl
@@ -22,6 +24,7 @@ namespace cmsl
                 explicit instance_converter(instances_holder& instances);
 
                 instance* convert_to_type(instance* from, const ast::type& desired_type);
+                instance* convert_to_type(instance_value_t from, const ast::type& desired_type);
 
                 std::pair<instance*, instance*> prepare_for_operator(instance* lhs, instance* rhs);
 

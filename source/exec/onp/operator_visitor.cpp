@@ -77,7 +77,7 @@ namespace cmsl
             {
                 if (lhs->has_function(rhs.name))
                 {
-                    return m_function_caller.execute_member_function_call(*lhs->get_function(rhs.name), lhs);
+                    return m_function_caller.execute_member_function_call(lhs, rhs.name);
                 }
                 else
                 {
@@ -186,9 +186,14 @@ namespace cmsl
                 {
 
                     case token_type_t::minus:
+                    {
+                        auto visitor = minus_operator_evaluation_visitor{ op };
+                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                    }
+
                     case token_type_t::plus:
                     {
-                        auto visitor = additive_operator_evaluation_visitor{ op };
+                        auto visitor = plus_operator_evaluation_visitor{ op };
                         return boost::apply_visitor(visitor, lhs_val, rhs_val);
                     }
 
@@ -214,13 +219,19 @@ namespace cmsl
                     }
 
                     case token_type_t::ampamp:
-                    case token_type_t::pipepipe:
-                    case token_type_t::equalequal:
                     case token_type_t::exclaimequal:
                     case token_type_t::less:
                     case token_type_t::lessequal:
                     case token_type_t::greater:
                     case token_type_t::greaterequal:
+                    {
+                        auto visitor = comparison_operator_evaluation_visitor{ op };
+                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                    }
+
+
+                    case token_type_t::pipepipe:
+                    case token_type_t::equalequal:
                     {
                         auto visitor = logical_operator_evaluation_visitor{ op };
                         return boost::apply_visitor(visitor, lhs_val, rhs_val);
