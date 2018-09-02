@@ -1,5 +1,5 @@
 #include "lexer/lexer.hpp"
-#include "exec/exec.hpp"
+#include "exec/source_executor.hpp"
 
 #include <iostream>
 
@@ -12,7 +12,7 @@ int main()
         "    return s.empty();"
         "}";
 
-    cmsl::exec::executor exec;
+    cmsl::exec::source_executor exec;
     auto ret = exec.execute(source);
     std::cout << ret << '\n';
 }

@@ -18,7 +18,7 @@ namespace cmsl
             public:
                 explicit declaration_statement(ast::declaration_node& node);
 
-                virtual void execute(executor& e) override;
+                virtual void execute(source_executor& e) override;
 
             private:
                 ast::declaration_node& m_node;

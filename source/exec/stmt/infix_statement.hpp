@@ -40,10 +40,10 @@ namespace cmsl
             public:
                 explicit infix_statement(const ast::infix_node& node, inst::instance_value_t & result);
 
-                virtual void execute(executor& e) override;
+                virtual void execute(source_executor& e) override;
 
             private:
-                tokens_container_t to_onp(executor& e) const;
+                tokens_container_t to_onp(source_executor& e) const;
 
             private:
                 const ast::infix_node& m_node;
