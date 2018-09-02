@@ -4,14 +4,14 @@ namespace cmsl
 {
     namespace exec
     {
-        class executor;
+        class execution;
 
         namespace stmt
         {
             class statement
             {
             public:
-                virtual void execute(executor& e) = 0;
+                virtual void execute(execution& e) = 0;
             };
         }
     }

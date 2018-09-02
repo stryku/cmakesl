@@ -9,7 +9,7 @@ namespace cmsl
 {
     namespace exec
     {
-        class executor;
+        class source_executor;
     }
 
     namespace ast
