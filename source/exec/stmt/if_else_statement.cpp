@@ -4,6 +4,9 @@
 #include "ast/conditional_node.hpp"
 #include "exec/stmt/infix_statement.hpp"
 #include "exec/exec.hpp"
+#include "exec/instance/instances_holder.hpp"
+#include "exec/instance/instance_converter.hpp"
+#include "ast/ast_context.hpp"
 
 namespace cmsl
 {
@@ -20,11 +23,18 @@ namespace cmsl
                 for(const auto& cond_node : m_node.get_ifs())
                 {
                     const auto& condition = cond_node->get_condition();
-                    int infix_result{};
+                    inst::instance_value_t infix_result{};
                     auto infix = infix_statement{ condition, infix_result };
                     infix.execute(e);
 
-                    if(infix_result != 0)
+                    // Convert result to bool
+                    inst::instances_holder instances{ e };
+                    inst::instance_converter converter{ instances };
+                    auto result_instance = instances.create(infix_result);
+                    const auto bool_type = e.get_ast_ctx().find_type("bool");
+                    auto bool_instance = converter.convert_to_type(result_instance, *bool_type);
+
+                    if(boost::get<bool>(bool_instance->get_value()) == true)
                     {
                         e.block(cond_node->get_block());
                         return;

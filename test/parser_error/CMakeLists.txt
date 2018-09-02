@@ -11,7 +11,7 @@ if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0")
 endif()
 
 add_executable(${TEST_NAME} ${CMAKESL_PARSER_ERROR_TEST_SOURCES})
-target_link_libraries(${TEST_NAME} gmock_main lexer ast errors_observer_mock tests_common)
+target_link_libraries(${TEST_NAME} gmock_main ast lexer errors_observer_mock tests_common)
 target_include_directories(${TEST_NAME} PRIVATE 
     ${CMAKESL_SOURCES_DIR}
     ${CMAKESL_TESTS_DIR}

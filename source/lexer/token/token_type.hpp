@@ -10,7 +10,7 @@ namespace cmsl
             {
                 undef,
                 integer,
-                real, // todo rename to double
+                double_, // todo rename to double
                 dot,
                 open_brace,
                 close_brace,
@@ -51,15 +51,18 @@ namespace cmsl
                 semicolon,
                 comma,
 
-                // builtin types
-                t_int, // todo rename to kw_*
-                t_real,
-
+                kw_int,
+                kw_double,
+                kw_bool,
+                kw_true,
+                kw_false,
+                
                 kw_return,
                 kw_class,
                 kw_if,
                 kw_else,
-                kw_while
+                kw_while,
+                kw_string
             };
         }
     }

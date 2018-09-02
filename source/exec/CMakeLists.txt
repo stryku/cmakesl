@@ -1,20 +1,26 @@
 set(EXEC_SOURCES
+    context_provider.hpp
     exec.cpp
     exec.hpp
     execution_context.cpp
     execution_context.hpp
+    fundamental_function_visitors.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
     scope_context.cpp
     scope_context.hpp
 
+    instance/conversion_visitor.hpp
     instance/instance.hpp
+    instance/instance_converter.cpp
+    instance/instance_converter.hpp
     instance/unnamed_instance.cpp
     instance/unnamed_instance.hpp
     instance/instances_holder.cpp
     instance/instances_holder.hpp
     instance/instance_factory.cpp
     instance/instance_factory.hpp
+    instance/instance_value.hpp
     instance/named_instance.cpp
     instance/named_instance.hpp
 
@@ -25,9 +31,11 @@ set(EXEC_SOURCES
     onp/onp_entry.hpp
     onp/onp_executor.cpp
     onp/onp_executor.hpp
+    onp/operator_evaluation_visitor.cpp
+    onp/operator_evaluation_visitor.hpp
     onp/operator_visitor.cpp
     onp/operator_visitor.hpp
-    
+
     stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp
     stmt/if_else_statement.cpp
@@ -39,7 +47,7 @@ set(EXEC_SOURCES
     stmt/statement.hpp
     stmt/while_statement.cpp
     stmt/while_statement.hpp
-) 
+)
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR})

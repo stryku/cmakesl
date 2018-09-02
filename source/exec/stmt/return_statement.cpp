@@ -17,7 +17,7 @@ namespace cmsl
             void return_statement::execute(executor& e)
             {
                 auto& expr = m_node.get_expression();
-                int infix_result;
+                inst::instance_value_t infix_result;
                 auto infix = infix_statement{ expr, infix_result };
                 infix.execute(e);
                 e.return_from_function(infix_result);

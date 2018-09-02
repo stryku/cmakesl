@@ -11,6 +11,12 @@
 #include "ast/if_else_node.hpp"
 #include "ast/while_node.hpp"
 
+#include "ast/fundamental_function.hpp"
+#include "common/type_traits.hpp"
+#include "exec/instance/instance_converter.hpp"
+#include "exec/instance/instances_holder.hpp"
+
+#include "exec/fundamental_function_visitors.hpp"
 #include "exec/stmt/return_statement.hpp"
 #include "exec/stmt/declaration_statement.hpp"
 #include "exec/stmt/if_else_statement.hpp"
@@ -32,13 +38,16 @@ namespace cmsl
             ast::ast_builder builder;
             ast::builtin_ast_context ctx;
             auto global_ast_ctx = builder.build(ctx, err_observer, tokens);
-            auto main_function = global_ast_ctx->find_function("main");
-            function_call(*main_function, {});
+            const auto &tt = ctx.find_type("string");
+            const auto main_function = global_ast_ctx->find_function("main");
+            const auto casted = dynamic_cast<const ast::user_function_node*>(main_function);
+            function_call(*casted, {});
             const auto main_result = *m_function_return_value;
-            return main_result;
+            const auto int_result = boost::get<int>(main_result);
+            return int_result;
         }
 
-        void executor::execute_function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters)
+        void executor::execute_function_call(const ast::user_function_node& fun, std::vector<inst::instance*> parameters)
         {
             m_function_return_value = boost::none;
 
@@ -56,7 +65,7 @@ namespace cmsl
         }
 
 
-        void executor::member_function_call(const ast::function_node& fun,
+        void executor::member_function_call(const ast::user_function_node& fun,
                                             std::vector<inst::instance*> parameters,
                                             inst::instance* class_instance)
         {
@@ -66,7 +75,7 @@ namespace cmsl
             execute_function_call(fun, std::move(parameters));
         }
 
-        void executor::function_call(const ast::function_node& fun, std::vector<inst::instance*> parameters)
+        void executor::function_call(const ast::user_function_node& fun, std::vector<inst::instance*> parameters)
         {
             m_ast_context = &fun.get_ast_context();
             m_callstack.push({ &fun, execution_context{} });
@@ -76,6 +85,7 @@ namespace cmsl
 
         bool executor::execute_function_expression(ast::ast_node& expr)
         {
+            // todo change type to dynamic casts
             switch (expr.get_type())
             {
                 case ast::ast_node_type::ret:
@@ -94,7 +104,7 @@ namespace cmsl
 
                 case ast::ast_node_type::infix:
                 {
-                    int result;
+                    inst::instance_value_t result;
                     stmt::infix_statement infix_stmt{ dynamic_cast<ast::infix_node&>(expr), result };
                     infix_stmt.execute(*this);
                 }
@@ -138,7 +148,7 @@ namespace cmsl
             return *m_ast_context;
         }
 
-        int executor::get_function_return_value() const
+        inst::instance_value_t executor::get_function_return_value() const
         {
             return *m_function_return_value;
         }
@@ -155,7 +165,7 @@ namespace cmsl
             const auto expressions = block_node.get_expressions();
             for (auto expr : expressions)
             {
-                const auto returned_from_function = execute_function_expression(*expr);
+                execute_function_expression(*expr);
                 if (returning_from_function())
                 {
                     return;
@@ -163,14 +173,44 @@ namespace cmsl
             }
         }
 
-        void executor::return_from_function(int value)
+        void executor::return_from_function(inst::instance_value_t value)
         {
-            m_function_return_value = value;
+            const auto& fun_ret_type = get_current_function_return_type();
+            inst::instances_holder instances{ *this };
+            inst::instance_converter converter{ instances };
+            auto inst = converter.convert_to_type(value, fun_ret_type);
+            m_function_return_value = inst->get_value();
         }
 
         bool executor::returning_from_function() const
         {
             return m_function_return_value.is_initialized();
+        }
+
+        inst::instance_value_t executor::fundamental_member_function_call(inst::instance *class_instance, cmsl::string_view fun_name)
+        {
+            const auto fun_ptr = class_instance->get_function(fun_name);
+
+            if(auto fun = dynamic_cast<const ast::fundamental_function*>(fun_ptr))
+            {
+                auto val = class_instance->get_value();
+                switch(fun->get_fundamental_fun_kind())
+                {
+                    case ast::fundamental_function::fundamental_function_kind::size:
+                    {
+                        return boost::apply_visitor(size_visitor{}, val);
+                    };
+                    case ast::fundamental_function::fundamental_function_kind::empty:
+                    {
+                        return boost::apply_visitor(empty_visitor{}, val);
+                    };
+                }
+            }
+        }
+
+        const ast::type &executor::get_current_function_return_type() const
+        {
+            return m_callstack.top().fun->get_return_type();
         }
     }
 }

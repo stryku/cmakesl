@@ -5,13 +5,14 @@
 #include "exec/instance/instance_factory.hpp"
 #include "exec/onp/operator_visitor.hpp"
 
+
 namespace cmsl
 {
     namespace exec
     {
         namespace onp
         {
-            onp_executor::onp_executor(const tokens_container_t& onp_tokens, executor& e, int& result)
+            onp_executor::onp_executor(const tokens_container_t& onp_tokens, executor& e, inst::instance_value_t& result)
                 : m_tokens{ onp_tokens }
                 , m_exec{ e }
                 , m_result{ result }
@@ -26,6 +27,12 @@ namespace cmsl
                     if (token_type == token_type_t::integer)
                     {
                         const auto val = std::stoi(token.str().to_string());
+                        auto inst = m_instances.create(val);
+                        m_stack.push(stack_entry_t{ inst });
+                    }
+                    else if(token_type == token_type_t::string)
+                    {
+                        const auto val = token.str().to_string();
                         auto inst = m_instances.create(val);
                         m_stack.push(stack_entry_t{ inst });
                     }
@@ -77,7 +84,7 @@ namespace cmsl
                 return boost::apply_visitor(visitor{ m_exec.get_exec_ctx() }, top);
             }
 
-            std::vector<inst::instance*> onp_executor::prepare_parameters_for_call(const ast::function_node& fun)
+            std::vector<inst::instance*> onp_executor::prepare_parameters_for_call(const ast::user_function_node& fun)
             {
                 auto& exec_ctx = m_exec.get_exec_ctx();
                 std::vector<inst::instance*> params;
@@ -94,16 +101,25 @@ namespace cmsl
                 return params;
             }
 
-            inst::instance* onp_executor::execute_member_function_call(const ast::function_node& fun, inst::instance* class_instance)
+            inst::instance* onp_executor::execute_member_function_call(inst::instance* class_instance, cmsl::string_view name)
             {
-                auto params = prepare_parameters_for_call(fun);
-                m_exec.member_function_call(fun, std::move(params), class_instance);
+                if(class_instance->get_type().is_fundamental())
+                {
+                    auto ret_val = m_exec.fundamental_member_function_call(class_instance, name);
+                    return m_instances.create(ret_val);
+                }
+                else
+                {
+                    const auto& fun = *dynamic_cast<const ast::user_function_node*>(class_instance->get_function(name));
+                    auto params = prepare_parameters_for_call(fun);
+                    m_exec.member_function_call(fun, std::move(params), class_instance);
 
-                const auto ret_val = m_exec.get_function_return_value();
-                return m_instances.create(ret_val);
+                    const auto ret_val = m_exec.get_function_return_value();
+                    return m_instances.create(ret_val);
+                }
             }
 
-            inst::instance* onp_executor::execute_function_call(const ast::function_node& fun)
+            inst::instance* onp_executor::execute_function_call(const ast::user_function_node& fun)
             {
                 auto params = prepare_parameters_for_call(fun);
                 m_exec.function_call(fun, std::move(params));

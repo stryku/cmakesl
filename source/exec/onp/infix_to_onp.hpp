@@ -1,7 +1,7 @@
 #pragma once
 
 #include "lexer/token/token.hpp"
-#include "common/enum_class_map.hpp"
+#include "common/enum_class_utils.hpp"
 #include "exec/onp/onp_entry.hpp"
 
 #include <stack>

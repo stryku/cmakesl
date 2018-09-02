@@ -5,6 +5,9 @@
 
 #include "exec/exec.hpp"
 #include "exec/stmt/infix_statement.hpp"
+#include "exec/instance/instances_holder.hpp"
+#include "exec/instance/instance_converter.hpp"
+#include "ast/ast_context.hpp"
 
 namespace cmsl
 {
@@ -27,11 +30,17 @@ namespace cmsl
             bool while_statement::condition_passed(executor &e)
             {
                 const auto& condition = m_node.get_node().get_condition();
-                int infix_result{};
+                inst::instance_value_t infix_result{};
                 auto infix = infix_statement{ condition, infix_result };
                 infix.execute(e);
 
-                return infix_result != 0;
+                // Convert result to bool
+                inst::instances_holder instances{ e };
+                inst::instance_converter converter{ instances };
+                auto result_instance = instances.create(infix_result);
+                const auto bool_type = e.get_ast_ctx().find_type("bool");
+                auto bool_instance = converter.convert_to_type(result_instance, *bool_type);
+                return boost::get<bool>(bool_instance->get_value()) == true;
             }
         }
     }

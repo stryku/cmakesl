@@ -156,6 +156,10 @@ namespace cmsl
                 {
                     m_out.emplace_back(token);
                 }
+                else if (token_type == token_type_t::string)
+                {
+                    m_out.emplace_back(token);
+                }
                 else if (token_type == token_type_t::semicolon)
                 {
                     // do nothing

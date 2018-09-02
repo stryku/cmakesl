@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ast/function_node.hpp"
+#include "ast/user_function_node.hpp"
 #include "lexer/token/token.hpp"
 
 namespace cmsl
@@ -17,14 +17,26 @@ namespace cmsl
 
             explicit type(lexer::token::token token);
             explicit type(cmsl::string_view name, type_kind kind, const ast_context* ast_ctx);
+
+            type(const type&) = delete;
+            type& operator=(const type&) = delete;
+
             virtual ~type() {}
 
-            bool is_builtin() const; // todo consider rename to is_fundamental
+            bool is_fundamental() const;
 
             cmsl::string_view get_name() const;
 
-            const function_node* get_function(cmsl::string_view name) const;
+            const function* get_function(cmsl::string_view name) const;
             bool has_function(cmsl::string_view name) const;
+
+            type_kind get_kind() const;
+
+            bool operator==(const type& other) const;
+            bool operator!=(const type& other) const;
+
+        protected:
+            void add_function();
 
         private:
             cmsl::string_view m_name;
