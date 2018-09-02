@@ -5,7 +5,7 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/infix_to_onp_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/instance_converter_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_context_provider.hpp
-)
+        high_level_exec_test.cpp)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
@@ -14,6 +14,6 @@ endif()
 
 
 add_executable(${TESTS_NAME} ${SOURCES} )
-target_link_libraries(${TESTS_NAME} gmock_main lexer errors exec ast tests_common)
+target_link_libraries(${TESTS_NAME} gmock_main exec lexer errors ast tests_common)
 target_include_directories(${TESTS_NAME} PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_DIR})
 add_test(NAME ${TESTS_NAME} COMMAND ${TESTS_NAME}) 
