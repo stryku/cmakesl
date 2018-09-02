@@ -23,7 +23,7 @@ namespace cmsl
 
                 if(expr)
                 {
-                    int infix_result;
+                    inst::instance_value_t infix_result;
                     auto infix = infix_statement{ *expr, infix_result };
                     infix.execute(e);
                     instance = factory.create(infix_result);

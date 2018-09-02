@@ -37,7 +37,7 @@ namespace cmsl
             {
                 virtual void SetUp()
                 {
-                    const auto& state = GetParam();
+                    const auto& state = TestWithParam<IncrementState>::GetParam();
                     sl_manip = std::make_unique<source_location_manipulator_t>(state.source);
 
                     for (auto i = 0u; i < state.to_increment; ++i)

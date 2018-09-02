@@ -1,7 +1,8 @@
 #pragma once
 
 #include "lexer/token/token_type.hpp"
-#include "common/enum_class_map.hpp"
+#include "common/enum_class_utils.hpp"
+#include "exec/instance/instance_value.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -62,6 +63,12 @@ namespace cmsl
                 instance_t* handle_arith_operator(instance_t* lhs, token_type_t  op, instance_t* rhs);
 
                 arith_operators_handlers_t get_arith_operators_handlers();
+                arith_operator_handler_t get_arith_operator_handler(token_type_t op);
+                arith_operator_handler_t get_compound_assignment_handler(token_type_t op);
+
+                // Todo remove static
+                static inst::instance_value_t apply_operator_visitor(instance_t* lhs, token_type_t  op, instance_t* rhs);
+                static token_type_t map_compound_assignment_op(token_type_t op);
 
             private:
                 token_type_t m_operator;

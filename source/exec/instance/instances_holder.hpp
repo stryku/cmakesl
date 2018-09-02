@@ -1,13 +1,20 @@
 #pragma once
 
+#include "exec/instance/instance_value.hpp"
+
 #include <memory>
 #include <vector>
 
 namespace cmsl
 {
+    namespace ast
+    {
+        class type;
+    }
+
     namespace exec
     {
-        class executor;
+        class context_provider;
 
         namespace inst
         {
@@ -18,15 +25,16 @@ namespace cmsl
             class instances_holder
             {
             public:
-                explicit instances_holder(executor& e);
+                explicit instances_holder(context_provider& e);
 
-                inst::instance* create(int value);
+                inst::instance* create(instance_value_t value);
+                inst::instance* create(const ast::type& t);
 
             private:
                 inst::instance_factory get_factory();
 
             private:
-                executor& m_exec;
+                context_provider& m_ctx_provider;
                 std::vector<std::unique_ptr<inst::instance>> m_instances;
             };
         }

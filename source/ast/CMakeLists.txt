@@ -7,10 +7,14 @@ set(AST_SOURCES
     block_node.hpp
     builtin_ast_context.cpp
     builtin_ast_context.hpp
-    class_node.cpp
+        class_node.cpp
     class_node.hpp
     class_type.cpp
     class_type.hpp
+    class_builder.cpp
+    class_builder.hpp
+    common_type_finder.cpp
+    common_type_finder.hpp
     conditional_node.cpp
     conditional_node.hpp
     ast_node_type.hpp
@@ -18,8 +22,10 @@ set(AST_SOURCES
     ast_node.hpp 
     declaration_node.cpp
     declaration_node.hpp
-    function_node.cpp
-    function_node.hpp
+    user_function_node.cpp
+    user_function_node.hpp
+    function.hpp
+    fundamental_function.hpp
     if_else_node.cpp
     if_else_node.hpp
     integer_constant.hpp
@@ -34,8 +40,12 @@ set(AST_SOURCES
     return_node.hpp
     type.cpp
     type.hpp
+    type_conversion_check.cpp
+    type_conversion_check.hpp
     type_kind.cpp
     type_kind.hpp
+    type_operator_support_check.cpp
+    type_operator_support_check.hpp
     while_node.cpp
     while_node.hpp
 )

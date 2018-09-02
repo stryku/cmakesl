@@ -72,7 +72,7 @@ namespace cmsl
                     auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
-                    ASSERT_THAT(tokens.front().get_type(), token_type_t::real);
+                    ASSERT_THAT(tokens.front().get_type(), token_type_t::double_);
                 }
 
                 const auto values = testing::Values("1.0", "123.0", "123.012", "000123.123000",
@@ -259,13 +259,17 @@ namespace cmsl
                         ASSERT_THAT(tokens[0].get_type(), state.expected_keyword);
                     }
 
-                    const auto values = testing::Values(PureKeywordState{ "int", token_type_t::t_int },
-                                                        PureKeywordState{ "real", token_type_t::t_real },
+                    const auto values = testing::Values(PureKeywordState{ "int", token_type_t::kw_int },
+                                                        PureKeywordState{ "double", token_type_t::kw_double },
                                                         PureKeywordState{ "class", token_type_t::kw_class },
                                                         PureKeywordState{ "return", token_type_t::kw_return },
                                                         PureKeywordState{ "if", token_type_t::kw_if },
                                                         PureKeywordState{ "else", token_type_t::kw_else },
-                                                        PureKeywordState{ "while", token_type_t::kw_while });
+                                                        PureKeywordState{ "while", token_type_t::kw_while },
+                                                        PureKeywordState{ "bool", token_type_t::kw_bool },
+                                                        PureKeywordState{ "true", token_type_t::kw_true },
+                                                        PureKeywordState{ "false", token_type_t::kw_false },
+                                                        PureKeywordState{ "string", token_type_t::kw_string });
                     INSTANTIATE_TEST_CASE_P(Lexer, PureKeyword, values);
                 }
 
@@ -284,7 +288,7 @@ namespace cmsl
                         ASSERT_THAT(tokens[0].get_type(), token_type_t::identifier);
                     }
 
-                    const auto values = testing::Values( "int123", "_real");
+                    const auto values = testing::Values( "int123", "_double");
                     INSTANTIATE_TEST_CASE_P(Lexer, PollutedKeyword, values);
                 }
             }

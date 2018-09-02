@@ -9,7 +9,9 @@ namespace cmsl
         enum class type_kind
         {
             k_int,
-            k_real,
+            k_double,
+            k_bool,
+            k_string,
 
             k_user
         };
