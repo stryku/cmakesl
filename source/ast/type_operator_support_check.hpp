@@ -1,5 +1,6 @@
 #pragma once
 
+#include <lexer/token/token_type.hpp>
 #include "common/enum_class_utils.hpp"
 #include "type_kind.hpp"
 
@@ -31,6 +32,7 @@ namespace cmsl
 
         private:
             types_operators_support_t get_types_operators_support() const;
+            operators_group_t get_string_operators_support() const;
 
             template <typename... Groups>
             auto make_group(Groups&&... groups_to_insert) const

@@ -268,7 +268,8 @@ namespace cmsl
                                                         PureKeywordState{ "while", token_type_t::kw_while },
                                                         PureKeywordState{ "bool", token_type_t::kw_bool },
                                                         PureKeywordState{ "true", token_type_t::kw_true },
-                                                        PureKeywordState{ "false", token_type_t::kw_false });
+                                                        PureKeywordState{ "false", token_type_t::kw_false },
+                                                        PureKeywordState{ "string", token_type_t::kw_string });
                     INSTANTIATE_TEST_CASE_P(Lexer, PureKeyword, values);
                 }
 

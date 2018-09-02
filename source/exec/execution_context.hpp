@@ -16,6 +16,7 @@ namespace cmsl
         public:
             void add_variable(cmsl::string_view name, std::unique_ptr<instance_t> inst);
             instance_t* get_variable(cmsl::string_view name);
+            instance_t* get_this();
 
             bool variable_exists(cmsl::string_view name) const;
 

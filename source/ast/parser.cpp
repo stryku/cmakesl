@@ -3,7 +3,7 @@
 #include "ast/type.hpp"
 #include "ast/infix_node.hpp"
 #include "ast/block_node.hpp"
-#include "ast/function_node.hpp"
+#include "ast/user_function_node.hpp"
 #include "ast/return_node.hpp"
 #include "ast/infix_node.hpp"
 #include "ast/declaration_node.hpp"
@@ -12,12 +12,12 @@
 #include "ast/if_else_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/while_node.hpp"
+#include "ast/class_builder.hpp"
 
 #include "common/algorithm.hpp"
 
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
-
 
 namespace cmsl
 {
@@ -74,7 +74,8 @@ namespace cmsl
             const auto builtin_types = {
                 token_type_t::kw_int,
                 token_type_t::kw_double,
-                token_type_t::kw_bool
+                token_type_t::kw_bool,
+                token_type_t::kw_string
             };
 
             return cmsl::contains(builtin_types, token_type);
@@ -236,6 +237,11 @@ namespace cmsl
 
         bool parser::current_is(token_type_t token_type) const
         {
+            if(is_at_end())
+            {
+                return false;
+            }
+
             return m_token->get_type() == token_type;
         }
 
@@ -372,7 +378,7 @@ namespace cmsl
             return std::make_unique<block_node>(std::move(expressions));
         }
 
-        std::unique_ptr<function_node> parser::get_function(ast_context& ctx)
+        std::unique_ptr<user_function_node> parser::get_function(ast_context& ctx)
         {
             const auto type = get_type(ctx);
             if (!type)
@@ -399,7 +405,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<function_node>(ctx, *type, name->str(), std::move(*parameters), std::move(block_expr));
+            return std::make_unique<user_function_node>(ctx, *type, name->str(), std::move(*parameters), std::move(block_expr));
         }
 
         boost::optional<lexer::token::token> parser::get_identifier()
@@ -513,16 +519,16 @@ namespace cmsl
                 return nullptr;
             }
 
-
-            std::vector<member_declaration> members;
-            auto class_ast_ctx = std::make_unique<ast_context>(&ctx);
+            class_builder builder{ ctx, name->str() };
+            auto& class_ast_ctx = builder.get_ast_ctx();
 
             while (!current_is(token_type_t::close_brace))
             {
                 if(class_function_starts())
                 {
+                    // pass context from builder
                     auto fun = get_function(ctx);
-                    class_ast_ctx->add_function(std::move(fun));
+                    builder.with_function(std::move(fun));
                 }
                 else
                 {
@@ -532,7 +538,7 @@ namespace cmsl
                         return nullptr;
                     }
 
-                    members.emplace_back(std::move(*member));
+                    builder.with_member(std::move(*member));
                 }
             }
 
@@ -548,7 +554,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            return std::make_unique<class_node>(std::move(class_ast_ctx), name->str(), std::move(members));
+            return builder.build();
         }
 
         bool parser::class_function_starts() const

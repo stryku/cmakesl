@@ -2,8 +2,9 @@ set(COMMON_SOURCES
     algorithm.hpp
     assert.hpp
     source_location.hpp
-        enum_class_utils.hpp
+    enum_class_utils.hpp
     string.hpp
+    type_traits.hpp
 )
 
 add_library(common ${COMMON_SOURCES})

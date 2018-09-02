@@ -1,15 +1,6 @@
 #include "ast/ast_builder.hpp"
 #include "ast/builtin_ast_context.hpp"
-//#include "ast/expr/block_node.hpp"
-//#include "ast/expr/constant_expression.hpp"
-//#include "ast/expr/infix_node.hpp"
-#include "lexer/token/token.hpp"
 #include "ast/class_type.hpp"
-
-//#include "ast/binary_operator.hpp"
-//#include "ast/integral_constant.hpp"
-#include "ast/type.hpp"
-#include "ast/function_node.hpp"
 
 #include <stack>
 
@@ -42,7 +33,6 @@ namespace cmsl
                 {
                     ctx->add_function(std::move(fun));
                 }
-
             }
 
             return std::move(ctx);

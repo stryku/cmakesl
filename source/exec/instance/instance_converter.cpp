@@ -2,10 +2,10 @@
 
 #include "ast/common_type_finder.hpp"
 #include "ast/type.hpp"
+#include "exec/instance/conversion_visitor.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/instance/instance.hpp"
 
-#include <type_traits>
 
 namespace cmsl
 {
@@ -13,22 +13,6 @@ namespace cmsl
     {
         namespace inst
         {
-            namespace details
-            {
-                struct convert_visitor : boost::static_visitor<instance_value_t>
-                {
-                    template<typename ValueToConvert,
-                             typename DesiredType,
-                             typename DecayedDesiredType = std::decay_t<DesiredType>,
-                             typename = std::enable_if_t<std::is_arithmetic<DecayedDesiredType>::value,
-                                                         void>>
-                    instance_value_t operator()(ValueToConvert &&val, DesiredType &&) const
-                    {
-                        return static_cast<DecayedDesiredType>(val);
-                    }
-                };
-            }
-
             instance_converter::instance_converter(instances_holder &instances)
                 : m_instances{ instances }
             {}
@@ -58,7 +42,7 @@ namespace cmsl
                     // todo get rid of these when we'll start using std::varian
                     auto lhs_val = lhs->get_value();
                     auto rhs_val = rhs->get_value();
-                    const auto converted_value = boost::apply_visitor(details::convert_visitor{}, lhs_val, rhs_val);
+                    const auto converted_value = boost::apply_visitor(conversion_visitor{}, lhs_val, rhs_val);
                     auto converted_lhs = m_instances.create(converted_value);
                     return { converted_lhs, rhs };
                 }
@@ -69,7 +53,7 @@ namespace cmsl
                     // todo get rid of these when we'll start using std::varian
                     auto lhs_val = lhs->get_value();
                     auto rhs_val = rhs->get_value();
-                    const auto converted_value = boost::apply_visitor(details::convert_visitor{}, rhs_val, lhs_val);
+                    const auto converted_value = boost::apply_visitor(conversion_visitor{}, rhs_val, lhs_val);
                     auto converted_rhs = m_instances.create(converted_value);
                     return { lhs, converted_rhs };
                 }
@@ -77,10 +61,14 @@ namespace cmsl
 
             instance *instance_converter::convert_to_type(instance *from, const ast::type &desired_type)
             {
+                return convert_to_type(from->get_value(), desired_type);
+            }
+
+            instance *instance_converter::convert_to_type(instance_value_t from, const ast::type &desired_type)
+            {
                 auto result_instance = m_instances.create(desired_type);
-                auto from_val = from->get_value();
                 auto result_val = result_instance->get_value();
-                const auto converted_value = boost::apply_visitor(details::convert_visitor{}, from_val, result_val);
+                const auto converted_value = boost::apply_visitor(conversion_visitor{}, from, result_val);
                 result_instance->assign(converted_value);
                 return result_instance;
             }
