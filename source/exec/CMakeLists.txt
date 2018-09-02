@@ -1,7 +1,7 @@
 set(EXEC_SOURCES
     context_provider.hpp
-    exec.cpp
-    exec.hpp
+    execution.cpp
+    execution.hpp
     execution_context.cpp
     execution_context.hpp
     fundamental_function_visitors.hpp
@@ -9,6 +9,8 @@ set(EXEC_SOURCES
     fundamental_instance.hpp
     scope_context.cpp
     scope_context.hpp
+    source_executor.cpp
+    source_executor.hpp
 
     instance/conversion_visitor.hpp
     instance/instance.hpp

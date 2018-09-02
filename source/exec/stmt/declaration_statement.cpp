@@ -1,7 +1,7 @@
 #include "exec/stmt/declaration_statement.hpp"
 
 #include "ast/declaration_node.hpp"
-#include "exec/exec.hpp"
+#include "exec/execution.hpp"
 #include "exec/stmt/infix_statement.hpp"
 #include "exec/instance/instance_factory.hpp"
 
@@ -15,7 +15,7 @@ namespace cmsl
                 : m_node{ node }
             {}
 
-            void declaration_statement::execute(executor& e)
+            void declaration_statement::execute(execution& e)
             {
                 const auto expr = m_node.get_expression();
                 std::unique_ptr<inst::instance> instance;

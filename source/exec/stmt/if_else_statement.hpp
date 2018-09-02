@@ -18,7 +18,7 @@ namespace cmsl
             public:
                 explicit if_else_statement(const ast::if_else_node& node);
 
-                virtual void execute(executor& e) override;
+                virtual void execute(execution& e) override;
 
             private:
                 const ast::if_else_node& m_node;

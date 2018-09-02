@@ -1,7 +1,7 @@
 #include "exec/stmt/return_statement.hpp"
 
 #include "ast/return_node.hpp"
-#include "exec/exec.hpp"
+#include "exec/execution.hpp"
 #include "exec/stmt/infix_statement.hpp"
 
 namespace cmsl
@@ -14,7 +14,7 @@ namespace cmsl
                 : m_node{ node }
             {}
 
-            void return_statement::execute(executor& e)
+            void return_statement::execute(execution& e)
             {
                 auto& expr = m_node.get_expression();
                 inst::instance_value_t infix_result;

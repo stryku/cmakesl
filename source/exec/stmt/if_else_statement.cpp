@@ -3,7 +3,7 @@
 #include "ast/if_else_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "exec/stmt/infix_statement.hpp"
-#include "exec/exec.hpp"
+#include "exec/execution.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/instance/instance_converter.hpp"
 #include "ast/ast_context.hpp"
@@ -18,7 +18,7 @@ namespace cmsl
                 : m_node{ node }
             {}
 
-            void if_else_statement::execute(executor &e)
+            void if_else_statement::execute(execution &e)
             {
                 for(const auto& cond_node : m_node.get_ifs())
                 {
