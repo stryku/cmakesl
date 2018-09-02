@@ -25,7 +25,7 @@ namespace cmsl
             class instance;
         }
 
-        class executor : public context_provider
+        class source_executor : public context_provider
         {
         public:
             int execute(cmsl::string_view source);

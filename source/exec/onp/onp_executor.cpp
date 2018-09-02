@@ -1,5 +1,5 @@
 #include "exec/onp/onp_executor.hpp"
-#include "exec/exec.hpp"
+#include "exec/source_executor.hpp"
 #include "exec/instance/named_instance.hpp"
 #include "ast/ast_context.hpp"
 #include "exec/instance/instance_factory.hpp"
@@ -12,7 +12,7 @@ namespace cmsl
     {
         namespace onp
         {
-            onp_executor::onp_executor(const tokens_container_t& onp_tokens, executor& e, inst::instance_value_t& result)
+            onp_executor::onp_executor(const tokens_container_t& onp_tokens, source_executor& e, inst::instance_value_t& result)
                 : m_tokens{ onp_tokens }
                 , m_exec{ e }
                 , m_result{ result }

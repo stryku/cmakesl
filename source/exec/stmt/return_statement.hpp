@@ -18,7 +18,7 @@ namespace cmsl
             public:
                 explicit return_statement(ast::return_node& node);
 
-                virtual void execute(executor& e) override;
+                virtual void execute(source_executor& e) override;
 
             private:
                 ast::return_node& m_node;

@@ -1,5 +1,5 @@
 #include "exec/stmt/infix_statement.hpp"
-#include "exec/exec.hpp"
+#include "exec/source_executor.hpp"
 #include "ast/infix_node.hpp"
 #include "ast/type_kind.hpp"
 #include "ast/ast_context.hpp"
@@ -17,13 +17,13 @@ namespace cmsl
                 , m_result{ result }
             {}
 
-            void infix_statement::execute(executor& e)
+            void infix_statement::execute(source_executor& e)
             {
                 const auto onp_tokens = to_onp(e);
                 onp::onp_executor{ onp_tokens, e, m_result }.execute();
             }
 
-            infix_statement::tokens_container_t infix_statement::to_onp(executor& e) const
+            infix_statement::tokens_container_t infix_statement::to_onp(source_executor& e) const
             {
                 const auto& tokens = m_node.get_tokens();
                 return onp::infix_to_onp{ tokens, e.get_ast_ctx() }.convert();
