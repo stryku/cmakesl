@@ -31,8 +31,16 @@ namespace cmsl
         {
             class_builder builder{ *this, "string" };
 
-            auto size_fun = std::make_unique<fundamental_function>(fundamental_function::fundamental_function_kind::size);
-            builder.with_function(std::move(size_fun));
+            const auto string_functions = {
+                fundamental_function::fundamental_function_kind::size,
+                fundamental_function::fundamental_function_kind::empty
+            };
+
+            for(const auto fun_kind : string_functions)
+            {
+                auto fun = std::make_unique<fundamental_function>(fun_kind);
+                builder.with_function(std::move(fun));
+            }
 
             auto string_class_node = builder.build();
             auto string_type = std::make_unique<class_type>(std::move(string_class_node), type_kind::k_string);

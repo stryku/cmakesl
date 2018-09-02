@@ -26,6 +26,7 @@ namespace cmsl
 
             cmsl::string_view get_name() const;
             const block_node& get_body() const;
+            const type& get_return_type() const;
 
             const ast_context& get_ast_context() const;
 

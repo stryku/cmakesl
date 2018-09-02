@@ -9,7 +9,7 @@ int main()
         "int main()"
         "{"
         "    string s = \"test\";"
-        "    return s.size();"
+        "    return s.empty();"
         "}";
 
     cmsl::exec::executor exec;
