@@ -24,9 +24,9 @@ namespace cmsl
             return m_kind != type_kind::k_user;
         }
 
-        cmsl::string_view type::get_name() const
+        std::string type::get_name() const
         {
-            return m_name;
+            return m_name.to_string();
         }
 
         bool type::has_function(cmsl::string_view name) const
