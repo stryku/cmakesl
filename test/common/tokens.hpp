@@ -48,8 +48,8 @@ namespace cmsl
             token_t token_string();
             token_t token_semicolon();
             token_t token_comma();
-            token_t token_t_int();
-            token_t token_t_real();
+            token_t token_kw_int();
+            token_t token_kw_real();
 
             token_t token_kw_if();
             token_t token_kw_else();

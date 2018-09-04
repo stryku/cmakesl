@@ -42,8 +42,8 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        tokens_container_t{ token_t_int() },
-                        tokens_container_t{ token_t_real() }
+                        tokens_container_t{token_kw_int() },
+                        tokens_container_t{token_kw_real() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(Parser_GetType, BuiltinTypeToken, values);
@@ -72,12 +72,12 @@ namespace cmsl
                 {
                     const auto tokens = tokens_container_t{
                         token_open_paren(),
-                        
-                        token_t_int(),
+
+                        token_kw_int(),
                         token_identifier(),
                         token_comma(),
-                        
-                        token_t_real(),
+
+                        token_kw_real(),
                         token_identifier(),
 
                         token_close_paren()
@@ -100,7 +100,7 @@ namespace cmsl
                 TEST(Parser_GetClassMemberDeclaration, NoInit_GetWithoutInit)
                 {
                     const auto tokens = tokens_container_t{
-                        token_t_int(),
+                            token_kw_int(),
                         token_identifier(),
                         token_semicolon()
                     };
@@ -116,7 +116,7 @@ namespace cmsl
                 TEST(Parser_GetClassMemberDeclaration, WithInit_GetWithInit)
                 {
                     const auto tokens = tokens_container_t{
-                        token_t_int(),
+                            token_kw_int(),
                         token_identifier(),
                         token_equal(),
                         token_integer(),
