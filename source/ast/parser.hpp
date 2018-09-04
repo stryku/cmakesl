@@ -57,7 +57,7 @@ namespace cmsl
 
         private:
             bool eat(boost::optional<token_type_t> type = {});
-            bool eat_type();
+            bool eat_simple_type();
 
             bool expect_not_at_end();
             bool expect_token(token_type_t type);

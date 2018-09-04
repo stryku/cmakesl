@@ -53,7 +53,7 @@ namespace cmsl
             return true;
         }
 
-        bool parser::eat_type()
+        bool parser::eat_simple_type()
         {
             const auto token_type = m_token->get_type();
 
@@ -76,7 +76,8 @@ namespace cmsl
                 token_type_t::kw_int,
                 token_type_t::kw_double,
                 token_type_t::kw_bool,
-                token_type_t::kw_string
+                token_type_t::kw_string,
+                token_type_t::kw_list
             };
 
             return cmsl::contains(builtin_types, token_type);
@@ -96,9 +97,9 @@ namespace cmsl
 
         const type *parser::get_or_add_generic_type(ast_context &ctx)
         {
-            const auto name_token = get_identifier();
+            const auto name_token = *m_token;
 
-            if(!name_token)
+            if(!eat_simple_type())
             {
                 return nullptr;
             }
@@ -120,7 +121,7 @@ namespace cmsl
                 return nullptr;
             }
 
-            const std::string type_name = name_token->str().to_string() + '<' + value_type->get_name() + '>';
+            const std::string type_name = name_token.str().to_string() + '<' + value_type->get_name() + '>';
 
             const auto found_type = ctx.find_type(type_name);
             if(found_type != nullptr)
@@ -138,7 +139,7 @@ namespace cmsl
         {
             const auto t = *m_token;
 
-            if (!eat_type())
+            if (!eat_simple_type())
             {
                 return nullptr;
             }

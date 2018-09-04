@@ -24,6 +24,7 @@ namespace cmsl
             virtual ~type() {}
 
             bool is_fundamental() const;
+            bool is_generic() const;
 
             std::string get_name() const;
 
@@ -39,7 +40,7 @@ namespace cmsl
             void add_function();
 
         private:
-            cmsl::string_view m_name;
+            std::string m_name;
             type_kind m_kind;
             const ast_context* m_ast_ctx;
         };

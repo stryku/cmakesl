@@ -44,11 +44,59 @@ namespace cmsl
                     const auto values = testing::Values(
                         tokens_container_t{ token_kw_bool() },
                         tokens_container_t{ token_kw_int() },
-                        tokens_container_t{ token_kw_real() },
+                        tokens_container_t{token_kw_double() },
                         tokens_container_t{ token_kw_string() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(Parser_GetType, BuiltinTypeToken, values);
+                }
+
+                namespace generic
+                {
+                    namespace get_generic_type
+                    {
+                        struct GenericTypeDeclarationState
+                        {
+                            tokens_container_t type_tokens;
+                            std::string expected_type_name;
+                        };
+
+                        using GenericTypeDeclaration = testing::TestWithParam<GenericTypeDeclarationState>;
+
+                        TEST_P(GenericTypeDeclaration, GetGenericType)
+                        {
+                            const auto &state = GetParam();
+                            auto p = parser_t{ dummy_err_observer,
+                                               state.type_tokens };
+                            builtin_ctx_t ctx;
+                            const auto type = p.get_type(ctx);
+                            ASSERT_NE(type, nullptr);
+                            ASSERT_THAT(type->is_generic(), true);
+                            ASSERT_THAT(type->get_name(), state.expected_type_name);
+                        }
+
+                        const auto values = testing::Values(
+                                GenericTypeDeclarationState{
+                                        tokens_container_t{token_kw_list(),
+                                                           token_less(),
+                                                           token_kw_int(),
+                                                           token_greater()},
+                                        "list<int>"
+                                },
+                                GenericTypeDeclarationState{
+                                        tokens_container_t{token_kw_list(),
+                                                           token_less(),
+                                                           token_kw_list(),
+                                                           token_less(),
+                                                           token_kw_double(),
+                                                           token_greater(),
+                                                           token_greater()},
+                                        "list<list<double>>"
+                                }
+                                                           );
+
+                        INSTANTIATE_TEST_CASE_P(Parser_GetType, GenericTypeDeclaration, values);
+                    }
                 }
             }
 
@@ -79,7 +127,7 @@ namespace cmsl
                         token_identifier(),
                         token_comma(),
 
-                        token_kw_real(),
+                        token_kw_double(),
                         token_identifier(),
 
                         token_close_paren()

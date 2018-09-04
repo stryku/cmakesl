@@ -26,7 +26,7 @@ namespace cmsl
 
         std::string type::get_name() const
         {
-            return m_name.to_string();
+            return m_name;
         }
 
         bool type::has_function(cmsl::string_view name) const
@@ -53,6 +53,11 @@ namespace cmsl
         bool type::operator!=(const type &other) const
         {
             return !(*this == other);
+        }
+
+        bool type::is_generic() const
+        {
+            return m_kind == type_kind::k_list;
         }
     }
 }

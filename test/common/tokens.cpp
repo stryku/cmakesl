@@ -65,7 +65,8 @@ namespace cmsl
                             { token_type_t::kw_bool, "bool" },
                             { token_type_t::kw_true, "true" },
                             { token_type_t::kw_false, "false" },
-                            { token_type_t::kw_string, "string" }
+                            { token_type_t::kw_string, "string" },
+                            { token_type_t::kw_list, "list" }
                     };
 
                     return map;
@@ -128,8 +129,9 @@ namespace cmsl
             token_t token_greaterequal() { return details::simple_token(token_type_t::greaterequal); }
             token_t token_semicolon() { return details::simple_token(token_type_t::semicolon); }
             token_t token_comma() { return details::simple_token(token_type_t::comma); }
+
             token_t token_kw_int() { return details::simple_token(token_type_t::kw_int); }
-            token_t token_kw_real() { return details::simple_token(token_type_t::kw_double); }
+            token_t token_kw_double() { return details::simple_token(token_type_t::kw_double); }
             token_t token_kw_return() { return details::simple_token(token_type_t::kw_return); }
             token_t token_kw_class() { return details::simple_token(token_type_t::kw_class); }
             token_t token_kw_if() { return details::simple_token(token_type_t::kw_if); }

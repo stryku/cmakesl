@@ -60,7 +60,7 @@ namespace cmsl
 
                     const auto values = testing::Values(
                         token_container_t{token_kw_int() },
-                        token_container_t{token_kw_real() }
+                        token_container_t{token_kw_double() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetType, BuiltinOrIdentifier, values);
@@ -200,7 +200,7 @@ namespace cmsl
 
                     const auto values = testing::Values(
                         token_container_t{token_kw_int() },
-                        token_container_t{token_kw_real() }
+                        token_container_t{token_kw_double() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError, GetOnpExpression_UnexpectedToken, values);
