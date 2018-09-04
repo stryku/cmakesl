@@ -53,14 +53,34 @@ namespace cmsl
 
                 namespace generic
                 {
+                    struct GenericTypeDeclarationState
+                    {
+                        tokens_container_t type_tokens;
+                        std::string expected_type_name;
+                    };
+
+                    const auto generic_type_values = testing::Values(
+                            GenericTypeDeclarationState{
+                                    tokens_container_t{token_kw_list(),
+                                                       token_less(),
+                                                       token_kw_int(),
+                                                       token_greater()},
+                                    "list<int>"
+                            },
+                            GenericTypeDeclarationState{
+                                    tokens_container_t{token_kw_list(),
+                                                       token_less(),
+                                                       token_kw_list(),
+                                                       token_less(),
+                                                       token_kw_double(),
+                                                       token_greater(),
+                                                       token_greater()},
+                                    "list<list<double>>"
+                            }
+                    );
+
                     namespace get_generic_type
                     {
-                        struct GenericTypeDeclarationState
-                        {
-                            tokens_container_t type_tokens;
-                            std::string expected_type_name;
-                        };
-
                         using GenericTypeDeclaration = testing::TestWithParam<GenericTypeDeclarationState>;
 
                         TEST_P(GenericTypeDeclaration, GetGenericType)
@@ -75,27 +95,26 @@ namespace cmsl
                             ASSERT_THAT(type->get_name(), state.expected_type_name);
                         }
 
-                        const auto values = testing::Values(
-                                GenericTypeDeclarationState{
-                                        tokens_container_t{token_kw_list(),
-                                                           token_less(),
-                                                           token_kw_int(),
-                                                           token_greater()},
-                                        "list<int>"
-                                },
-                                GenericTypeDeclarationState{
-                                        tokens_container_t{token_kw_list(),
-                                                           token_less(),
-                                                           token_kw_list(),
-                                                           token_less(),
-                                                           token_kw_double(),
-                                                           token_greater(),
-                                                           token_greater()},
-                                        "list<list<double>>"
-                                }
-                                                           );
+                        INSTANTIATE_TEST_CASE_P(Parser_GetType, GenericTypeDeclaration, generic_type_values);
+                    }
 
-                        INSTANTIATE_TEST_CASE_P(Parser_GetType, GenericTypeDeclaration, values);
+                    namespace generic_type_added_to_context
+                    {
+                        using NewGenericType = testing::TestWithParam<GenericTypeDeclarationState>;
+
+                        TEST_P(NewGenericType, AddedToASTContext)
+                        {
+                            const auto &state = GetParam();
+                            auto p = parser_t{ dummy_err_observer,
+                                               state.type_tokens };
+                            builtin_ctx_t ctx;
+                            (void)p.get_type(ctx);
+
+                            const auto found_type = ctx.find_type(state.expected_type_name.c_str());
+                            ASSERT_NE(found_type, nullptr);
+                        }
+
+                        INSTANTIATE_TEST_CASE_P(Parser_GetType, NewGenericType, generic_type_values);
                     }
                 }
             }
