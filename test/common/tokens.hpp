@@ -54,6 +54,11 @@ namespace cmsl
             token_t token_kw_if();
             token_t token_kw_else();
             token_t token_kw_while();
+            token_t token_kw_bool();
+            token_t token_kw_true();
+            token_t token_kw_false();
+            token_t token_kw_string();
+            token_t token_kw_list();
         }
     }
 }

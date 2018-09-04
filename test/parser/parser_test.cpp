@@ -42,8 +42,10 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        tokens_container_t{token_kw_int() },
-                        tokens_container_t{token_kw_real() }
+                        tokens_container_t{ token_kw_bool() },
+                        tokens_container_t{ token_kw_int() },
+                        tokens_container_t{ token_kw_real() },
+                        tokens_container_t{ token_kw_string() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(Parser_GetType, BuiltinTypeToken, values);
@@ -100,7 +102,7 @@ namespace cmsl
                 TEST(Parser_GetClassMemberDeclaration, NoInit_GetWithoutInit)
                 {
                     const auto tokens = tokens_container_t{
-                            token_kw_int(),
+                        token_kw_int(),
                         token_identifier(),
                         token_semicolon()
                     };
@@ -116,7 +118,7 @@ namespace cmsl
                 TEST(Parser_GetClassMemberDeclaration, WithInit_GetWithInit)
                 {
                     const auto tokens = tokens_container_t{
-                            token_kw_int(),
+                        token_kw_int(),
                         token_identifier(),
                         token_equal(),
                         token_integer(),
@@ -159,15 +161,15 @@ namespace cmsl
                 {
                     // if(1) {} else {}
                     const auto tokens = tokens_container_t{
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace(),
-                            token_kw_else(),
-                            token_open_brace(),
-                            token_close_brace(),
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace(),
+                        token_kw_else(),
+                        token_open_brace(),
+                        token_close_brace(),
                     };
 
                     auto p = parser_t{ dummy_err_observer, tokens };
@@ -183,19 +185,19 @@ namespace cmsl
                 {
                     // if(1) {} else if(1) {}
                     const auto tokens = tokens_container_t{
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace(),
-                            token_kw_else(),
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace()
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace(),
+                        token_kw_else(),
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace()
                     };
 
                     auto p = parser_t{ dummy_err_observer, tokens };
@@ -211,22 +213,22 @@ namespace cmsl
                 {
                     // if(1) {} else if(1) {} else {}
                     const auto tokens = tokens_container_t{
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace(),
-                            token_kw_else(),
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace(),
-                            token_kw_else(),
-                            token_open_brace(),
-                            token_close_brace()
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace(),
+                        token_kw_else(),
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace(),
+                        token_kw_else(),
+                        token_open_brace(),
+                        token_close_brace()
                     };
 
                     auto p = parser_t{ dummy_err_observer, tokens };
