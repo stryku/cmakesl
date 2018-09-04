@@ -67,6 +67,7 @@ namespace cmsl
             bool current_is_infix_token() const;
             bool current_is_type(ast_context& ctx) const;
             bool current_is(token_type_t token_type) const;
+            bool generic_type_starts(ast_context& ctx) const;
 
             token_type_t peek(size_t n) const;
             bool declaration_starts(ast_context& ctx) const;
@@ -84,6 +85,8 @@ namespace cmsl
 
             std::unique_ptr<infix_node> get_condition_infix_node();
             std::unique_ptr<conditional_node> get_conditional_node(ast_context &ctx);
+            const type* get_simple_type(ast_context& ctx);
+            const type* get_or_add_generic_type(ast_context& ctx);
 
         private:
             errors::errors_observer& m_err_observer;

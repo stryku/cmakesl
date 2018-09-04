@@ -25,7 +25,7 @@ namespace cmsl
 
             bool is_fundamental() const;
 
-            cmsl::string_view get_name() const;
+            std::string get_name() const;
 
             const function* get_function(cmsl::string_view name) const;
             bool has_function(cmsl::string_view name) const;
