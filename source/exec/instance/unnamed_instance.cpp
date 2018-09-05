@@ -118,6 +118,7 @@ namespace cmsl
                     case ast::type_kind::k_int: return int{};
                     case ast::type_kind::k_double: return double{};
                     case ast::type_kind::k_string: return std::string{};
+                    case ast::type_kind ::k_list: return get_init_list_data();
                 }
 
                 CMSL_UNREACHABLE("Unknown builtin type kind");
@@ -172,6 +173,11 @@ namespace cmsl
             const ast::type& unnamed_instance::get_type() const
             {
                 return m_type;
+            }
+
+            unnamed_instance::data_t unnamed_instance::get_init_list_data() const
+            {
+                return generic_instance_value{ get_type(), instance_value_type::list };
             }
         }
     }

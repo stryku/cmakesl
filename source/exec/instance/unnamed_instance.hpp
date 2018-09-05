@@ -36,6 +36,8 @@ namespace cmsl
                 data_t get_builtin_init_data() const;
                 data_t get_init_data(instance_value_t val) const;
                 data_t get_init_data(members_t m_members) const;
+                data_t get_init_list_data() const;
+
                 void expect_fundamental() const;
                 void expect_user() const;
 
