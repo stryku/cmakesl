@@ -8,8 +8,8 @@ int main()
     const auto source =
         "int main()"
         "{"
-        "    string s = \"test\";"
-        "    return s.empty();"
+        "    list<int> l;"
+        "    return 0;"
         "}";
 
     cmsl::exec::source_executor exec;
