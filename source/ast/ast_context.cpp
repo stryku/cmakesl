@@ -6,7 +6,7 @@ namespace cmsl
 {
     namespace ast
     {
-        ast_context::ast_context(ast_context* parent)
+        ast_context::ast_context(const ast_context* parent)
             : m_parent{ parent }
         {}
 
