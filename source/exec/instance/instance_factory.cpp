@@ -44,9 +44,9 @@ namespace cmsl
                         return *m_ctx.find_type("string");
                     }
 
-                    decltype(auto) operator()(generic& gen) const
+                    decltype(auto) operator()(generic_instance_value& gen) const
                     {
-                        return gen.m_type;
+                        return gen.get_type();
                     }
 
                 private:

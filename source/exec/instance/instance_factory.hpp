@@ -32,9 +32,6 @@ namespace cmsl
                 std::unique_ptr<instance> create(const ast::type& type) const;
 
             private:
-                const ast::type &get_int_type() const;
-
-            private:
                 const ast::ast_context &m_ast_ctx;
                 execution_context &m_exec_ctx;
             };
