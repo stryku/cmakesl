@@ -38,6 +38,7 @@ namespace cmsl
                 data_t get_init_data(members_t m_members) const;
                 data_t get_init_list_data() const;
 
+                // todo rename to builtin
                 void expect_fundamental() const;
                 void expect_user() const;
 

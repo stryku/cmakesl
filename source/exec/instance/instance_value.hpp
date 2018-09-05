@@ -43,6 +43,18 @@ namespace cmsl
 
                 const ast::type& get_type() const;
 
+                template <typename Callable>
+                auto apply(Callable&& cb)
+                {
+                    return boost::apply_visitor(cb, m_generic_value);
+                }
+
+                template <typename Callable>
+                auto apply(Callable&& cb) const
+                {
+                    return boost::apply_visitor(cb, m_generic_value);
+                }
+
             private:
                 generic_variant_t get_init_value() const;
 
