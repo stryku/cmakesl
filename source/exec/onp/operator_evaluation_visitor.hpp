@@ -46,7 +46,7 @@ namespace cmsl
                 {}
 
                 template <typename ValuesType>
-                inst::instance_value_t operator()(ValuesType&& lhs, ValuesType&& rhs)
+                auto operator()(ValuesType&& lhs, ValuesType&& rhs) -> decltype(lhs + rhs)
                 {
                     switch(m_operator)
                     {
@@ -110,7 +110,7 @@ namespace cmsl
                 {}
 
                 template <typename ValuesType>
-                inst::instance_value_t operator()(ValuesType&& lhs, ValuesType&& rhs)
+                auto operator()(ValuesType&& lhs, ValuesType&& rhs) -> decltype(lhs < rhs)
                 {
                     switch(m_operator)
                     {
@@ -162,7 +162,7 @@ namespace cmsl
 
                 template <typename ValuesType,
                           typename = enable_reminder<ValuesType>>
-                inst::instance_value_t operator()(ValuesType&& lhs, ValuesType&& rhs)
+                auto operator()(ValuesType&& lhs, ValuesType&& rhs) -> decltype(lhs % rhs)
                 {
                     switch(m_operator)
                     {
@@ -187,7 +187,7 @@ namespace cmsl
 
                 template <typename ValuesType,
                         typename = enable_bitwise<ValuesType>>
-                inst::instance_value_t operator()(ValuesType&& lhs, ValuesType&& rhs)
+                auto operator()(ValuesType&& lhs, ValuesType&& rhs) -> decltype(lhs & rhs)
                 {
                     switch(m_operator)
                     {
