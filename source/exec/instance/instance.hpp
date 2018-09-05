@@ -24,11 +24,11 @@ namespace cmsl
             public:
                 enum class kind
                 {
-                    fundamental,
+                    builtin,
                     user
                 };
 
-                virtual ~instance() {}
+                virtual ~instance() = default;
 
                 virtual std::unique_ptr<instance> copy() const = 0;
                 virtual instance_value_t get_value() const = 0;
