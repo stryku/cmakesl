@@ -103,7 +103,7 @@ namespace cmsl
 
             inst::instance* onp_executor::execute_member_function_call(inst::instance* class_instance, cmsl::string_view name)
             {
-                if(class_instance->get_type().is_fundamental())
+                if(class_instance->get_type().is_builtin())
                 {
                     auto ret_val = m_exec.fundamental_member_function_call(class_instance, name);
                     return m_instances.create(ret_val);

@@ -9,7 +9,7 @@ int main()
         "int main()"
         "{"
         "    list<int> l;"
-        "    return 0;"
+        "    return l.size();"
         "}";
 
     cmsl::exec::source_executor exec;

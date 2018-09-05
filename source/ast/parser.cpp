@@ -14,6 +14,7 @@
 #include "ast/while_node.hpp"
 #include "ast/class_builder.hpp"
 #include "ast/list_type.hpp"
+#include "ast/generic_type_factory.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -129,7 +130,7 @@ namespace cmsl
                 return found_type;
             }
 
-            auto t = std::make_unique<list_type>(type_name, &ctx, *value_type);
+            auto t = generic_type_factory{}.create_list(type_name, ctx, *value_type);
             auto type_ptr = t.get();
             ctx.add_type(std::move(t));
             return type_ptr;
