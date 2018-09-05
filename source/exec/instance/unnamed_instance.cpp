@@ -11,7 +11,7 @@ namespace cmsl
         namespace inst
         {
             unnamed_instance::unnamed_instance(const ast::type &type)
-                : m_kind{ type.is_fundamental() ? kind::fundamental : kind::user }
+                : m_kind{ type.is_builtin() ? kind::builtin : kind::user }
                 , m_type{ type }
                 , m_data{ get_init_data() }
             {}
@@ -23,7 +23,7 @@ namespace cmsl
             {}
 
             unnamed_instance::unnamed_instance(const ast::type &type, instance_value_t value)
-                : m_kind{ kind::fundamental }
+                : m_kind{ kind::builtin }
                 , m_type{ type }
                 , m_data{ get_init_data(value) }
             {}
@@ -38,8 +38,8 @@ namespace cmsl
             {
                 switch (m_kind)
                 {
-                    case kind::fundamental:
-                        return get_fundamental_init_data();
+                    case kind::builtin:
+                        return get_builtin_init_data();
                     case kind::user:
                         return create_init_members();
                 }
@@ -71,7 +71,7 @@ namespace cmsl
 
             void unnamed_instance::expect_fundamental() const
             {
-                BOOST_ASSERT_MSG(is_fundamental(), "Expected fundamental type");
+                BOOST_ASSERT_MSG(is_fundamental(), "Expected builtin type");
             }
 
             void unnamed_instance::expect_user() const
@@ -94,14 +94,14 @@ namespace cmsl
 
             bool unnamed_instance::is_fundamental() const
             {
-                return m_kind == kind::fundamental;
+                return m_kind == kind::builtin;
             }
 
             std::unique_ptr<instance> unnamed_instance::copy() const
             {
                 switch (m_kind)
                 {
-                    case kind::fundamental:
+                    case kind::builtin:
                         return std::make_unique<unnamed_instance>(m_type, get_value());
                     case kind::user:
                         return std::make_unique<unnamed_instance>(m_type, copy_members());
@@ -110,7 +110,7 @@ namespace cmsl
                 CMSL_UNREACHABLE("Cloning unnamed_instance with unknown kind");
             }
 
-            unnamed_instance::data_t unnamed_instance::get_fundamental_init_data() const
+            unnamed_instance::data_t unnamed_instance::get_builtin_init_data() const
             {
                 switch(m_type.get_kind())
                 {
@@ -120,7 +120,7 @@ namespace cmsl
                     case ast::type_kind::k_string: return std::string{};
                 }
 
-                CMSL_UNREACHABLE("Unknown fundamental type kind");
+                CMSL_UNREACHABLE("Unknown builtin type kind");
             }
 
             unnamed_instance::members_t unnamed_instance::copy_members() const

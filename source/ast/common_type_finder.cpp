@@ -20,18 +20,18 @@ namespace cmsl
                 return &t1;
             }
 
-            if(kind1 == type_kind::k_user || kind2 == type_kind::k_user)
+            if(t1.is_user() || t2.is_user())
             {
                 // Possible combinations:
                 // user user
-                // user fundamental
-                // fundamental user
+                // user builtin
+                // builtin user
                 // In any of these cases conversion is not possible => there is no common type
                 return nullptr;
             }
             else
             {
-                // At this point we know that t1 and t2 are fundamental types
+                // At this point we know that t1 and t2 are builtin types
 
                 const auto rank1 = m_type_ranks.at(kind1);
                 const auto rank2 = m_type_ranks.at(kind2);

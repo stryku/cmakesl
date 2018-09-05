@@ -2,6 +2,7 @@
 
 #include "ast/user_function_node.hpp"
 #include "lexer/token/token.hpp"
+#include "type_kind.hpp"
 
 namespace cmsl
 {
@@ -25,6 +26,8 @@ namespace cmsl
 
             bool is_fundamental() const;
             bool is_generic() const;
+            bool is_builtin() const;
+            bool is_user() const;
 
             std::string get_name() const;
 
