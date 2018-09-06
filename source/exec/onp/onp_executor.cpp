@@ -84,7 +84,7 @@ namespace cmsl
                 return boost::apply_visitor(visitor{ m_exec.get_exec_ctx() }, top);
             }
 
-            std::vector<inst::instance*> onp_executor::prepare_parameters_for_call(const ast::user_function_node& fun)
+            std::vector<inst::instance*> onp_executor::prepare_parameters_for_call(const ast::function& fun)
             {
                 auto& exec_ctx = m_exec.get_exec_ctx();
                 std::vector<inst::instance*> params;
@@ -103,9 +103,11 @@ namespace cmsl
 
             inst::instance* onp_executor::execute_member_function_call(inst::instance* class_instance, cmsl::string_view name)
             {
-                if(class_instance->get_type().is_fundamental())
+                if(class_instance->get_type().is_builtin())
                 {
-                    auto ret_val = m_exec.fundamental_member_function_call(class_instance, name);
+                    const auto& fun = *class_instance->get_function(name);
+                    auto params = prepare_parameters_for_call(fun);
+                    auto ret_val = m_exec.fundamental_member_function_call(class_instance, name, std::move(params));
                     return m_instances.create(ret_val);
                 }
                 else

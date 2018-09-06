@@ -44,6 +44,11 @@ namespace cmsl
                         return *m_ctx.find_type("string");
                     }
 
+                    decltype(auto) operator()(generic_instance_value& gen) const
+                    {
+                        return gen.get_type();
+                    }
+
                 private:
                     const ast::ast_context& m_ctx;
                 };

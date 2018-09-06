@@ -42,11 +42,80 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        tokens_container_t{ token_t_int() },
-                        tokens_container_t{ token_t_real() }
+                        tokens_container_t{ token_kw_bool() },
+                        tokens_container_t{ token_kw_int() },
+                        tokens_container_t{token_kw_double() },
+                        tokens_container_t{ token_kw_string() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(Parser_GetType, BuiltinTypeToken, values);
+                }
+
+                namespace generic
+                {
+                    struct GenericTypeDeclarationState
+                    {
+                        tokens_container_t type_tokens;
+                        std::string expected_type_name;
+                    };
+
+                    const auto generic_type_values = testing::Values(
+                            GenericTypeDeclarationState{
+                                    tokens_container_t{token_kw_list(),
+                                                       token_less(),
+                                                       token_kw_int(),
+                                                       token_greater()},
+                                    "list<int>"
+                            },
+                            GenericTypeDeclarationState{
+                                    tokens_container_t{token_kw_list(),
+                                                       token_less(),
+                                                       token_kw_list(),
+                                                       token_less(),
+                                                       token_kw_double(),
+                                                       token_greater(),
+                                                       token_greater()},
+                                    "list<list<double>>"
+                            }
+                    );
+
+                    namespace get_generic_type
+                    {
+                        using GenericTypeDeclaration = testing::TestWithParam<GenericTypeDeclarationState>;
+
+                        TEST_P(GenericTypeDeclaration, GetGenericType)
+                        {
+                            const auto &state = GetParam();
+                            auto p = parser_t{ dummy_err_observer,
+                                               state.type_tokens };
+                            builtin_ctx_t ctx;
+                            const auto type = p.get_type(ctx);
+                            ASSERT_NE(type, nullptr);
+                            ASSERT_THAT(type->is_generic(), true);
+                            ASSERT_THAT(type->get_name(), state.expected_type_name);
+                        }
+
+                        INSTANTIATE_TEST_CASE_P(Parser_GetType, GenericTypeDeclaration, generic_type_values);
+                    }
+
+                    namespace generic_type_added_to_context
+                    {
+                        using NewGenericType = testing::TestWithParam<GenericTypeDeclarationState>;
+
+                        TEST_P(NewGenericType, AddedToASTContext)
+                        {
+                            const auto &state = GetParam();
+                            auto p = parser_t{ dummy_err_observer,
+                                               state.type_tokens };
+                            builtin_ctx_t ctx;
+                            (void)p.get_type(ctx);
+
+                            const auto found_type = ctx.find_type(state.expected_type_name.c_str());
+                            ASSERT_NE(found_type, nullptr);
+                        }
+
+                        INSTANTIATE_TEST_CASE_P(Parser_GetType, NewGenericType, generic_type_values);
+                    }
                 }
             }
 
@@ -72,12 +141,12 @@ namespace cmsl
                 {
                     const auto tokens = tokens_container_t{
                         token_open_paren(),
-                        
-                        token_t_int(),
+
+                        token_kw_int(),
                         token_identifier(),
                         token_comma(),
-                        
-                        token_t_real(),
+
+                        token_kw_double(),
                         token_identifier(),
 
                         token_close_paren()
@@ -100,7 +169,7 @@ namespace cmsl
                 TEST(Parser_GetClassMemberDeclaration, NoInit_GetWithoutInit)
                 {
                     const auto tokens = tokens_container_t{
-                        token_t_int(),
+                        token_kw_int(),
                         token_identifier(),
                         token_semicolon()
                     };
@@ -116,7 +185,7 @@ namespace cmsl
                 TEST(Parser_GetClassMemberDeclaration, WithInit_GetWithInit)
                 {
                     const auto tokens = tokens_container_t{
-                        token_t_int(),
+                        token_kw_int(),
                         token_identifier(),
                         token_equal(),
                         token_integer(),
@@ -159,15 +228,15 @@ namespace cmsl
                 {
                     // if(1) {} else {}
                     const auto tokens = tokens_container_t{
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace(),
-                            token_kw_else(),
-                            token_open_brace(),
-                            token_close_brace(),
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace(),
+                        token_kw_else(),
+                        token_open_brace(),
+                        token_close_brace(),
                     };
 
                     auto p = parser_t{ dummy_err_observer, tokens };
@@ -183,19 +252,19 @@ namespace cmsl
                 {
                     // if(1) {} else if(1) {}
                     const auto tokens = tokens_container_t{
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace(),
-                            token_kw_else(),
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace()
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace(),
+                        token_kw_else(),
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace()
                     };
 
                     auto p = parser_t{ dummy_err_observer, tokens };
@@ -211,22 +280,22 @@ namespace cmsl
                 {
                     // if(1) {} else if(1) {} else {}
                     const auto tokens = tokens_container_t{
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace(),
-                            token_kw_else(),
-                            token_kw_if(),
-                            token_open_paren(),
-                            token_integer("1"),
-                            token_close_paren(),
-                            token_open_brace(),
-                            token_close_brace(),
-                            token_kw_else(),
-                            token_open_brace(),
-                            token_close_brace()
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace(),
+                        token_kw_else(),
+                        token_kw_if(),
+                        token_open_paren(),
+                        token_integer("1"),
+                        token_close_paren(),
+                        token_open_brace(),
+                        token_close_brace(),
+                        token_kw_else(),
+                        token_open_brace(),
+                        token_close_brace()
                     };
 
                     auto p = parser_t{ dummy_err_observer, tokens };

@@ -169,13 +169,15 @@ namespace cmsl
             return m_function_return_value.is_initialized();
         }
 
-        inst::instance_value_t execution::fundamental_member_function_call(inst::instance *class_instance, cmsl::string_view fun_name)
+        inst::instance_value_t execution::fundamental_member_function_call(inst::instance *class_instance,
+                                                                           cmsl::string_view fun_name,
+                                                                           std::vector<inst::instance*> parameters)
         {
             const auto fun_ptr = class_instance->get_function(fun_name);
 
             if(auto fun = dynamic_cast<const ast::fundamental_function*>(fun_ptr))
             {
-                auto val = class_instance->get_value();
+                auto& val = class_instance->get_value_ref();
                 switch(fun->get_fundamental_fun_kind())
                 {
                     case ast::fundamental_function::fundamental_function_kind::size:
@@ -185,6 +187,13 @@ namespace cmsl
                     case ast::fundamental_function::fundamental_function_kind::empty:
                     {
                         return boost::apply_visitor(empty_visitor{}, val);
+                    };
+                    case ast::fundamental_function::fundamental_function_kind::push_back:
+                    {
+                        auto param = parameters[0];
+                        auto visitor = push_back_visitor{ *param };
+                        visitor.visit(val);
+                        return true;
                     };
                 }
             }
