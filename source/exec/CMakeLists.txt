@@ -22,10 +22,11 @@ set(EXEC_SOURCES
     instance/instances_holder.hpp
     instance/instance_factory.cpp
     instance/instance_factory.hpp
-    instance/instance_value.cpp
     instance/instance_value.hpp
     instance/named_instance.cpp
     instance/named_instance.hpp
+    instance/generic_instance_value.cpp
+    instance/generic_instance_value.hpp
 
     onp/id_access.cpp
     onp/id_access.hpp
