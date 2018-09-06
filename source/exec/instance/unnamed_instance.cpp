@@ -63,6 +63,12 @@ namespace cmsl
                 return boost::get<instance_value_t>(m_data);
             }
 
+            instance_value_t &unnamed_instance::get_value_ref()
+            {
+                expect_fundamental();
+                return boost::get<instance_value_t>(m_data);
+            }
+
             void unnamed_instance::assign(instance_value_t val)
             {
                 expect_fundamental();
@@ -177,7 +183,8 @@ namespace cmsl
 
             unnamed_instance::data_t unnamed_instance::get_init_list_data() const
             {
-                return generic_instance_value{ get_type(), instance_value_type::list };
+                const auto k_list_type = generic_instance_value::generic_instance_value_type::list;
+                return generic_instance_value{ get_type(), k_list_type };
             }
         }
     }

@@ -8,7 +8,8 @@ int main()
     const auto source =
         "int main()"
         "{"
-        "    list<int> l;"
+        "    list<string> l;"
+        "    l.push_back(\"1\");"
         "    return l.size();"
         "}";
 

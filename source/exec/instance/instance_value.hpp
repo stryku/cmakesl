@@ -16,7 +16,7 @@ namespace cmsl
     {
         namespace inst
         {
-            class instance_value_wrapper;
+            class instance;
 
             enum class instance_value_type
             {
@@ -24,17 +24,22 @@ namespace cmsl
                 int_,
                 double_,
                 string,
-                list
+                generic
             };
 
             class generic_instance_value
             {
             public:
-                using value_ptr_t = std::unique_ptr<instance_value_wrapper>;
-                using list_t = std::list<value_ptr_t>;
+                using instance_ptr_t = std::unique_ptr<instance>; //TODO CONSIDER POINTERS TO INSTANCES
+                using list_t = std::list<instance_ptr_t>;
                 using generic_variant_t = boost::variant<list_t>;
 
-                explicit generic_instance_value(const ast::type& t, instance_value_type value_type);
+                enum class generic_instance_value_type
+                {
+                    list
+                };
+
+                explicit generic_instance_value(const ast::type& t, generic_instance_value_type value_type);
 
                 generic_instance_value(const generic_instance_value& other);
                 generic_instance_value& operator=(const generic_instance_value& other);
@@ -57,10 +62,11 @@ namespace cmsl
 
             private:
                 generic_variant_t get_init_value() const;
+                void copy_value(const generic_instance_value& other);
 
             private:
                 const ast::type& m_type;
-                instance_value_type m_value_type;
+                generic_instance_value_type m_value_type;
                 generic_variant_t m_generic_value;
             };
 
