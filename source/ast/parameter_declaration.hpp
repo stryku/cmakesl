@@ -10,7 +10,7 @@ namespace cmsl
         struct parameter_declaration
         {
             const type* param_type;
-            lexer::token::token name;
+            lexer::token::token name; // todo introduce type_only_parameter_declaration
         };
     }
 }

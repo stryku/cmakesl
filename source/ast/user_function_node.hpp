@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ast/function.hpp"
-#include "ast/parameter_declaration.hpp"
 #include "ast/block_node.hpp"
 
 #include "lexer/token/token.hpp"
@@ -30,7 +29,7 @@ namespace cmsl
 
             const ast_context& get_ast_context() const;
 
-            const std::vector<parameter_declaration>& get_params_declarations() const;
+            const std::vector<parameter_declaration>& get_params_declarations() const override;
 
         private:
             ast_context& m_ast_context;

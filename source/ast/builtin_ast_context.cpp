@@ -38,7 +38,7 @@ namespace cmsl
 
             for(const auto fun_kind : string_functions)
             {
-                auto fun = std::make_unique<fundamental_function>(fun_kind);
+                auto fun = std::make_unique<fundamental_function>(fun_kind, fundamental_function::params_declaration_t{});
                 builder.with_function(std::move(fun));
             }
 

@@ -23,6 +23,7 @@ namespace cmsl
                 virtual ~unnamed_instance() {}
 
                 instance_value_t get_value() const override;
+                instance_value_t& get_value_ref() override;
                 void assign(instance_value_t val) override;
                 std::unique_ptr<instance> copy() const override;
                 instance *get_member(cmsl::string_view name) override;
@@ -33,9 +34,12 @@ namespace cmsl
 
             private:
                 data_t get_init_data() const;
-                data_t get_fundamental_init_data() const;
+                data_t get_builtin_init_data() const;
                 data_t get_init_data(instance_value_t val) const;
                 data_t get_init_data(members_t m_members) const;
+                data_t get_init_list_data() const;
+
+                // todo rename to builtin
                 void expect_fundamental() const;
                 void expect_user() const;
 

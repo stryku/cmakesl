@@ -30,14 +30,34 @@ namespace cmsl
     using is_one_of = details::disjunction<std::is_same<T, Ts>...>;
 
     template <typename T, typename... Ts>
+    constexpr auto is_one_of_v = is_one_of<T, Ts...>::value;
+
+    template <typename T, typename... Ts>
     using is_not_one_of = details::disjunction<details::negation<std::is_same<T, Ts>>...>;
 
     template <typename T>
-    constexpr auto is_container_v = is_one_of<std::decay_t<T>, std::string>::value;
+    struct is_list : std::false_type
+    {};
+
+    template <typename V>
+    struct is_list<std::list<V>> : std::true_type
+    {};
+
+    template <typename T>
+    constexpr auto is_list_v = is_list<T>::value;
+
+    template <typename T>
+    using list_mock_t = std::conditional_t<is_list_v<T>, T, std::false_type>;
+
+    template <typename T>
+    constexpr auto is_container_v = is_one_of<std::decay_t<T>, std::string, list_mock_t<T>>::value;
 
     template <typename T>
     using enable_if_container = std::enable_if_t<is_container_v<T>>;
 
     template <typename T>
     using enable_if_not_container = std::enable_if_t<!is_container_v<T>>;
+
+    template <typename T>
+    using enable_if_has_not_size = std::enable_if_t<!is_container_v<T>>;
 }

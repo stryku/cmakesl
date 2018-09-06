@@ -51,7 +51,7 @@ namespace cmsl
                     {
                         testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
                         errors::errors_observer err_observer;
-                        const auto t = token_t_int;
+                        const auto t = token_kw_int;
                         const auto tokens = GetParam();
                         auto p = parser_t{ err_observer, tokens };
                         builtin_ctx_t ctx;
@@ -59,8 +59,8 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        token_container_t{ token_t_int() },
-                        token_container_t{ token_t_real() }
+                        token_container_t{token_kw_int() },
+                        token_container_t{token_kw_double() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError_GetType, BuiltinOrIdentifier, values);
@@ -199,8 +199,8 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        token_container_t{ token_t_int() },
-                        token_container_t{ token_t_real() }
+                        token_container_t{token_kw_int() },
+                        token_container_t{token_kw_double() }
                     );
 
                     INSTANTIATE_TEST_CASE_P(ParserError, GetOnpExpression_UnexpectedToken, values);
@@ -242,7 +242,7 @@ namespace cmsl
                     }
 
                     const auto values = testing::Values(
-                        token_container_t{ token_t_int() },
+                        token_container_t{token_kw_int() },
                         token_container_t{ token_integer(), token_plus(), token_integer() }
                     );
 
@@ -287,7 +287,7 @@ namespace cmsl
 
                 TEST(ParserError, GetFunction_MissingName_ReportError)
                 {
-                    const auto tokens = token_container_t{ token_t_int(), token_open_paren(), token_close_paren(), token_open_brace(), token_close_brace() };
+                    const auto tokens = token_container_t{token_kw_int(), token_open_paren(), token_close_paren(), token_open_brace(), token_close_brace() };
                     report_error_test(tokens, [](auto& parser)
                     {
                         builtin_ctx_t ctx;
@@ -297,7 +297,7 @@ namespace cmsl
 
                 TEST(ParserError, GetFunction_MissingParameters_ReportError)
                 {
-                    const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_open_brace(), token_close_brace() };
+                    const auto tokens = token_container_t{token_kw_int(), token_identifier(), token_open_brace(), token_close_brace() };
                     report_error_test(tokens, [](auto& parser)
                     {
                         builtin_ctx_t ctx;
@@ -307,7 +307,7 @@ namespace cmsl
 
                 TEST(ParserError, GetFunction_MissingBody_ReportError)
                 {
-                    const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_open_paren(), token_close_paren() };
+                    const auto tokens = token_container_t{token_kw_int(), token_identifier(), token_open_paren(), token_close_paren() };
                     report_error_test(tokens, [](auto& parser)
                     {
                         builtin_ctx_t ctx;
@@ -330,7 +330,7 @@ namespace cmsl
 
                 TEST(ParserError, GetClassMemberDeclaration_MissingName_ReportError)
                 {
-                    const auto tokens = token_container_t{ token_t_int(), token_semicolon() };
+                    const auto tokens = token_container_t{token_kw_int(), token_semicolon() };
                     report_error_test(tokens, [](auto& parser)
                     {
                         builtin_ctx_t ctx;
@@ -341,8 +341,8 @@ namespace cmsl
                 TEST(ParserError, GetClassMemberDeclaration_MissingSemicolon_ReportError)
                 {
                     const auto tokens = token_container_t{
-                        token_t_int(), token_identifier(),
-                        token_t_int(), token_identifier(), token_semicolon() };
+                            token_kw_int(), token_identifier(),
+                        token_kw_int(), token_identifier(), token_semicolon() };
                     report_error_test(tokens, [](auto& parser)
                     {
                         builtin_ctx_t ctx;
@@ -352,7 +352,7 @@ namespace cmsl
 
                 TEST(ParserError, GetClassMemberDeclaration_WithIninMissingEqual_ReportError)
                 {
-                    const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_integer(), token_semicolon() };
+                    const auto tokens = token_container_t{token_kw_int(), token_identifier(), token_integer(), token_semicolon() };
                     report_error_test(tokens, [](auto& parser)
                     {
                         builtin_ctx_t ctx;
@@ -362,7 +362,7 @@ namespace cmsl
 
                 TEST(ParserError, GetClassMemberDeclaration_WithEqualMissingExpr_ReportError)
                 {
-                    const auto tokens = token_container_t{ token_t_int(), token_identifier(), token_equal(), token_semicolon() };
+                    const auto tokens = token_container_t{token_kw_int(), token_identifier(), token_equal(), token_semicolon() };
                     report_error_test(tokens, [](auto& parser)
                     {
                         builtin_ctx_t ctx;
