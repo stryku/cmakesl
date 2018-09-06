@@ -21,10 +21,10 @@ namespace cmsl
 
         bool type::is_fundamental() const
         {
-            return m_kind != type_kind::k_user;
+            return !is_user() && !is_generic();
         }
 
-        cmsl::string_view type::get_name() const
+        std::string type::get_name() const
         {
             return m_name;
         }
@@ -53,6 +53,21 @@ namespace cmsl
         bool type::operator!=(const type &other) const
         {
             return !(*this == other);
+        }
+
+        bool type::is_generic() const
+        {
+            return m_kind == type_kind::k_list;
+        }
+
+        bool type::is_builtin() const
+        {
+            return is_generic() || is_fundamental();
+        }
+
+        bool type::is_user() const
+        {
+            return m_kind == type_kind::k_user;
         }
     }
 }

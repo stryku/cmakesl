@@ -56,13 +56,14 @@ namespace cmsl
                 kw_bool,
                 kw_true,
                 kw_false,
+                kw_string,
+                kw_list,
                 
                 kw_return,
                 kw_class,
                 kw_if,
                 kw_else,
-                kw_while,
-                kw_string
+                kw_while
             };
         }
     }

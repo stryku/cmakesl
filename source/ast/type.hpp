@@ -2,6 +2,7 @@
 
 #include "ast/user_function_node.hpp"
 #include "lexer/token/token.hpp"
+#include "type_kind.hpp"
 
 namespace cmsl
 {
@@ -24,8 +25,11 @@ namespace cmsl
             virtual ~type() {}
 
             bool is_fundamental() const;
+            bool is_generic() const;
+            bool is_builtin() const;
+            bool is_user() const;
 
-            cmsl::string_view get_name() const;
+            std::string get_name() const;
 
             const function* get_function(cmsl::string_view name) const;
             bool has_function(cmsl::string_view name) const;
@@ -35,11 +39,8 @@ namespace cmsl
             bool operator==(const type& other) const;
             bool operator!=(const type& other) const;
 
-        protected:
-            void add_function();
-
         private:
-            cmsl::string_view m_name;
+            std::string m_name;
             type_kind m_kind;
             const ast_context* m_ast_ctx;
         };

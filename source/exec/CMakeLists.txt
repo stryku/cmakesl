@@ -25,6 +25,8 @@ set(EXEC_SOURCES
     instance/instance_value.hpp
     instance/named_instance.cpp
     instance/named_instance.hpp
+    instance/generic_instance_value.cpp
+    instance/generic_instance_value.hpp
 
     onp/id_access.cpp
     onp/id_access.hpp

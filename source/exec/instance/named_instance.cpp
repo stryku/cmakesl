@@ -20,6 +20,11 @@ namespace cmsl
                 return m_instance->get_value();
             }
 
+            instance_value_t& named_instance::get_value_ref()
+            {
+                return m_instance->get_value_ref();
+            }
+
             void named_instance::assign(instance_value_t val)
             {
                 m_instance->assign(val);

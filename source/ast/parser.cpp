@@ -13,6 +13,8 @@
 #include "ast/conditional_node.hpp"
 #include "ast/while_node.hpp"
 #include "ast/class_builder.hpp"
+#include "ast/list_type.hpp"
+#include "ast/generic_type_factory.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -52,7 +54,7 @@ namespace cmsl
             return true;
         }
 
-        bool parser::eat_type()
+        bool parser::eat_simple_type()
         {
             const auto token_type = m_token->get_type();
 
@@ -75,7 +77,8 @@ namespace cmsl
                 token_type_t::kw_int,
                 token_type_t::kw_double,
                 token_type_t::kw_bool,
-                token_type_t::kw_string
+                token_type_t::kw_string,
+                token_type_t::kw_list
             };
 
             return cmsl::contains(builtin_types, token_type);
@@ -83,9 +86,61 @@ namespace cmsl
 
         const type* parser::get_type(ast_context& ctx) 
         {
+            if(generic_type_starts(ctx))
+            {
+                return get_or_add_generic_type(ctx);
+            }
+            else
+            {
+                return get_simple_type(ctx);
+            }
+        }
+
+        const type *parser::get_or_add_generic_type(ast_context &ctx)
+        {
+            const auto name_token = *m_token;
+
+            if(!eat_simple_type())
+            {
+                return nullptr;
+            }
+
+            if(!eat(token_type_t::less))
+            {
+                return nullptr;
+            }
+
+            const auto value_type = get_type(ctx);
+
+            if(!value_type)
+            {
+                return nullptr;
+            }
+
+            if(!eat(token_type_t::greater))
+            {
+                return nullptr;
+            }
+
+            const std::string type_name = name_token.str().to_string() + '<' + value_type->get_name() + '>';
+
+            const auto found_type = ctx.find_type(type_name);
+            if(found_type != nullptr)
+            {
+                return found_type;
+            }
+
+            auto t = generic_type_factory{}.create_list(type_name, ctx, *value_type);
+            auto type_ptr = t.get();
+            ctx.add_type(std::move(t));
+            return type_ptr;
+        }
+
+        const type *parser::get_simple_type(ast_context &ctx)
+        {
             const auto t = *m_token;
 
-            if (!eat_type())
+            if (!eat_simple_type())
             {
                 return nullptr;
             }
@@ -755,6 +810,11 @@ namespace cmsl
             }
 
             return std::make_unique<conditional_node>(std::move(condition), std::move(block));
+        }
+
+        bool parser::generic_type_starts(ast_context& ctx) const
+        {
+            return current_is_type(ctx) && peek(1u) == token_type_t::less;
         }
     }
 }

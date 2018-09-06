@@ -127,6 +127,43 @@ namespace cmsl
                 const auto result = source_executor_t{}.execute(source);
                 ASSERT_THAT(result, 2);
             }
+
+            TEST(Exec, ListPushBack)
+            {
+                const auto source =
+                    "int main()"
+                    "{"
+                    "    list<int> l;"
+                    "    l.push_back(1);"
+                    "    l.push_back(2);"
+                    "    l.push_back(3);"
+                    "    l.push_back(4);"
+                    "    l.push_back(5);"
+                    "    return l.size();"
+                    "}";
+
+                const auto result = source_executor_t{}.execute(source);
+                ASSERT_THAT(result, 5);
+            }
+
+            TEST(Exec, ListOfListPushBack)
+            {
+                const auto source =
+                    "int main()"
+                    "{"
+                    "    list<int> l;"
+                    "    list<list<int>> ll;"
+                    "    ll.push_back(l);"
+                    "    ll.push_back(l);"
+                    "    ll.push_back(l);"
+                    "    ll.push_back(l);"
+                    "    ll.push_back(l);"
+                    "    return ll.size();"
+                    "}";
+
+                const auto result = source_executor_t{}.execute(source);
+                ASSERT_THAT(result, 5);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ set(AST_SOURCES
     block_node.hpp
     builtin_ast_context.cpp
     builtin_ast_context.hpp
-        class_node.cpp
+    class_node.cpp
     class_node.hpp
     class_type.cpp
     class_type.hpp
@@ -48,7 +48,10 @@ set(AST_SOURCES
     type_operator_support_check.hpp
     while_node.cpp
     while_node.hpp
-)
+    list_type.cpp
+    list_type.hpp
+    generic_type_factory.hpp
+        generic_type_factory.cpp)
 
 add_library(ast ${AST_SOURCES})
 target_include_directories(ast PRIVATE ${CMAKESL_SOURCES_DIR})
