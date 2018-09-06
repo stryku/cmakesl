@@ -23,6 +23,7 @@ namespace cmsl
                 virtual ~unnamed_instance() {}
 
                 instance_value_t get_value() const override;
+                instance_value_t& get_value_ref() override;
                 void assign(instance_value_t val) override;
                 std::unique_ptr<instance> copy() const override;
                 instance *get_member(cmsl::string_view name) override;
