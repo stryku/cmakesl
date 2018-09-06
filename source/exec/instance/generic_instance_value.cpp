@@ -1,4 +1,4 @@
-#include "exec/instance/instance_value.hpp"
+#include "exec/instance/generic_instance_value.hpp"
 #include "exec/instance/instance.hpp"
 
 namespace cmsl
@@ -8,14 +8,14 @@ namespace cmsl
         namespace inst
         {
             generic_instance_value::generic_instance_value(const ast::type &t, generic_instance_value_type value_type)
-                : m_type{ t }
-                , m_value_type{ value_type }
-                , m_generic_value{ get_init_value() }
+                    : m_type{ t }
+                    , m_value_type{ value_type }
+                    , m_generic_value{ get_init_value() }
             {}
 
             generic_instance_value::generic_instance_value(const generic_instance_value& other)
-                : m_value_type{ other.m_value_type }
-                , m_type{ other.m_type }
+                    : m_value_type{ other.m_value_type }
+                    , m_type{ other.m_type }
             {
                 copy_value(other);
             }
