@@ -7,73 +7,82 @@ namespace cmsl
 {
     namespace exec
     {
-        namespace details
+        struct size_visitor
         {
-            struct arithmetical_types_sink : public boost::static_visitor<inst::instance_value_t>
+            int visit(const inst::instance_value_t& inst_val) const
             {
-                inst::instance_value_t operator()(bool) const
-                {
-                    // Should never be called
-                    return 0;
-                }
-                inst::instance_value_t operator()(int) const
-                {
-                    // Should never be called
-                    return 0;
-                }
-                inst::instance_value_t operator()(double) const
-                {
-                    // Should never be called
-                    return 0;
-                }
-            };
-        }
+                const auto value_type = static_cast<inst::instance_value_type>(inst_val.which());
 
-        struct size_visitor : public details::arithmetical_types_sink
-        {
-            template <typename ValueType>
-            auto operator()(ValueType&& val) const -> decltype(static_cast<int>(val.size()))
-            {
-                return static_cast<int>(val.size());
+                switch(value_type)
+                {
+
+                    case inst::instance_value_type::string:
+                    {
+                        const auto& val = boost::get<std::string>(inst_val);
+                        return static_cast<int>(val.size()); // todo introduce int alias
+                    }
+
+                    case inst::instance_value_type::generic:
+                    {
+                        auto& generic_val = boost::get<inst::generic_instance_value>(inst_val);
+                        return generic_val.apply([](const auto& stored_value)
+                                                 {
+                                                     return stored_value.size();
+                                                 });
+                    }
+
+                    case inst::instance_value_type::bool_:
+                    case inst::instance_value_type::int_:
+                    case inst::instance_value_type::double_:
+                        CMSL_UNREACHABLE("Called size() on fundamental type");
+
+                    default:
+                        CMSL_UNREACHABLE("Called size() on unknown type");
+                }
             }
-
-            int operator()(inst::generic_instance_value& val) const
-            {
-                return val.apply([](const auto& stored_value)
-                                 {
-                                     return stored_value.size();
-                                 });
-            }
-
-            using details::arithmetical_types_sink::operator();
         };
 
-        struct empty_visitor : public details::arithmetical_types_sink
+        struct empty_visitor
         {
-            template <typename ValueType>
-            auto operator()(ValueType&& val) const -> decltype(val.empty())
+            bool visit(const inst::instance_value_t& inst_val) const
             {
-                return val.empty();
-            }
+                const auto value_type = static_cast<inst::instance_value_type>(inst_val.which());
 
-            bool operator()(inst::generic_instance_value& val) const
-            {
-                return val.apply([](const auto& stored_value)
-                                 {
-                                     return stored_value.empty();
-                                 });
-            }
+                switch(value_type)
+                {
+                    case inst::instance_value_type::string:
+                    {
+                        const auto& val = boost::get<std::string>(inst_val);
+                        return val.empty();
+                    }
 
-            using details::arithmetical_types_sink::operator();
+                    case inst::instance_value_type::generic:
+                    {
+                        auto& generic_val = boost::get<inst::generic_instance_value>(inst_val);
+                        return generic_val.apply([](const auto& stored_value)
+                                                 {
+                                                     return stored_value.empty();
+                                                 });
+                    }
+
+                    case inst::instance_value_type::bool_:
+                    case inst::instance_value_type::int_:
+                    case inst::instance_value_type::double_:
+                        CMSL_UNREACHABLE("Called empty() on fundamental type");
+
+                    default:
+                        CMSL_UNREACHABLE("Called empty() on unknown type");
+                }
+            }
         };
 
         struct push_back_visitor
         {
-            explicit push_back_visitor(inst::instance& val)
-                : m_val{ val }
+            explicit push_back_visitor(const inst::instance& parameter)
+                : m_parameter{ parameter }
             {}
 
-            void visit(inst::instance_value_t& inst_val)
+            void visit(inst::instance_value_t& inst_val) const
             {
                 const auto value_type = static_cast<inst::instance_value_type>(inst_val.which());
 
@@ -89,7 +98,7 @@ namespace cmsl
                         auto& generic_val = boost::get<inst::generic_instance_value>(inst_val);
                         generic_val.apply([this](auto& stored_value)
                                           {
-                                              stored_value.push_back(m_val.copy());
+                                              stored_value.push_back(m_parameter.copy());
                                               return true;
                                           });
                     }
@@ -97,7 +106,7 @@ namespace cmsl
             }
 
         private:
-            inst::instance& m_val;
+            const inst::instance& m_parameter;
         };
     }
 }

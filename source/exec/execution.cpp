@@ -175,22 +175,24 @@ namespace cmsl
         {
             const auto fun_ptr = class_instance->get_function(fun_name);
 
+            using ff_kind_t = ast::fundamental_function::fundamental_function_kind;
+
             if(auto fun = dynamic_cast<const ast::fundamental_function*>(fun_ptr))
             {
                 auto& val = class_instance->get_value_ref();
                 switch(fun->get_fundamental_fun_kind())
                 {
-                    case ast::fundamental_function::fundamental_function_kind::size:
+                    case ff_kind_t::size:
                     {
-                        return boost::apply_visitor(size_visitor{}, val);
+                        return size_visitor{}.visit(val);
                     };
-                    case ast::fundamental_function::fundamental_function_kind::empty:
+                    case ff_kind_t::empty:
                     {
-                        return boost::apply_visitor(empty_visitor{}, val);
+                        return empty_visitor{}.visit(val);
                     };
-                    case ast::fundamental_function::fundamental_function_kind::push_back:
+                    case ff_kind_t::push_back:
                     {
-                        auto param = parameters[0];
+                        const auto param = parameters[0];
                         auto visitor = push_back_visitor{ *param };
                         visitor.visit(val);
                         return true;
