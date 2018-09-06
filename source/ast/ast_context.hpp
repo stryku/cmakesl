@@ -14,8 +14,8 @@ namespace cmsl
         class ast_context
         {
         public:
-            explicit ast_context(ast_context* parent = nullptr);
-            virtual ~ast_context() {}
+            explicit ast_context(const ast_context* parent = nullptr);
+            virtual ~ast_context() = default;
 
             void add_type(std::unique_ptr<type> t);
             const type* find_type(cmsl::string_view name) const;
@@ -24,7 +24,7 @@ namespace cmsl
             const function* find_function(cmsl::string_view name) const;
 
         private:
-            ast_context* m_parent;
+            const ast_context* m_parent;
             std::vector<std::unique_ptr<type>> m_types;
             std::vector<std::unique_ptr<function>> m_functions;
         };

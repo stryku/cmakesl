@@ -12,11 +12,13 @@ namespace cmsl
             enum class fundamental_function_kind
             {
                 size,
-                empty
+                empty,
+                push_back
             };
 
-            explicit fundamental_function(fundamental_function_kind k)
+            explicit fundamental_function(fundamental_function_kind k, params_declaration_t params_declaration)
                 : m_kind{ k }
+                , m_params_declaration{ std::move(params_declaration) }
             {}
 
             cmsl::string_view get_name() const override
@@ -25,6 +27,7 @@ namespace cmsl
                 {
                     case fundamental_function_kind::size: return "size";
                     case fundamental_function_kind::empty: return "empty";
+                    case fundamental_function_kind::push_back: return "push_back";
                 }
             }
 
@@ -33,8 +36,14 @@ namespace cmsl
                 return m_kind;
             }
 
+            const params_declaration_t& get_params_declarations() const override
+            {
+                return m_params_declaration;
+            }
+
         private:
             fundamental_function_kind m_kind;
+            params_declaration_t m_params_declaration;
         };
     }
 }
