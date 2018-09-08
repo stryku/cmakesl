@@ -15,7 +15,8 @@ namespace cmsl
         {
             using instance_converter_t = cmsl::exec::inst::instance_converter;
             using instances_holder_t = cmsl::exec::inst::instances_holder;
-            using instance_value_t = cmsl::exec::inst::instance_value_t ;
+            using instance_value_t = cmsl::exec::inst::instance_value_t;
+            using int_t = cmsl::exec::inst::int_t;
 
             namespace convert_to_type
             {
@@ -42,7 +43,7 @@ namespace cmsl
 
                     // to bool
                     {
-                        const auto desired_type = ctx_provider.get_ast_ctx() .find_type("bool");
+                        const auto desired_type = ctx_provider.get_ast_ctx().find_type("bool");
                         auto converted_instance = converter.convert_to_type(instance_to_convert, *desired_type);
                         auto converted_value = converted_instance->get_value();
                         ASSERT_THAT(converted_value, state.expected_bool_value);
@@ -50,7 +51,7 @@ namespace cmsl
 
                     // to int
                     {
-                        const auto desired_type = ctx_provider.get_ast_ctx() .find_type("int");
+                        const auto desired_type = ctx_provider.get_ast_ctx().find_type("int");
                         auto converted_instance = converter.convert_to_type(instance_to_convert, *desired_type);
                         auto converted_value = converted_instance->get_value();
                         ASSERT_THAT(converted_value, state.expected_int_value);
@@ -58,7 +59,7 @@ namespace cmsl
 
                     // to double
                     {
-                        const auto desired_type = ctx_provider.get_ast_ctx() .find_type("double");
+                        const auto desired_type = ctx_provider.get_ast_ctx().find_type("double");
                         auto converted_instance = converter.convert_to_type(instance_to_convert, *desired_type);
                         auto converted_value = converted_instance->get_value();
                         ASSERT_THAT(converted_value, state.expected_double_value);
@@ -66,11 +67,11 @@ namespace cmsl
                 }
 
                 const auto values = testing::Values(
-                        ConvertToType_FundamentalArithmetic_State{ true, true, 1, 1.0 },
-                        ConvertToType_FundamentalArithmetic_State{ false, false, 0, 0.0 },
-                        ConvertToType_FundamentalArithmetic_State{ 0.9, true, 0, 0.9 },
-                        ConvertToType_FundamentalArithmetic_State{ 1.9, true, 1, 1.9 },
-                        ConvertToType_FundamentalArithmetic_State{ 2.9, true, 2, 2.9 }
+                        ConvertToType_FundamentalArithmetic_State{ true, true, int_t{ 1 }, 1.0 },
+                        ConvertToType_FundamentalArithmetic_State{ false, false, int_t{ 0 }, 0.0 },
+                        ConvertToType_FundamentalArithmetic_State{ 0.9, true, int_t{ 0 }, 0.9 },
+                        ConvertToType_FundamentalArithmetic_State{ 1.9, true, int_t{ 1 }, 1.9 },
+                        ConvertToType_FundamentalArithmetic_State{ 2.9, true, int_t{ 2 }, 2.9 }
                 );
 
                 INSTANTIATE_TEST_CASE_P(InstanceConverter, ConvertToType, values);

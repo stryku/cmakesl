@@ -26,8 +26,8 @@ namespace cmsl
                     const auto token_type = token.get_type();
                     if (token_type == token_type_t::integer)
                     {
-                        const auto val = std::stoi(token.str().to_string());
-                        auto inst = m_instances.create(val);
+                        const auto val = std::stoll(token.str().to_string());
+                        auto inst = m_instances.create(static_cast<inst::int_t>(val));
                         m_stack.push(stack_entry_t{ inst });
                     }
                     else if(token_type == token_type_t::string)

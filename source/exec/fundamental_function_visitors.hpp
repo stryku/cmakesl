@@ -9,7 +9,7 @@ namespace cmsl
     {
         struct size_visitor
         {
-            int visit(const inst::instance_value_t& inst_val) const
+            inst::int_t visit(const inst::instance_value_t& inst_val) const
             {
                 const auto value_type = static_cast<inst::instance_value_type>(inst_val.which());
 

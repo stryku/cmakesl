@@ -60,6 +60,16 @@ namespace cmsl
                     }break;
                 }
             }
+
+            const generic_instance_value::generic_instance_value_type generic_instance_value::get_value_type() const
+            {
+                return m_value_type;
+            }
+
+            const generic_instance_value::generic_variant_t& generic_instance_value::get_underlying_value_cref() const
+            {
+                return m_generic_value;
+            }
         }
     }
 }

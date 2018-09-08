@@ -39,6 +39,7 @@ namespace cmsl
                 bool operator==(const generic_instance_value& rhs) const;
 
                 const ast::type& get_type() const;
+                const generic_instance_value_type get_value_type() const;
 
                 template <typename Callable>
                 auto apply(Callable&& cb)
@@ -52,9 +53,12 @@ namespace cmsl
                     return boost::apply_visitor(cb, m_generic_value);
                 }
 
+                void copy_value(const generic_instance_value& other);
+
+                const generic_variant_t& get_underlying_value_cref() const;
+
             private:
                 generic_variant_t get_init_value() const;
-                void copy_value(const generic_instance_value& other);
 
             private:
                 const ast::type& m_type;

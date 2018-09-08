@@ -4,7 +4,6 @@
 
 namespace cmsl
 {
-
     namespace exec
     {
         namespace inst
@@ -20,7 +19,10 @@ namespace cmsl
                 generic
             };
 
-            using instance_value_t = boost::variant<bool, int, double, std::string, generic_instance_value>;
+            using int_t = std::int64_t;
+            using instance_value_t = boost::variant<bool, int_t, double, std::string, generic_instance_value>;
+
+            instance_value_type get_inst_val_type(const instance_value_t& i);
         }
     }
 }
