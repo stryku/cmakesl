@@ -159,7 +159,7 @@ namespace cmsl
                                [this](const auto& member_decl)
                                {
                                    auto member_inst = std::make_unique<unnamed_instance>(*member_decl.ty);
-                                   return std::make_pair(member_decl.name.str(), std::move(member_inst));
+                                   return std::make_pair(member_decl.name, std::move(member_inst));
                                });
 
                 return members;
