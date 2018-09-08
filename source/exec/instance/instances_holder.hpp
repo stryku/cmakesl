@@ -30,6 +30,10 @@ namespace cmsl
                 inst::instance* create(instance_value_t value);
                 inst::instance* create(const ast::type& t);
 
+                void store(std::unique_ptr<instance> i);
+
+                std::unique_ptr<instance> gather_ownership(inst::instance* instance_ptr);
+
             private:
                 inst::instance_factory get_factory();
 

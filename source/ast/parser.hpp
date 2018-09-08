@@ -19,6 +19,7 @@ namespace cmsl
         class ast_context;
         class ast_node;
         class type;
+        class function;
         class user_function_node;
         class block_node;
         class return_node;
@@ -50,6 +51,7 @@ namespace cmsl
             boost::optional<member_declaration> get_class_member_declaration(ast_context& ctx);
             std::unique_ptr<if_else_node> get_if_else_node(ast_context& ctx);
             std::unique_ptr<while_node> get_while_node(ast_context& ctx);
+            std::unique_ptr<function> get_ctor(ast_context& ctx);
 
             std::unique_ptr<class_node> try_get_class_node(ast_context& ctx);
 
@@ -72,6 +74,7 @@ namespace cmsl
             token_type_t peek(size_t n) const;
             bool declaration_starts(ast_context& ctx) const;
             bool class_function_starts() const;
+            bool class_ctor_starts(cmsl::string_view class_name) const;
 
             void raise_error();
 

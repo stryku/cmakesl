@@ -1,7 +1,6 @@
 #include "exec/stmt/infix_statement.hpp"
 #include "exec/execution.hpp"
 #include "ast/infix_node.hpp"
-#include "ast/type_kind.hpp"
 #include "ast/ast_context.hpp"
 #include "exec/onp/infix_to_onp.hpp"
 #include "exec/onp/onp_executor.hpp"
@@ -12,7 +11,7 @@ namespace cmsl
     {
         namespace stmt
         {
-            infix_statement::infix_statement(const ast::infix_node& node, inst::instance_value_t& result)
+            infix_statement::infix_statement(const ast::infix_node& node, std::unique_ptr<inst::instance>& result)
                 : m_node{ node }
                 , m_result{ result }
             {}
@@ -20,7 +19,9 @@ namespace cmsl
             void infix_statement::execute(execution& e)
             {
                 const auto onp_tokens = to_onp(e);
-                onp::onp_executor{ onp_tokens, e, m_result }.execute();
+                auto executor = onp::onp_executor{ onp_tokens, e };
+                auto result = executor.execute();
+                m_result = std::move(result);
             }
 
             infix_statement::tokens_container_t infix_statement::to_onp(execution& e) const

@@ -579,6 +579,15 @@ namespace cmsl
 
             while (!current_is(token_type_t::close_brace))
             {
+                if(class_ctor_starts(name->str()))
+                {
+                    auto ctor = get_ctor(class_ast_ctx);
+                    if(!ctor)
+                    {
+                        return nullptr;
+                    }
+                    builder.with_function(std::move(ctor));
+                }
                 if(class_function_starts())
                 {
                     // pass context from builder
@@ -617,6 +626,11 @@ namespace cmsl
             // return_type name (
             //           ^
             return peek(2u) == token_type_t::open_paren;
+        }
+
+        bool parser::class_ctor_starts(cmsl::string_view class_name) const
+        {
+            return m_token->str() == class_name;
         }
 
         boost::optional<member_declaration> parser::get_class_member_declaration(ast_context& ctx)
@@ -815,6 +829,34 @@ namespace cmsl
         bool parser::generic_type_starts(ast_context& ctx) const
         {
             return current_is_type(ctx) && peek(1u) == token_type_t::less;
+        }
+
+        std::unique_ptr<function> parser::get_ctor(ast_context &ctx)
+        {
+            auto type_name = get_identifier();
+            if(!type_name)
+            {
+                return nullptr;
+            }
+
+            auto parameters = get_parameters_declaration(ctx);
+            if (!parameters)
+            {
+                return nullptr;
+            }
+
+            auto block_expr = get_block(ctx);
+
+            if (!block_expr)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<user_function_node>(ctx,
+                                                        *ctx.find_type(type_name->str()),
+                                                        type_name->str(),
+                                                        std::move(*parameters),
+                                                        std::move(block_expr));
         }
     }
 }

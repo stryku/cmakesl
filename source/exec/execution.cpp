@@ -31,7 +31,7 @@ namespace cmsl
     {
         void execution::execute_function_call(const ast::user_function_node& fun, std::vector<inst::instance*> parameters)
         {
-            m_function_return_value = boost::none;
+            m_function_return_value.reset();
 
             const auto& params_decl = fun.get_params_declarations();
             const auto params_count = params_decl.size();
@@ -86,7 +86,7 @@ namespace cmsl
 
                 case ast::ast_node_type::infix:
                 {
-                    inst::instance_value_t result;
+                    std::unique_ptr<inst::instance> result;
                     stmt::infix_statement infix_stmt{ dynamic_cast<ast::infix_node&>(expr), result };
                     infix_stmt.execute(*this);
                 }
@@ -130,9 +130,9 @@ namespace cmsl
             return *m_ast_context;
         }
 
-        inst::instance_value_t execution::get_function_return_value() const
+        std::unique_ptr<inst::instance> execution::get_function_return_value() const
         {
-            return *m_function_return_value;
+            return m_function_return_value->copy();
         }
 
         void execution::block(const ast::block_node &block_node)
@@ -155,18 +155,18 @@ namespace cmsl
             }
         }
 
-        void execution::return_from_function(inst::instance_value_t value)
+        void execution::return_from_function(std::unique_ptr<inst::instance> value)
         {
             const auto& fun_ret_type = get_current_function_return_type();
             inst::instances_holder instances{ *this };
             inst::instance_converter converter{ instances };
-            auto inst = converter.convert_to_type(value, fun_ret_type);
-            m_function_return_value = inst->get_value();
+            auto inst = converter.convert_to_type(value.get(), fun_ret_type);
+            m_function_return_value = instances.gather_ownership(inst);
         }
 
         bool execution::returning_from_function() const
         {
-            return m_function_return_value.is_initialized();
+            return m_function_return_value.get() != nullptr;
         }
 
         inst::instance_value_t execution::fundamental_member_function_call(inst::instance *class_instance,
