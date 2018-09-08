@@ -23,10 +23,8 @@ namespace cmsl
 
                 if(expr)
                 {
-                    inst::instance_value_t infix_result;
-                    auto infix = infix_statement{ *expr, infix_result };
+                    auto infix = infix_statement{ *expr, instance };
                     infix.execute(e);
-                    instance = factory.create(infix_result);
                 }
                 else
                 {

@@ -17,10 +17,10 @@ namespace cmsl
             void return_statement::execute(execution& e)
             {
                 auto& expr = m_node.get_expression();
-                inst::instance_value_t infix_result;
+                std::unique_ptr<inst::instance> infix_result;
                 auto infix = infix_statement{ expr, infix_result };
                 infix.execute(e);
-                e.return_from_function(infix_result);
+                e.return_from_function(std::move(infix_result));
             }
         }
     }

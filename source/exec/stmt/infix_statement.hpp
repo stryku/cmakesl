@@ -38,7 +38,7 @@ namespace cmsl
                 using token_type_t = lexer::token::token_type;
 
             public:
-                explicit infix_statement(const ast::infix_node& node, inst::instance_value_t & result);
+                explicit infix_statement(const ast::infix_node& node, std::unique_ptr<inst::instance>& result);
 
                 virtual void execute(execution& e) override;
 
@@ -47,7 +47,7 @@ namespace cmsl
 
             private:
                 const ast::infix_node& m_node;
-                inst::instance_value_t& m_result;
+                std::unique_ptr<inst::instance>& m_result;
             };
         }
     }

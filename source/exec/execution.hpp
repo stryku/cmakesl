@@ -38,8 +38,8 @@ namespace cmsl
 
             void block(const ast::block_node& block_node);
 
-            void return_from_function(inst::instance_value_t value);
-            inst::instance_value_t get_function_return_value() const;
+            void return_from_function(std::unique_ptr<inst::instance> value);
+            std::unique_ptr<inst::instance> get_function_return_value() const;
 
         private:
             void return_from_function();
@@ -59,7 +59,7 @@ namespace cmsl
             };
 
             const ast::ast_context* m_ast_context;
-            boost::optional<inst::instance_value_t> m_function_return_value;
+            std::unique_ptr<inst::instance> m_function_return_value;
             std::stack<callstack_frame> m_callstack;
         };
     }
