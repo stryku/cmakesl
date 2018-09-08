@@ -2,10 +2,12 @@ set(TESTS_NAME exec_test)
 
 set(SOURCES 
     main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/infix_to_onp_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/instance_converter_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_context_provider.hpp
-        high_level_exec_test.cpp)
+    infix_to_onp_test.cpp
+    instance_converter_test.cpp
+    test_context_provider.hpp
+    high_level_exec_test.cpp
+    builtin_type_default_constructor.cpp
+)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
