@@ -8,6 +8,8 @@ namespace cmsl
 {
     namespace ast
     {
+        class ast_context;
+
         class function : public ast_node
         {
         public:

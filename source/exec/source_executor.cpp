@@ -26,7 +26,7 @@ namespace cmsl
             execution e;
             e.function_call(*casted, {});
             const auto main_result = e.get_function_return_value();
-            const auto int_result = boost::get<inst::int_t>(main_result);
+            const auto int_result = boost::get<inst::int_t>(main_result->get_value());
             return int_result;
         }
     }

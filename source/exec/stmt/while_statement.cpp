@@ -30,16 +30,15 @@ namespace cmsl
             bool while_statement::condition_passed(execution &e)
             {
                 const auto& condition = m_node.get_node().get_condition();
-                inst::instance_value_t infix_result{};
+                std::unique_ptr<inst::instance> infix_result;
                 auto infix = infix_statement{ condition, infix_result };
                 infix.execute(e);
 
                 // Convert result to bool
                 inst::instances_holder instances{ e };
                 inst::instance_converter converter{ instances };
-                auto result_instance = instances.create(infix_result);
                 const auto bool_type = e.get_ast_ctx().find_type("bool");
-                auto bool_instance = converter.convert_to_type(result_instance, *bool_type);
+                auto bool_instance = converter.convert_to_type(infix_result.get(), *bool_type);
                 return boost::get<bool>(bool_instance->get_value()) == true;
             }
         }
