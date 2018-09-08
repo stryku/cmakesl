@@ -42,7 +42,7 @@ namespace cmsl
                     // todo get rid of these when we'll start using std::varian
                     auto lhs_val = lhs->get_value();
                     auto rhs_val = rhs->get_value();
-                    const auto converted_value = boost::apply_visitor(conversion_visitor{}, lhs_val, rhs_val);
+                    const auto converted_value = conversion_visitor{}.visit(lhs_val, rhs_val);
                     auto converted_lhs = m_instances.create(converted_value);
                     return { converted_lhs, rhs };
                 }
@@ -53,7 +53,7 @@ namespace cmsl
                     // todo get rid of these when we'll start using std::varian
                     auto lhs_val = lhs->get_value();
                     auto rhs_val = rhs->get_value();
-                    const auto converted_value = boost::apply_visitor(conversion_visitor{}, rhs_val, lhs_val);
+                    const auto converted_value = conversion_visitor{}.visit(rhs_val, lhs_val);
                     auto converted_rhs = m_instances.create(converted_value);
                     return { lhs, converted_rhs };
                 }
@@ -68,7 +68,7 @@ namespace cmsl
             {
                 auto result_instance = m_instances.create(desired_type);
                 auto result_val = result_instance->get_value();
-                const auto converted_value = boost::apply_visitor(conversion_visitor{}, from, result_val);
+                const auto converted_value = conversion_visitor{}.visit(from, result_val);
                 result_instance->assign(converted_value);
                 return result_instance;
             }

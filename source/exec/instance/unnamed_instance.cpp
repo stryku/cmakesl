@@ -1,7 +1,6 @@
 #include "exec/instance/unnamed_instance.hpp"
 
 #include "ast/class_type.hpp"
-#include "ast/type_kind.hpp"
 #include "common/assert.hpp"
 
 namespace cmsl
@@ -121,7 +120,7 @@ namespace cmsl
                 switch(m_type.get_kind())
                 {
                     case ast::type_kind::k_bool: return bool{};
-                    case ast::type_kind::k_int: return int{};
+                    case ast::type_kind::k_int: return int_t{};
                     case ast::type_kind::k_double: return double{};
                     case ast::type_kind::k_string: return std::string{};
                     case ast::type_kind ::k_list: return get_init_list_data();

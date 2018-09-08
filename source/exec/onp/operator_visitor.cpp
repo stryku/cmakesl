@@ -184,17 +184,16 @@ namespace cmsl
 
                 switch(op)
                 {
-
                     case token_type_t::minus:
                     {
-                        auto visitor = minus_operator_evaluation_visitor{ op };
-                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                        auto visitor = minus_operator_evaluation_visitor{};
+                        return visitor.visit(lhs_val, rhs_val);
                     }
 
                     case token_type_t::plus:
                     {
-                        auto visitor = plus_operator_evaluation_visitor{ op };
-                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                        auto visitor = plus_operator_evaluation_visitor{};
+                        return visitor.visit(lhs_val, rhs_val);
                     }
 
                     case token_type_t::amp:
@@ -202,23 +201,22 @@ namespace cmsl
                     case token_type_t::xor_:
                     {
                         auto visitor = bitwise_operator_evaluation_visitor{ op };
-                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                        return visitor.visit(lhs_val, rhs_val);
                     }
 
                     case token_type_t::slash:
                     case token_type_t::star:
                     {
                         auto visitor = multiplicative_operator_evaluation_visitor{ op };
-                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                        return visitor.visit(lhs_val, rhs_val);
                     }
 
                     case token_type_t::percent:
                     {
-                        auto visitor = reminder_operator_evaluation_visitor{ op };
-                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                        auto visitor = reminder_operator_evaluation_visitor{};
+                        return visitor.visit(lhs_val, rhs_val);
                     }
 
-                    case token_type_t::ampamp:
                     case token_type_t::exclaimequal:
                     case token_type_t::less:
                     case token_type_t::lessequal:
@@ -226,15 +224,20 @@ namespace cmsl
                     case token_type_t::greaterequal:
                     {
                         auto visitor = comparison_operator_evaluation_visitor{ op };
-                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                        return visitor.visit(lhs_val, rhs_val);
                     }
 
-
-                    case token_type_t::pipepipe:
                     case token_type_t::equalequal:
                     {
+                        auto visitor = equalequal_operator_evaluation_visitor{};
+                        return visitor.visit(lhs_val, rhs_val);
+                    }
+
+                    case token_type_t::pipepipe:
+                    case token_type_t::ampamp:
+                    {
                         auto visitor = logical_operator_evaluation_visitor{ op };
-                        return boost::apply_visitor(visitor, lhs_val, rhs_val);
+                        return visitor.visit(lhs_val, rhs_val);
                     }
                 }
             }

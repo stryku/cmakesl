@@ -29,7 +29,7 @@ namespace cmsl
                         return *m_ctx.find_type("bool");
                     }
 
-                    decltype(auto) operator()(int) const
+                    decltype(auto) operator()(inst::int_t) const
                     {
                         return *m_ctx.find_type("int");
                     }

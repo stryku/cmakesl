@@ -15,6 +15,101 @@ namespace cmsl
         {
             struct conversion_visitor : boost::static_visitor<instance_value_t>
             {
+                instance_value_t visit(const instance_value_t& from, const instance_value_t& to) const
+                {
+                    const auto from_val_type = get_inst_val_type(from);
+
+                    switch(from_val_type)
+                    {
+                        case instance_value_type::bool_:
+                            return convert_from_arithmetic(boost::get<bool>(from), to);
+
+                        case instance_value_type::int_:
+                            return convert_from_arithmetic(boost::get<inst::int_t>(from), to);
+
+                        case instance_value_type::double_:
+                            return convert_from_arithmetic(boost::get<double>(from), to);
+
+                        case instance_value_type::string:
+                            return convert_from_string(boost::get<std::string>(from), to);
+
+                        case instance_value_type::generic:
+                            return convert_from_generic(boost::get<generic_instance_value>(from), to);
+                    }
+                }
+
+            private:
+                template <typename DesiredType>
+                auto apply_generic_conversion(const generic_instance_value& from)
+                {
+                    DesiredType result;
+
+                    auto transformer = [&result](const auto& from_val)
+                    {
+                        std::transform(std::cbegin(from_val), std::cend(from_val),
+                                       std::back_inserter(result),
+                                       [](const auto& instance)
+                                       {
+                                           return instance->copy();
+                                       });
+                    };
+
+                    from.apply(transformer);
+
+                    return result;
+                }
+
+                instance_value_t convert_from_generic(const generic_instance_value& from, const instance_value_t& to) const
+                {
+                    const auto to_val_type = get_inst_val_type(to);
+
+                    if(to_val_type != instance_value_type::generic)
+                    {
+                        CMSL_UNREACHABLE("Applying not possible conversion");
+                    }
+
+                    const auto& generic_to = boost::get<generic_instance_value>(to);
+
+                    generic_instance_value converted{ generic_to.get_type(), generic_to.get_value_type() };
+
+                    converted.copy_value(from);
+
+                    return converted;
+                }
+
+                instance_value_t convert_from_string(const std::string& from, const instance_value_t& to) const
+                {
+                    const auto to_val_type = get_inst_val_type(to);
+
+                    if(to_val_type != instance_value_type::string)
+                    {
+                        CMSL_UNREACHABLE("Applying not possible conversion");
+                    }
+
+                    return from;
+                }
+
+                template <typename FromType>
+                instance_value_t convert_from_arithmetic(FromType&& from, const instance_value_t& to) const
+                {
+                    const auto to_val_type = get_inst_val_type(to);
+
+                    switch(to_val_type)
+                    {
+                        case instance_value_type::bool_:
+                            return static_cast<bool>(from);
+
+                        case instance_value_type::int_:
+                            return static_cast<inst::int_t>(from);
+
+                        case instance_value_type::double_:
+                            return static_cast<double>(from);
+
+                        default:
+                            CMSL_UNREACHABLE("Applying not possible conversion");
+                    }
+                }
+/*
                 template <typename T>
                 constexpr static auto is_decayed_arithmetic_v = std::is_arithmetic<std::decay_t<T>>::value;
 
@@ -53,6 +148,7 @@ namespace cmsl
                     CMSL_UNREACHABLE("Applying not possible conversion");
                     return 1;
                 };
+                */
             };
         }
     }
