@@ -1,5 +1,7 @@
 #include "exec/execution_context.hpp"
 
+#include "exec/instance/named_instance.hpp"
+
 namespace cmsl
 {
     namespace exec
@@ -42,6 +44,7 @@ namespace cmsl
         void execution_context::enter_member_function_scope(instance_t* class_instance)
         {
             m_scopes.push(scope_context{ class_instance });
+            add_variable("this", std::make_unique<inst::named_instance>("this", *class_instance));
         }
 
         execution_context::instance_t *execution_context::get_this()

@@ -34,6 +34,29 @@ namespace cmsl
                 m_instances.emplace_back(std::move(inst));
                 return ptr;
             }
+
+            std::unique_ptr<instance> instances_holder::gather_ownership(inst::instance *instance_ptr)
+            {
+                auto found = std::find_if(std::begin(m_instances), std::end(m_instances),
+                                         [instance_ptr](const auto& i)
+                                         {
+                                             return i.get() == instance_ptr;
+                                         });
+
+                if(found == std::end(m_instances))
+                {
+                    return nullptr;
+                }
+
+                auto ret = std::move(*found);
+                m_instances.erase(found);
+                return std::move(ret);
+            }
+
+            void instances_holder::store(std::unique_ptr<instance> i)
+            {
+                m_instances.emplace_back(std::move(i));
+            }
         }
     }
 }

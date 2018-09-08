@@ -12,14 +12,13 @@ namespace cmsl
     {
         namespace onp
         {
-            onp_executor::onp_executor(const tokens_container_t& onp_tokens, execution& e, inst::instance_value_t& result)
+            onp_executor::onp_executor(const tokens_container_t& onp_tokens, execution& e)
                 : m_tokens{ onp_tokens }
                 , m_exec{ e }
-                , m_result{ result }
                 , m_instances{ m_exec }
             {}
 
-            void onp_executor::execute()
+            std::unique_ptr<inst::instance> onp_executor::execute()
             {
                 for (const auto& token : m_tokens)
                 {
@@ -38,7 +37,15 @@ namespace cmsl
                     }
                     else if (token_type == token_type_t::identifier)
                     {
-                        m_stack.push(stack_entry_t{ id_access{nullptr, token.str() } });
+                        if(is_function_or_ctor(token))
+                        {
+                            auto result = handle_function_call(token);
+                            m_stack.push(stack_entry_t{ result });
+                        }
+                        else
+                        {
+                            m_stack.push(stack_entry_t{ id_access{nullptr, token.str() } });
+                        }
                     }
                     else
                     {
@@ -53,7 +60,7 @@ namespace cmsl
                 if(!m_stack.empty())
                 {
                     auto instance = get_instance_from_stack_top();
-                    m_result = instance->get_value();
+                    return instance->copy();
                 }
             }
 
@@ -116,8 +123,16 @@ namespace cmsl
                     auto params = prepare_parameters_for_call(fun);
                     m_exec.member_function_call(fun, std::move(params), class_instance);
 
-                    const auto ret_val = m_exec.get_function_return_value();
-                    return m_instances.create(ret_val);
+                    // If just executed function was a constructor, return class isntance. It's already stored in m_instances
+                    if(class_instance->is_ctor(name))
+                    {
+                        return class_instance;
+                    }
+
+                    auto ret_instance = m_exec.get_function_return_value();
+                    auto inst_ptr = ret_instance.get();
+                    m_instances.store(std::move(ret_instance));
+                    return inst_ptr;
                 }
             }
 
@@ -126,8 +141,10 @@ namespace cmsl
                 auto params = prepare_parameters_for_call(fun);
                 m_exec.function_call(fun, std::move(params));
 
-                const auto ret_val = m_exec.get_function_return_value();
-                return m_instances.create(ret_val);
+                auto ret_instance = m_exec.get_function_return_value();
+                auto ret_instance_ptr = ret_instance.get();
+                m_instances.store(std::move(ret_instance));
+                return ret_instance_ptr;
             }
 
             onp_executor::stack_entry_t onp_executor::get_top_and_pop()
@@ -141,6 +158,42 @@ namespace cmsl
             {
                 auto visitor = operator_visitor{ op, m_exec.get_exec_ctx(), m_instances, *this };
                 return boost::apply_visitor(visitor, lhs, rhs);
+            }
+
+            bool onp_executor::is_function_or_ctor(const token_t& tok) const
+            {
+                const auto& ctx = m_exec.get_ast_ctx();
+                return ctx.find_function(tok.str()) ||
+                       ctx.find_type(tok.str()); // Class ctors are threated as functions at this point
+            }
+
+            inst::instance *onp_executor::handle_function_call(const onp_executor::token_t &tok)
+            {
+                const auto name = tok.str();
+
+                const auto& ctx = m_exec.get_ast_ctx();
+
+                if(const auto fun = ctx.find_function(name))
+                {
+                    auto casted = dynamic_cast<const ast::user_function_node*>(fun);
+                    execute_function_call(*casted);
+                }
+                else if(const auto ctor_type = ctx.find_type(name))
+                {
+                    auto instance = m_instances.create(*ctor_type);
+
+                    const auto ctor_function = ctor_type->get_function(name);
+
+                    // No defined ctor. Return default instance value.
+                    if(!ctor_function)
+                    {
+                        return instance;
+                    }
+                    else
+                    {
+                        return execute_member_function_call(instance, name);
+                    }
+                }
             }
         }
     }

@@ -23,14 +23,14 @@ namespace cmsl
                 for(const auto& cond_node : m_node.get_ifs())
                 {
                     const auto& condition = cond_node->get_condition();
-                    inst::instance_value_t infix_result{};
+                    std::unique_ptr<inst::instance> infix_result;
                     auto infix = infix_statement{ condition, infix_result };
                     infix.execute(e);
 
                     // Convert result to bool
                     inst::instances_holder instances{ e };
                     inst::instance_converter converter{ instances };
-                    auto result_instance = instances.create(infix_result);
+                    auto result_instance = instances.create(infix_result->get_value());
                     const auto bool_type = e.get_ast_ctx().find_type("bool");
                     auto bool_instance = converter.convert_to_type(result_instance, *bool_type);
 

@@ -185,6 +185,11 @@ namespace cmsl
                 const auto k_list_type = generic_instance_value::generic_instance_value_type::list;
                 return generic_instance_value{ get_type(), k_list_type };
             }
+
+            bool unnamed_instance::is_ctor(cmsl::string_view name) const
+            {
+                return get_type().get_name() == name;
+            }
         }
     }
 }

@@ -14,8 +14,8 @@ namespace cmsl
             class named_instance : public instance
             {
             public:
-                named_instance(cmsl::string_view name,
-                               execution_context &ctx);
+                named_instance(cmsl::string_view name, execution_context &ctx);
+                named_instance(cmsl::string_view name, instance& referenced_instance);
 
                 instance_value_t get_value() const override;
                 instance_value_t& get_value_ref() override;
@@ -23,13 +23,13 @@ namespace cmsl
                 std::unique_ptr<instance> copy() const override;
                 instance* get_member(cmsl::string_view name) override;
                 bool has_function(cmsl::string_view name) const override;
+                bool is_ctor(cmsl::string_view name) const override;
                 const ast::function* get_function(cmsl::string_view name) const override;
                 const ast::type& get_type() const override;
 
             private:
                 cmsl::string_view m_name;
-                execution_context &m_ctx;
-                instance* m_instance;
+                instance& m_instance;
             };
         }
     }

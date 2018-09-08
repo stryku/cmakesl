@@ -6,11 +6,24 @@
 int main()
 {
     const auto source =
+        "class Version"
+        "{"
+            "Version(int major, int minor, int patch)"
+            "{"
+                "this.major = major;"
+                "this.minor = minor;"
+                "this.patch = patch;"
+            "}"
+            ""
+            "int major;"
+            "int minor;"
+            "int patch;"
+        "};"
+        ""
         "int main()"
         "{"
-        "    list<string> l;"
-        "    l.push_back(\"1\");"
-        "    return l.size();"
+        "    Version v = Version( 1, 2, 3 );"
+        "    return v.major + v.minor + v.patch;"
         "}";
 
     cmsl::exec::source_executor exec;

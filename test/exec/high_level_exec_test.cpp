@@ -164,6 +164,28 @@ namespace cmsl
                 const auto result = source_executor_t{}.execute(source);
                 ASSERT_THAT(result, 5);
             }
+
+            TEST(Exec, UserDefinedConstructor)
+            {
+                const auto source =
+                    "class Foo"
+                    "{"
+                    "    Foo(int value)"
+                    "    {"
+                    "        this.m_value = value;"
+                    "    }"
+                    ""
+                    "    int m_value;"
+                    "};"
+                    "int main()"
+                    "{"
+                    "    Foo foo = Foo(4);"
+                    "    return foo.m_value;"
+                    "}";
+
+                const auto result = source_executor_t{}.execute(source);
+                ASSERT_THAT(result, 4);
+            }
         }
     }
 }
