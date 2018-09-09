@@ -1,6 +1,6 @@
 #include "instances_holder.hpp"
-#include "unnamed_instance.hpp"
 #include "instance_factory.hpp"
+#include "exec/instance/instance.hpp"
 #include "exec/context_provider.hpp"
 
 namespace cmsl
@@ -21,10 +21,18 @@ namespace cmsl
                 return ptr;
             }
 
-            instance_factory instances_holder::get_factory()
+            inst::instance *instances_holder::create(const ast::type& type, instance_members_t members)
             {
-                return instance_factory{ m_ctx_provider.get_ast_ctx(),
-                                         m_ctx_provider.get_exec_ctx() };
+                auto inst = get_factory().create(type, std::move(members));
+                auto ptr = inst.get();
+                m_instances.emplace_back(std::move(inst));
+                return ptr;
+            }
+
+            contexted_instance_factory instances_holder::get_factory()
+            {
+                return contexted_instance_factory{ m_ctx_provider.get_ast_ctx(),
+                                                   m_ctx_provider.get_exec_ctx() };
             }
 
             inst::instance *instances_holder::create(const ast::type& t)

@@ -13,7 +13,9 @@ namespace cmsl
             {
                 size,
                 empty,
-                push_back
+                push_back,
+
+                version_ctor
             };
 
             explicit fundamental_function(fundamental_function_kind k, params_declaration_t params_declaration)
@@ -28,6 +30,7 @@ namespace cmsl
                     case fundamental_function_kind::size: return "size";
                     case fundamental_function_kind::empty: return "empty";
                     case fundamental_function_kind::push_back: return "push_back";
+                    case fundamental_function_kind::version_ctor: return "version";
                 }
             }
 
