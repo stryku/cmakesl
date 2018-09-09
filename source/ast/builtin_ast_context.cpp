@@ -10,6 +10,8 @@ namespace cmsl
 {
     namespace ast
     {
+        using ff_kind_t = fundamental_function::fundamental_function_kind;
+
         builtin_ast_context::builtin_ast_context()
             : ast_context{ nullptr }
         {
@@ -25,6 +27,7 @@ namespace cmsl
             }
 
             add_string_type();
+            add_version_type();
         }
 
         void builtin_ast_context::add_string_type()
@@ -32,8 +35,8 @@ namespace cmsl
             class_builder builder{ *this, "string" };
 
             const auto string_functions = {
-                fundamental_function::fundamental_function_kind::size,
-                fundamental_function::fundamental_function_kind::empty
+                ff_kind_t::size,
+                ff_kind_t::empty
             };
 
             for(const auto fun_kind : string_functions)
@@ -46,6 +49,48 @@ namespace cmsl
             auto string_type = std::make_unique<class_type>(std::move(string_class_node), type_kind::k_string);
 
             add_type(std::move(string_type));
+        }
+
+        void builtin_ast_context::add_version_type()
+        {
+            class_builder builder{ *this, "version" };
+
+            const auto int_type = find_type("int");
+
+            const auto member_names = {
+                "major",
+                "minor",
+                "patch",
+                "tweak"
+            };
+
+            for(const auto member_name : member_names)
+            {
+                auto member = member_declaration{int_type, member_name};
+                builder.with_member(std::move(member));
+            }
+
+            fundamental_function::params_declaration_t params{
+                    parameter_declaration{ int_type, fake_name_token() }, // major
+                    parameter_declaration{ int_type, fake_name_token() }, // minor
+                    parameter_declaration{ int_type, fake_name_token() }, // patch
+                    parameter_declaration{ int_type, fake_name_token() }  // tweak
+            };
+
+            auto fun = std::make_unique<fundamental_function>(ff_kind_t::version_ctor,
+                                                              std::move(params));
+
+            builder.with_function(std::move(fun));
+
+            auto node = builder.build();
+            auto version_type = std::make_unique<class_type>(std::move(node), type_kind::k_version);
+
+            add_type(std::move(version_type));
+        }
+
+        lexer::token::token builtin_ast_context::fake_name_token() const
+        {
+            return lexer::token::token{ lexer::token::token_type::identifier };
         }
     }
 }

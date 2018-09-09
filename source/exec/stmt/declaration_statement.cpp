@@ -19,7 +19,7 @@ namespace cmsl
             {
                 const auto expr = m_node.get_expression();
                 std::unique_ptr<inst::instance> instance;
-                auto factory = inst::instance_factory{ e.get_ast_ctx(), e.get_exec_ctx() };
+                auto factory = inst::contexted_instance_factory{ e.get_ast_ctx(), e.get_exec_ctx() };
 
                 if(expr)
                 {

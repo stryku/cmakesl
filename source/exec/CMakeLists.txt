@@ -4,7 +4,9 @@ set(EXEC_SOURCES
     execution.hpp
     execution_context.cpp
     execution_context.hpp
-    fundamental_function_visitors.hpp
+    builtin_function_visitors.hpp
+    builtin_member_function_caller.cpp
+    builtin_member_function_caller.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
     scope_context.cpp
@@ -16,8 +18,6 @@ set(EXEC_SOURCES
     instance/instance.hpp
     instance/instance_converter.cpp
     instance/instance_converter.hpp
-    instance/unnamed_instance.cpp
-    instance/unnamed_instance.hpp
     instance/instances_holder.cpp
     instance/instances_holder.hpp
     instance/instance_factory.cpp
@@ -28,6 +28,12 @@ set(EXEC_SOURCES
     instance/generic_instance_value.cpp
     instance/generic_instance_value.hpp
     instance/instance_value.cpp
+    instance/int_alias.hpp
+    instance/instance_members_alias.hpp
+    instance/simple_unnamed_instance.cpp
+    instance/simple_unnamed_instance.hpp
+    instance/complex_unnamed_instance.cpp
+    instance/complex_unnamed_instance.hpp
 
     onp/id_access.cpp
     onp/id_access.hpp

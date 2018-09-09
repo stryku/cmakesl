@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/string.hpp"
-#include "exec/instance/unnamed_instance.hpp"
+#include "exec/instance/instance.hpp"
 
 #include <unordered_map>
 

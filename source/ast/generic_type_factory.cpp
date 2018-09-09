@@ -35,7 +35,7 @@ namespace cmsl
             // push_back(val)
             {
                 fundamental_function::params_declaration_t params{
-                    parameter_declaration{ &value_type, lexer::token::token{ lexer::token::token_type::identifier} }
+                    parameter_declaration{ &value_type, lexer::token::token{ lexer::token::token_type::identifier } }
                 };
 
                 auto fun = std::make_unique<fundamental_function>(fun_kind_t::push_back, std::move(params));
