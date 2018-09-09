@@ -1,6 +1,8 @@
 #pragma once
 
+#include "common/assert.hpp"
 #include "common/type_traits.hpp"
+#include "exec/instance/instance.hpp"
 #include "exec/instance/instance_value.hpp"
 
 namespace cmsl

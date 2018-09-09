@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/string.hpp"
+#include "exec/instance/instance_members_alias.hpp"
 #include "exec/instance/instance_value.hpp"
 
 #include <memory>
@@ -27,6 +28,7 @@ namespace cmsl
                 explicit instance_factory(const ast::ast_context &ast_ctx, execution_context &exec_ctx);
 
                 std::unique_ptr<instance> create(instance_value_t value) const;
+                std::unique_ptr<instance> create(const ast::type& type, instance_members_t members) const;
                 std::unique_ptr<instance> create(cmsl::string_view name) const;
                 std::unique_ptr<instance> create(cmsl::string_view name, instance_value_t value) const;
                 std::unique_ptr<instance> create(const ast::type& type) const;
