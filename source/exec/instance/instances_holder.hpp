@@ -20,7 +20,7 @@ namespace cmsl
         namespace inst
         {
             class instance;
-            class instance_factory;
+            class contexted_instance_factory;
 
             // class used to handle lifetime of 'rvalue' instances created during full expression execution
             class instances_holder
@@ -37,7 +37,7 @@ namespace cmsl
                 std::unique_ptr<instance> gather_ownership(inst::instance* instance_ptr);
 
             private:
-                inst::instance_factory get_factory();
+                contexted_instance_factory get_factory();
 
             private:
                 context_provider& m_ctx_provider;
