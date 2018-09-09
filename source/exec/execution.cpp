@@ -185,18 +185,34 @@ namespace cmsl
                     case ff_kind_t::size:
                     {
                         return size_visitor{}.visit(val);
-                    };
+                    }
                     case ff_kind_t::empty:
                     {
                         return empty_visitor{}.visit(val);
-                    };
+                    }
                     case ff_kind_t::push_back:
                     {
                         const auto param = parameters[0];
                         auto visitor = push_back_visitor{ *param };
                         visitor.visit(val);
                         return true;
-                    };
+                    }
+                    case ff_kind_t::version_ctor:
+                    {
+                        const auto major = parameters[0];
+                        const auto minor = parameters[1];
+                        const auto patch = parameters[2];
+                        const auto tweak = parameters[3];
+
+                        inst::instance::members_t
+
+                        return inst::version {
+                                boost::get<inst::int_t>(major->get_value()),
+                                boost::get<inst::int_t>(minor->get_value()),
+                                boost::get<inst::int_t>(patch->get_value()),
+                                boost::get<inst::int_t>(tweak->get_value()),
+                        };
+                    }
                 }
             }
         }

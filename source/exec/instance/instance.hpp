@@ -22,6 +22,8 @@ namespace cmsl
             class instance
             {
             public:
+                using members_t = string_view_map<std::unique_ptr<instance>>;
+
                 enum class kind
                 {
                     builtin,

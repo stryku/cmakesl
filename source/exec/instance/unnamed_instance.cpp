@@ -87,9 +87,7 @@ namespace cmsl
 
             instance *unnamed_instance::get_member(cmsl::string_view name)
             {
-                expect_user();
                 auto &members = boost::get<members_t>(m_data);
-
                 auto found = members.find(name);
 
                 return found != std::end(members)
@@ -123,6 +121,7 @@ namespace cmsl
                     case ast::type_kind::k_int: return int_t{};
                     case ast::type_kind::k_double: return double{};
                     case ast::type_kind::k_string: return std::string{};
+                    case ast::type_kind::k_version: return version{};
                     case ast::type_kind ::k_list: return get_init_list_data();
                 }
 

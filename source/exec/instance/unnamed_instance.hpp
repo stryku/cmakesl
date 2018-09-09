@@ -12,7 +12,6 @@ namespace cmsl
             class unnamed_instance : public instance
             {
             private:
-                using members_t = string_view_map<std::unique_ptr<instance>>;
                 using data_t = boost::variant<members_t, instance_value_t>;
 
             public:

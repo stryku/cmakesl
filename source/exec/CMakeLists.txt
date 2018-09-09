@@ -28,6 +28,9 @@ set(EXEC_SOURCES
     instance/generic_instance_value.cpp
     instance/generic_instance_value.hpp
     instance/instance_value.cpp
+    instance/version.hpp
+    instance/int_alias.hpp
+    instance/version.cpp
 
     onp/id_access.cpp
     onp/id_access.hpp
