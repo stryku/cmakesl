@@ -4,6 +4,14 @@
 
 namespace cmsl
 {
+    namespace lexer
+    {
+        namespace token
+        {
+            class token;
+        }
+    }
+
     namespace ast
     {
         class builtin_ast_context : public ast_context
@@ -13,6 +21,9 @@ namespace cmsl
 
         private:
             void add_string_type();
+            void add_version_type();
+
+            lexer::token::token fake_name_token() const;
         };
     }
 }
