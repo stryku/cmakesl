@@ -21,6 +21,14 @@ namespace cmsl
                 return ptr;
             }
 
+            inst::instance *instances_holder::create(const ast::type& type, instance_members_t members)
+            {
+                auto inst = get_factory().create(type, std::move(members));
+                auto ptr = inst.get();
+                m_instances.emplace_back(std::move(inst));
+                return ptr;
+            }
+
             instance_factory instances_holder::get_factory()
             {
                 return instance_factory{ m_ctx_provider.get_ast_ctx(),

@@ -2,6 +2,7 @@
 
 #include "ast/type.hpp"
 #include "exec/instance/instance.hpp"
+#include "exec/instance/instance_members_alias.hpp"
 
 namespace cmsl
 {
@@ -12,13 +13,13 @@ namespace cmsl
             class unnamed_instance : public instance
             {
             private:
-                using data_t = boost::variant<members_t, instance_value_t>;
+                using data_t = boost::variant<instance_members_t, instance_value_t>;
 
             public:
                 explicit unnamed_instance(const ast::type &type);
                 explicit unnamed_instance(kind k, const ast::type &type);
                 explicit unnamed_instance(const ast::type &type, instance_value_t value);
-                explicit unnamed_instance(const ast::type &type, members_t members);
+                explicit unnamed_instance(const ast::type &type, instance_members_t members);
                 virtual ~unnamed_instance() {}
 
                 instance_value_t get_value() const override;
@@ -36,15 +37,15 @@ namespace cmsl
                 data_t get_init_data() const;
                 data_t get_builtin_init_data() const;
                 data_t get_init_data(instance_value_t val) const;
-                data_t get_init_data(members_t m_members) const;
+                data_t get_init_data(instance_members_t m_members) const;
                 data_t get_init_list_data() const;
 
                 // todo rename to builtin
                 void expect_fundamental() const;
                 void expect_user() const;
 
-                members_t copy_members() const;
-                members_t create_init_members() const;
+                instance_members_t copy_members() const;
+                instance_members_t create_init_members() const;
 
             private:
                 kind m_kind;

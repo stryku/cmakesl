@@ -27,7 +27,7 @@ namespace cmsl
                 , m_data{ get_init_data(value) }
             {}
 
-            unnamed_instance::unnamed_instance(const ast::type &type, members_t members)
+            unnamed_instance::unnamed_instance(const ast::type &type, instance_members_t members)
                 : m_kind{ kind::user }
                 , m_type{ type }
                 , m_data{ get_init_data(std::move(members)) }
@@ -51,7 +51,7 @@ namespace cmsl
                 return val;
             }
 
-            unnamed_instance::data_t unnamed_instance::get_init_data(members_t members) const
+            unnamed_instance::data_t unnamed_instance::get_init_data(instance_members_t members) const
             {
                 return std::move(members);
             }
@@ -87,7 +87,7 @@ namespace cmsl
 
             instance *unnamed_instance::get_member(cmsl::string_view name)
             {
-                auto &members = boost::get<members_t>(m_data);
+                auto &members = boost::get<instance_members_t>(m_data);
                 auto found = members.find(name);
 
                 return found != std::end(members)
@@ -128,10 +128,10 @@ namespace cmsl
                 CMSL_UNREACHABLE("Unknown builtin type kind");
             }
 
-            unnamed_instance::members_t unnamed_instance::copy_members() const
+            instance_members_t unnamed_instance::copy_members() const
             {
-                members_t m;
-                const auto &members = boost::get<members_t>(m_data);
+                instance_members_t m;
+                const auto &members = boost::get<instance_members_t>(m_data);
 
                 std::transform(std::cbegin(members), std::cend(members),
                                std::inserter(m, m.end()),
@@ -144,11 +144,11 @@ namespace cmsl
                 return std::move(m);
             }
 
-            unnamed_instance::members_t unnamed_instance::create_init_members() const
+            instance_members_t unnamed_instance::create_init_members() const
             {
                 expect_user();
 
-                members_t members;
+                instance_members_t members;
 
                 const auto& class_type = dynamic_cast<const ast::class_type&>(m_type);
                 const auto& members_decl = class_type.get_members_decl();

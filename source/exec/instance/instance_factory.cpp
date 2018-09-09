@@ -78,6 +78,11 @@ namespace cmsl
             {
                 return std::make_unique<unnamed_instance>(type);
             }
+
+            std::unique_ptr<instance> instance_factory::create(const ast::type& type, instance_members_t members) const
+            {
+                return std::make_unique<unnamed_instance>(type, std::move(members));
+            }
         }
     }
 }

@@ -4,7 +4,9 @@ set(EXEC_SOURCES
     execution.hpp
     execution_context.cpp
     execution_context.hpp
-    fundamental_function_visitors.hpp
+    builtin_function_visitors.hpp
+    builtin_member_function_caller.cpp
+    builtin_member_function_caller.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
     scope_context.cpp
@@ -55,7 +57,7 @@ set(EXEC_SOURCES
     stmt/statement.hpp
     stmt/while_statement.cpp
     stmt/while_statement.hpp
-)
+        instance/instance_members_alias.hpp)
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR})
