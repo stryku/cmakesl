@@ -1,7 +1,7 @@
 #pragma once
 
+#include "exec/instance/int_alias.hpp"
 #include "exec/instance/generic_instance_value.hpp"
-#include "exec/instance/version.hpp"
 
 namespace cmsl
 {
@@ -17,7 +17,6 @@ namespace cmsl
                 int_,
                 double_,
                 string,
-                version,
 
                 generic
             };
@@ -27,7 +26,6 @@ namespace cmsl
                                                     int_t,
                                                     double,
                                                     std::string,
-                                                    version,
                                                     generic_instance_value>;
 
             instance_value_type get_inst_val_type(const instance_value_t& i);

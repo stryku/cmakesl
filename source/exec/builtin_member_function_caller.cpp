@@ -22,21 +22,23 @@ namespace cmsl
 
             if(auto fun = dynamic_cast<const ast::fundamental_function*>(fun_ptr))
             {
-                auto& val = class_instance->get_value_ref();
                 switch(fun->get_fundamental_fun_kind())
                 {
                     case ff_kind_t::size:
                     {
+                        auto& val = class_instance->get_value_ref();
                         const auto result = size_visitor{}.visit(val);
                         return m_instances.create(result);
                     }
                     case ff_kind_t::empty:
                     {
+                        auto& val = class_instance->get_value_ref();
                         const auto result = empty_visitor{}.visit(val);
                         return m_instances.create(result);
                     }
                     case ff_kind_t::push_back:
                     {
+                        auto& val = class_instance->get_value_ref();
                         const auto param = parameters[0];
                         auto visitor = push_back_visitor{ *param };
                         visitor.visit(val);

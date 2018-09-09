@@ -69,5 +69,14 @@ namespace cmsl
         {
             return m_kind == type_kind::k_user;
         }
+
+        bool type::is_complex() const
+        {
+            const auto builtin_complex_type_kinds = {
+                    type_kind::k_version
+            };
+
+            return is_user() || contains(builtin_complex_type_kinds, m_kind);
+        }
     }
 }
