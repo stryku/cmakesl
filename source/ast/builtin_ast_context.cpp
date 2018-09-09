@@ -15,10 +15,16 @@ namespace cmsl
         builtin_ast_context::builtin_ast_context()
             : ast_context{ nullptr }
         {
+            add_types();
+            add_functions();
+        }
+
+        void builtin_ast_context::add_types()
+        {
             const auto builtin_types_kind = {
-                std::make_pair("int", type_kind::k_int),
-                std::make_pair("double", type_kind::k_double),
-                std::make_pair("bool", type_kind::k_bool)
+                    std::make_pair("int", type_kind::k_int),
+                    std::make_pair("double", type_kind::k_double),
+                    std::make_pair("bool", type_kind::k_bool)
             };
 
             for (const auto pair : builtin_types_kind)
@@ -92,6 +98,24 @@ namespace cmsl
         {
             return lexer::token::token{ lexer::token::token_type::identifier };
         }
+
+        void builtin_ast_context::add_functions()
+        {
+            add_cmake_minimum_required();
+        }
+
+        void builtin_ast_context::add_cmake_minimum_required()
+        {
+            const auto version_type = find_type("version");
+
+            fundamental_function::params_declaration_t params{
+                    parameter_declaration{ version_type, fake_name_token() } // version
+            };
+
+            auto fun = std::make_unique<fundamental_function>(ff_kind_t::cmake_minimum_required,
+                                                              std::move(params));
+
+            add_function(std::move(fun));
+        }
     }
 }
-

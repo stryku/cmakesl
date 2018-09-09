@@ -15,7 +15,9 @@ namespace cmsl
                 empty,
                 push_back,
 
-                version_ctor
+                version_ctor,
+
+                cmake_minimum_required
             };
 
             explicit fundamental_function(fundamental_function_kind k, params_declaration_t params_declaration)
