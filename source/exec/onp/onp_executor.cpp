@@ -15,7 +15,7 @@ namespace cmsl
                 : m_tokens{ onp_tokens }
                 , m_exec{ e }
                 , m_instances{ m_exec }
-                ,m_builtin_member_fun_caller{ m_instances }
+                ,m_builtin_fun_caller{ m_instances }
             {}
 
             std::unique_ptr<inst::instance> onp_executor::execute()
@@ -114,7 +114,7 @@ namespace cmsl
                 {
                     const auto& fun = *class_instance->get_function(name);
                     auto params = prepare_parameters_for_call(fun);
-                    return m_builtin_member_fun_caller.call(class_instance, name, std::move(params));
+                    return m_builtin_fun_caller.call_member_function(class_instance, name, std::move(params));
                 }
                 else
                 {
