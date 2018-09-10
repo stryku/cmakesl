@@ -52,18 +52,13 @@ set(CMAKESL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 
 include_directories(facade)
-
+add_subdirectory(facade)
 add_subdirectory(source)
-<<<<<<< HEAD
-enable_testing()
-add_subdirectory(test)
-||||||| parent of c92bf4b... made tests building optional
-add_subdirectory(test)
-=======
 
 if(CMAKESL_WITH_TESTS)
+    enable_testing()
     add_subdirectory(test)
 endif()
->>>>>>> c92bf4b... made tests building optional
+
 add_subdirectory(playground)
 
