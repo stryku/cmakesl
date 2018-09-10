@@ -667,7 +667,7 @@ namespace cmsl
                 return boost::none;
             }
 
-            return member_declaration{ type, *name, std::move(init) };
+            return member_declaration{ type, name->str(), std::move(init) };
         }
 
         std::unique_ptr<class_node> parser::try_get_class_node(ast_context& ctx)

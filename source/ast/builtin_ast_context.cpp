@@ -13,10 +13,16 @@ namespace cmsl
         builtin_ast_context::builtin_ast_context()
             : ast_context{ nullptr }
         {
+            add_types();
+            add_functions();
+        }
+
+        void builtin_ast_context::add_types()
+        {
             const auto builtin_types_kind = {
-                std::make_pair("int", type_kind::k_int),
-                std::make_pair("double", type_kind::k_double),
-                std::make_pair("bool", type_kind::k_bool)
+                    std::make_pair("int", type_kind::k_int),
+                    std::make_pair("double", type_kind::k_double),
+                    std::make_pair("bool", type_kind::k_bool)
             };
 
             for (const auto pair : builtin_types_kind)
@@ -25,6 +31,7 @@ namespace cmsl
             }
 
             add_string_type();
+            add_version_type();
         }
 
         void builtin_ast_context::add_string_type()
@@ -32,8 +39,8 @@ namespace cmsl
             class_builder builder{ *this, "string" };
 
             const auto string_functions = {
-                fundamental_function::fundamental_function_kind::size,
-                fundamental_function::fundamental_function_kind::empty
+                builtin_function_kind::size,
+                builtin_function_kind::empty
             };
 
             for(const auto fun_kind : string_functions)
@@ -47,6 +54,66 @@ namespace cmsl
 
             add_type(std::move(string_type));
         }
+
+        void builtin_ast_context::add_version_type()
+        {
+            class_builder builder{ *this, "version" };
+
+            const auto int_type = find_type("int");
+
+            const auto member_names = {
+                "major",
+                "minor",
+                "patch",
+                "tweak"
+            };
+
+            for(const auto member_name : member_names)
+            {
+                auto member = member_declaration{int_type, member_name};
+                builder.with_member(std::move(member));
+            }
+
+            fundamental_function::params_declaration_t params{
+                    parameter_declaration{ int_type, fake_name_token() }, // major
+                    parameter_declaration{ int_type, fake_name_token() }, // minor
+                    parameter_declaration{ int_type, fake_name_token() }, // patch
+                    parameter_declaration{ int_type, fake_name_token() }  // tweak
+            };
+
+            auto fun = std::make_unique<fundamental_function>(builtin_function_kind ::version_ctor,
+                                                              std::move(params));
+
+            builder.with_function(std::move(fun));
+
+            auto node = builder.build();
+            auto version_type = std::make_unique<class_type>(std::move(node), type_kind::k_version);
+
+            add_type(std::move(version_type));
+        }
+
+        lexer::token::token builtin_ast_context::fake_name_token() const
+        {
+            return lexer::token::token{ lexer::token::token_type::identifier };
+        }
+
+        void builtin_ast_context::add_functions()
+        {
+            add_cmake_minimum_required();
+        }
+
+        void builtin_ast_context::add_cmake_minimum_required()
+        {
+            const auto version_type = find_type("version");
+
+            fundamental_function::params_declaration_t params{
+                    parameter_declaration{ version_type, fake_name_token() } // version
+            };
+
+            auto fun = std::make_unique<fundamental_function>(builtin_function_kind::cmake_minimum_required,
+                                                              std::move(params));
+
+            add_function(std::move(fun));
+        }
     }
 }
-

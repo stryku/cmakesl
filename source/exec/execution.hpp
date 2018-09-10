@@ -32,9 +32,6 @@ namespace cmsl
 
             void function_call(const ast::user_function_node& fun, std::vector<inst::instance*> parameters);
             void member_function_call(const ast::user_function_node& fun, std::vector<inst::instance*> parameters, inst::instance* class_instance);
-            inst::instance_value_t fundamental_member_function_call(inst::instance* class_instance,
-                                                                    cmsl::string_view fun_name,
-                                                                    std::vector<inst::instance*> parameters = {});
 
             void block(const ast::block_node& block_node);
 

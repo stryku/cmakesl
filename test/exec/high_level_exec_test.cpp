@@ -186,6 +186,19 @@ namespace cmsl
                 const auto result = source_executor_t{}.execute(source);
                 ASSERT_THAT(result, 4);
             }
+
+            TEST(Exec, VersionCreation)
+            {
+                const auto source =
+                    "int main()"
+                    "{"
+                    "    version v = version(1, 2, 3, 4);"
+                    "    return v.major + v.minor + v.patch + v.tweak;"
+                    "}";
+
+                const auto result = source_executor_t{}.execute(source);
+                ASSERT_THAT(result, 10);
+            }
         }
     }
 }

@@ -16,7 +16,6 @@
 #include "exec/instance/instance_converter.hpp"
 #include "exec/instance/instances_holder.hpp"
 
-#include "exec/fundamental_function_visitors.hpp"
 #include "exec/stmt/return_statement.hpp"
 #include "exec/stmt/declaration_statement.hpp"
 #include "exec/stmt/if_else_statement.hpp"
@@ -167,38 +166,6 @@ namespace cmsl
         bool execution::returning_from_function() const
         {
             return m_function_return_value.get() != nullptr;
-        }
-
-        inst::instance_value_t execution::fundamental_member_function_call(inst::instance *class_instance,
-                                                                           cmsl::string_view fun_name,
-                                                                           std::vector<inst::instance*> parameters)
-        {
-            const auto fun_ptr = class_instance->get_function(fun_name);
-
-            using ff_kind_t = ast::fundamental_function::fundamental_function_kind;
-
-            if(auto fun = dynamic_cast<const ast::fundamental_function*>(fun_ptr))
-            {
-                auto& val = class_instance->get_value_ref();
-                switch(fun->get_fundamental_fun_kind())
-                {
-                    case ff_kind_t::size:
-                    {
-                        return size_visitor{}.visit(val);
-                    };
-                    case ff_kind_t::empty:
-                    {
-                        return empty_visitor{}.visit(val);
-                    };
-                    case ff_kind_t::push_back:
-                    {
-                        const auto param = parameters[0];
-                        auto visitor = push_back_visitor{ *param };
-                        visitor.visit(val);
-                        return true;
-                    };
-                }
-            }
         }
 
         const ast::type& execution::get_current_function_return_type() const

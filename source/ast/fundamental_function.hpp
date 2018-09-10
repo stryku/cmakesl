@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast/function.hpp"
+#include "ast/builtin_function_kind.hpp"
 
 namespace cmsl
 {
@@ -9,14 +10,7 @@ namespace cmsl
         class fundamental_function : public function
         {
         public:
-            enum class fundamental_function_kind
-            {
-                size,
-                empty,
-                push_back
-            };
-
-            explicit fundamental_function(fundamental_function_kind k, params_declaration_t params_declaration)
+            explicit fundamental_function(builtin_function_kind k, params_declaration_t params_declaration)
                 : m_kind{ k }
                 , m_params_declaration{ std::move(params_declaration) }
             {}
@@ -25,13 +19,14 @@ namespace cmsl
             {
                 switch(m_kind)
                 {
-                    case fundamental_function_kind::size: return "size";
-                    case fundamental_function_kind::empty: return "empty";
-                    case fundamental_function_kind::push_back: return "push_back";
+                    case builtin_function_kind::size: return "size";
+                    case builtin_function_kind::empty: return "empty";
+                    case builtin_function_kind::push_back: return "push_back";
+                    case builtin_function_kind::version_ctor: return "version";
                 }
             }
 
-            fundamental_function_kind get_fundamental_fun_kind() const
+            builtin_function_kind get_fundamental_fun_kind() const
             {
                 return m_kind;
             }
@@ -42,7 +37,7 @@ namespace cmsl
             }
 
         private:
-            fundamental_function_kind m_kind;
+            builtin_function_kind m_kind;
             params_declaration_t m_params_declaration;
         };
     }
