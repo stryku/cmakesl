@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/builtin_function_kind.hpp"
 #include "common/string.hpp"
 
 #include <vector>
@@ -20,18 +21,24 @@ namespace cmsl
         }
 
         // Class to call member functions on builtin types. e.g. int::to_string().
-        class builtin_member_function_caller
+        class builtin_function_caller
         {
-        public:
-            explicit builtin_member_function_caller(inst::instances_holder& instances);
+        private:
+            using ff_kind_t = ast::builtin_function_kind;
 
-            inst::instance* call(inst::instance* class_instance,
-                                 cmsl::string_view fun_name,
-                                 std::vector<inst::instance*> parameters);
+        public:
+            explicit builtin_function_caller(inst::instances_holder& instances);
+
+            inst::instance* call_member_function(inst::instance *class_instance,
+                                                 cmsl::string_view fun_name,
+                                                 std::vector<inst::instance *> parameters);
+
+            inst::instance* call(ff_kind_t fun, std::vector<inst::instance *> parameters);
 
         private:
             inst::instance* call_push_back(inst::instance* class_instance, std::vector<inst::instance*> parameters);
             inst::instance* call_version_ctor(const ast::type& type, std::vector<inst::instance*> parameters);
+            inst::instance* call_cmake_minimum_required(std::vector<inst::instance*> parameters);
 
         private:
             inst::instances_holder& m_instances;

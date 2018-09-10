@@ -5,7 +5,7 @@
 #include "exec/instance/instance_value.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/onp/id_access.hpp"
-#include "exec/builtin_member_function_caller.hpp"
+#include "exec/builtin_function_caller.hpp"
 
 #include <boost/variant.hpp>
 
@@ -71,7 +71,7 @@ namespace cmsl
                 execution& m_exec;
                 std::stack<stack_entry_t> m_stack;
                 inst::instances_holder m_instances;
-                builtin_member_function_caller m_builtin_member_fun_caller;
+                builtin_function_caller m_builtin_fun_caller;
             };
         }
     }

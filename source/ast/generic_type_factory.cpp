@@ -18,11 +18,10 @@ namespace cmsl
         {
             auto ctx = std::make_unique<ast_context>(&parent) ;
 
-            using fun_kind_t = fundamental_function::fundamental_function_kind;
 
             const auto function_kinds = {
-                fun_kind_t::size,
-                fun_kind_t::empty
+                builtin_function_kind::size,
+                builtin_function_kind::empty
             };
 
             for(const auto kind : function_kinds)
@@ -38,7 +37,7 @@ namespace cmsl
                     parameter_declaration{ &value_type, lexer::token::token{ lexer::token::token_type::identifier } }
                 };
 
-                auto fun = std::make_unique<fundamental_function>(fun_kind_t::push_back, std::move(params));
+                auto fun = std::make_unique<fundamental_function>(builtin_function_kind::push_back, std::move(params));
                 ctx->add_function(std::move(fun));
             }
 

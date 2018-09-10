@@ -10,8 +10,6 @@ namespace cmsl
 {
     namespace ast
     {
-        using ff_kind_t = fundamental_function::fundamental_function_kind;
-
         builtin_ast_context::builtin_ast_context()
             : ast_context{ nullptr }
         {
@@ -41,8 +39,8 @@ namespace cmsl
             class_builder builder{ *this, "string" };
 
             const auto string_functions = {
-                ff_kind_t::size,
-                ff_kind_t::empty
+                builtin_function_kind::size,
+                builtin_function_kind::empty
             };
 
             for(const auto fun_kind : string_functions)
@@ -83,7 +81,7 @@ namespace cmsl
                     parameter_declaration{ int_type, fake_name_token() }  // tweak
             };
 
-            auto fun = std::make_unique<fundamental_function>(ff_kind_t::version_ctor,
+            auto fun = std::make_unique<fundamental_function>(builtin_function_kind ::version_ctor,
                                                               std::move(params));
 
             builder.with_function(std::move(fun));
@@ -112,7 +110,7 @@ namespace cmsl
                     parameter_declaration{ version_type, fake_name_token() } // version
             };
 
-            auto fun = std::make_unique<fundamental_function>(ff_kind_t::cmake_minimum_required,
+            auto fun = std::make_unique<fundamental_function>(builtin_function_kind::cmake_minimum_required,
                                                               std::move(params));
 
             add_function(std::move(fun));
