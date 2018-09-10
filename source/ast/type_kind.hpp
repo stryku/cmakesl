@@ -13,6 +13,7 @@ namespace cmsl
             k_bool,
             k_string,
             k_list,
+            k_version,
 
             k_user
         };

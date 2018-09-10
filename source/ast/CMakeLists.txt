@@ -51,7 +51,7 @@ set(AST_SOURCES
     list_type.cpp
     list_type.hpp
     generic_type_factory.hpp
-        generic_type_factory.cpp)
+        generic_type_factory.cpp builtin_function_kind.hpp)
 
 add_library(ast ${AST_SOURCES})
 target_include_directories(ast PRIVATE ${CMAKESL_SOURCES_DIR})

@@ -28,6 +28,7 @@ namespace cmsl
             bool is_generic() const;
             bool is_builtin() const;
             bool is_user() const;
+            bool is_complex() const;
 
             std::string get_name() const;
 
