@@ -58,7 +58,7 @@ set(EXEC_SOURCES
     stmt/statement.hpp
     stmt/while_statement.cpp
     stmt/while_statement.hpp
-)
+        infix/infix_expression.hpp)
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR})
