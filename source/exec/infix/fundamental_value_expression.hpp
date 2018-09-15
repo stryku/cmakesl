@@ -14,10 +14,40 @@ namespace cmsl
             public:
                 explicit fundamental_value_expression(lexer::token::token token);
 
-                inst::instance* evaluate(infix_evaluation_context& ctx) const override;
-
-            private:
+            protected:
                 const lexer::token::token m_token;
+            };
+
+            class bool_value_expression : public fundamental_value_expression
+            {
+            public:
+                explicit bool_value_expression(lexer::token::token token);
+
+                inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+            };
+
+            class int_value_expression : public fundamental_value_expression
+            {
+            public:
+                explicit int_value_expression(lexer::token::token token);
+
+                inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+            };
+
+            class double_value_expression : public fundamental_value_expression
+            {
+            public:
+                explicit double_value_expression(lexer::token::token token);
+
+                inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+            };
+
+            class string_value_expression : public fundamental_value_expression
+            {
+            public:
+                explicit string_value_expression(lexer::token::token token);
+
+                inst::instance* evaluate(infix_evaluation_context& ctx) const override;
             };
         }
     }

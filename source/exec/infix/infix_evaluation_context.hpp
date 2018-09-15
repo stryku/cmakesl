@@ -2,14 +2,9 @@
 
 namespace cmsl
 {
-    namespace ast
-    {
-        class ast_context;
-    }
-
     namespace exec
     {
-        class execution_context;
+        class context_provider;
 
         namespace inst
         {
@@ -20,8 +15,7 @@ namespace cmsl
         {
             struct infix_evaluation_context
             {
-                const ast::ast_context& ast_ctx;
-                ast::ast_context& exec_ctx;
+                context_provider& m_ctx_provider;
                 inst::instances_holder& instances;
             };
         }

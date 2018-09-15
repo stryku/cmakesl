@@ -145,8 +145,14 @@ namespace cmsl
 
 
             token_t token_undef() { return token_t{ token_type_t::undef }; }
-            token_t token_real() { return token_t{ token_type_t::double_ }; }
-            token_t token_string() { return token_t{ token_type_t::string }; }
+            token_t token_double(cmsl::string_view str)
+            {
+                return details::token_from_source(token_type_t::double_, str);
+            }
+            token_t token_string(cmsl::string_view str)
+            {
+                return details::token_from_source(token_type_t::string, str);
+            }
             token_t token_integer(cmsl::string_view str)
             { 
                 return details::token_from_source(token_type_t::integer, str);

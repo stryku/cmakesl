@@ -12,7 +12,7 @@ namespace cmsl
 
             token_t token_undef();
             token_t token_integer(cmsl::string_view str = "");
-            token_t token_real();
+            token_t token_double(cmsl::string_view str = "");
             token_t token_dot();
             token_t token_open_brace();
             token_t token_close_brace();
@@ -45,7 +45,7 @@ namespace cmsl
             token_t token_exclaimequal();
             token_t token_xor();
             token_t token_xorequal();
-            token_t token_string();
+            token_t token_string(cmsl::string_view str);
             token_t token_semicolon();
             token_t token_comma();
             token_t token_less();
