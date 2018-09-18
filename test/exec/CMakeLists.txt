@@ -7,7 +7,7 @@ set(SOURCES
     test_context_provider.hpp
     high_level_exec_test.cpp
     builtin_type_default_constructor.cpp
-        fundamental_value_expression_test.cpp)
+        fundamental_value_expression_test.cpp binary_operator_expression_test.cpp eval/ExpressionEvaluationTest.hpp)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 

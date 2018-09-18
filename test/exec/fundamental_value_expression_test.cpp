@@ -1,12 +1,6 @@
-#include <gmock/gmock.h>
+#include "test/exec/eval/ExpressionEvaluationTest.hpp"
 
-#include "ast/builtin_ast_context.hpp"
 #include "exec/infix/fundamental_value_expression.hpp"
-#include "exec/infix/infix_evaluation_context.hpp"
-#include "exec/execution_context.hpp"
-#include "exec/instance/instances_holder.hpp"
-#include "exec/context_provider.hpp"
-#include "exec/instance/instance.hpp"
 
 #include "test/common/tokens.hpp"
 
@@ -25,34 +19,7 @@ namespace cmsl
 
                 namespace fundamental_value_expression
                 {
-                    class context_provider : public cmsl::exec::context_provider
-                    {
-                    public:
-                        const ast::ast_context& get_ast_ctx() const
-                        {
-                            return m_ast_ctx;
-                        }
-
-                        cmsl::exec::execution_context& get_exec_ctx()
-                        {
-                            return m_exec_ctx;
-                        }
-
-                    private:
-                        cmsl::ast::builtin_ast_context m_ast_ctx;
-                        cmsl::exec::execution_context m_exec_ctx;
-                    };
-
-                    class FundamentalValueExpression : public testing::Test
-                    {
-                    protected:
-                        context_provider m_ctx_provider;
-                        cmsl::exec::inst::instances_holder m_instances{ m_ctx_provider };
-                        cmsl::exec::infix::infix_evaluation_context m_eval_ctx{
-                            m_ctx_provider,
-                            m_instances
-                        };
-                    };
+                    using FundamentalValueExpression = ExpressionEvaluationTest;
 
                     TEST_F(FundamentalValueExpression, Evaluate_BoolToken_GetBool)
                     {
@@ -77,7 +44,6 @@ namespace cmsl
                         }
                     }
 
-
                     TEST_F(FundamentalValueExpression, Evaluate_IntToken_GetInt)
                     {
                         using expr_t = cmsl::exec::infix::int_value_expression;
@@ -89,7 +55,6 @@ namespace cmsl
                         ASSERT_THAT(int_result, Eq(cmsl::exec::inst::int_t{ 123 }));
                     }
 
-
                     TEST_F(FundamentalValueExpression, Evaluate_DoubleToken_GetDouble)
                     {
                         using expr_t = cmsl::exec::infix::double_value_expression;
@@ -100,7 +65,6 @@ namespace cmsl
 
                         ASSERT_THAT(double_result, DoubleEq(123.456));
                     }
-
 
                     TEST_F(FundamentalValueExpression, Evaluate_StringToken_GetString)
                     {
