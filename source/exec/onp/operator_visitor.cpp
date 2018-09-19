@@ -223,13 +223,13 @@ namespace cmsl
                     case token_type_t::greater:
                     case token_type_t::greaterequal:
                     {
-                        auto visitor = comparison_operator_evaluation_visitor{ op };
+                        auto visitor = relation_operator_evaluation_visitor{ op };
                         return visitor.visit(lhs_val, rhs_val);
                     }
 
                     case token_type_t::equalequal:
                     {
-                        auto visitor = equalequal_operator_evaluation_visitor{};
+                        auto visitor = comparison_operator_evaluation_visitor{ op };
                         return visitor.visit(lhs_val, rhs_val);
                     }
 
