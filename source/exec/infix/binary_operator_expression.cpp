@@ -66,19 +66,19 @@ namespace cmsl
                         return visitor.visit(lhs_val, rhs_val);
                     }
 
-                    case token_type_t::exclaimequal:
                     case token_type_t::less:
                     case token_type_t::lessequal:
                     case token_type_t::greater:
                     case token_type_t::greaterequal:
                     {
-                        auto visitor = onp::comparison_operator_evaluation_visitor{ op };
+                        auto visitor = onp::relation_operator_evaluation_visitor{ op };
                         return visitor.visit(lhs_val, rhs_val);
                     }
 
                     case token_type_t::equalequal:
+                    case token_type_t::exclaimequal:
                     {
-                        auto visitor = onp::equalequal_operator_evaluation_visitor{};
+                        auto visitor = onp::comparison_operator_evaluation_visitor{ op };
                         return visitor.visit(lhs_val, rhs_val);
                     }
 

@@ -32,7 +32,8 @@ namespace cmsl
                     cmsl::exec::execution_context m_exec_ctx;
                 };
 
-                class ExpressionEvaluationTest : public testing::Test
+                template <typename T>
+                class ExpressionEvaluationTest : public T
                 {
                 protected:
                     context_provider m_ctx_provider;

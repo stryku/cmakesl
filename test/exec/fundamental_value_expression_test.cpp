@@ -19,7 +19,7 @@ namespace cmsl
 
                 namespace fundamental_value_expression
                 {
-                    using FundamentalValueExpression = ExpressionEvaluationTest;
+                    using FundamentalValueExpression = ExpressionEvaluationTest<testing::Test>;
 
                     TEST_F(FundamentalValueExpression, Evaluate_BoolToken_GetBool)
                     {
