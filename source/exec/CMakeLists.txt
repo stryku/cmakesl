@@ -20,6 +20,8 @@ set(EXEC_SOURCES
     infix/infix_evaluation_context.hpp
     infix/binary_operator_expression.cpp
     infix/binary_operator_expression.hpp
+    infix/class_member_access_expression.cpp
+    infix/class_member_access_expression.hpp
     infix/id_expression.cpp
     infix/id_expression.hpp
 
