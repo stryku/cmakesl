@@ -5,14 +5,23 @@ set(EXEC_SOURCES
     execution_context.cpp
     execution_context.hpp
     builtin_function_visitors.hpp
-        builtin_function_caller.cpp
-        builtin_function_caller.hpp
+    builtin_function_caller.cpp
+    builtin_function_caller.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
     scope_context.cpp
     scope_context.hpp
     source_executor.cpp
     source_executor.hpp
+
+    infix/infix_expression.hpp
+    infix/fundamental_value_expression.cpp
+    infix/fundamental_value_expression.hpp
+    infix/infix_evaluation_context.hpp
+    infix/binary_operator_expression.cpp
+    infix/binary_operator_expression.hpp
+    infix/id_expression.cpp
+    infix/id_expression.hpp
 
     instance/conversion_visitor.hpp
     instance/instance.hpp
@@ -58,7 +67,7 @@ set(EXEC_SOURCES
     stmt/statement.hpp
     stmt/while_statement.cpp
     stmt/while_statement.hpp
-        infix/infix_expression.hpp infix/fundamental_value_expression.cpp infix/fundamental_value_expression.hpp infix/infix_evaluation_context.hpp infix/binary_operator_expression.cpp infix/binary_operator_expression.hpp)
+)
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR})
