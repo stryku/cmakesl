@@ -34,12 +34,14 @@ namespace cmsl
                         const auto value = 3.4;
                         auto instance = std::make_unique<inst_t>(*m_ctx_provider.get_ast_ctx().find_type("int"),
                                                                  value);
+                        auto instance_ptr = instance.get();
 
                         m_ctx_provider.get_exec_ctx().enter_scope();
                         m_ctx_provider.get_exec_ctx().add_variable(name, std::move(instance));
                         auto expr = std::make_unique<expr_t>(token_identifier(name));
                         auto result = expr->evaluate(m_eval_ctx);
                         EXPECT_THAT(result, NotNull());
+                        EXPECT_THAT(result, Eq(instance_ptr));
                         EXPECT_THAT(result_val<double>(result), DoubleEq(value));
                     }
                 }
