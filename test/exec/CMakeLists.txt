@@ -10,7 +10,7 @@ set(SOURCES
         fundamental_value_expression_test.cpp
         binary_operator_expression_test.cpp
         eval/ExpressionEvaluationTest.hpp
-        )
+        id_expression_test.cpp)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 

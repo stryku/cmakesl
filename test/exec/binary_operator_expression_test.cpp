@@ -37,23 +37,6 @@ namespace cmsl
                             auto rhs = std::make_unique<expr_t>(token_integer(rhs_str));
                             return std::make_unique<bin_op_expr_t>(std::move(lhs), op, std::move(rhs));
                         }
-
-                        template <typename T>
-                        T result_val(instance_t* result)
-                        {
-                            auto result_val = result->get_value();
-                            return boost::get<T>(result_val);
-                        }
-
-                        int_t result_int_val(instance_t* result)
-                        {
-                            return result_val<int_t>(result);
-                        }
-
-                        bool result_bool_val(instance_t* result)
-                        {
-                            return result_val<bool>(result);
-                        }
                     };
 
                     namespace integer_based
