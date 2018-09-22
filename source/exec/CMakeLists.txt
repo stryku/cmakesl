@@ -69,7 +69,7 @@ set(EXEC_SOURCES
     stmt/statement.hpp
     stmt/while_statement.cpp
     stmt/while_statement.hpp
-)
+        infix/function_call_expression.cpp infix/function_call_expression.hpp function_caller.hpp)
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR})
