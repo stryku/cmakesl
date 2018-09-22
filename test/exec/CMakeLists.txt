@@ -10,7 +10,7 @@ set(SOURCES
         fundamental_value_expression_test.cpp
         binary_operator_expression_test.cpp
         eval/ExpressionEvaluationTest.hpp
-        id_expression_test.cpp)
+        id_expression_test.cpp class_member_access_expression_test.cpp class_instance_mock.hpp infix_expression_mock.hpp)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
