@@ -40,12 +40,18 @@ namespace cmsl
                     auto expected_result = std::make_unique<instance_mock>();
 
                     auto function_mock = std::make_unique<ast::function_mock>();
+                    auto ast_ctx_mock = std::make_unique<ast::ast_context_mock>();
+
+                    EXPECT_CALL(*ast_ctx_mock, find_function(_))
+                                .WillOnce(Return(function_mock.get()));
+
+                    m_ctx_provider.set_ast_ctx(std::move(ast_ctx_mock));
 
                     auto expected_params = std::vector<cmsl::exec::inst::instance*>
-                            {
-                                    param_1_inst_mock.get(),
-                                    param_2_inst_mock.get()
-                            };
+                    {
+                            param_1_inst_mock.get(),
+                            param_2_inst_mock.get()
+                    };
 
                     EXPECT_CALL(*param_1_expr_mock, evaluate(_))
                             .WillOnce(Return(param_1_inst_mock.get()));
@@ -68,6 +74,8 @@ namespace cmsl
                                                           std::move(params));
 
                     auto eval_resutl = expr->evaluate(m_eval_ctx);
+
+                    EXPECT_THAT(eval_resutl, Eq(expected_result.get()));
                 }
             }
         }
