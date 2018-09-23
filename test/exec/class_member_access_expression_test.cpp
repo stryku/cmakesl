@@ -3,7 +3,7 @@
 #include "exec/infix/id_expression.hpp"
 
 #include "test/exec/infix_expression_mock.hpp"
-#include "test/exec/class_instance_mock.hpp"
+#include "test/exec/instance_mock.hpp"
 #include "test/exec/eval/ExpressionEvaluationTest.hpp"
 #include "test/common/tokens.hpp"
 
@@ -29,7 +29,7 @@ namespace cmsl
                     {
                         const auto& int_type = *m_ctx_provider.get_ast_ctx().find_type("int");
                         auto member_instance = std::make_unique<cmsl::exec::inst::simple_unnamed_instance>(int_type);
-                        auto class_instance = std::make_unique<class_instance_mock>();
+                        auto class_instance = std::make_unique<instance_mock>();
                         auto infix_expr = std::make_unique<infix_expression_mock>();
 
                         EXPECT_CALL(*infix_expr, evaluate(_))

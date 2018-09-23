@@ -16,14 +16,16 @@ namespace cmsl
             class function_call_expression : public infix_expression
             {
             public:
-                explicit function_call_expression(function_caller& fun_caller, lexer::token::token name, std::vector<std::unique_ptr<infix_expression>> parameter_expressions);
+                using params_t = std::vector<std::unique_ptr<infix_expression>>;
+
+                explicit function_call_expression(function_caller& fun_caller, lexer::token::token name, params_t parameter_expressions);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
 
             private:
                 function_caller& m_fun_caller;
                 cmsl::lexer::token::token m_name;
-                std::vector<std::unique_ptr<infix_expression>> m_parameter_expressions;
+                params_t m_parameter_expressions;
             };
         }
     }
