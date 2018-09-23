@@ -81,7 +81,7 @@ namespace cmsl
 
                     const auto values = testing::Values(
                         token_container_t{ token_integer() },
-                        token_container_t{ token_real() },
+                        token_container_t{ token_double() },
                         token_container_t{ token_dot() },
                         token_container_t{ token_open_brace() },
                         token_container_t{ token_close_brace() },
@@ -113,7 +113,7 @@ namespace cmsl
                         token_container_t{ token_exclaimequal() },
                         token_container_t{ token_xor() },
                         token_container_t{ token_xorequal() },
-                        token_container_t{ token_string() },
+                        token_container_t{ token_string("") },
                         token_container_t{ token_semicolon() }
                     );
 

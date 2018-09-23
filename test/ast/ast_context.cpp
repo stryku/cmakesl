@@ -12,7 +12,7 @@ namespace cmsl
             {
                 TEST(AstContext, Empty_FindType_GetNull)
                 {
-                    ast::ast_context ctx;
+                    ast::ast_context_impl ctx;
                     const auto t = ctx.find_type("int");
                     ASSERT_THAT(t, nullptr);
                 }

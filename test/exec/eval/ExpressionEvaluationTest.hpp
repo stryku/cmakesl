@@ -17,7 +17,7 @@ namespace cmsl
                 class context_provider : public cmsl::exec::context_provider
                 {
                 public:
-                    const ast::ast_context& get_ast_ctx() const
+                    const cmsl::ast::ast_context& get_ast_ctx() const
                     {
                         return m_ast_ctx;
                     }

@@ -16,7 +16,7 @@ set(SOURCES
         mock/infix_expression_mock.hpp
         function_call_expression_test.cpp
         mock/function_caller_mock.hpp
-)
+        )
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
