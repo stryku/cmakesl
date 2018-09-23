@@ -40,7 +40,6 @@ namespace cmsl
                         m_ctx_provider.get_exec_ctx().add_variable(name, std::move(instance));
                         auto expr = std::make_unique<expr_t>(token_identifier(name));
                         auto result = expr->evaluate(m_eval_ctx);
-                        EXPECT_THAT(result, NotNull());
                         EXPECT_THAT(result, Eq(instance_ptr));
                         EXPECT_THAT(result_val<double>(result), DoubleEq(value));
                     }
