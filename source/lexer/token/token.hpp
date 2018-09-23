@@ -18,6 +18,7 @@ namespace cmsl
                 using token_type_t = cmsl::lexer::token::token_type;
 
                 // Creates token with invalid begin and end locations
+                explicit token();
                 explicit token(token_type_t type);
                 explicit token(token_type_t type, const source_range& src_range, cmsl::string_view source);
 

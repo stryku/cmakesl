@@ -6,6 +6,10 @@ namespace cmsl
     {
         namespace token
         {
+            token::token()
+                : token{ token_type_t::undef }
+            {}
+
             token::token(token_type_t type)
                 : token{ type, source_range{}, cmsl::string_view{} }
             {}

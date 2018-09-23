@@ -49,6 +49,8 @@ namespace cmsl
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
             };
+
+            std::unique_ptr<infix_expression> make_fundamental_expression(lexer::token::token token);
         }
     }
 }
