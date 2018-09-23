@@ -9,7 +9,7 @@ namespace cmsl
     namespace ast
     {
         class_builder::class_builder(ast_context &parent_ast_ctx, cmsl::string_view name)
-            : m_ast_ctx{ std::make_unique<ast_context>(&parent_ast_ctx) }
+            : m_ast_ctx{ std::make_unique<ast_context_impl>(&parent_ast_ctx) }
             , m_name{ name }
         {}
 

@@ -11,7 +11,7 @@ namespace cmsl
     namespace ast
     {
         builtin_ast_context::builtin_ast_context()
-            : ast_context{ nullptr }
+            : ast_context_impl{ nullptr }
         {
             add_types();
             add_functions();

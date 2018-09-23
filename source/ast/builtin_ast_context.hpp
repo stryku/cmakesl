@@ -14,7 +14,7 @@ namespace cmsl
 
     namespace ast
     {
-        class builtin_ast_context : public ast_context
+        class builtin_ast_context : public ast_context_impl
         {
         public:
             builtin_ast_context();
