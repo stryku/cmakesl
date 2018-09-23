@@ -61,6 +61,30 @@ namespace cmsl
 
                 return ctx.instances.create(val.to_string());
             }
+
+
+            std::unique_ptr<infix_expression> make_fundamental_expression(lexer::token::token token)
+            {
+                switch(token.get_type())
+                {
+
+                    case lexer::token::token_type::integer:
+                        return std::make_unique<int_value_expression>(token);
+
+                    case lexer::token::token_type::double_:
+                        return std::make_unique<double_value_expression>(token);
+
+                    case lexer::token::token_type::string:
+                        return std::make_unique<string_value_expression>(token);
+
+                    case lexer::token::token_type::kw_true:
+                    case lexer::token::token_type::kw_false:
+                        return std::make_unique<bool_value_expression>(token);
+
+                    default:
+                        return nullptr;
+                }
+            }
         }
     }
 }
