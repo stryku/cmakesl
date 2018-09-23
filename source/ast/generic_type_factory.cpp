@@ -16,8 +16,7 @@ namespace cmsl
 
         std::unique_ptr<ast_context> generic_type_factory::create_list_type_ast_ctx(const ast_context& parent, const type& value_type)
         {
-            auto ctx = std::make_unique<ast_context>(&parent) ;
-
+            auto ctx = std::make_unique<ast_context_impl>(&parent) ;
 
             const auto function_kinds = {
                 builtin_function_kind::size,
