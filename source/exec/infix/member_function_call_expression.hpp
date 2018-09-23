@@ -16,9 +16,6 @@ namespace cmsl
         {
             class member_function_call_expression : public call_expression
             {
-            private:
-                using params_t = std::vector<std::unique_ptr<infix_expression>>;
-
             public:
                 explicit member_function_call_expression(function_caller& fun_caller, std::unique_ptr<infix_expression> lhs, lexer::token::token name, params_t params);
 
