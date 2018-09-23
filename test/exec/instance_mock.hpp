@@ -8,7 +8,7 @@ namespace cmsl
     {
         namespace exec
         {
-            class class_instance_mock : public cmsl::exec::inst::instance
+            class instance_mock : public cmsl::exec::inst::instance
             {
             private:
                 using instance_t = cmsl::exec::inst::instance;
@@ -22,8 +22,8 @@ namespace cmsl
                 MOCK_METHOD1(get_member, instance_t*(cmsl::string_view));
                 MOCK_CONST_METHOD1(has_function, bool(cmsl::string_view));
                 MOCK_CONST_METHOD1(is_ctor, bool(cmsl::string_view));
-                MOCK_CONST_METHOD1(get_function, const ast::function*(cmsl::string_view));
-                MOCK_CONST_METHOD0(get_type, const ast::type&());
+                MOCK_CONST_METHOD1(get_function, const cmsl::ast::function*(cmsl::string_view));
+                MOCK_CONST_METHOD0(get_type, const cmsl::ast::type&());
             };
         }
     }
