@@ -12,10 +12,10 @@ set(SOURCES
         eval/ExpressionEvaluationTest.hpp
         id_expression_test.cpp
         class_member_access_expression_test.cpp
-        instance_mock.hpp
-        infix_expression_mock.hpp
+        mock/instance_mock.hpp
+        mock/infix_expression_mock.hpp
         function_call_expression_test.cpp
-        function_caller_mock.hpp
+        mock/function_caller_mock.hpp
 )
 
 

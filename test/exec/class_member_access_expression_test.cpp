@@ -2,8 +2,8 @@
 #include "exec/infix/class_member_access_expression.cpp"
 #include "exec/infix/id_expression.hpp"
 
-#include "test/exec/infix_expression_mock.hpp"
-#include "test/exec/instance_mock.hpp"
+#include "test/exec/mock/infix_expression_mock.hpp"
+#include "test/exec/mock/instance_mock.hpp"
 #include "test/exec/eval/ExpressionEvaluationTest.hpp"
 #include "test/common/tokens.hpp"
 
