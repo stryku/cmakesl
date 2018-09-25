@@ -5,6 +5,7 @@
 #include "exec/function_caller.hpp"
 
 #include <algorithm>
+#include "exec/infix/infix_expression_visitor.hpp"
 
 namespace cmsl
 {
@@ -22,6 +23,11 @@ namespace cmsl
                 const auto& ast_ctx = ctx.m_ctx_provider.get_ast_ctx();
                 const auto fun = ast_ctx.find_function(get_name());
                 return get_caller().call(*fun, evaluated_params);
+            }
+
+            void function_call_expression::visit(infix_expression_visitor &visitor) const
+            {
+                visitor.visit(*this);
             }
         }
     }

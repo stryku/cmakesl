@@ -2,6 +2,7 @@
 #include "exec/infix/infix_evaluation_context.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/instance/instance.hpp"
+#include "exec/infix/infix_expression_visitor.hpp"
 
 namespace cmsl
 {
@@ -13,6 +14,11 @@ namespace cmsl
                 : m_token{ token }
             {}
 
+            lexer::token::token fundamental_value_expression::get_token() const
+            {
+                return m_token;
+            }
+
             bool_value_expression::bool_value_expression(lexer::token::token token)
                 : fundamental_value_expression(token)
 
@@ -22,6 +28,11 @@ namespace cmsl
             {
                 const auto val = m_token.str() == "true";
                 return ctx.instances.create(val);
+            }
+
+            void bool_value_expression::visit(infix_expression_visitor &visitor) const
+            {
+                return visitor.visit(*this);
             }
 
 
@@ -35,6 +46,11 @@ namespace cmsl
                 return ctx.instances.create(static_cast<inst::int_t>(val));
             }
 
+            void int_value_expression::visit(infix_expression_visitor &visitor) const
+            {
+                return visitor.visit(*this);
+            }
+
 
             double_value_expression::double_value_expression(lexer::token::token token)
                 : fundamental_value_expression(token)
@@ -44,6 +60,11 @@ namespace cmsl
             {
                 const auto val = std::stod(m_token.str().to_string());
                 return ctx.instances.create(val);
+            }
+
+            void double_value_expression::visit(infix_expression_visitor &visitor) const
+            {
+                return visitor.visit(*this);
             }
 
 
@@ -60,6 +81,11 @@ namespace cmsl
                 };
 
                 return ctx.instances.create(val.to_string());
+            }
+
+            void string_value_expression::visit(infix_expression_visitor &visitor) const
+            {
+                return visitor.visit(*this);
             }
 
 

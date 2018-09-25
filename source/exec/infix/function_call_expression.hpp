@@ -21,6 +21,7 @@ namespace cmsl
                 explicit function_call_expression(function_caller& fun_caller, lexer::token::token name, params_t parameter_expressions);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+                void visit(infix_expression_visitor& visitor) const override;
             };
         }
     }

@@ -20,6 +20,7 @@ namespace cmsl
                 explicit member_function_call_expression(function_caller& fun_caller, std::unique_ptr<infix_expression> lhs, lexer::token::token name, params_t params);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+                void visit(infix_expression_visitor& visitor) const override;
 
             private:
                 std::unique_ptr<infix_expression> m_lhs;

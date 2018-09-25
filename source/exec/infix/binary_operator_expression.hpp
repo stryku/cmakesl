@@ -22,6 +22,7 @@ namespace cmsl
                 binary_operator_expression(std::unique_ptr<infix_expression> lhs, lexer::token::token op,  std::unique_ptr<infix_expression> rhs);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+                void visit(infix_expression_visitor& visitor) const override;
 
             private:
                 inst::instance_value_t apply_operator_visitor(inst::instance* lhs, token_type_t  op, inst::instance* rhs) const;

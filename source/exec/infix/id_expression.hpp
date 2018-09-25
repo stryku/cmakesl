@@ -15,6 +15,7 @@ namespace cmsl
                 explicit id_expression(lexer::token::token identifer);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+                void visit(infix_expression_visitor& visitor) const override;
 
             private:
                 lexer::token::token m_identifer;

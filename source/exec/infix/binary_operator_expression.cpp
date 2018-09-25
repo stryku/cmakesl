@@ -3,6 +3,7 @@
 #include "exec/onp/operator_evaluation_visitor.hpp"
 #include "infix_evaluation_context.hpp"
 #include "exec/instance/instances_holder.hpp"
+#include "exec/infix/infix_expression_visitor.hpp"
 
 namespace cmsl
 {
@@ -89,6 +90,11 @@ namespace cmsl
                         return visitor.visit(lhs_val, rhs_val);
                     }
                 }
+            }
+
+            void binary_operator_expression::visit(infix_expression_visitor &visitor) const
+            {
+                return visitor.visit(*this);
             }
         }
     }
