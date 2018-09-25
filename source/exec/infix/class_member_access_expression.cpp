@@ -1,6 +1,7 @@
 #include "exec/infix/class_member_access_expression.hpp"
 
 #include "exec/instance/instance.hpp"
+#include "exec/infix/infix_expression_visitor.hpp"
 
 namespace cmsl
 {
@@ -17,6 +18,11 @@ namespace cmsl
             {
                 auto lhs_instance = m_lhs->evaluate(ctx);
                 return lhs_instance->get_member(m_member_name.str());
+            }
+
+            void class_member_access_expression::visit(infix_expression_visitor &visitor) const
+            {
+                visitor.visit(*this);
             }
         }
     }

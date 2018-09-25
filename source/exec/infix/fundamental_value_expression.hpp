@@ -14,6 +14,8 @@ namespace cmsl
             public:
                 explicit fundamental_value_expression(lexer::token::token token);
 
+                lexer::token::token get_token() const;
+
             protected:
                 const lexer::token::token m_token;
             };
@@ -24,6 +26,7 @@ namespace cmsl
                 explicit bool_value_expression(lexer::token::token token);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+                void visit(infix_expression_visitor& visitor) const override;
             };
 
             class int_value_expression : public fundamental_value_expression
@@ -32,6 +35,7 @@ namespace cmsl
                 explicit int_value_expression(lexer::token::token token);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+                void visit(infix_expression_visitor& visitor) const override;
             };
 
             class double_value_expression : public fundamental_value_expression
@@ -40,6 +44,7 @@ namespace cmsl
                 explicit double_value_expression(lexer::token::token token);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+                void visit(infix_expression_visitor& visitor) const override;
             };
 
             class string_value_expression : public fundamental_value_expression
@@ -48,6 +53,7 @@ namespace cmsl
                 explicit string_value_expression(lexer::token::token token);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+                void visit(infix_expression_visitor& visitor) const override;
             };
 
             std::unique_ptr<infix_expression> make_fundamental_expression(lexer::token::token token);

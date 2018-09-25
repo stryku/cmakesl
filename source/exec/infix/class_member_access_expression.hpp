@@ -17,6 +17,7 @@ namespace cmsl
                 explicit class_member_access_expression(std::unique_ptr<infix_expression> lhs, lexer::token::token member_name);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
+                void visit(infix_expression_visitor& visitor) const override;
 
             private:
                 std::unique_ptr<infix_expression> m_lhs;
