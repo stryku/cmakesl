@@ -39,6 +39,7 @@ namespace cmsl
                 token_type_t peek(size_t n) const;
 
                 bool is_current_function_call() const;
+                bool is_current_class_member_access() const;
 
                 template <typename Collection>
                 bool current_is_one_of(Collection&& collection)

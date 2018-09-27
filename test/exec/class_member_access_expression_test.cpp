@@ -30,15 +30,15 @@ namespace cmsl
                         const auto& int_type = *m_ctx_provider.get_ast_ctx().find_type("int");
                         auto member_instance = std::make_unique<cmsl::exec::inst::simple_unnamed_instance>(int_type);
                         auto class_instance = std::make_unique<instance_mock>();
-                        auto infix_expr = std::make_unique<infix_expression_mock>();
+                        auto lhs_expr = std::make_unique<infix_expression_mock>();
 
-                        EXPECT_CALL(*infix_expr, evaluate(_))
+                        EXPECT_CALL(*lhs_expr, evaluate(_))
                                     .WillOnce(Return(class_instance.get()));
 
                         EXPECT_CALL(*class_instance, get_member(_))
                                     .WillOnce(Return(member_instance.get()));
 
-                        auto class_member_access_expr = std::make_unique<cmsl::exec::infix::class_member_access_expression>(std::move(infix_expr), token_identifier());
+                        auto class_member_access_expr = std::make_unique<cmsl::exec::infix::class_member_access_expression>(std::move(lhs_expr), token_identifier());
                         auto result = class_member_access_expr->evaluate(m_eval_ctx);
 
                         EXPECT_THAT(result, member_instance.get());
