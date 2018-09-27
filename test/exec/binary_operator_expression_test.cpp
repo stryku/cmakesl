@@ -1,7 +1,7 @@
 #include "test/exec/eval/ExpressionEvaluationTest.hpp"
 
 #include "exec/infix/fundamental_value_expression.hpp"
-#include "exec/infix/binary_operator_expression.cpp"
+#include "exec/infix/binary_operator_expression.hpp"
 
 #include "test/common/tokens.hpp"
 
