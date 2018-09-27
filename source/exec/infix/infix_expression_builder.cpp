@@ -1,11 +1,12 @@
 #include "exec/infix/infix_expression_builder.hpp"
 
 
-#include "exec/infix/binary_operator_expression.cpp"
+#include "exec/infix/binary_operator_expression.hpp"
 #include "exec/infix/fundamental_value_expression.hpp"
 #include "exec/infix/id_expression.hpp"
 #include "exec/infix/function_call_expression.hpp"
 #include "exec/infix/member_function_call_expression.hpp"
+#include "exec/infix/class_member_access_expression.hpp"
 
 
 namespace cmsl
@@ -22,7 +23,7 @@ namespace cmsl
 
             std::unique_ptr<infix_expression> infix_expression_builder::build()
             {
-
+                return expr();
             }
 
             std::unique_ptr<infix_expression> infix_expression_builder::factor()
@@ -99,7 +100,7 @@ namespace cmsl
 
             bool infix_expression_builder::expect_token(infix_expression_builder::token_type_t expected_type) const
             {
-                return !expect_not_at_end() && m_token->get_type() == expected_type;
+                return expect_not_at_end() && m_token->get_type() == expected_type;
             }
 
             std::unique_ptr<infix_expression> infix_expression_builder::expr()
@@ -115,12 +116,22 @@ namespace cmsl
                     if(curr_type() == token_type_t::dot)
                     {
                         eat();
-                        auto vals = get_function_call_values();
+                        if(is_current_class_member_access())
+                        {
+                            const auto member_name = *m_token;
+                            eat();
+                            return std::make_unique<class_member_access_expression>(std::move(operator_expr),
+                                                                                    member_name);
+                        }
+                        else
+                        {
+                            auto vals = get_function_call_values();
 
-                        return std::make_unique<member_function_call_expression>(m_fun_caller,
-                                                                                 std::move(operator_expr),
-                                                                                 vals.name,
-                                                                                 std::move(vals.params));
+                            return std::make_unique<member_function_call_expression>(m_fun_caller,
+                                                                                     std::move(operator_expr),
+                                                                                     vals.name,
+                                                                                     std::move(vals.params));
+                        }
                     }
 
                     return std::move(operator_expr);
@@ -174,17 +185,24 @@ namespace cmsl
             bool infix_expression_builder::is_current_function_call() const
             {
                 return curr_type() == token_type_t::identifier
-                && is_next(token_type_t::open_paren);
+                        && is_next(token_type_t::open_paren);
+            }
+
+            bool infix_expression_builder::is_current_class_member_access() const
+            {
+                // At this point we know that we're after the dot token. Test whether it's a member function call or just member access.
+                return !is_current_function_call();
             }
 
             bool infix_expression_builder::is_next(infix_expression_builder::token_type_t expected_type) const
             {
+                auto p = peek(1);
                 return expect_not_at_end() && peek(1) == expected_type;
             }
 
             infix_expression_builder::token_type_t infix_expression_builder::peek(size_t n) const
             {
-                if(std::distance(m_token, m_end) >= n)
+                if(std::distance(m_token, m_end) <= n)
                 {
                     return token_type_t::undef;
                 }
