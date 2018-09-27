@@ -2,6 +2,7 @@
 #include "infix_evaluation_context.hpp"
 #include "exec/execution_context.hpp"
 #include "exec/context_provider.hpp"
+#include "exec/infix/infix_expression_visitor.hpp"
 
 namespace cmsl
 {
@@ -17,6 +18,11 @@ namespace cmsl
             {
                 auto& exec_ctx = ctx.m_ctx_provider.get_exec_ctx();
                 return exec_ctx.get_variable(m_identifer.str());
+            }
+
+            void id_expression::visit(infix_expression_visitor &visitor) const
+            {
+                visitor.visit(*this);
             }
         }
     }

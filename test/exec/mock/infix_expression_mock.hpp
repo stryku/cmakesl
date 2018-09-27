@@ -18,6 +18,7 @@ namespace cmsl
 
                 public:
                     MOCK_CONST_METHOD1(evaluate, instance_t*(infix_evaluation_context_t&));
+                    MOCK_CONST_METHOD1(visit, void(cmsl::exec::infix::infix_expression_visitor&));
                 };
             }
         }
