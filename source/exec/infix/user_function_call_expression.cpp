@@ -1,4 +1,4 @@
-#include "exec/infix/function_call_expression.hpp"
+#include "exec/infix/user_function_call_expression.hpp"
 
 #include "ast/ast_context.hpp"
 #include "exec/context_provider.hpp"
@@ -19,7 +19,7 @@ namespace cmsl
 
             inst::instance *function_call_expression::evaluate(infix_evaluation_context &ctx) const
             {
-                auto evaluated_params=  evaluate_params(ctx);
+                auto evaluated_params =  evaluate_params(ctx);
                 const auto& ast_ctx = ctx.m_ctx_provider.get_ast_ctx();
                 const auto fun = ast_ctx.find_function(get_name());
                 return get_caller().call(*fun, evaluated_params);

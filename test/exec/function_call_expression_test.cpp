@@ -1,4 +1,4 @@
-#include "exec/infix/function_call_expression.hpp"
+#include "exec/infix/user_function_call_expression.hpp"
 #include "exec/infix/infix_expression_visitor.hpp"
 
 #include "test/ast/mock/function_mock.hpp"

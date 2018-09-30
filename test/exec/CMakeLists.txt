@@ -7,16 +7,19 @@ set(SOURCES
     test_context_provider.hpp
     high_level_exec_test.cpp
     builtin_type_default_constructor.cpp
-        fundamental_value_expression_test.cpp
-        binary_operator_expression_test.cpp
-        eval/ExpressionEvaluationTest.hpp
-        id_expression_test.cpp
-        class_member_access_expression_test.cpp
-        mock/instance_mock.hpp
-        mock/infix_expression_mock.hpp
-        function_call_expression_test.cpp
-        mock/function_caller_mock.hpp
-        member_function_call_expression_test.cpp infix_expression_builder_test.cpp mock/infix_expression_visitor_mock.hpp fake/fake_function_caller.hpp)
+    fundamental_value_expression_test.cpp
+    binary_operator_expression_test.cpp
+    eval/ExpressionEvaluationTest.hpp
+    id_expression_test.cpp
+    user_class_member_access_expression_test.cpp
+    mock/instance_mock.hpp
+    mock/infix_expression_mock.hpp
+    function_call_expression_test.cpp
+    mock/function_caller_mock.hpp
+    user_member_function_call_expression_test.cpp
+    infix_expression_builder_test.cpp
+    mock/infix_expression_visitor_mock.hpp
+)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
