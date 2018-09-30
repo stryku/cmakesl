@@ -6,6 +6,11 @@
 
 namespace cmsl
 {
+    namespace ast
+    {
+        class function;
+    }
+
     namespace exec
     {
         class function_caller;
@@ -23,6 +28,8 @@ namespace cmsl
                 function_caller& get_caller() const;
                 cmsl::string_view get_name() const;
                 std::vector<inst::instance*> evaluate_params(infix_evaluation_context& ctx) const;
+
+                const ast::function& get_function(infix_evaluation_context& ctx) const;
 
             private:
                 function_caller& m_fun_caller;

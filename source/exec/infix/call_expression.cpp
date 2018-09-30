@@ -1,4 +1,8 @@
 #include "exec/infix/call_expression.hpp"
+#include "exec/infix/infix_evaluation_context.hpp"
+#include "exec/context_provider.hpp"
+#include "ast/ast_context.hpp"
+#include "common/assert.hpp"
 
 #include <algorithm>
 
@@ -21,7 +25,7 @@ namespace cmsl
 
             cmsl::string_view call_expression::get_name() const
             {
-                return cmsl::string_view();
+                return m_name.str();
             }
 
             std::vector<inst::instance *> call_expression::evaluate_params(infix_evaluation_context &ctx) const
@@ -36,6 +40,25 @@ namespace cmsl
                                });
 
                 return evaluated_params;
+            }
+
+            const ast::function &call_expression::get_function(infix_evaluation_context& ctx) const
+            {
+                const auto& ast_ctx =  ctx.m_ctx_provider.get_ast_ctx();
+                auto fun = ast_ctx.find_function(get_name());
+                if(fun)
+                {
+                    return *fun;
+                }
+
+                // Try to find type. If get_name() == some type name, that means we want to call a ctor.
+                auto type = ast_ctx.find_type(get_name());
+                if(type)
+                {
+                    return *type->get_function(get_name());
+                }
+
+                CMSL_UNREACHABLE("Function no found. This issue should be found during sema check.");
             }
         }
     }
