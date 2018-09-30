@@ -21,8 +21,8 @@ namespace cmsl
             {
                 auto evaluated_params =  evaluate_params(ctx);
                 const auto& ast_ctx = ctx.m_ctx_provider.get_ast_ctx();
-                const auto fun = ast_ctx.find_function(get_name());
-                return get_caller().call(*fun, evaluated_params);
+                const auto& fun = get_function(ctx);
+                return get_caller().call(fun, evaluated_params);
             }
 
             void function_call_expression::visit(infix_expression_visitor &visitor) const

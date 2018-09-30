@@ -8,8 +8,6 @@ set(EXEC_SOURCES
     builtin_function_caller.cpp
     builtin_function_caller.hpp
     function_caller.hpp
-    function_call_evaluator.cpp
-    function_call_evaluator.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
     scope_context.cpp
@@ -18,6 +16,8 @@ set(EXEC_SOURCES
     source_executor.hpp
 
     infix/infix_expression.hpp
+    infix/function_call_evaluator.cpp
+    infix/function_call_evaluator.hpp
     infix/fundamental_value_expression.cpp
     infix/fundamental_value_expression.hpp
     infix/infix_evaluation_context.hpp
