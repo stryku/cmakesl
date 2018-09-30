@@ -8,6 +8,8 @@ set(EXEC_SOURCES
     builtin_function_caller.cpp
     builtin_function_caller.hpp
     function_caller.hpp
+    function_call_evaluator.cpp
+    function_call_evaluator.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
     scope_context.cpp
