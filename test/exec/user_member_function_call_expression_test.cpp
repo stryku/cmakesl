@@ -1,4 +1,4 @@
-#include "exec/infix/member_function_call_expression.hpp"
+#include "exec/infix/user_member_function_call_expression.hpp"
 #include "exec/infix/infix_expression_visitor.hpp"
 
 #include "test/ast/mock/function_mock.hpp"
@@ -68,7 +68,7 @@ namespace cmsl
                     EXPECT_CALL(*caller_mock, call_member(RefByPtrMatcher(class_instance_ptr), RefByPtrMatcher(function_mock_ptr), Eq(expected_params)))
                             .WillOnce(Return(expected_result.get()));
 
-                    using expr_t = cmsl::exec::infix::member_function_call_expression;
+                    using expr_t = cmsl::exec::infix::user_member_function_call_expression;
                     expr_t::params_t params;
 
                     params.emplace_back(std::move(param_1_expr_mock));

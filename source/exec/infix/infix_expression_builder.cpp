@@ -4,8 +4,8 @@
 #include "exec/infix/binary_operator_expression.hpp"
 #include "exec/infix/fundamental_value_expression.hpp"
 #include "exec/infix/id_expression.hpp"
-#include "exec/infix/function_call_expression.hpp"
-#include "exec/infix/member_function_call_expression.hpp"
+#include "exec/infix/user_function_call_expression.hpp"
+#include "exec/infix/user_member_function_call_expression.hpp"
 #include "exec/infix/class_member_access_expression.hpp"
 
 
@@ -127,7 +127,7 @@ namespace cmsl
                         {
                             auto vals = get_function_call_values();
 
-                            return std::make_unique<member_function_call_expression>(m_fun_caller,
+                            return std::make_unique<user_member_function_call_expression>(m_fun_caller,
                                                                                      std::move(operator_expr),
                                                                                      vals.name,
                                                                                      std::move(vals.params));
