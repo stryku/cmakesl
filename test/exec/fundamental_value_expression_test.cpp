@@ -16,6 +16,7 @@ namespace cmsl
 
                 using testing::Eq;
                 using testing::DoubleEq;
+                using testing::NotNull;
 
                 namespace fundamental_value_expression
                 {
@@ -29,18 +30,18 @@ namespace cmsl
                             auto expr = std::make_unique<expr_t>(token_kw_true());
                             auto result = expr->evaluate(m_eval_ctx);
                             const auto val = result->get_value();
-                            const auto int_result = boost::get<bool>(val);
 
-                            ASSERT_THAT(int_result, Eq(true));
+                            ASSERT_THAT(result, NotNull());
+                            ASSERT_THAT(result_bool_val(result), Eq(true));
                         }
 
                         {
                             auto expr = std::make_unique<expr_t>(token_kw_false());
                             auto result = expr->evaluate(m_eval_ctx);
                             const auto val = result->get_value();
-                            const auto int_result = boost::get<bool>(val);
 
-                            ASSERT_THAT(int_result, Eq(false));
+                            ASSERT_THAT(result, NotNull());
+                            ASSERT_THAT(result_bool_val(result), Eq(false));
                         }
                     }
 
@@ -49,10 +50,9 @@ namespace cmsl
                         using expr_t = cmsl::exec::infix::int_value_expression;
                         auto expr = std::make_unique<expr_t>(token_integer("123"));
                         auto result = expr->evaluate(m_eval_ctx);
-                        const auto val = result->get_value();
-                        const auto int_result = boost::get<cmsl::exec::inst::int_t>(val);
 
-                        ASSERT_THAT(int_result, Eq(cmsl::exec::inst::int_t{ 123 }));
+                        ASSERT_THAT(result, NotNull());
+                        ASSERT_THAT(result_int_val(result), Eq(cmsl::exec::inst::int_t{ 123 }));
                     }
 
                     TEST_F(FundamentalValueExpression, Evaluate_DoubleToken_GetDouble)
@@ -60,10 +60,9 @@ namespace cmsl
                         using expr_t = cmsl::exec::infix::double_value_expression;
                         auto expr = std::make_unique<expr_t>(token_double("123.456"));
                         auto result = expr->evaluate(m_eval_ctx);
-                        const auto val = result->get_value();
-                        const auto double_result = boost::get<double>(val);
 
-                        ASSERT_THAT(double_result, DoubleEq(123.456));
+                        ASSERT_THAT(result, NotNull());
+                        ASSERT_THAT(result_double_val(result), DoubleEq(123.456));
                     }
 
                     TEST_F(FundamentalValueExpression, Evaluate_StringToken_GetString)
@@ -71,10 +70,9 @@ namespace cmsl
                         using expr_t = cmsl::exec::infix::string_value_expression;
                         auto expr = std::make_unique<expr_t>(token_string("\"str\""));
                         auto result = expr->evaluate(m_eval_ctx);
-                        const auto val = result->get_value();
-                        const auto double_result = boost::get<std::string>(val);
 
-                        ASSERT_THAT(double_result, Eq("str"));
+                        ASSERT_THAT(result, NotNull());
+                        ASSERT_THAT(result_string_val(result), Eq("str"));
                     }
                 }
             }
