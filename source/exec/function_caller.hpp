@@ -9,13 +9,13 @@ namespace cmsl
         class function;
     }
 
-    namespace inst
-    {
-        class instance;
-    }
-
     namespace exec
     {
+        namespace inst
+        {
+            class instance;
+        }
+
         class function_caller
         {
         public:

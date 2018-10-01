@@ -10,6 +10,7 @@ namespace cmsl
     namespace ast
     {
         class type;
+        class fundamental_function;
     }
 
     namespace exec
@@ -20,7 +21,7 @@ namespace cmsl
             class instances_holder;
         }
 
-        // Class to call member functions on builtin types. e.g. int::to_string().
+        // Class to call builtin functions (also on builtin types). e.g. int::to_string().
         class builtin_function_caller
         {
         private:
@@ -31,7 +32,11 @@ namespace cmsl
 
             inst::instance* call_member_function(inst::instance *class_instance,
                                                  cmsl::string_view fun_name,
-                                                 std::vector<inst::instance *> parameters);
+                                                 const std::vector<inst::instance *>& parameters);
+
+            inst::instance* call_member_function(inst::instance *class_instance,
+                                                 const ast::fundamental_function& fun,
+                                                 const std::vector<inst::instance *>& parameters);
 
             inst::instance* call(ff_kind_t fun, std::vector<inst::instance *> parameters);
 
