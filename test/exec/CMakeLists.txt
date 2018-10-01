@@ -2,11 +2,22 @@ set(TESTS_NAME exec_test)
 
 set(SOURCES 
     main.cpp
-    infix_to_onp_test.cpp
-    instance_converter_test.cpp
+        instance_converter_test.cpp
     test_context_provider.hpp
     high_level_exec_test.cpp
     builtin_type_default_constructor.cpp
+    fundamental_value_expression_test.cpp
+    binary_operator_expression_test.cpp
+    eval/ExpressionEvaluationTest.hpp
+    id_expression_test.cpp
+    user_class_member_access_expression_test.cpp
+    mock/instance_mock.hpp
+    mock/infix_expression_mock.hpp
+    function_call_expression_test.cpp
+    mock/function_caller_mock.hpp
+    user_member_function_call_expression_test.cpp
+    infix_expression_builder_test.cpp
+    mock/infix_expression_visitor_mock.hpp
 )
 
 

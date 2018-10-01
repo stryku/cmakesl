@@ -15,14 +15,13 @@ namespace cmsl
             m_contextes.emplace_back(std::move(builtin_ctx));
         }
 
-        std::unique_ptr<ast_context> ast_builder::build(ast_context& builtin_ast_ctx,
-                                                        errors::errors_observer& err_observer,
-                                                        const tokens_container_t& tokens)
+        std::unique_ptr<ast_context>
+        ast_builder::build(ast_context &builtin_ast_ctx, errors::errors_observer &err_observer, const ast_builder::tokens_container_t &tokens)
         {
-            auto ctx = std::make_unique<ast_context>(&builtin_ast_ctx);
+            auto ctx = std::make_unique<ast_context_impl>(&builtin_ast_ctx);
             m_parser = std::make_unique<parser>(err_observer, tokens);
 
-            while(!m_parser->is_at_end())
+            while (!m_parser->is_at_end())
             {
                 if (auto cl = m_parser->try_get_class_node(*ctx))
                 {

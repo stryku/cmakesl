@@ -147,14 +147,25 @@ namespace cmsl
                 lexer::token::token_type m_operator;
             };
 
-            // Separate == and <, <=, >, >=. E.g. List supports == bot does not the other
-            struct equalequal_operator_evaluation_visitor : public details::operator_evaluation_visitor
+            // Separate ==, != and <, <=, >, >=. E.g. List supports == bot does not the other
+            struct comparison_operator_evaluation_visitor : public details::operator_evaluation_visitor
             {
+                comparison_operator_evaluation_visitor(lexer::token::token_type op)
+                    : m_operator{ op }
+                {}
+
                 inst::instance_value_t visit(const inst::instance_value_t& lhs, const inst::instance_value_t& rhs)
                 {
-                    const auto operation = [](const auto& lhs, const auto& rhs)
+                    const auto operation = [op = m_operator](const auto& lhs, const auto& rhs)
                     {
-                        return lhs == rhs;
+                        switch(op)
+                        {
+                            case lexer::token::token_type::equalequal: return lhs == rhs;
+                            case lexer::token::token_type::exclaimequal: return lhs != rhs;
+
+                            default:
+                                CMSL_UNREACHABLE("Unsupported operator");
+                        }
                     };
 
                     const auto values_type = inst::get_inst_val_type(lhs);
@@ -175,11 +186,14 @@ namespace cmsl
                             CMSL_UNREACHABLE("Applying equalequal operator to types that doesn't support it.");
                     }
                 }
+
+            private:
+                lexer::token::token_type m_operator;
             };
 
-            struct comparison_operator_evaluation_visitor : public details::operator_evaluation_visitor
+            struct relation_operator_evaluation_visitor : public details::operator_evaluation_visitor
             {
-                comparison_operator_evaluation_visitor(lexer::token::token_type op)
+                relation_operator_evaluation_visitor(lexer::token::token_type op)
                     : m_operator{ op }
                 {}
 
@@ -212,7 +226,7 @@ namespace cmsl
                             return apply<std::string>(lhs, rhs, operation);
 
                         default:
-                            CMSL_UNREACHABLE("Applying comparison operator to types that doesn't support it.");
+                            CMSL_UNREACHABLE("Applying relation operator to types that doesn't support it.");
                     }
                 }
 

@@ -6,11 +6,11 @@ namespace cmsl
 {
     namespace ast
     {
-        ast_context::ast_context(const ast_context* parent)
+        ast_context_impl::ast_context_impl(const ast_context* parent)
             : m_parent{ parent }
         {}
 
-        void ast_context::add_type(std::unique_ptr<type> t)
+        void ast_context_impl::add_type(std::unique_ptr<type> t)
         {
             if (cmsl::contains(m_types, t))
             {
@@ -21,7 +21,7 @@ namespace cmsl
             m_types.emplace_back(std::move(t));
         }
 
-        const type* ast_context::find_type(cmsl::string_view name) const
+        const type* ast_context_impl::find_type(cmsl::string_view name) const
         {
             const auto it = std::find_if(std::begin(m_types), std::end(m_types),
                                          [name](const auto& t)
@@ -42,12 +42,12 @@ namespace cmsl
             return it->get();
         }
 
-        void ast_context::add_function(std::unique_ptr<function> fun)
+        void ast_context_impl::add_function(std::unique_ptr<function> fun)
         {
             m_functions.emplace_back(std::move(fun));
         }
 
-        const function* ast_context::find_function(cmsl::string_view name) const
+        const function* ast_context_impl::find_function(cmsl::string_view name) const
         {
             const auto it = std::find_if(std::begin(m_functions), std::end(m_functions),
                                          [name](const auto& t)

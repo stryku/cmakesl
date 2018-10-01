@@ -21,7 +21,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 2);
+                EXPECT_THAT(result, 2);
             }
 
             TEST(Exec, VariableSelfAssign)
@@ -35,7 +35,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 4);
+                EXPECT_THAT(result, 4);
             }
 
             TEST(Exec, ClassMemberAssign)
@@ -54,7 +54,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 2);
+                EXPECT_THAT(result, 2);
             }
 
             TEST(Exec, ClassMemberFunction)
@@ -75,7 +75,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 2);
+                EXPECT_THAT(result, 2);
             }
 
             TEST(Exec, ClassMemberFunctionUsingClassMember)
@@ -101,7 +101,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 5);
+                EXPECT_THAT(result, 5);
             }
 
             TEST(Exec, UserTypeClassMember)
@@ -125,7 +125,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 2);
+                EXPECT_THAT(result, 2);
             }
 
             TEST(Exec, ListPushBack)
@@ -143,7 +143,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 5);
+                EXPECT_THAT(result, 5);
             }
 
             TEST(Exec, ListOfListPushBack)
@@ -162,7 +162,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 5);
+                EXPECT_THAT(result, 5);
             }
 
             TEST(Exec, UserDefinedConstructor)
@@ -184,7 +184,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 4);
+                EXPECT_THAT(result, 4);
             }
 
             TEST(Exec, VersionCreation)
@@ -197,7 +197,7 @@ namespace cmsl
                     "}";
 
                 const auto result = source_executor_t{}.execute(source);
-                ASSERT_THAT(result, 10);
+                EXPECT_THAT(result, 10);
             }
         }
     }

@@ -5,8 +5,9 @@ set(EXEC_SOURCES
     execution_context.cpp
     execution_context.hpp
     builtin_function_visitors.hpp
-        builtin_function_caller.cpp
-        builtin_function_caller.hpp
+    builtin_function_caller.cpp
+    builtin_function_caller.hpp
+    function_caller.hpp
     fundamental_instance.cpp
     fundamental_instance.hpp
     scope_context.cpp
@@ -14,7 +15,31 @@ set(EXEC_SOURCES
     source_executor.cpp
     source_executor.hpp
 
-    instance/conversion_visitor.hpp
+    infix/infix_expression.hpp
+    infix/function_call_evaluator.cpp
+    infix/function_call_evaluator.hpp
+    infix/fundamental_value_expression.cpp
+    infix/fundamental_value_expression.hpp
+    infix/infix_evaluation_context.hpp
+    infix/binary_operator_expression.cpp
+    infix/binary_operator_expression.hpp
+    infix/class_member_access_expression.cpp
+    infix/class_member_access_expression.hpp
+    infix/id_expression.cpp
+    infix/id_expression.hpp
+    infix/user_function_call_expression.cpp
+    infix/user_function_call_expression.hpp
+    infix/user_member_function_call_expression.cpp
+    infix/user_member_function_call_expression.hpp
+    infix/call_expression.cpp
+    infix/call_expression.hpp
+    infix/infix_expression_builder.cpp
+    infix/infix_expression_builder.hpp
+    infix/infix_expression_visitor.hpp
+    infix/operator_evaluation_visitor.cpp
+    infix/operator_evaluation_visitor.hpp
+
+        instance/conversion_visitor.hpp
     instance/instance.hpp
     instance/instance_converter.cpp
     instance/instance_converter.hpp
@@ -35,19 +60,7 @@ set(EXEC_SOURCES
     instance/complex_unnamed_instance.cpp
     instance/complex_unnamed_instance.hpp
 
-    onp/id_access.cpp
-    onp/id_access.hpp
-    onp/infix_to_onp.cpp
-    onp/infix_to_onp.hpp
-    onp/onp_entry.hpp
-    onp/onp_executor.cpp
-    onp/onp_executor.hpp
-    onp/operator_evaluation_visitor.cpp
-    onp/operator_evaluation_visitor.hpp
-    onp/operator_visitor.cpp
-    onp/operator_visitor.hpp
-
-    stmt/declaration_statement.cpp
+        stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp
     stmt/if_else_statement.cpp
     stmt/if_else_statement.hpp
