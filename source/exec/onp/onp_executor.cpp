@@ -3,7 +3,7 @@
 #include "exec/instance/named_instance.hpp"
 #include "ast/ast_context.hpp"
 #include "exec/instance/instance_factory.hpp"
-#include "exec/onp/operator_visitor.hpp"
+#include "exec/infix/operator_visitor.hpp"
 
 namespace cmsl
 {

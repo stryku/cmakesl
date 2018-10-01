@@ -1,6 +1,6 @@
 #include "exec/infix/binary_operator_expression.hpp"
 
-#include "exec/onp/operator_evaluation_visitor.hpp"
+#include "operator_evaluation_visitor.hpp"
 #include "infix_evaluation_context.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/infix/infix_expression_visitor.hpp"
