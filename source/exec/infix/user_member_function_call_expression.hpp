@@ -14,10 +14,10 @@ namespace cmsl
 
         namespace infix
         {
-            class member_function_call_expression : public call_expression
+            class user_member_function_call_expression : public call_expression
             {
             public:
-                explicit member_function_call_expression(function_caller& fun_caller, std::unique_ptr<infix_expression> lhs, lexer::token::token name, params_t params);
+                explicit user_member_function_call_expression(function_caller& fun_caller, std::unique_ptr<infix_expression> lhs, lexer::token::token name, params_t params);
 
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
                 void visit(infix_expression_visitor& visitor) const override;

@@ -46,14 +46,24 @@ namespace cmsl
                         return boost::get<Result>(result_val);
                     }
 
-                    int_t result_int_val(instance_t* result)
+                    auto result_int_val(instance_t* result)
                     {
                         return result_val<int_t>(result);
                     }
 
-                    bool result_bool_val(instance_t* result)
+                    auto result_bool_val(instance_t* result)
                     {
                         return result_val<bool>(result);
+                    }
+
+                    auto result_string_val(instance_t* result)
+                    {
+                        return result_val<std::string>(result);
+                    }
+
+                    auto result_double_val(instance_t* result)
+                    {
+                        return result_val<double>(result);
                     }
 
                     test_context_provider m_ctx_provider;
