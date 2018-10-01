@@ -36,6 +36,10 @@ set(EXEC_SOURCES
     infix/infix_expression_builder.cpp
     infix/infix_expression_builder.hpp
     infix/infix_expression_visitor.hpp
+    infix/operator_evaluation_visitor.cpp
+    infix/operator_evaluation_visitor.hpp
+    infix/operator_visitor.cpp
+    infix/operator_visitor.hpp
 
     instance/conversion_visitor.hpp
     instance/instance.hpp
@@ -65,10 +69,6 @@ set(EXEC_SOURCES
     onp/onp_entry.hpp
     onp/onp_executor.cpp
     onp/onp_executor.hpp
-    onp/operator_evaluation_visitor.cpp
-    onp/operator_evaluation_visitor.hpp
-    onp/operator_visitor.cpp
-    onp/operator_visitor.hpp
 
     stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp
@@ -81,7 +81,7 @@ set(EXEC_SOURCES
     stmt/statement.hpp
     stmt/while_statement.cpp
     stmt/while_statement.hpp
-        )
+)
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR})

@@ -1,11 +1,11 @@
-#include "exec/onp/operator_visitor.hpp"
+#include "operator_visitor.hpp"
 #include "exec/instance/instance.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/execution_context.hpp"
 #include "exec/onp/id_access.hpp"
 #include "exec/onp/onp_executor.hpp"
 #include "common/assert.hpp"
-#include "exec/onp/operator_evaluation_visitor.hpp"
+#include "operator_evaluation_visitor.hpp"
 
 namespace cmsl
 {

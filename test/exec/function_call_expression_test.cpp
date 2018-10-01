@@ -44,7 +44,10 @@ namespace cmsl
                     auto ast_ctx_mock = std::make_unique<ast::ast_context_mock>();
 
                     EXPECT_CALL(*ast_ctx_mock, find_function(_))
-                                .WillOnce(Return(function_mock.get()));
+                            .WillOnce(Return(function_mock.get()));
+
+                    EXPECT_CALL(*ast_ctx_mock, find_type(_))
+                            .WillOnce(Return(nullptr));
 
                     m_ctx_provider.set_ast_ctx(std::move(ast_ctx_mock));
 
