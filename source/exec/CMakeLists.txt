@@ -38,10 +38,8 @@ set(EXEC_SOURCES
     infix/infix_expression_visitor.hpp
     infix/operator_evaluation_visitor.cpp
     infix/operator_evaluation_visitor.hpp
-    infix/operator_visitor.cpp
-    infix/operator_visitor.hpp
 
-    instance/conversion_visitor.hpp
+        instance/conversion_visitor.hpp
     instance/instance.hpp
     instance/instance_converter.cpp
     instance/instance_converter.hpp
@@ -62,15 +60,7 @@ set(EXEC_SOURCES
     instance/complex_unnamed_instance.cpp
     instance/complex_unnamed_instance.hpp
 
-    onp/id_access.cpp
-    onp/id_access.hpp
-    onp/infix_to_onp.cpp
-    onp/infix_to_onp.hpp
-    onp/onp_entry.hpp
-    onp/onp_executor.cpp
-    onp/onp_executor.hpp
-
-    stmt/declaration_statement.cpp
+        stmt/declaration_statement.cpp
     stmt/declaration_statement.hpp
     stmt/if_else_statement.cpp
     stmt/if_else_statement.hpp

@@ -2,8 +2,6 @@
 #include "exec/execution.hpp"
 #include "ast/infix_node.hpp"
 #include "ast/ast_context.hpp"
-#include "exec/onp/infix_to_onp.hpp"
-#include "exec/onp/onp_executor.hpp"
 #include "exec/infix/infix_expression_builder.hpp"
 #include "exec/infix/function_call_evaluator.hpp"
 #include "exec/infix/infix_evaluation_context.hpp"
@@ -33,18 +31,6 @@ namespace cmsl
 
                 auto result = expr->evaluate(ctx);
                 m_result = result->copy();
-
-
-             //   const auto onp_tokens = to_onp(e);
-               // auto executor = onp::onp_executor{ onp_tokens, e };
-                //auto result = executor.execute();
-                //m_result = std::move(result);
-            }
-
-            infix_statement::tokens_container_t infix_statement::to_onp(execution& e) const
-            {
-                const auto& tokens = m_node.get_tokens();
-                return onp::infix_to_onp{ tokens, e.get_ast_ctx() }.convert();
             }
         }
     }
