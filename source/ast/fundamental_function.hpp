@@ -26,6 +26,7 @@ namespace cmsl
                     case builtin_function_kind::empty: return "empty";
                     case builtin_function_kind::push_back: return "push_back";
                     case builtin_function_kind::version_ctor: return "version";
+                    case builtin_function_kind::cmake_minimum_required: return "cmake_minimum_required";
                 }
             }
 
