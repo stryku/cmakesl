@@ -300,7 +300,6 @@ namespace cmsl
                 prec[token_type_t::minusequal] = 16;
                 prec[token_type_t::starequal] = 16;
                 prec[token_type_t::slashequal] = 16;
-                prec[token_type_t::slashequal] = 16;
                 prec[token_type_t::ampequal] = 16;
                 prec[token_type_t::xorequal] = 16;
                 prec[token_type_t::pipeequal] = 16;

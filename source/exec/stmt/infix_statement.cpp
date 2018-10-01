@@ -32,7 +32,7 @@ namespace cmsl
                 auto expr = builder.build();
 
                 auto result = expr->evaluate(ctx);
-                m_result = instances.gather_ownership(result);
+                m_result = result->copy();
 
 
              //   const auto onp_tokens = to_onp(e);
