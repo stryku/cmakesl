@@ -23,7 +23,6 @@ namespace cmsl
             inst::instance *
             function_call_evaluator::call(const ast::function &fun, const std::vector<inst::instance *> &params)
             {
-
                 if (auto user_function = dynamic_cast<const ast::user_function_node *>(&fun))
                 {
                     m_execution.function_call(*user_function, params);

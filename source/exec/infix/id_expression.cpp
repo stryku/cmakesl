@@ -3,6 +3,8 @@
 #include "exec/execution_context.hpp"
 #include "exec/context_provider.hpp"
 #include "exec/infix/infix_expression_visitor.hpp"
+#include "exec/instance/instance_factory.hpp"
+#include "exec/instance/instances_holder.hpp"
 
 namespace cmsl
 {

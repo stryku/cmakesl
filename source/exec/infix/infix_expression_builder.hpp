@@ -59,14 +59,35 @@ namespace cmsl
 
                 std::vector<std::unique_ptr<infix_expression>> parameter_list();
                 std::unique_ptr<infix_expression> function_call();
-                bool is_current_operator_5() const;
-                std::unique_ptr<infix_expression> operator_expr_5();
-                bool is_current_operator_6() const;
-                std::unique_ptr<infix_expression> operator_expr_6();
                 std::unique_ptr<infix_expression> expr();
                 std::unique_ptr<infix_expression> factor();
                 std::unique_ptr<infix_expression> fundamental_value();
 
+                // It is ugly, but it is better to keep it this way for grammar purpose. Consider refactor, though.
+                bool is_current_operator_2() const;
+                bool is_current_operator_3() const;
+                bool is_current_operator_5() const;
+                bool is_current_operator_6() const;
+                bool is_current_operator_9() const;
+                bool is_current_operator_10() const;
+                bool is_current_operator_11() const;
+                bool is_current_operator_12() const;
+                bool is_current_operator_13() const;
+                bool is_current_operator_14() const;
+                bool is_current_operator_15() const;
+                bool is_current_operator_16() const;
+                std::unique_ptr<infix_expression> operator_expr_2();
+                std::unique_ptr<infix_expression> operator_expr_3();
+                std::unique_ptr<infix_expression> operator_expr_5();
+                std::unique_ptr<infix_expression> operator_expr_6();
+                std::unique_ptr<infix_expression> operator_expr_9();
+                std::unique_ptr<infix_expression> operator_expr_10();
+                std::unique_ptr<infix_expression> operator_expr_11();
+                std::unique_ptr<infix_expression> operator_expr_12();
+                std::unique_ptr<infix_expression> operator_expr_13();
+                std::unique_ptr<infix_expression> operator_expr_14();
+                std::unique_ptr<infix_expression> operator_expr_15();
+                std::unique_ptr<infix_expression> operator_expr_16();
 
             private:
                 token_it_t m_token;

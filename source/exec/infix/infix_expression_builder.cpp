@@ -111,7 +111,7 @@ namespace cmsl
                 }
                 else
                 {
-                    auto operator_expr = operator_expr_6();
+                    auto operator_expr = operator_expr_16();
 
                     if(curr_type() == token_type_t::dot)
                     {
@@ -136,44 +136,6 @@ namespace cmsl
 
                     return std::move(operator_expr);
                 }
-            }
-
-            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_5()
-            {
-                auto f = factor();
-
-                while(expect_not_at_end() &&
-                      is_current_operator_5())
-                {
-                    const auto op = *m_token;
-                    eat(); // eat operator
-
-                    auto rhs = factor();
-
-                    auto lhs = std::move(f);
-                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
-                }
-
-                return std::move(f);
-            }
-
-            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_6()
-            {
-                auto f = operator_expr_5();
-
-                while(expect_not_at_end() &&
-                      is_current_operator_6())
-                {
-                    const auto op = *m_token;
-                    eat(); // eat operator
-
-                    auto rhs = operator_expr_5();
-
-                    auto lhs = std::move(f);
-                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
-                }
-
-                return std::move(f);
             }
 
             std::unique_ptr<infix_expression> infix_expression_builder::function_call()
@@ -244,6 +206,16 @@ namespace cmsl
                 return std::move(params);
             }
 
+            bool infix_expression_builder::is_current_operator_2() const
+            {
+                return curr_type() == token_type_t::dot;
+            }
+
+            bool infix_expression_builder::is_current_operator_3() const
+            {
+                return curr_type() == token_type_t::exclaim;
+            }
+
             bool infix_expression_builder::is_current_operator_5() const
             {
                 const auto operators = {token_type_t::star, token_type_t::slash, token_type_t::percent};
@@ -254,6 +226,304 @@ namespace cmsl
             {
                 const auto operators = {token_type_t::plus, token_type_t::minus};
                 return contains(operators, curr_type());
+            }
+
+            bool infix_expression_builder::is_current_operator_9() const
+            {
+                const auto operators = {
+                        token_type_t::less,
+                        token_type_t::lessequal,
+                        token_type_t::greater,
+                        token_type_t::greaterequal
+                };
+                return contains(operators, curr_type());
+            }
+
+            bool infix_expression_builder::is_current_operator_10() const
+            {
+                const auto operators = {
+                        token_type_t::equalequal,
+                        token_type_t::exclaimequal
+                };
+                return contains(operators, curr_type());
+            }
+
+            bool infix_expression_builder::is_current_operator_11() const
+            {
+                return curr_type() == token_type_t::amp;
+            }
+
+            bool infix_expression_builder::is_current_operator_12() const
+            {
+                return curr_type() == token_type_t::xor_;
+            }
+
+            bool infix_expression_builder::is_current_operator_13() const
+            {
+                return curr_type() == token_type_t::pipe;
+            }
+
+            bool infix_expression_builder::is_current_operator_14() const
+            {
+                return curr_type() == token_type_t::ampamp;
+            }
+
+            bool infix_expression_builder::is_current_operator_15() const
+            {
+                return curr_type() == token_type_t::pipepipe;
+            }
+
+            bool infix_expression_builder::is_current_operator_16() const
+            {
+                const auto operators = {
+                        token_type_t::equal,
+                        token_type_t::plusequal,
+                        token_type_t::minusequal,
+                        token_type_t::starequal,
+                        token_type_t::slashequal,
+                        token_type_t::ampequal,
+                        token_type_t::xorequal,
+                        token_type_t::pipeequal
+                };
+                return contains(operators, curr_type());
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_2()
+            {
+                auto f = factor();
+
+                while(expect_not_at_end() &&
+                        is_current_operator_2())
+                {
+                    eat(); // dot
+                    auto lhs = std::move(f);
+                    if(is_current_class_member_access())
+                    {
+                        const auto member_name = *m_token;
+                        eat();
+                        f = std::make_unique<class_member_access_expression>(std::move(lhs),
+                                                                                member_name);
+                    }
+                    else
+                    {
+                        auto vals = get_function_call_values();
+                        f = std::make_unique<user_member_function_call_expression>(m_fun_caller,
+                                                                                   std::move(lhs),
+                                                                                   vals.name,
+                                                                                   std::move(vals.params));
+                    }
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_3()
+            {
+                auto f = operator_expr_2();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_3())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_2();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_5()
+            {
+                auto f = operator_expr_3();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_5())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_3();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_6()
+            {
+                auto f = operator_expr_5();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_6())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_5();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_9()
+            {
+                auto f = operator_expr_6();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_9())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_6();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_10()
+            {
+                auto f = operator_expr_9();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_10())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_9();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_11()
+            {
+                auto f = operator_expr_10();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_11())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_10();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_12()
+            {
+                auto f = operator_expr_11();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_12())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_11();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_13()
+            {
+                auto f = operator_expr_12();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_13())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_12();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_14()
+            {
+                auto f = operator_expr_13();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_14())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_13();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_15()
+            {
+                auto f = operator_expr_14();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_15())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_14();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
+            }
+
+            std::unique_ptr<infix_expression> infix_expression_builder::operator_expr_16()
+            {
+                auto f = operator_expr_15();
+
+                while(expect_not_at_end() &&
+                      is_current_operator_16())
+                {
+                    const auto op = *m_token;
+                    eat(); // eat operator
+
+                    auto rhs = operator_expr_15();
+
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_expression>(std::move(lhs), op, std::move(rhs));
+                }
+
+                return std::move(f);
             }
         }
     }
