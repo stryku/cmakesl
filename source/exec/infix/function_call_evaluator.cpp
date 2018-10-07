@@ -31,7 +31,7 @@ namespace cmsl
                 else if(auto builtin_fun = dynamic_cast<const ast::builtin_function*>(&fun))
                 {
                     // builtin function
-                    builtin_function_caller caller{ m_ctx.instances };
+                    builtin::builtin_function_caller caller{ m_ctx.instances };
                     return caller.call(builtin_fun->get_fundamental_fun_kind(), params);
                 }
 
@@ -43,7 +43,7 @@ namespace cmsl
             {
                 if(class_instance.get_type().is_builtin())
                 {
-                    builtin_function_caller caller{ m_ctx.instances };
+                    builtin::builtin_function_caller caller{ m_ctx.instances };
                     const auto casted_fun = dynamic_cast<const ast::builtin_function*>(&fun);
                     return caller.call_member_function(&class_instance, *casted_fun, params);
                 }

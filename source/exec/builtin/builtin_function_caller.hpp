@@ -21,32 +21,38 @@ namespace cmsl
             class instances_holder;
         }
 
-        // Class to call builtin functions (also on builtin types). e.g. int::to_string().
-        class builtin_function_caller
+        namespace builtin
         {
-        private:
-            using ff_kind_t = ast::builtin_function_kind;
+            // Class to call builtin functions (also on builtin types). e.g. int::to_string().
+            class builtin_function_caller
+            {
+            private:
+                using ff_kind_t = ast::builtin_function_kind;
 
-        public:
-            explicit builtin_function_caller(inst::instances_holder& instances);
+            public:
+                explicit builtin_function_caller(inst::instances_holder &instances);
 
-            inst::instance* call_member_function(inst::instance *class_instance,
-                                                 cmsl::string_view fun_name,
-                                                 const std::vector<inst::instance *>& parameters);
+                inst::instance *call_member_function(inst::instance *class_instance,
+                                                     cmsl::string_view fun_name,
+                                                     const std::vector<inst::instance *> &parameters);
 
-            inst::instance* call_member_function(inst::instance *class_instance,
-                                                 const ast::builtin_function& fun,
-                                                 const std::vector<inst::instance *>& parameters);
+                inst::instance *call_member_function(inst::instance *class_instance,
+                                                     const ast::builtin_function &fun,
+                                                     const std::vector<inst::instance *> &parameters);
 
-            inst::instance* call(ff_kind_t fun, std::vector<inst::instance *> parameters);
+                inst::instance *call(ff_kind_t fun, std::vector<inst::instance *> parameters);
 
-        private:
-            inst::instance* call_push_back(inst::instance* class_instance, std::vector<inst::instance*> parameters);
-            inst::instance* call_version_ctor(const ast::type& type, std::vector<inst::instance*> parameters);
-            inst::instance* call_cmake_minimum_required(std::vector<inst::instance*> parameters);
+            private:
+                inst::instance *
+                call_push_back(inst::instance *class_instance, std::vector<inst::instance *> parameters);
 
-        private:
-            inst::instances_holder& m_instances;
-        };
+                inst::instance *call_version_ctor(const ast::type &type, std::vector<inst::instance *> parameters);
+
+                inst::instance *call_cmake_minimum_required(std::vector<inst::instance *> parameters);
+
+            private:
+                inst::instances_holder &m_instances;
+            };
+        }
     }
 }
