@@ -29,6 +29,7 @@ namespace cmsl
                     case builtin_function_kind::version_ctor: return "version";
                     case builtin_function_kind::project_ctor: return "project";
                     case builtin_function_kind::cmake_minimum_required: return "cmake_minimum_required";
+                    case builtin_function_kind::project_add_executable: return "add_executable";
 
                     default:
                         CMSL_UNREACHABLE("Passed unknown builtin function kind");
