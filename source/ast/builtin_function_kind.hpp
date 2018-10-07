@@ -13,6 +13,7 @@ namespace cmsl
             version_ctor,
 
             project_ctor,
+            project_add_executable,
 
             cmake_minimum_required
         };

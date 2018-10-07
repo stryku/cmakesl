@@ -28,6 +28,8 @@ namespace cmsl
             void add_functions();
             void add_cmake_minimum_required();
 
+            const ast::type& get_or_create_list_type(cmsl::string_view name, const ast::type& value_type);
+
             lexer::token::token fake_name_token() const;
         };
     }

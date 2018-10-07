@@ -22,7 +22,7 @@ namespace cmsl
             type(const type&) = delete;
             type& operator=(const type&) = delete;
 
-            virtual ~type() {}
+            virtual ~type() = default;
 
             bool is_fundamental() const;
             bool is_generic() const;
