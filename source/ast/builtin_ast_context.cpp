@@ -32,6 +32,7 @@ namespace cmsl
 
             add_string_type();
             add_version_type();
+            add_project_type();
         }
 
         void builtin_ast_context::add_string_type()
@@ -81,7 +82,7 @@ namespace cmsl
                     parameter_declaration{ int_type, fake_name_token() }  // tweak
             };
 
-            auto fun = std::make_unique<builtin_function>(builtin_function_kind ::version_ctor,
+            auto fun = std::make_unique<builtin_function>(builtin_function_kind::version_ctor,
                                                               std::move(params));
 
             builder.with_function(std::move(fun));
@@ -114,6 +115,27 @@ namespace cmsl
                                                               std::move(params));
 
             add_function(std::move(fun));
+        }
+
+        void builtin_ast_context::add_project_type()
+        {
+            class_builder builder{ *this, "project" };
+
+            const auto string_type = find_type("string");
+
+            builtin_function::params_declaration_t params{
+                parameter_declaration{ string_type, fake_name_token() }, // name
+            };
+
+            auto fun = std::make_unique<builtin_function>(builtin_function_kind::project_ctor,
+                                                          std::move(params));
+
+            builder.with_function(std::move(fun));
+
+            auto node = builder.build();
+            auto project_type = std::make_unique<class_type>(std::move(node), type_kind::k_project);
+
+            add_type(std::move(project_type));
         }
     }
 }

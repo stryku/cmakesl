@@ -12,6 +12,8 @@ namespace cmsl
 
             version_ctor,
 
+            project_ctor,
+
             cmake_minimum_required
         };
     }

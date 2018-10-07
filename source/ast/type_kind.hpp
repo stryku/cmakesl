@@ -14,6 +14,7 @@ namespace cmsl
             k_string,
             k_list,
             k_version,
+            k_project,
 
             k_user
         };
