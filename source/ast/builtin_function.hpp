@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/assert.hpp"
 #include "ast/function.hpp"
 #include "ast/builtin_function_kind.hpp"
 
@@ -28,6 +29,9 @@ namespace cmsl
                     case builtin_function_kind::version_ctor: return "version";
                     case builtin_function_kind::project_ctor: return "project";
                     case builtin_function_kind::cmake_minimum_required: return "cmake_minimum_required";
+
+                    default:
+                        CMSL_UNREACHABLE("Passed unknown builtin function kind");
                 }
             }
 

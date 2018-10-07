@@ -76,10 +76,10 @@ namespace cmsl
             }
 
             builtin_function::params_declaration_t params{
-                    parameter_declaration{ int_type, fake_name_token() }, // major
-                    parameter_declaration{ int_type, fake_name_token() }, // minor
-                    parameter_declaration{ int_type, fake_name_token() }, // patch
-                    parameter_declaration{ int_type, fake_name_token() }  // tweak
+                    parameter_declaration{ int_type }, // major
+                    parameter_declaration{ int_type }, // minor
+                    parameter_declaration{ int_type }, // patch
+                    parameter_declaration{ int_type }  // tweak
             };
 
             auto fun = std::make_unique<builtin_function>(builtin_function_kind::version_ctor,
@@ -108,7 +108,7 @@ namespace cmsl
             const auto version_type = find_type("version");
 
             builtin_function::params_declaration_t params{
-                    parameter_declaration{ version_type, fake_name_token() } // version
+                    parameter_declaration{ version_type } // version
             };
 
             auto fun = std::make_unique<builtin_function>(builtin_function_kind::cmake_minimum_required,
@@ -124,7 +124,7 @@ namespace cmsl
             const auto string_type = find_type("string");
 
             builtin_function::params_declaration_t params{
-                parameter_declaration{ string_type, fake_name_token() }, // name
+                parameter_declaration{ string_type}, // name
             };
 
             auto fun = std::make_unique<builtin_function>(builtin_function_kind::project_ctor,
