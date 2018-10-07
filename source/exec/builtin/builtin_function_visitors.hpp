@@ -21,7 +21,7 @@ namespace cmsl
                     case inst::instance_value_type::string:
                     {
                         const auto& val = boost::get<std::string>(inst_val);
-                        return static_cast<int>(val.size()); // todo introduce int alias
+                        return static_cast<inst::int_t>(val.size());
                     }
 
                     case inst::instance_value_type::generic:
@@ -90,10 +90,6 @@ namespace cmsl
 
                 switch(value_type)
                 {
-                    case inst::instance_value_type::bool_:break;
-                    case inst::instance_value_type::int_:break;
-                    case inst::instance_value_type::double_:break;
-                    case inst::instance_value_type::string:break;
 
                     case inst::instance_value_type::generic:
                     {
@@ -104,6 +100,10 @@ namespace cmsl
                                               return true;
                                           });
                     }
+
+
+                    default:
+                        CMSL_UNREACHABLE("Called push_back() on type that does not support it");
                 }
             }
 
