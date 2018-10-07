@@ -46,7 +46,7 @@ namespace cmsl
 
         bool type::operator==(const type &other) const
         {
-            // For every type, there only one instance during runtime. Pointers comparison is enough
+            // For every type, there is only one instance during runtime. Pointers comparison is enough
             return this == &other;
         }
 

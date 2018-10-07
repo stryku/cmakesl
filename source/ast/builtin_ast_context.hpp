@@ -23,6 +23,7 @@ namespace cmsl
             void add_types();
             void add_string_type();
             void add_version_type();
+            void add_project_type();
 
             void add_functions();
             void add_cmake_minimum_required();
