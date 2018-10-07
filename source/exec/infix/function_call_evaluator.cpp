@@ -2,7 +2,7 @@
 
 #include "common/assert.hpp"
 #include "ast/ast_context.hpp"
-#include "ast/fundamental_function.hpp"
+#include "ast/builtin_function.hpp"
 #include "exec/execution.hpp"
 #include "exec/builtin_function_caller.hpp"
 #include "infix_evaluation_context.hpp"
@@ -28,7 +28,7 @@ namespace cmsl
                     m_execution.function_call(*user_function, params);
                     return get_and_store_function_result();
                 }
-                else if(auto builtin_fun = dynamic_cast<const ast::fundamental_function*>(&fun))
+                else if(auto builtin_fun = dynamic_cast<const ast::builtin_function*>(&fun))
                 {
                     // builtin function
                     builtin_function_caller caller{ m_ctx.instances };
@@ -44,7 +44,7 @@ namespace cmsl
                 if(class_instance.get_type().is_builtin())
                 {
                     builtin_function_caller caller{ m_ctx.instances };
-                    const auto casted_fun = dynamic_cast<const ast::fundamental_function*>(&fun);
+                    const auto casted_fun = dynamic_cast<const ast::builtin_function*>(&fun);
                     return caller.call_member_function(&class_instance, *casted_fun, params);
                 }
                 else

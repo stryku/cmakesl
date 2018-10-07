@@ -25,7 +25,7 @@ set(AST_SOURCES
     user_function_node.cpp
     user_function_node.hpp
     function.hpp
-    fundamental_function.hpp
+    builtin_function.hpp
     if_else_node.cpp
     if_else_node.hpp
     integer_constant.hpp
@@ -51,7 +51,9 @@ set(AST_SOURCES
     list_type.cpp
     list_type.hpp
     generic_type_factory.hpp
-        generic_type_factory.cpp builtin_function_kind.hpp)
+    generic_type_factory.cpp
+    builtin_function_kind.hpp
+)
 
 add_library(ast ${AST_SOURCES})
 target_include_directories(ast PRIVATE ${CMAKESL_SOURCES_DIR})

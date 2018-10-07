@@ -11,7 +11,7 @@
 #include "ast/if_else_node.hpp"
 #include "ast/while_node.hpp"
 
-#include "ast/fundamental_function.hpp"
+#include "ast/builtin_function.hpp"
 #include "common/type_traits.hpp"
 #include "exec/instance/instance_converter.hpp"
 #include "exec/instance/instances_holder.hpp"

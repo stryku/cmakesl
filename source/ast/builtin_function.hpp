@@ -8,11 +8,11 @@ namespace cmsl
     namespace ast
     {
         // todo rename to builtin
-        class fundamental_function : public function
+        class builtin_function : public function
         {
         public:
             // todo accept name as parameter
-            explicit fundamental_function(builtin_function_kind k, params_declaration_t params_declaration)
+            explicit builtin_function(builtin_function_kind k, params_declaration_t params_declaration)
                 : m_kind{ k }
                 , m_params_declaration{ std::move(params_declaration) }
             {}

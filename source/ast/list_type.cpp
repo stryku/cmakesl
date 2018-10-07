@@ -1,7 +1,7 @@
 #include "ast/list_type.hpp"
 
 #include "ast/ast_context.hpp"
-#include "ast/fundamental_function.hpp"
+#include "ast/builtin_function.hpp"
 
 namespace cmsl
 {

@@ -2,7 +2,7 @@
 
 #include "ast/ast_context.hpp"
 #include "ast/list_type.hpp"
-#include "ast/fundamental_function.hpp"
+#include "ast/builtin_function.hpp"
 
 namespace cmsl
 {
@@ -25,18 +25,18 @@ namespace cmsl
 
             for(const auto kind : function_kinds)
             {
-                fundamental_function::params_declaration_t params{};
-                auto fun = std::make_unique<fundamental_function>(kind, params);
+                builtin_function::params_declaration_t params{};
+                auto fun = std::make_unique<builtin_function>(kind, params);
                 ctx->add_function(std::move(fun));
             }
 
             // push_back(val)
             {
-                fundamental_function::params_declaration_t params{
+                builtin_function::params_declaration_t params{
                     parameter_declaration{ &value_type, lexer::token::token{ lexer::token::token_type::identifier } }
                 };
 
-                auto fun = std::make_unique<fundamental_function>(builtin_function_kind::push_back, std::move(params));
+                auto fun = std::make_unique<builtin_function>(builtin_function_kind::push_back, std::move(params));
                 ctx->add_function(std::move(fun));
             }
 

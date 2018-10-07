@@ -10,7 +10,7 @@ namespace cmsl
     namespace ast
     {
         class type;
-        class fundamental_function;
+        class builtin_function;
     }
 
     namespace exec
@@ -35,7 +35,7 @@ namespace cmsl
                                                  const std::vector<inst::instance *>& parameters);
 
             inst::instance* call_member_function(inst::instance *class_instance,
-                                                 const ast::fundamental_function& fun,
+                                                 const ast::builtin_function& fun,
                                                  const std::vector<inst::instance *>& parameters);
 
             inst::instance* call(ff_kind_t fun, std::vector<inst::instance *> parameters);
