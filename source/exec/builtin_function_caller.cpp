@@ -1,7 +1,7 @@
 #include <vector>
 #include "exec/builtin_function_caller.hpp"
 
-#include "ast/fundamental_function.hpp"
+#include "ast/builtin_function.hpp"
 #include "exec/builtin_function_visitors.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "ast/type.hpp"
@@ -20,12 +20,12 @@ namespace cmsl
         {
             const auto fun_ptr = class_instance->get_function(fun_name);
 
-            if(auto fun = dynamic_cast<const ast::fundamental_function*>(fun_ptr))
+            if(auto fun = dynamic_cast<const ast::builtin_function*>(fun_ptr))
             {
                 return call_member_function(class_instance, *fun, parameters);
             }
 
-            CMSL_UNREACHABLE("Not a fundamental call instance type.");
+            CMSL_UNREACHABLE("Not a builtin call instance type.");
             return nullptr;
         }
 
@@ -57,7 +57,7 @@ namespace cmsl
         }
 
         inst::instance *
-        builtin_function_caller::call(builtin_function_caller::ff_kind_t fun, std::vector<inst::instance *> parameters)
+        builtin_function_caller::call(ff_kind_t fun, std::vector<inst::instance *> parameters)
         {
             switch(fun)
             {
@@ -73,7 +73,7 @@ namespace cmsl
         }
 
         inst::instance *
-        builtin_function_caller::call_member_function(inst::instance *class_instance, const ast::fundamental_function& fun, const std::vector<inst::instance *>& parameters)
+        builtin_function_caller::call_member_function(inst::instance *class_instance, const ast::builtin_function& fun, const std::vector<inst::instance *>& parameters)
         {
             switch(fun.get_fundamental_fun_kind())
             {

@@ -4,7 +4,7 @@
 #include "ast/type_kind.hpp"
 #include "ast/class_builder.hpp"
 #include "ast/class_type.hpp"
-#include "ast/fundamental_function.hpp"
+#include "ast/builtin_function.hpp"
 
 namespace cmsl
 {
@@ -45,7 +45,7 @@ namespace cmsl
 
             for(const auto fun_kind : string_functions)
             {
-                auto fun = std::make_unique<fundamental_function>(fun_kind, fundamental_function::params_declaration_t{});
+                auto fun = std::make_unique<builtin_function>(fun_kind, builtin_function::params_declaration_t{});
                 builder.with_function(std::move(fun));
             }
 
@@ -74,14 +74,14 @@ namespace cmsl
                 builder.with_member(std::move(member));
             }
 
-            fundamental_function::params_declaration_t params{
+            builtin_function::params_declaration_t params{
                     parameter_declaration{ int_type, fake_name_token() }, // major
                     parameter_declaration{ int_type, fake_name_token() }, // minor
                     parameter_declaration{ int_type, fake_name_token() }, // patch
                     parameter_declaration{ int_type, fake_name_token() }  // tweak
             };
 
-            auto fun = std::make_unique<fundamental_function>(builtin_function_kind ::version_ctor,
+            auto fun = std::make_unique<builtin_function>(builtin_function_kind ::version_ctor,
                                                               std::move(params));
 
             builder.with_function(std::move(fun));
@@ -106,11 +106,11 @@ namespace cmsl
         {
             const auto version_type = find_type("version");
 
-            fundamental_function::params_declaration_t params{
+            builtin_function::params_declaration_t params{
                     parameter_declaration{ version_type, fake_name_token() } // version
             };
 
-            auto fun = std::make_unique<fundamental_function>(builtin_function_kind::cmake_minimum_required,
+            auto fun = std::make_unique<builtin_function>(builtin_function_kind::cmake_minimum_required,
                                                               std::move(params));
 
             add_function(std::move(fun));
