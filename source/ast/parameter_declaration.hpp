@@ -2,6 +2,8 @@
 
 #include "lexer/token/token.hpp"
 
+#include <boost/optional.hpp>
+
 namespace cmsl
 {
     namespace ast
@@ -10,7 +12,7 @@ namespace cmsl
         struct parameter_declaration
         {
             const type* param_type;
-            lexer::token::token name; // todo introduce type_only_parameter_declaration
+            boost::optional<lexer::token::token> name;
         };
     }
 }

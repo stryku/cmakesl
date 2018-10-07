@@ -2,7 +2,7 @@ set(AST_TEST_SOURCES
     main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ast_context.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/type_conversion_check_test.cpp
-        mock/function_mock.hpp mock/ast_context_mock.hpp)
+        mock/function_mock.hpp mock/ast_context_mock.hpp project_type_test.cpp)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 

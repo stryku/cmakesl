@@ -5,6 +5,8 @@
 #include "ast/class_builder.hpp"
 #include "ast/class_type.hpp"
 #include "ast/builtin_function.hpp"
+#include "ast/generic_type_factory.hpp"
+#include "ast/list_type.hpp"
 
 namespace cmsl
 {
@@ -32,6 +34,7 @@ namespace cmsl
 
             add_string_type();
             add_version_type();
+            add_project_type();
         }
 
         void builtin_ast_context::add_string_type()
@@ -75,13 +78,13 @@ namespace cmsl
             }
 
             builtin_function::params_declaration_t params{
-                    parameter_declaration{ int_type, fake_name_token() }, // major
-                    parameter_declaration{ int_type, fake_name_token() }, // minor
-                    parameter_declaration{ int_type, fake_name_token() }, // patch
-                    parameter_declaration{ int_type, fake_name_token() }  // tweak
+                    parameter_declaration{ int_type }, // major
+                    parameter_declaration{ int_type }, // minor
+                    parameter_declaration{ int_type }, // patch
+                    parameter_declaration{ int_type }  // tweak
             };
 
-            auto fun = std::make_unique<builtin_function>(builtin_function_kind ::version_ctor,
+            auto fun = std::make_unique<builtin_function>(builtin_function_kind::version_ctor,
                                                               std::move(params));
 
             builder.with_function(std::move(fun));
@@ -107,13 +110,69 @@ namespace cmsl
             const auto version_type = find_type("version");
 
             builtin_function::params_declaration_t params{
-                    parameter_declaration{ version_type, fake_name_token() } // version
+                    parameter_declaration{ version_type } // version
             };
 
             auto fun = std::make_unique<builtin_function>(builtin_function_kind::cmake_minimum_required,
                                                               std::move(params));
 
             add_function(std::move(fun));
+        }
+
+        void builtin_ast_context::add_project_type()
+        {
+            class_builder builder{ *this, "project" };
+
+            const auto string_type = find_type("string");
+
+            // constructor
+            {
+                builtin_function::params_declaration_t params{
+                        parameter_declaration{string_type}, // name
+                };
+
+                auto fun = std::make_unique<builtin_function>(builtin_function_kind::project_ctor,
+                                                              std::move(params));
+
+                builder.with_function(std::move(fun));
+            }
+
+            // add_executable
+            {
+                const auto& sources_type = get_or_create_list_type("list<string>", *string_type);
+                builtin_function::params_declaration_t params {
+                        parameter_declaration{ &sources_type }, // sources
+                };
+
+                auto fun = std::make_unique<builtin_function>(builtin_function_kind::project_add_executable,
+                                                                std::move(params));
+
+                builder.with_function(std::move(fun));
+            }
+
+            auto node = builder.build();
+            auto project_type = std::make_unique<class_type>(std::move(node), type_kind::k_project);
+
+            add_type(std::move(project_type));
+        }
+
+        const ast::type& builtin_ast_context::get_or_create_list_type(cmsl::string_view name, const ast::type &value_type)
+        {
+            if(const auto found_type = find_type(name))
+            {
+                return *found_type;
+            }
+
+            generic_type_factory factory;
+            auto created_list_type = factory.create_list(name.to_string(), *this, value_type);
+
+            // Move ptr from unique_ptr<derived class> to unique_ptr<base class>
+            std::unique_ptr<type> created_type( created_list_type.release() );
+
+            auto created_type_ptr = created_type.get();
+            add_type(std::move(created_type));
+
+            return *created_type_ptr;
         }
     }
 }
