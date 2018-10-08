@@ -35,6 +35,11 @@ namespace cmsl
                 instance_t* evaluate(infix_evaluation_context& ctx) const override;
                 void visit(infix_expression_visitor& visitor) const override;
 
+                const infix_expression& get_lhs() const;
+                lexer::token::token get_operator() const;
+                const infix_expression& get_rhs() const;
+
+
             private:
                 //todo remove static
                 static inst::instance_value_t apply_operator_visitor(instance_t* lhs, token_type_t  op, instance_t* rhs);

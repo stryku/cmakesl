@@ -20,6 +20,7 @@ namespace cmsl
                 void visit(infix_expression_visitor& visitor) const override;
 
                 lexer::token::token get_member_name() const;
+                const infix_expression& get_lhs() const;
 
             private:
                 std::unique_ptr<infix_expression> m_lhs;

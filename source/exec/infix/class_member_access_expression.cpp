@@ -29,6 +29,11 @@ namespace cmsl
             {
                 return m_member_name;
             }
+
+            const infix_expression &class_member_access_expression::get_lhs() const
+            {
+                return *m_lhs;
+            }
         }
     }
 }
