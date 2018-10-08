@@ -17,6 +17,8 @@ namespace cmsl
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
                 void visit(infix_expression_visitor& visitor) const override;
 
+                lexer::token::token get_identifier() const;
+                
             private:
                 lexer::token::token m_identifer;
             };

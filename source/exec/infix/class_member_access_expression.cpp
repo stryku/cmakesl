@@ -24,6 +24,11 @@ namespace cmsl
             {
                 visitor.visit(*this);
             }
+
+            lexer::token::token class_member_access_expression::get_member_name() const
+            {
+                return m_member_name;
+            }
         }
     }
 }

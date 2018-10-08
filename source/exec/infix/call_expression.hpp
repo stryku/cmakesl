@@ -24,6 +24,8 @@ namespace cmsl
 
                 explicit call_expression(function_caller& fun_caller, lexer::token::token name, params_t parameter_expressions);
 
+                lexer::token::token get_name();
+                
             protected:
                 function_caller& get_caller() const;
                 cmsl::string_view get_name() const;
@@ -33,7 +35,7 @@ namespace cmsl
 
             private:
                 function_caller& m_fun_caller;
-                cmsl::lexer::token::token m_name;
+                lexer::token::token m_name;
                 params_t m_parameter_expressions;
             };
         }

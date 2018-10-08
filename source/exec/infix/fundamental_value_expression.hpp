@@ -15,7 +15,7 @@ namespace cmsl
                 explicit fundamental_value_expression(lexer::token::token token);
 
                 lexer::token::token get_token() const;
-
+                
             protected:
                 const lexer::token::token m_token;
             };

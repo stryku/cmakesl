@@ -26,6 +26,11 @@ namespace cmsl
             {
                 visitor.visit(*this);
             }
+
+            lexer::token::token id_expression::get_identifier() const
+            {
+                return m_identifer;
+            }
         }
     }
 }
