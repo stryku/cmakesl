@@ -90,7 +90,6 @@ namespace cmsl
 
                 switch(value_type)
                 {
-
                     case inst::instance_value_type::generic:
                     {
                         auto& generic_val = boost::get<inst::generic_instance_value>(inst_val);
@@ -100,6 +99,7 @@ namespace cmsl
                                               return true;
                                           });
                     }
+                    break;
 
 
                     default:

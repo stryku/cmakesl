@@ -6,9 +6,9 @@
 
 namespace cmsl
 {
-    namespace test
+    namespace ast
     {
-        namespace ast
+        namespace test
         {
             class function_mock : public cmsl::ast::function
             {

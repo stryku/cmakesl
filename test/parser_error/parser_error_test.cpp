@@ -32,7 +32,7 @@ namespace cmsl
             template <typename Tokens, typename Action>
             void report_error_test(Tokens&& tokens, Action&& action)
             {
-                testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
+                testing::StrictMock<errors::test::errors_observer_mock> err_observer_mock;
                 errors::errors_observer err_observer;
 
                 EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
@@ -49,7 +49,7 @@ namespace cmsl
 
                     TEST_P(BuiltinOrIdentifier, NoError)
                     {
-                        testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
+                        testing::StrictMock<errors::test::errors_observer_mock> err_observer_mock;
                         errors::errors_observer err_observer;
                         const auto t = token_kw_int;
                         const auto tokens = GetParam();

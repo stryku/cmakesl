@@ -9,14 +9,13 @@
 #include "test/exec/mock/infix_expression_mock.hpp"
 #include "test/exec/mock/instance_mock.hpp"
 
-
 namespace cmsl
 {
-    namespace test
+    namespace exec
     {
-        namespace exec
+        namespace infix
         {
-            namespace infix
+            namespace test
             {
                 using testing::Eq;
                 using testing::Return;
@@ -33,22 +32,22 @@ namespace cmsl
 
                 TEST_F(MemberFunctionCallExpression, CorrectParametersPassAndReturn)
                 {
-                    auto caller_mock = std::make_unique<function_caller_mock>();
+                    auto caller_mock = std::make_unique<exec::test::function_caller_mock>();
                     auto param_1_expr_mock = std::make_unique<infix_expression_mock>();
                     auto param_2_expr_mock = std::make_unique<infix_expression_mock>();
-                    auto param_1_inst_mock = std::make_unique<instance_mock>();
-                    auto param_2_inst_mock = std::make_unique<instance_mock>();
-                    auto expected_result = std::make_unique<instance_mock>();
+                    auto param_1_inst_mock = std::make_unique<inst::test::instance_mock>();
+                    auto param_2_inst_mock = std::make_unique<inst::test::instance_mock>();
+                    auto expected_result = std::make_unique<inst::test::instance_mock>();
 
                     auto class_isntance_expr_mock = std::make_unique<infix_expression_mock>();
-                    auto class_instance_mock = std::make_unique<instance_mock>();
+                    auto class_instance_mock = std::make_unique<inst::test::instance_mock>();
 
-                    auto function_mock = std::make_unique<ast::function_mock>();
+                    auto function_mock = std::make_unique<ast::test::function_mock>();
 
                     EXPECT_CALL(*class_instance_mock, get_function(_))
-                                .WillOnce(Return(function_mock.get()));
+                            .WillOnce(Return(function_mock.get()));
 
-                    auto expected_params = std::vector<cmsl::exec::inst::instance*>
+                    auto expected_params = std::vector<cmsl::exec::inst::instance *>
                             {
                                     param_1_inst_mock.get(),
                                     param_2_inst_mock.get()
@@ -65,16 +64,17 @@ namespace cmsl
 
                     auto function_mock_ptr = function_mock.get();
                     auto class_instance_ptr = class_instance_mock.get();
-                    EXPECT_CALL(*caller_mock, call_member(RefByPtrMatcher(class_instance_ptr), RefByPtrMatcher(function_mock_ptr), Eq(expected_params)))
+                    EXPECT_CALL(*caller_mock,
+                                call_member(RefByPtrMatcher(class_instance_ptr), RefByPtrMatcher(function_mock_ptr),
+                                            Eq(expected_params)))
                             .WillOnce(Return(expected_result.get()));
 
-                    using expr_t = cmsl::exec::infix::member_function_call_expression;
-                    expr_t::params_t params;
+                    member_function_call_expression::params_t params;
 
                     params.emplace_back(std::move(param_1_expr_mock));
                     params.emplace_back(std::move(param_2_expr_mock));
 
-                    auto expr = std::make_unique<expr_t>(*caller_mock,
+                    auto expr = std::make_unique<member_function_call_expression>(*caller_mock,
                                                          std::move(class_isntance_expr_mock),
                                                          token_identifier(""),
                                                          std::move(params));

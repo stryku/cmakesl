@@ -4,21 +4,23 @@
 
 namespace cmsl
 {
-    namespace test
+    namespace exec
     {
-        namespace exec
+        namespace infix
         {
-            namespace infix
+            namespace test
             {
-                class infix_expression_mock : public cmsl::exec::infix::infix_expression
+                class infix_expression_mock : public infix_expression
                 {
                 private:
-                    using instance_t = cmsl::exec::inst::instance;
-                    using infix_evaluation_context_t = cmsl::exec::infix::infix_evaluation_context;
+                    using instance_t = inst::instance;
 
                 public:
-                    MOCK_CONST_METHOD1(evaluate, instance_t*(infix_evaluation_context_t&));
-                    MOCK_CONST_METHOD1(visit, void(cmsl::exec::infix::infix_expression_visitor&));
+                    MOCK_CONST_METHOD1(evaluate, instance_t *(infix_evaluation_context
+                            &));
+
+                    MOCK_CONST_METHOD1(visit, void(infix_expression_visitor
+                            &));
                 };
             }
         }

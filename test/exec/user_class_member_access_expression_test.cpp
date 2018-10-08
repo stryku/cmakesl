@@ -9,40 +9,39 @@
 
 namespace cmsl
 {
-    namespace test
+    namespace exec
     {
-        namespace exec
+        namespace infix
         {
-            namespace infix
+            namespace test
             {
-                namespace class_member_access_expression
+                using testing::Return;
+                using testing::NotNull;
+                using testing::_;
+
+                using namespace cmsl::test::common;
+
+                using ClassMemberAccess = ExpressionEvaluationTest<testing::Test>;
+
+                TEST_F(ClassMemberAccess, GetCorrectMember)
                 {
-                    using testing::Return;
-                    using testing::NotNull;
-                    using testing::_;
+                    const auto &int_type = *m_ctx_provider.get_ast_ctx()
+                                                          .find_type("int");
+                    auto member_instance = std::make_unique<inst::simple_unnamed_instance>(int_type);
+                    auto class_instance = std::make_unique<inst::test::instance_mock>();
+                    auto lhs_expr = std::make_unique<infix::test::infix_expression_mock>();
 
-                    using namespace cmsl::test::common;
+                    EXPECT_CALL(*lhs_expr, evaluate(_))
+                            .WillOnce(Return(class_instance.get()));
 
-                    using ClassMemberAccess = ExpressionEvaluationTest<testing::Test>;
+                    EXPECT_CALL(*class_instance, get_member(_))
+                            .WillOnce(Return(member_instance.get()));
 
-                    TEST_F(ClassMemberAccess, GetCorrectMember)
-                    {
-                        const auto& int_type = *m_ctx_provider.get_ast_ctx().find_type("int");
-                        auto member_instance = std::make_unique<cmsl::exec::inst::simple_unnamed_instance>(int_type);
-                        auto class_instance = std::make_unique<instance_mock>();
-                        auto lhs_expr = std::make_unique<infix_expression_mock>();
+                    auto class_member_access_expr = std::make_unique<class_member_access_expression>(
+                            std::move(lhs_expr), token_identifier());
+                    auto result = class_member_access_expr->evaluate(m_eval_ctx);
 
-                        EXPECT_CALL(*lhs_expr, evaluate(_))
-                                    .WillOnce(Return(class_instance.get()));
-
-                        EXPECT_CALL(*class_instance, get_member(_))
-                                    .WillOnce(Return(member_instance.get()));
-
-                        auto class_member_access_expr = std::make_unique<cmsl::exec::infix::class_member_access_expression>(std::move(lhs_expr), token_identifier());
-                        auto result = class_member_access_expr->evaluate(m_eval_ctx);
-
-                        EXPECT_THAT(result, member_instance.get());
-                    }
+                    EXPECT_THAT(result, member_instance.get());
                 }
             }
         }

@@ -6,23 +6,43 @@
 
 namespace cmsl
 {
-    namespace test
+    namespace exec
     {
-        namespace exec
+        namespace infix
         {
-            class infix_expression_visitor_mock : public cmsl::exec::infix::infix_expression_visitor
+            namespace test
             {
-            public:
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::bool_value_expression&));
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::int_value_expression&));
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::double_value_expression&));
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::string_value_expression&));
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::id_expression&));
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::member_function_call_expression&));
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::binary_operator_expression&));
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::function_call_expression&));
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::class_member_access_expression&));
-            };
+                class infix_expression_visitor_mock : public infix_expression_visitor
+                {
+                public:
+                    MOCK_METHOD1(visit, void(
+                            const bool_value_expression&));
+
+                    MOCK_METHOD1(visit, void(
+                            const int_value_expression&));
+
+                    MOCK_METHOD1(visit, void(
+                            const double_value_expression&));
+
+                    MOCK_METHOD1(visit, void(
+                            const string_value_expression&));
+
+                    MOCK_METHOD1(visit, void(
+                            const id_expression&));
+
+                    MOCK_METHOD1(visit, void(
+                            const member_function_call_expression&));
+
+                    MOCK_METHOD1(visit, void(
+                            const binary_operator_expression&));
+
+                    MOCK_METHOD1(visit, void(
+                            const function_call_expression&));
+
+                    MOCK_METHOD1(visit, void(
+                            const class_member_access_expression&));
+                };
+            }
         }
     }
 }

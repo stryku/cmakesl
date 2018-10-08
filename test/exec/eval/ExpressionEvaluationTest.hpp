@@ -8,67 +8,67 @@
 
 namespace cmsl
 {
-    namespace test
+    namespace exec
     {
-        namespace exec
+        namespace infix
         {
-            namespace infix
+            namespace test
             {
-                class context_provider : public cmsl::exec::context_provider
+                class context_provider : public exec::context_provider
                 {
                 public:
-                    const cmsl::ast::ast_context& get_ast_ctx() const
+                    const cmsl::ast::ast_context &get_ast_ctx() const
                     {
                         return m_ast_ctx;
                     }
 
-                    cmsl::exec::execution_context& get_exec_ctx()
+                    cmsl::exec::execution_context &get_exec_ctx()
                     {
                         return m_exec_ctx;
                     }
 
                 private:
-                    cmsl::ast::builtin_ast_context m_ast_ctx;
-                    cmsl::exec::execution_context m_exec_ctx;
+                    ast::builtin_ast_context m_ast_ctx;
+                    execution_context m_exec_ctx;
                 };
 
-                template <typename T>
+                template<typename T>
                 class ExpressionEvaluationTest : public T
                 {
                 protected:
-                    using instance_t = cmsl::exec::inst::instance;
-                    using int_t = cmsl::exec::inst::int_t;
+                    using instance_t = inst::instance;
+                    using int_t = inst::int_t;
 
-                    template <typename Result>
-                    Result result_val(instance_t* result)
+                    template<typename Result>
+                    Result result_val(instance_t *result)
                     {
                         auto result_val = result->get_value();
                         return boost::get<Result>(result_val);
                     }
 
-                    auto result_int_val(instance_t* result)
+                    auto result_int_val(instance_t *result)
                     {
                         return result_val<int_t>(result);
                     }
 
-                    auto result_bool_val(instance_t* result)
+                    auto result_bool_val(instance_t *result)
                     {
                         return result_val<bool>(result);
                     }
 
-                    auto result_string_val(instance_t* result)
+                    auto result_string_val(instance_t *result)
                     {
                         return result_val<std::string>(result);
                     }
 
-                    auto result_double_val(instance_t* result)
+                    auto result_double_val(instance_t *result)
                     {
                         return result_val<double>(result);
                     }
 
-                    test_context_provider m_ctx_provider;
-                    cmsl::exec::inst::instances_holder m_instances{ m_ctx_provider };
-                    cmsl::exec::infix::infix_evaluation_context m_eval_ctx{
+                    exec::test::test_context_provider m_ctx_provider;
+                    inst::instances_holder m_instances{m_ctx_provider};
+                    infix_evaluation_context m_eval_ctx{
                             m_ctx_provider,
                             m_instances
                     };
