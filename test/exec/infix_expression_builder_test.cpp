@@ -3,9 +3,9 @@
 
 // These needs to be included because gmock needs complete types
 #include "exec/infix/class_member_access_expression.hpp"
-#include "exec/infix/user_function_call_expression.hpp"
+#include "exec/infix/function_call_expression.hpp"
 #include "exec/infix/binary_operator_expression.hpp"
-#include "exec/infix/user_member_function_call_expression.hpp"
+#include "exec/infix/member_function_call_expression.hpp"
 #include "exec/infix/id_expression.hpp"
 #include "exec/infix/fundamental_value_expression.hpp"
 #include "ast/function.hpp"
@@ -100,14 +100,14 @@ namespace cmsl
 
                     TEST_F(InfixExpressionBuilder, IdentiferDotIdentiferParens_GetMemberFunctionCall)
                     {
-                        using member_fun_call_expr_t = cmsl::exec::infix::user_member_function_call_expression;
+                        using member_fun_call_expr_t = cmsl::exec::infix::member_function_call_expression;
                         const auto tokens = tokens_t{ token_identifier("foo"), token_dot(), token_identifier("bar"), token_open_paren(), token_close_paren() };
                         test_single_expression<member_fun_call_expr_t>(tokens);
                     }
 
                     TEST_F(InfixExpressionBuilder, IdentiferDotIdentiferParensWithParam_GetMemberFunctionCall)
                     {
-                        using member_fun_call_expr_t = cmsl::exec::infix::user_member_function_call_expression;
+                        using member_fun_call_expr_t = cmsl::exec::infix::member_function_call_expression;
                         const auto tokens = tokens_t{ token_identifier("foo"), token_dot(), token_identifier("bar"),
                                                       token_open_paren(),
                                                       token_identifier("baz"),
@@ -117,7 +117,7 @@ namespace cmsl
 
                     TEST_F(InfixExpressionBuilder, IdentiferDotIdentiferParensWithParams_GetMemberFunctionCall)
                     {
-                        using member_fun_call_expr_t = cmsl::exec::infix::user_member_function_call_expression;
+                        using member_fun_call_expr_t = cmsl::exec::infix::member_function_call_expression;
                         const auto tokens = tokens_t{ token_identifier("foo"), token_dot(), token_identifier("bar"),
                                                       token_open_paren(),
                                                       token_identifier("baz"),
@@ -126,6 +126,8 @@ namespace cmsl
                                                       token_close_paren() };
                         test_single_expression<member_fun_call_expr_t>(tokens);
                     }
+
+
                 }
             }
         }

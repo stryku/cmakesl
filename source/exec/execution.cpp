@@ -37,7 +37,7 @@ namespace cmsl
 
             for (auto i = 0u; i < params_count; ++i)
             {
-                get_exec_ctx().add_variable(params_decl[i].name.str(),
+                get_exec_ctx().add_variable(params_decl[i].name->str(),
                                             parameters[i]->copy());
             }
 

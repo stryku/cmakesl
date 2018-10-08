@@ -60,6 +60,11 @@ namespace cmsl
 
                 CMSL_UNREACHABLE("Function no found. This issue should be found during sema check.");
             }
+
+            cmsl::lexer::token::token call_expression::get_name()
+            {
+                return m_name;
+            }
         }
     }
 }

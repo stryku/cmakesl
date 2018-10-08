@@ -18,7 +18,7 @@ namespace cmsl
                 MOCK_METHOD1(visit, void(const cmsl::exec::infix::double_value_expression&));
                 MOCK_METHOD1(visit, void(const cmsl::exec::infix::string_value_expression&));
                 MOCK_METHOD1(visit, void(const cmsl::exec::infix::id_expression&));
-                MOCK_METHOD1(visit, void(const cmsl::exec::infix::user_member_function_call_expression&));
+                MOCK_METHOD1(visit, void(const cmsl::exec::infix::member_function_call_expression&));
                 MOCK_METHOD1(visit, void(const cmsl::exec::infix::binary_operator_expression&));
                 MOCK_METHOD1(visit, void(const cmsl::exec::infix::function_call_expression&));
                 MOCK_METHOD1(visit, void(const cmsl::exec::infix::class_member_access_expression&));
