@@ -20,7 +20,7 @@ namespace cmsl
 
             TEST(LexerErrorTest, Empty_NoError)
             {
-                testing::StrictMock<errors_observer::errors_observer_mock> err_observer_mock;
+                testing::StrictMock<errors::test::errors_observer_mock> err_observer_mock;
                 errors::errors_observer err_observer;
                 const auto source = "";
                 cmsl::lexer::lexer lex{ err_observer, source };
@@ -34,7 +34,7 @@ namespace cmsl
 
                 TEST_P(StringNotEndedBeforeEOF, NotifyError)
                 {
-                    errors_observer::errors_observer_mock err_observer_mock;
+                    errors::test::errors_observer_mock err_observer_mock;
                     errors::errors_observer err_observer;
 
                     EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);

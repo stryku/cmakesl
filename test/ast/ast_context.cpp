@@ -4,15 +4,15 @@
 
 namespace cmsl
 {
-    namespace test
+    namespace ast
     {
-        namespace ast_context
+        namespace test
         {
-            namespace add_find_type
+            namespace ast_context
             {
                 TEST(AstContext, Empty_FindType_GetNull)
                 {
-                    ast::ast_context_impl ctx;
+                    ast_context_impl ctx;
                     const auto t = ctx.find_type("int");
                     ASSERT_THAT(t, nullptr);
                 }

@@ -6,18 +6,21 @@
 
 namespace cmsl
 {
-    namespace test
+    namespace exec
     {
-        namespace exec
+        namespace test
         {
-            class function_caller_mock : public cmsl::exec::function_caller
+            class function_caller_mock : public function_caller
             {
             private:
-                using inst_t = cmsl::exec::inst::instance;
+                using inst_t = inst::instance;
 
             public:
-                MOCK_METHOD2(call, inst_t*(const cmsl::ast::function&, const std::vector<inst_t*>&));
-                MOCK_METHOD3(call_member, inst_t*(inst_t&, const cmsl::ast::function&, const std::vector<inst_t*>&));
+                MOCK_METHOD2(call, inst_t*(
+                        const ast::function&, const std::vector<inst_t*>&));
+                MOCK_METHOD3(call_member, inst_t *(inst_t
+                        &,
+                        const ast::function&, const std::vector<inst_t*>&));
             };
         }
     }

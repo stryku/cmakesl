@@ -6,43 +6,48 @@
 
 namespace cmsl
 {
-    namespace test
+    namespace ast
     {
-        namespace type_conversion_checker
+        namespace test
         {
-            using type_kind_t = ast::type_kind;
-
-            TEST(TypeConversionCheck_CanConvert, FundamentalArithmetical_ConversionPossible)
+            namespace type_conversion_checker
             {
-                const auto kinds = { type_kind_t::k_bool, type_kind_t::k_int, type_kind_t::k_double };
-
-                ast::type_conversion_check tcc;
-
-                for(const auto from : kinds)
+                TEST(TypeConversionCheck_CanConvert, FundamentalArithmetical_ConversionPossible)
                 {
-                    for(const auto to : kinds)
+                    const auto kinds = {type_kind::k_bool,
+                                        type_kind::k_int,
+                                        type_kind::k_double};
+
+                    type_conversion_check tcc;
+
+                    for (const auto from : kinds)
                     {
-                        const auto result = tcc.can_convert(from, to);
-                        ASSERT_THAT(result, true);
+                        for (const auto to : kinds)
+                        {
+                            const auto result = tcc.can_convert(from, to);
+                            ASSERT_THAT(result, true);
+                        }
                     }
                 }
-            }
 
-            TEST(TypeConversionCheck_CanConvert, FundamentalToFromUser_ConversionNotPossible)
-            {
-                const auto kinds = { type_kind_t::k_bool, type_kind_t::k_int, type_kind_t::k_double };
-
-                ast::type_conversion_check tcc;
-
-                for(const auto kind : kinds)
+                TEST(TypeConversionCheck_CanConvert, FundamentalToFromUser_ConversionNotPossible)
                 {
+                    const auto kinds = {type_kind::k_bool,
+                                        type_kind::k_int,
+                                        type_kind::k_double};
+
+                    type_conversion_check tcc;
+
+                    for (const auto kind : kinds)
                     {
-                        const auto result = tcc.can_convert(kind, type_kind_t::k_user);
-                        ASSERT_THAT(result, false);
-                    }
-                    {
-                        const auto result = tcc.can_convert(type_kind_t::k_user, kind);
-                        ASSERT_THAT(result, false);
+                        {
+                            const auto result = tcc.can_convert(kind, type_kind::k_user);
+                            ASSERT_THAT(result, false);
+                        }
+                        {
+                            const auto result = tcc.can_convert(type_kind::k_user, kind);
+                            ASSERT_THAT(result, false);
+                        }
                     }
                 }
             }

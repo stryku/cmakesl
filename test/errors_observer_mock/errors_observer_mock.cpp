@@ -3,14 +3,14 @@
 
 namespace
 {
-    cmsl::test::errors_observer::errors_observer_mock* errors_observer_mock_ptr;
+    cmsl::errors::test::errors_observer_mock* errors_observer_mock_ptr;
 }
 
 namespace cmsl
 {
-    namespace test
+    namespace errors
     {
-        namespace errors_observer
+        namespace test
         {
             errors_observer_mock::errors_observer_mock()
             {
@@ -23,10 +23,7 @@ namespace cmsl
                 errors_observer_mock_ptr = nullptr;
             }
         }
-    }
 
-    namespace errors
-    {
         void errors_observer::nofify_error(const cmsl::errors::error& error)
         {
             errors_observer_mock_ptr->notify_error(error);

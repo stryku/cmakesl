@@ -6,16 +6,17 @@
 
 namespace cmsl
 {
-    namespace test
+    namespace errors
     {
-        namespace errors_observer
+        namespace test
         {
             struct errors_observer_mock
             {
                 errors_observer_mock();
                 ~errors_observer_mock();
 
-                MOCK_METHOD1(notify_error, void(const cmsl::errors::error&));
+                MOCK_METHOD1(notify_error, void(
+                        const error&));
             };
         }
     }
