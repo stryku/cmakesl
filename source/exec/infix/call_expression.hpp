@@ -24,11 +24,12 @@ namespace cmsl
 
                 explicit call_expression(function_caller& fun_caller, lexer::token::token name, params_t parameter_expressions);
 
-                lexer::token::token get_name();
+                lexer::token::token get_name() const;
+                std::vector<const infix_expression*> get_param_expressions() const;
                 
             protected:
                 function_caller& get_caller() const;
-                cmsl::string_view get_name() const;
+                cmsl::string_view get_name_view() const;
                 std::vector<inst::instance*> evaluate_params(infix_evaluation_context& ctx) const;
 
                 const ast::function& get_function(infix_evaluation_context& ctx) const;

@@ -22,6 +22,8 @@ namespace cmsl
                 inst::instance* evaluate(infix_evaluation_context& ctx) const override;
                 void visit(infix_expression_visitor& visitor) const override;
 
+                const infix_expression& get_lhs() const;
+
             private:
                 std::unique_ptr<infix_expression> m_lhs;
             };

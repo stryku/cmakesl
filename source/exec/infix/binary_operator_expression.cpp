@@ -209,6 +209,21 @@ namespace cmsl
                         return op;
                 }
             }
+
+            const infix_expression &binary_operator_expression::get_lhs() const
+            {
+                return *m_lhs;
+            }
+
+            lexer::token::token binary_operator_expression::get_operator() const
+            {
+                return m_operator;
+            }
+
+            const infix_expression &binary_operator_expression::get_rhs() const
+            {
+                return *m_rhs;
+            }
         }
     }
 }

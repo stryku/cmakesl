@@ -23,7 +23,7 @@ namespace cmsl
                 return m_fun_caller;
             }
 
-            cmsl::string_view call_expression::get_name() const
+            cmsl::string_view call_expression::get_name_view() const
             {
                 return m_name.str();
             }
@@ -45,23 +45,37 @@ namespace cmsl
             const ast::function &call_expression::get_function(infix_evaluation_context& ctx) const
             {
                 const auto& ast_ctx =  ctx.m_ctx_provider.get_ast_ctx();
-                auto fun = ast_ctx.find_function(get_name());
+                auto fun = ast_ctx.find_function(get_name_view());
                 if(fun)
                 {
                     return *fun;
                 }
 
                 // Try to find type. If get_name() == some type name, that means we want to call a ctor.
-                auto type = ast_ctx.find_type(get_name());
+                auto type = ast_ctx.find_type(get_name_view());
                 if(type)
                 {
-                    return *type->get_function(get_name());
+                    return *type->get_function(get_name_view());
                 }
 
                 CMSL_UNREACHABLE("Function no found. This issue should be found during sema check.");
             }
 
-            cmsl::lexer::token::token call_expression::get_name()
+            std::vector<const infix_expression *> call_expression::get_param_expressions() const
+            {
+                std::vector<const infix_expression *> result;
+
+                std::transform(std::cbegin(m_parameter_expressions), std::cend(m_parameter_expressions),
+                              std::back_inserter(result),
+                              [](const auto& param_expr)
+                               {
+                                   return param_expr.get();
+                               });
+
+                return result;
+            }
+
+            cmsl::lexer::token::token call_expression::get_name() const
             {
                 return m_name;
             }

@@ -22,13 +22,18 @@ namespace cmsl
             {
                 auto evaluated_params = evaluate_params(ctx);
                 auto lhs_instance = m_lhs->evaluate(ctx);
-                auto fun = lhs_instance->get_function(get_name());
+                auto fun = lhs_instance->get_function(get_name_view());
                 return get_caller().call_member(*lhs_instance, *fun, std::move(evaluated_params));
             }
 
             void member_function_call_expression::visit(infix_expression_visitor &visitor) const
             {
                 visitor.visit(*this);
+            }
+
+            const infix_expression &member_function_call_expression::get_lhs() const
+            {
+                return *m_lhs;
             }
         }
     }
