@@ -18,7 +18,7 @@ set(SOURCES
     user_member_function_call_expression_test.cpp
     infix_expression_builder_test.cpp
     mock/infix_expression_visitor_mock.hpp
-)
+        fake/fake_function_caller.hpp)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
