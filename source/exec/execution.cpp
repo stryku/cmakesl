@@ -28,6 +28,10 @@ namespace cmsl
 {
     namespace exec
     {
+        execution::execution(facade::cmake_facade &f)
+            : m_cmake_facade{ f }
+        {}
+        
         void execution::execute_function_call(const ast::user_function_node& fun, std::vector<inst::instance*> parameters)
         {
             m_function_return_value.reset();

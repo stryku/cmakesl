@@ -50,6 +50,8 @@ include_directories (${Boost_INCLUDE_DIRS})
 set(CMAKESL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 
+include_directories(facade)
+
 add_subdirectory(source)
 add_subdirectory(test)
 add_subdirectory(playground)
