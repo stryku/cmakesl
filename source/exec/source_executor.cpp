@@ -10,6 +10,10 @@ namespace cmsl
 {
     namespace exec
     {
+        source_executor::source_executor(facade::cmake_facade &f)
+            : m_cmake_facade{ f }
+        {}
+
         int source_executor::execute(cmsl::string_view source)
         {
             errors::errors_observer err_observer;
@@ -23,7 +27,7 @@ namespace cmsl
             const auto main_function = global_ast_ctx->find_function("main");
             const auto casted = dynamic_cast<const ast::user_function_node*>(main_function);
 
-            execution e;
+            execution e{ m_cmake_facade };
             e.function_call(*casted, {});
             const auto main_result = e.get_function_return_value();
             const auto int_result = boost::get<inst::int_t>(main_result->get_value());

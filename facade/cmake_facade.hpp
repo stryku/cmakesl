@@ -17,7 +17,7 @@ namespace cmsl
                 size_t tweak;
             };
 
-            virtual ~cmake_facade();
+            virtual ~cmake_facade() = default;
 
             virtual version get_cmake_version() const = 0;
         };
