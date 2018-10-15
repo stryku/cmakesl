@@ -12,6 +12,7 @@ namespace cmsl
         {
             using testing::StrictMock;
             using testing::Return;
+            using testing::_;
 
             TEST(CmakeMinimumRequired, RunningHigherVersion_NoErrorReported)
             {
