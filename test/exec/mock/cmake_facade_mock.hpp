@@ -14,6 +14,7 @@ namespace cmsl
             {
             public:
                 MOCK_CONST_METHOD0(get_cmake_version, version());
+                MOCK_CONST_METHOD1(fatal_error, void(const std::string&));
             };
         }
     }

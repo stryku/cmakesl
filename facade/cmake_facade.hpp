@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <string>
 
 namespace cmsl
 {
@@ -20,6 +21,7 @@ namespace cmsl
             virtual ~cmake_facade() = default;
 
             virtual version get_cmake_version() const = 0;
+            virtual void fatal_error(const std::string& what) const = 0;
         };
     }
 }
