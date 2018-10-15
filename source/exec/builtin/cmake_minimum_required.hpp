@@ -14,6 +14,9 @@ namespace cmsl
                 cmake_minimum_required(facade::cmake_facade& cmake_facade);
 
                 void call(const facade::cmake_facade::version& version);
+
+            private:
+                facade::cmake_facade& m_facade;
             };
         }
     }
