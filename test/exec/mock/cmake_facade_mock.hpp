@@ -10,7 +10,7 @@ namespace cmsl
     {
         namespace test
         {
-            class function_caller_mock : public facade::cmake_facade
+            class cmake_facade_mock : public facade::cmake_facade
             {
             public:
                 MOCK_CONST_METHOD0(get_cmake_version, version());

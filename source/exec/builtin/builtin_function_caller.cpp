@@ -67,8 +67,7 @@ namespace cmsl
                     case ast::builtin_function_kind::cmake_minimum_required:
                     {
                         const auto current_cmake_version = 1; // todo gather current cmake version from cmake facade
-                        return m_instances.create(
-                                true); // todo handle void return type. this true is to return any instance
+                        return m_instances.create(true); // todo handle void return type. this true is to return any instance
                     }
 
                     default:
