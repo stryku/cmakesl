@@ -13,6 +13,11 @@ namespace cmsl
         class builtin_function;
     }
 
+    namespace facade
+    {
+        class cmake_facade;
+    }
+
     namespace exec
     {
         namespace inst
@@ -30,7 +35,7 @@ namespace cmsl
                 using ff_kind_t = ast::builtin_function_kind;
 
             public:
-                explicit builtin_function_caller(inst::instances_holder &instances);
+                explicit builtin_function_caller(inst::instances_holder &instances, facade::cmake_facade& cmake_facade);
 
                 inst::instance *call_member_function(inst::instance *class_instance,
                                                      cmsl::string_view fun_name,
@@ -52,6 +57,7 @@ namespace cmsl
 
             private:
                 inst::instances_holder &m_instances;
+                facade::cmake_facade& m_facade;
             };
         }
     }

@@ -28,6 +28,11 @@ namespace cmsl
                 return m_instance.get_value_ref();
             }
 
+            const instance_value_t& named_instance::get_value_cref() const
+            {
+                return m_instance.get_value_cref();
+            }
+
             void named_instance::assign(instance_value_t val)
             {
                 m_instance.assign(val);

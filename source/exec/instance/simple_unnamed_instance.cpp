@@ -59,6 +59,11 @@ namespace cmsl
                 return m_data;
             }
 
+            const instance_value_t& simple_unnamed_instance::get_value_cref() const
+            {
+                return m_data;
+            }
+
             void simple_unnamed_instance::assign(instance_value_t val)
             {
                 m_data = val;
