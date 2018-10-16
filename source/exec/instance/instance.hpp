@@ -33,6 +33,7 @@ namespace cmsl
                 virtual std::unique_ptr<instance> copy() const = 0;
                 virtual instance_value_t get_value() const = 0;
                 virtual instance_value_t& get_value_ref() = 0;
+                virtual const instance_value_t& get_value_cref() const = 0;
                 virtual void assign(instance_value_t val) = 0;
                 virtual instance* get_member(cmsl::string_view name) = 0;
                 virtual bool has_function(cmsl::string_view name) const = 0;

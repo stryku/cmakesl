@@ -19,6 +19,8 @@ namespace cmsl
                 {
                     return {};
                 }
+                void fatal_error(const std::string&) const override
+                {}
             };
 
             fake_facade facade;

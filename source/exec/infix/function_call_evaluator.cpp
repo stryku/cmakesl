@@ -15,7 +15,7 @@ namespace cmsl
     {
         namespace infix
         {
-            function_call_evaluator::function_call_evaluator(infix_evaluation_context& ctx, execution &e)
+            function_call_evaluator::function_call_evaluator(infix_evaluation_context& ctx, execution &e, builtin::builtin_function_caller builtin_caller)
                 : m_ctx{ ctx }
                 , m_execution{ e }
             {}
@@ -32,10 +32,10 @@ namespace cmsl
                 {
                     // builtin function
                     builtin::builtin_function_caller caller{ m_ctx.instances };
-                    return caller.call(builtin_fun->get_fundamental_fun_kind(), params);
+                    return m_builtin_caller.call(builtin_fun->get_fundamental_fun_kind(), params);
                 }
 
-                CMSL_UNREACHABLE("Call of a neither user nor builtin function");
+                CMSL_UNREACHABLE("Call of an neither user nor builtin function");
             }
 
             inst::instance *
