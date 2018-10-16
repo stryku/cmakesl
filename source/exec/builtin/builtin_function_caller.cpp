@@ -1,11 +1,15 @@
-#include <vector>
-#include "builtin_function_caller.hpp"
+#include "exec/builtin/builtin_function_caller.hpp"
 
 #include "ast/builtin_function.hpp"
 #include "builtin_function_visitors.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "ast/type.hpp"
 #include "exec/builtin/container.hpp"
+#include "exec/builtin/cmake_minimum_required.hpp"
+#include "cmake_facade.hpp" // todo extract version to its own file
+#include "exec/instance/instance_value_getter.hpp"
+
+#include <vector>
 
 namespace cmsl
 {
@@ -13,8 +17,9 @@ namespace cmsl
     {
         namespace builtin
         {
-            builtin_function_caller::builtin_function_caller(inst::instances_holder &instances)
-                    : m_instances{instances}
+            builtin_function_caller::builtin_function_caller(inst::instances_holder &instances, facade::cmake_facade& cmake_facade)
+                : m_instances{instances}
+                , m_facade{ cmake_facade }
             {}
 
             inst::instance *builtin_function_caller::call_member_function(inst::instance *class_instance,
@@ -66,9 +71,7 @@ namespace cmsl
                 {
                     case ast::builtin_function_kind::cmake_minimum_required:
                     {
-                        const auto current_cmake_version = 1; // todo gather current cmake version from cmake facade
-                        return m_instances.create(
-                                true); // todo handle void return type. this true is to return any instance
+                        return call_cmake_minimum_required(std::move(parameters));
                     }
 
                     default:
@@ -100,6 +103,23 @@ namespace cmsl
                         return call_version_ctor(class_instance->get_type(), parameters);
                     }
                 }
+            }
+
+            inst::instance *
+            builtin_function_caller::call_cmake_minimum_required(std::vector<inst::instance *> parameters)
+            {
+                cmake_minimum_required cmr{ m_facade };
+                const auto value_getter = inst::instance_value_getter{};
+
+                const auto version = facade::cmake_facade::version{
+                        static_cast<size_t>(value_getter.int_(*parameters[0])), // major
+                        static_cast<size_t>(value_getter.int_(*parameters[1])), // minor
+                        static_cast<size_t>(value_getter.int_(*parameters[2])), // patch
+                        static_cast<size_t>(value_getter.int_(*parameters[3]))  // tweak
+                };
+
+                cmr.call(version);
+                return m_instances.create(true); // todo handle void return type. this true is to return any instance
             }
         }
     }

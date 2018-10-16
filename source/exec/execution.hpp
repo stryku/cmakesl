@@ -16,6 +16,11 @@ namespace cmsl
         class ast_context;
         class block_node;
     }
+    
+    namespace facade
+    {
+        class cmake_facade;
+    }
 
     namespace exec
     {
@@ -27,6 +32,8 @@ namespace cmsl
         class execution : public context_provider
         {
         public:
+            explicit execution(facade::cmake_facade& f);
+            
             execution_context& get_exec_ctx() override;
             const ast::ast_context& get_ast_ctx() const override;
 
@@ -55,6 +62,7 @@ namespace cmsl
                 execution_context exec_ctx;
             };
 
+            facade::cmake_facade& m_cmake_facade;
             const ast::ast_context* m_ast_context;
             std::unique_ptr<inst::instance> m_function_return_value;
             std::stack<callstack_frame> m_callstack;

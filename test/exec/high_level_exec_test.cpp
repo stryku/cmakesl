@@ -1,5 +1,7 @@
 #include "exec/source_executor.hpp"
 
+#include "cmake_facade.hpp"
+
 #include <gmock/gmock.h>
 
 namespace cmsl
@@ -9,6 +11,19 @@ namespace cmsl
         namespace high_level_exec
         {
             using source_executor_t = cmsl::exec::source_executor;
+
+            class fake_facade : public facade::cmake_facade
+            {
+            public:
+                version get_cmake_version() const override
+                {
+                    return {};
+                }
+                void fatal_error(const std::string&) const override
+                {}
+            };
+
+            fake_facade facade;
 
             TEST(Exec, VariableAssign)
             {
@@ -20,7 +35,7 @@ namespace cmsl
                     "    return foo;"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 2);
             }
 
@@ -34,7 +49,7 @@ namespace cmsl
                     "    return foo;"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 4);
             }
 
@@ -53,7 +68,7 @@ namespace cmsl
                     "    return foo.m_bar;"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 2);
             }
 
@@ -74,7 +89,7 @@ namespace cmsl
                     "    return foo.bar();"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 2);
             }
 
@@ -100,7 +115,7 @@ namespace cmsl
                     "    return foo.bar();"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 5);
             }
 
@@ -124,7 +139,7 @@ namespace cmsl
                     "    return baz.m_foo.m_bar;"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 2);
             }
 
@@ -142,7 +157,7 @@ namespace cmsl
                     "    return l.size();"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 5);
             }
 
@@ -161,7 +176,7 @@ namespace cmsl
                     "    return ll.size();"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 5);
             }
 
@@ -183,7 +198,7 @@ namespace cmsl
                     "    return foo.m_value;"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 4);
             }
 
@@ -196,7 +211,7 @@ namespace cmsl
                     "    return v.major + v.minor + v.patch + v.tweak;"
                     "}";
 
-                const auto result = source_executor_t{}.execute(source);
+                const auto result = source_executor_t{facade}.execute(source);
                 EXPECT_THAT(result, 10);
             }
         }
