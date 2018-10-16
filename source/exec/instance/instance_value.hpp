@@ -9,8 +9,6 @@ namespace cmsl
     {
         namespace inst
         {
-            class instance;
-
             enum class instance_value_type
             {
                 bool_,

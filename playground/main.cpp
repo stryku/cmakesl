@@ -1,7 +1,17 @@
 #include "lexer/lexer.hpp"
 #include "exec/source_executor.hpp"
+#include "cmake_facade.hpp"
 
 #include <iostream>
+
+class fake_facade : public cmsl::facade::cmake_facade
+{
+public:
+    version get_cmake_version() const override
+    {
+        return {};
+    }
+};
 
 int main()
 {
@@ -26,7 +36,8 @@ int main()
         "    return v.major + v.minor + v.patch;"
         "}";
 
-    cmsl::exec::source_executor exec;
+    fake_facade facade{};
+    cmsl::exec::source_executor exec{ facade };
     auto ret = exec.execute(source);
     std::cout << ret << '\n';
 }
