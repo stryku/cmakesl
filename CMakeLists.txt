@@ -4,7 +4,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 project(CMakeSL)
 
-
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
@@ -53,5 +52,6 @@ set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 include_directories(facade)
 
 add_subdirectory(source)
+enable_testing()
 add_subdirectory(test)
 add_subdirectory(playground)
