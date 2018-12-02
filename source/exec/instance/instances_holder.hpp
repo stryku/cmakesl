@@ -1,7 +1,6 @@
 #pragma once
 
-#include "exec/instance/instance_members_alias.hpp"
-#include "exec/instance/instance_value.hpp"
+#include "exec/instance/instances_holder_interface.hpp"
 
 #include <memory>
 #include <vector>
@@ -23,19 +22,19 @@ namespace cmsl
             class contexted_instance_factory;
 
             // class used to handle lifetime of 'rvalue' instances created during full expression execution
-            class instances_holder
+            class instances_holder : public instances_holder_interface
             {
             public:
                 explicit instances_holder(context_provider& e);
 
-                inst::instance* create(instance_value_t value);
-                inst::instance* create(const ast::type& type, instance_members_t members);
-                inst::instance* create(const ast::type& t);
-                inst::instance* create_void();
+                inst::instance* create(instance_value_t value) override;
+                inst::instance* create(const ast::type& type, instance_members_t members) override;
+                inst::instance* create(const ast::type& t) override;
+                inst::instance* create_void() override;
 
-                void store(std::unique_ptr<instance> i);
+                void store(std::unique_ptr<instance> i) override;
 
-                std::unique_ptr<instance> gather_ownership(inst::instance* instance_ptr);
+                std::unique_ptr<instance> gather_ownership(inst::instance* instance_ptr) override;
 
             private:
                 contexted_instance_factory get_factory();

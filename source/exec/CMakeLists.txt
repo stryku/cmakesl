@@ -44,7 +44,8 @@ set(EXEC_SOURCES
     instance/instance_converter.cpp
     instance/instance_converter.hpp
     instance/instances_holder.cpp
-    instance/instances_holder.hpp
+        instance/instances_holder.hpp
+        instance/instances_holder_interface.hpp
     instance/instance_factory.cpp
     instance/instance_factory.hpp
     instance/instance_value.hpp

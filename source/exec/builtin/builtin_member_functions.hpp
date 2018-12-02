@@ -13,7 +13,7 @@ namespace cmsl
             class size_member_function : public evaluatable_member_function
             {
             public:
-                explicit size_member_function(inst::instance& class_instance, inst::instances_holder& instances);
+                explicit size_member_function(inst::instance& class_instance, inst::instances_holder_interface& instances);
 
                 inst::instance* evaluate() override;
 
@@ -24,7 +24,7 @@ namespace cmsl
             class empty_member_function : public evaluatable_member_function
             {
             public:
-                explicit empty_member_function(inst::instance& class_instance, inst::instances_holder& instances);
+                explicit empty_member_function(inst::instance& class_instance, inst::instances_holder_interface& instances);
 
                 inst::instance* evaluate() override;
 
@@ -35,7 +35,7 @@ namespace cmsl
             class push_back_member_function : public evaluatable_member_function
             {
             public:
-                explicit push_back_member_function(inst::instance& class_instance, inst::instances_holder& instances, const inst::instance& parameter);
+                explicit push_back_member_function(inst::instance& class_instance, inst::instances_holder_interface& instances, const inst::instance& parameter);
 
                 inst::instance* evaluate() override;
 

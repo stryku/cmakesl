@@ -20,7 +20,7 @@ namespace cmsl
             {}
 
             std::unique_ptr<evaluatable_function> builtin_function_factory::create(const ast::ast_context& ast_ctx,
-                                                                                   inst::instances_holder& instances,
+                                                                                   inst::instances_holder_interface& instances,
                                                                                    ast::builtin_function_kind kind,
                                                                                    const std::vector<inst::instance*>& params) const
             {
@@ -58,7 +58,7 @@ namespace cmsl
             }
 
             std::unique_ptr<evaluatable_function>
-            builtin_function_factory::create_member(inst::instance &class_instance, inst::instances_holder &instances, ast::builtin_function_kind kind, const std::vector<inst::instance *> &params) const
+            builtin_function_factory::create_member(inst::instance &class_instance, inst::instances_holder_interface &instances, ast::builtin_function_kind kind, const std::vector<inst::instance *> &params) const
             {
                 switch (kind)
                 {
@@ -94,7 +94,7 @@ namespace cmsl
             }
 
             std::unique_ptr<evaluatable_function>
-            builtin_function_factory::create_cmake_minimum_required(inst::instances_holder& instances, const std::vector<inst::instance *> &params) const
+            builtin_function_factory::create_cmake_minimum_required(inst::instances_holder_interface& instances, const std::vector<inst::instance *> &params) const
             {
                 const auto value_getter = inst::instance_value_getter{};
 
@@ -110,7 +110,7 @@ namespace cmsl
 
             // todo it's not safe. Taking a reference to a element of a const ref vector
             std::unique_ptr<evaluatable_function>
-            builtin_function_factory::create_push_back(inst::instance &class_instance, inst::instances_holder &instances, const std::vector<inst::instance *> &params) const
+            builtin_function_factory::create_push_back(inst::instance &class_instance, inst::instances_holder_interface &instances, const std::vector<inst::instance *> &params) const
             {
                 const auto &val = class_instance.get_value_cref();
                 const auto& param = *params[0];

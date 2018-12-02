@@ -11,7 +11,7 @@ namespace cmsl
             class evaluatable_member_function : public evaluatable_function
             {
             public:
-                explicit evaluatable_member_function(inst::instance& class_instance, inst::instances_holder& instances)
+                explicit evaluatable_member_function(inst::instance& class_instance, inst::instances_holder_interface& instances)
                     : evaluatable_function{ instances }
                     , m_class_instance{ class_instance }
                 {}

@@ -12,7 +12,7 @@ namespace cmsl
         namespace builtin
         {
 
-            size_member_function::size_member_function(inst::instance &class_instance, inst::instances_holder &instances)
+            size_member_function::size_member_function(inst::instance &class_instance, inst::instances_holder_interface &instances)
                     : evaluatable_member_function(class_instance, instances)
             {}
 
@@ -56,7 +56,7 @@ namespace cmsl
                 return static_cast<size_t>(-1);
             }
 
-            empty_member_function::empty_member_function(inst::instance &class_instance, inst::instances_holder &instances)
+            empty_member_function::empty_member_function(inst::instance &class_instance, inst::instances_holder_interface &instances)
                     : evaluatable_member_function(class_instance, instances)
             {}
 
@@ -100,7 +100,7 @@ namespace cmsl
                 return true;
             }
 
-            push_back_member_function::push_back_member_function(inst::instance &class_instance, inst::instances_holder &instances, const inst::instance &parameter)
+            push_back_member_function::push_back_member_function(inst::instance &class_instance, inst::instances_holder_interface &instances, const inst::instance &parameter)
                     : evaluatable_member_function(class_instance, instances)
                     , m_parameter{parameter}
             {}

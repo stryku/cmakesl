@@ -8,7 +8,7 @@ namespace cmsl
 
         namespace inst
         {
-            class instances_holder;
+            class instances_holder_interface;
         }
 
         namespace infix
@@ -16,7 +16,7 @@ namespace cmsl
             struct infix_evaluation_context
             {
                 context_provider& m_ctx_provider;
-                inst::instances_holder& instances;
+                inst::instances_holder_interface& instances;
             };
         }
     }
