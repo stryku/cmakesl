@@ -17,7 +17,7 @@ namespace cmsl
     {
         namespace builtin
         {
-            builtin_function_caller::builtin_function_caller(inst::instances_holder &instances, facade::cmake_facade& cmake_facade)
+            builtin_function_caller::builtin_function_caller(inst::instances_holder_interface &instances, facade::cmake_facade& cmake_facade)
                 : m_instances{instances}
                 , m_facade{ cmake_facade }
             {}

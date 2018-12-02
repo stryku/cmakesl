@@ -154,7 +154,7 @@ namespace cmsl
                 return handlers;
             }
 
-            binary_operator_expression::instance_t * binary_operator_expression::handle_arith_operator(inst::instances_holder& instances, instance_t *lhs, token_type_t  op, instance_t *rhs) const
+            binary_operator_expression::instance_t * binary_operator_expression::handle_arith_operator(inst::instances_holder_interface& instances, instance_t *lhs, token_type_t  op, instance_t *rhs) const
             {
                 auto found_handler_it = m_arith_op_handlers.find(op);
 

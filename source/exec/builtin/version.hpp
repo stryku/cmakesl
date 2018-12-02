@@ -13,7 +13,7 @@ namespace cmsl
     {
         namespace inst
         {
-            class instances_holder;
+            class instances_holder_interface;
         }
 
         namespace builtin
@@ -21,7 +21,7 @@ namespace cmsl
             class version_ctor : public evaluatable_function
             {
             public:
-                explicit version_ctor(inst::instances_holder& instances,
+                explicit version_ctor(inst::instances_holder_interface& instances,
                                       const ast::type& version_type,
                                       const inst::instance& major,
                                       const inst::instance& minor,

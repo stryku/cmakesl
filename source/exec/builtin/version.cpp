@@ -9,7 +9,7 @@ namespace cmsl
     {
         namespace builtin
         {
-            version_ctor::version_ctor(inst::instances_holder &instances,
+            version_ctor::version_ctor(inst::instances_holder_interface &instances,
                                        const ast::type& version_type,
                                        const inst::instance &major,
                                        const inst::instance &minor,

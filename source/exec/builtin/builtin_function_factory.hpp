@@ -22,7 +22,7 @@ namespace cmsl
         namespace inst
         {
             class instance;
-            class instances_holder;
+            class instances_holder_interface;
         }
 
         namespace builtin
@@ -35,18 +35,18 @@ namespace cmsl
                 explicit builtin_function_factory(facade::cmake_facade& cmake_facade);
 
                 std::unique_ptr<evaluatable_function> create(const ast::ast_context& ast_ctx,
-                                                             inst::instances_holder& instances,
+                                                             inst::instances_holder_interface& instances,
                                                              ast::builtin_function_kind kind,
                                                              const std::vector<inst::instance*>& params) const;
                 std::unique_ptr<evaluatable_function> create_member(inst::instance& class_instance,
-                                                                    inst::instances_holder& instances,
+                                                                    inst::instances_holder_interface& instances,
                                                                     ast::builtin_function_kind kind,
                                                                     const std::vector<inst::instance*>& params) const;
 
             private:
-                std::unique_ptr<evaluatable_function> create_cmake_minimum_required(inst::instances_holder& instances, const std::vector<inst::instance*>& params) const;
+                std::unique_ptr<evaluatable_function> create_cmake_minimum_required(inst::instances_holder_interface& instances, const std::vector<inst::instance*>& params) const;
                 std::unique_ptr<evaluatable_function> create_push_back(inst::instance& class_instance,
-                                                                       inst::instances_holder& instances,
+                                                                       inst::instances_holder_interface& instances,
                                                                        const std::vector<inst::instance*>& params) const;
 
             private:

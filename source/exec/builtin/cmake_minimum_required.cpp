@@ -8,7 +8,7 @@ namespace cmsl
     {
         namespace builtin
         {
-            cmake_minimum_required::cmake_minimum_required(facade::cmake_facade &cmake_facade, inst::instances_holder& instances, facade::cmake_facade::version version)
+            cmake_minimum_required::cmake_minimum_required(facade::cmake_facade &cmake_facade, inst::instances_holder_interface& instances, facade::cmake_facade::version version)
                 : evaluatable_function{ instances }
                 , m_facade{ cmake_facade }
                 , m_version{ version }

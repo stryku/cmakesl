@@ -7,7 +7,7 @@ namespace cmsl
         namespace inst
         {
             class instance;
-            class instances_holder;
+            class instances_holder_interface;
         }
 
         namespace builtin
@@ -15,7 +15,7 @@ namespace cmsl
             class evaluatable_function
             {
             public:
-                explicit evaluatable_function(inst::instances_holder& instances)
+                explicit evaluatable_function(inst::instances_holder_interface& instances)
                     : m_instances{ instances }
                 {}
 
@@ -24,7 +24,7 @@ namespace cmsl
                 virtual inst::instance* evaluate() = 0;
 
             protected:
-                inst::instances_holder& m_instances;
+                inst::instances_holder_interface& m_instances;
             };
         }
     }
