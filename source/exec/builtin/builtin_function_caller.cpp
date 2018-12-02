@@ -69,11 +69,6 @@ namespace cmsl
             {
                 switch (fun)
                 {
-                    case ast::builtin_function_kind::cmake_minimum_required:
-                    {
-                        return call_cmake_minimum_required(std::move(parameters));
-                    }
-
                     default:
                         CMSL_UNREACHABLE("Unexpected member function call.");
                 }
@@ -103,23 +98,6 @@ namespace cmsl
                         return call_version_ctor(class_instance->get_type(), parameters);
                     }
                 }
-            }
-
-            inst::instance *
-            builtin_function_caller::call_cmake_minimum_required(std::vector<inst::instance *> parameters)
-            {
-                cmake_minimum_required cmr{ m_facade };
-                const auto value_getter = inst::instance_value_getter{};
-
-                const auto version = facade::cmake_facade::version{
-                        static_cast<size_t>(value_getter.int_(*parameters[0])), // major
-                        static_cast<size_t>(value_getter.int_(*parameters[1])), // minor
-                        static_cast<size_t>(value_getter.int_(*parameters[2])), // patch
-                        static_cast<size_t>(value_getter.int_(*parameters[3]))  // tweak
-                };
-
-                cmr.call(version);
-                return m_instances.create(true); // todo handle void return type. this true is to return any instance
             }
         }
     }

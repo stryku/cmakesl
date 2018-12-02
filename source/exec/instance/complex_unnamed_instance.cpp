@@ -48,6 +48,11 @@ namespace cmsl
                 CMSL_UNREACHABLE("Getting value of complex type");
             }
 
+            const instance_value_t &complex_unnamed_instance::get_value_cref() const
+            {
+                CMSL_UNREACHABLE("Getting value of complex type");
+            }
+
             void complex_unnamed_instance::assign(instance_value_t val)
             {
                 // TODO

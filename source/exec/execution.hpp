@@ -45,6 +45,8 @@ namespace cmsl
             void return_from_function(std::unique_ptr<inst::instance> value);
             std::unique_ptr<inst::instance> get_function_return_value() const;
 
+            facade::cmake_facade& get_cmake_facade();
+
         private:
             void return_from_function();
             bool execute_function_expression(ast::ast_node& expr); // todo rename. Block also uses this

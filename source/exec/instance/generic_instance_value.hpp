@@ -48,7 +48,7 @@ namespace cmsl
                 }
 
                 template <typename Callable>
-                auto apply(Callable&& cb) const
+                auto apply_const(Callable&& cb) const
                 {
                     return boost::apply_visitor(cb, m_generic_value);
                 }

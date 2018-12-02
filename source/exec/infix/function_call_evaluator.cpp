@@ -8,6 +8,8 @@
 #include "infix_evaluation_context.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/instance/instance.hpp"
+#include "exec/builtin/builtin_function_factory.hpp"
+#include "exec/builtin/evaluatable_function.hpp"
 
 namespace cmsl
 {
@@ -15,9 +17,10 @@ namespace cmsl
     {
         namespace infix
         {
-            function_call_evaluator::function_call_evaluator(infix_evaluation_context& ctx, execution &e, builtin::builtin_function_caller builtin_caller)
+            function_call_evaluator::function_call_evaluator(builtin::builtin_function_factory& function_factory, infix_evaluation_context& ctx, execution &e)
                 : m_ctx{ ctx }
-                , m_execution{ e }
+                    , m_execution{ e }
+                    , m_function_factory{ function_factory }
             {}
 
             inst::instance *
@@ -31,11 +34,11 @@ namespace cmsl
                 else if(auto builtin_fun = dynamic_cast<const ast::builtin_function*>(&fun))
                 {
                     // builtin function
-                    builtin::builtin_function_caller caller{ m_ctx.instances };
-                    return m_builtin_caller.call(builtin_fun->get_fundamental_fun_kind(), params);
+                    auto eval_function = m_function_factory.create(m_ctx.m_ctx_provider.get_ast_ctx(), m_ctx.instances, builtin_fun->get_fundamental_fun_kind(), params);
+                    return eval_function->evaluate();
                 }
 
-                CMSL_UNREACHABLE("Call of an neither user nor builtin function");
+                CMSL_UNREACHABLE("Call of neither user nor builtin function");
             }
 
             inst::instance *
@@ -43,7 +46,7 @@ namespace cmsl
             {
                 if(class_instance.get_type().is_builtin())
                 {
-                    builtin::builtin_function_caller caller{ m_ctx.instances };
+                    builtin::builtin_function_caller caller{ m_ctx.instances, m_execution.get_cmake_facade() };
                     const auto casted_fun = dynamic_cast<const ast::builtin_function*>(&fun);
                     return caller.call_member_function(&class_instance, *casted_fun, params);
                 }

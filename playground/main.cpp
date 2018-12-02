@@ -11,6 +11,9 @@ public:
     {
         return {};
     }
+    void fatal_error(const std::string& what) const override
+    {}
+
 };
 
 int main()
