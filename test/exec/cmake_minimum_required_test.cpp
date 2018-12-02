@@ -22,6 +22,7 @@ namespace cmsl
                 EXPECT_CALL(facade, get_cmake_version())
                         .WillOnce(Return(test_cmake_version));
 
+                StrictMock<exec::inst::test::instance_mock> instance
                 const auto test_param_version = facade::cmake_facade::version{ 0, 1, 0, 0 };
                 cmake_minimum_required cmr{ facade };
                 cmr.call(test_param_version);

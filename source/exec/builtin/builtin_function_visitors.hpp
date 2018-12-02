@@ -27,7 +27,7 @@ namespace cmsl
                     case inst::instance_value_type::generic:
                     {
                         auto& generic_val = boost::get<inst::generic_instance_value>(inst_val);
-                        return generic_val.apply([](const auto& stored_value)
+                        return generic_val.apply_const([](const auto& stored_value)
                                                  {
                                                      return stored_value.size();
                                                  });
@@ -61,7 +61,7 @@ namespace cmsl
                     case inst::instance_value_type::generic:
                     {
                         auto& generic_val = boost::get<inst::generic_instance_value>(inst_val);
-                        return generic_val.apply([](const auto& stored_value)
+                        return generic_val.apply_const([](const auto& stored_value)
                                                  {
                                                      return stored_value.empty();
                                                  });

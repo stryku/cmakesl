@@ -31,6 +31,7 @@ namespace cmsl
                 inst::instance* create(instance_value_t value);
                 inst::instance* create(const ast::type& type, instance_members_t members);
                 inst::instance* create(const ast::type& t);
+                inst::instance* create_void();
 
                 void store(std::unique_ptr<instance> i);
 

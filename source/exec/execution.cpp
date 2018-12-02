@@ -176,6 +176,11 @@ namespace cmsl
         {
             return m_callstack.top().fun->get_return_type();
         }
+
+        facade::cmake_facade &execution::get_cmake_facade()
+        {
+            return m_cmake_facade;
+        }
     }
 }
 
