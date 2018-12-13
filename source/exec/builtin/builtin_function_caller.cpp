@@ -37,21 +37,25 @@ namespace cmsl
                 return nullptr;
             }
 
-            inst::instance *
-            builtin_function_caller::call_version_ctor(const ast::type &type, std::vector<inst::instance *> parameters)
+            void
+            builtin_function_caller::call_version_ctor(inst::instance& version_instance, std::vector<inst::instance *> parameters)
             {
                 const auto major = parameters[0];
                 const auto minor = parameters[1];
                 const auto patch = parameters[2];
                 const auto tweak = parameters[3];
 
-                inst::instance_members_t members;
-                members.emplace("major", major->copy());
-                members.emplace("minor", minor->copy());
-                members.emplace("patch", patch->copy());
-                members.emplace("tweak", tweak->copy());
+                auto major_member = version_instance.get_member("major");
+                major_member->assign(major->get_value());
 
-                return m_instances.create(type, std::move(members));
+                auto minor_member = version_instance.get_member("minor");
+                minor_member->assign(minor->get_value());
+
+                auto patch_member = version_instance.get_member("patch");
+                patch_member->assign(patch->get_value());
+
+                auto tweak_member = version_instance.get_member("tweak");
+                tweak_member->assign(tweak->get_value());
             }
 
             inst::instance *
@@ -95,7 +99,8 @@ namespace cmsl
                     }
                     case ast::builtin_function_kind::version_ctor:
                     {
-                        return call_version_ctor(class_instance->get_type(), parameters);
+                        call_version_ctor(*class_instance, parameters);
+                        return class_instance;
                     }
                 }
             }

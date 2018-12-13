@@ -51,7 +51,7 @@ namespace cmsl
                 inst::instance *
                 call_push_back(inst::instance *class_instance, std::vector<inst::instance *> parameters);
 
-                inst::instance *call_version_ctor(const ast::type &type, std::vector<inst::instance *> parameters);
+                void call_version_ctor(inst::instance& version_instance, std::vector<inst::instance *> parameters);
 
                 inst::instance *call_cmake_minimum_required(std::vector<inst::instance *> parameters);
 
