@@ -25,10 +25,10 @@ namespace cmsl
                 {
                     StrictMock<exec::test::cmake_facade_mock> facade;
                     StrictMock<exec::inst::test::instances_holder_mock> instances;
-                    StrictMock<exec::inst::test::instance_mock> major_member_instance;
-                    StrictMock<exec::inst::test::instance_mock> minor_member_instance;
-                    StrictMock<exec::inst::test::instance_mock> patch_member_instance;
-                    StrictMock<exec::inst::test::instance_mock> tweak_member_instance;
+                    StrictMock<exec::inst::test::instance_mock> major_param_instance;
+                    StrictMock<exec::inst::test::instance_mock> minor_param_instance;
+                    StrictMock<exec::inst::test::instance_mock> patch_param_instance;
+                    StrictMock<exec::inst::test::instance_mock> tweak_param_instance;
 
                     using int_t = inst::int_t;
 
@@ -37,23 +37,23 @@ namespace cmsl
                     const auto expected_patch = int_t{3};
                     const auto expected_tweak = int_t{4};
 
-                    EXPECT_CALL(major_member_instance, get_value())
+                    EXPECT_CALL(major_param_instance, get_value())
                             .WillOnce(Return(inst::instance_value_t{expected_major}));
 
-                    EXPECT_CALL(minor_member_instance, get_value())
+                    EXPECT_CALL(minor_param_instance, get_value())
                             .WillOnce(Return(inst::instance_value_t{expected_minor}));
 
-                    EXPECT_CALL(patch_member_instance, get_value())
+                    EXPECT_CALL(patch_param_instance, get_value())
                             .WillOnce(Return(inst::instance_value_t{expected_patch}));
 
-                    EXPECT_CALL(tweak_member_instance, get_value())
+                    EXPECT_CALL(tweak_param_instance, get_value())
                             .WillOnce(Return(inst::instance_value_t{expected_tweak}));
 
                     std::vector<inst::instance*> parameters{
-                            &major_member_instance,
-                            &minor_member_instance,
-                            &patch_member_instance,
-                            &tweak_member_instance
+                            &major_param_instance,
+                            &minor_param_instance,
+                            &patch_param_instance,
+                            &tweak_param_instance
                     };
 
                     ast::builtin_ast_context ast_ctx;
