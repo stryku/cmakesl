@@ -125,6 +125,9 @@ namespace cmsl
 
             const auto string_type = find_type("string");
 
+            auto name_member = member_declaration{string_type, "name"};
+            builder.with_member(std::move(name_member));
+
             // constructor
             {
                 builtin_function::params_declaration_t params{
