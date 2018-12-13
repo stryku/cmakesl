@@ -65,7 +65,7 @@ namespace cmsl
                 const auto param = parameters[0];
                 auto visitor = push_back_visitor{*param};
                 visitor.visit(val);
-                return m_instances.create(true); // todo handle void return type. this true is to return any instance
+                return m_instances.create_void();
             }
 
             inst::instance *
