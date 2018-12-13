@@ -30,21 +30,13 @@ namespace cmsl
                     {
                         return create_cmake_minimum_required(instances, params);
                     }
-                    case ast::builtin_function_kind::version_ctor:
-                    {
-                        return std::make_unique<version_ctor>(instances,
-                                                              *ast_ctx.find_type("version"),
-                                                              *params[0], // major
-                                                              *params[1], // minor
-                                                              *params[2], // patch
-                                                              *params[3]); // tweak
-                    }
 
                     case ast::builtin_function_kind::size:
                     case ast::builtin_function_kind::empty:
                     case ast::builtin_function_kind::push_back:
                     case ast::builtin_function_kind::project_ctor:
                     case ast::builtin_function_kind::project_add_executable:
+                    case ast::builtin_function_kind::version_ctor:
                     {
                         CMSL_UNREACHABLE("Trying to create a member function as a non member function.");
                         return nullptr;
