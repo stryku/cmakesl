@@ -78,6 +78,33 @@ namespace cmsl
                     EXPECT_THAT(get_int_value("patch"), Eq(expected_patch));
                     EXPECT_THAT(get_int_value("tweak"), Eq(expected_tweak));
                 }
+
+                TEST(BuiltinFunctionCallerTest, ProjectConstructor_RegistersProjectInCMakeFacade)
+                {
+                    StrictMock<exec::test::cmake_facade_mock> facade;
+                    StrictMock<exec::inst::test::instances_holder_mock> instances;
+                    StrictMock<exec::inst::test::instance_mock> name_param_instance;
+
+                    const auto expected_project_name = std::string{"Project Name"};
+
+                    EXPECT_CALL(name_param_instance, get_value())
+                            .WillOnce(Return(inst::instance_value_t{expected_project_name}));
+
+                    EXPECT_CALL(facade, register_project(expected_project_name));
+
+                    ast::builtin_ast_context ast_ctx;
+                    const auto project_type = ast_ctx.find_type("project");
+                    auto project_instance = inst::instance_factory{}.create(*project_type);
+
+                    std::vector<inst::instance*> parameters{
+                            &name_param_instance,
+                    };
+
+                    builtin_function_caller caller{instances, facade};
+                    auto result = caller.call_member_function(project_instance.get(), "project", parameters);
+
+                    EXPECT_THAT(result, Eq(project_instance.get()));
+                }
             }
         }
     }

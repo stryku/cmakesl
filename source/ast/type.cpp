@@ -73,7 +73,8 @@ namespace cmsl
         bool type::is_complex() const
         {
             const auto builtin_complex_type_kinds = {
-                    type_kind::k_version
+                    type_kind::k_version,
+                    type_kind::k_project
             };
 
             return is_user() || contains(builtin_complex_type_kinds, m_kind);
