@@ -14,6 +14,7 @@ namespace cmsl
                 using testing::NotNull;
                 using testing::Eq;
 
+                // Todo: move to a common file
                 class BuiltinAstContext : public testing::Test
                 {
                 protected:
