@@ -56,15 +56,6 @@ namespace cmsl
                         const auto string_value = boost::get<std::string>(val);
                         ASSERT_THAT(string_value, Eq(""));
                     }
-
-                    TEST_F(BuiltinTypeDefaultValue, Version_GetZeros)
-                    {
-                        //todo
-                        //using version_t = cmsl::exec::inst::version;
-                        //const auto val = get_value_of_type("version");
-                        //const auto version_value = boost::get<version_t>(val);
-                        //ASSERT_THAT(version_value, Eq(version_t{ 0, 0, 0, 0 }));
-                    }
                 }
             }
         }
