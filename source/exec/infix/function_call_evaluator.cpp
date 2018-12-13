@@ -28,8 +28,17 @@ namespace cmsl
             {
                 if (auto user_function = dynamic_cast<const ast::user_function_node *>(&fun))
                 {
-                    m_execution.function_call(*user_function, params);
-                    return get_and_store_function_result();
+                    const auto& ast_ctx = m_ctx.m_ctx_provider.get_ast_ctx();
+                    if(auto type = ast_ctx.find_type(fun.get_name()))
+                    {
+                        auto class_instance = m_ctx.instances.create(*type);
+                        return call_member(*class_instance, fun, params);
+                    }
+                    else
+                    {
+                        m_execution.function_call(*user_function, params);
+                        return get_and_store_function_result();
+                    }
                 }
                 else if(auto builtin_fun = dynamic_cast<const ast::builtin_function*>(&fun))
                 {

@@ -23,18 +23,7 @@ namespace cmsl
                 auto evaluated_params =  evaluate_params(ctx);
                 const auto& ast_ctx = ctx.m_ctx_provider.get_ast_ctx();
                 const auto& fun = get_function(ctx);
-
-                if(auto type = ast_ctx.find_type(get_name_view()))
-                {
-                    // Calling constructor
-                    auto class_instance = ctx.instances.create(*type);
-                    return get_caller().call_member(*class_instance, fun, evaluated_params);
-                }
-                else
-                {
-                    return get_caller().call(fun, evaluated_params);
-                }
-
+                return get_caller().call(fun, evaluated_params);
             }
 
             void function_call_expression::visit(infix_expression_visitor &visitor) const
