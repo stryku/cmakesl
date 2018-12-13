@@ -13,6 +13,8 @@ public:
     }
     void fatal_error(const std::string& what) const override
     {}
+    void register_project(const std::string& what) override
+    {}
 
 };
 

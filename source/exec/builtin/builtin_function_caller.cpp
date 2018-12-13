@@ -102,7 +102,23 @@ namespace cmsl
                         call_version_ctor(*class_instance, parameters);
                         return class_instance;
                     }
+                    case ast::builtin_function_kind::project_ctor:
+                    {
+                        call_project_ctor(*class_instance, parameters);
+                        return class_instance;
+                    }
+
+                    default:
+                        CMSL_UNREACHABLE("Unknown member function call.");
                 }
+            }
+
+            void
+            builtin_function_caller::call_project_ctor(inst::instance &instance, std::vector<inst::instance *> parameters)
+            {
+                const auto name_param = parameters[0];
+                const auto name = boost::get<std::string>(name_param->get_value());
+                m_facade.register_project(name);
             }
         }
     }
