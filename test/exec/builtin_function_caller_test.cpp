@@ -16,6 +16,7 @@ namespace cmsl
         {
             namespace test
             {
+                using ::testing::NiceMock;
                 using ::testing::StrictMock;
                 using ::testing::Return;
                 using ::testing::Eq;
@@ -104,6 +105,34 @@ namespace cmsl
                     auto result = caller.call_member_function(project_instance.get(), "project", parameters);
 
                     EXPECT_THAT(result, Eq(project_instance.get()));
+                }
+
+                TEST(BuiltinFunctionCallerTest, ProjectConstructor_SetsNameMemberValue)
+                {
+                    NiceMock<exec::test::cmake_facade_mock> facade;
+                    StrictMock<exec::inst::test::instances_holder_mock> instances;
+                    StrictMock<exec::inst::test::instance_mock> name_param_instance;
+
+                    const auto expected_project_name = std::string{"Project Name"};
+
+                    EXPECT_CALL(name_param_instance, get_value())
+                            .WillOnce(Return(inst::instance_value_t{expected_project_name}));
+
+                    ast::builtin_ast_context ast_ctx;
+                    const auto project_type = ast_ctx.find_type("project");
+                    auto project_instance = inst::instance_factory{}.create(*project_type);
+
+                    std::vector<inst::instance*> parameters{
+                            &name_param_instance,
+                    };
+
+                    builtin_function_caller caller{instances, facade};
+                    auto result = caller.call_member_function(project_instance.get(), "project", parameters);
+
+                    EXPECT_THAT(result, Eq(project_instance.get()));
+
+                    const auto name_member_value = boost::get<std::string>(project_instance->get_member("name")->get_value());
+                    EXPECT_THAT(name_member_value, Eq(expected_project_name));
                 }
             }
         }

@@ -117,8 +117,10 @@ namespace cmsl
             builtin_function_caller::call_project_ctor(inst::instance &instance, std::vector<inst::instance *> parameters)
             {
                 const auto name_param = parameters[0];
-                const auto name = boost::get<std::string>(name_param->get_value());
+                auto name = boost::get<std::string>(name_param->get_value());
+                auto name_member = instance.get_member("name");
                 m_facade.register_project(name);
+                name_member->assign(std::move(name));
             }
         }
     }
