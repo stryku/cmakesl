@@ -7,7 +7,7 @@ namespace cmsl
         namespace inst
         {
             class instance;
-            class instances_holder;
+            class instances_holder_interface;
         }
 
         namespace builtin
@@ -16,14 +16,14 @@ namespace cmsl
             class container
             {
             public:
-                explicit container(inst::instance& class_instance, inst::instances_holder& instances);
+                explicit container(inst::instance& class_instance, inst::instances_holder_interface& instances);
 
                 inst::instance* empty();
                 inst::instance* size();
 
             private:
                 inst::instance& m_class_instance;
-                inst::instances_holder& m_instances;
+                inst::instances_holder_interface& m_instances;
             };
         }
     }

@@ -1,6 +1,6 @@
 #include "exec/builtin/container.hpp"
 
-#include "exec/instance/instances_holder.hpp"
+#include "exec/instance/instances_holder_interface.hpp"
 #include "exec/instance/instance.hpp"
 #include "exec/builtin/builtin_function_visitors.hpp"
 
@@ -10,7 +10,7 @@ namespace cmsl
     {
         namespace builtin
         {
-            container::container(inst::instance &class_instance, inst::instances_holder& instances)
+            container::container(inst::instance &class_instance, inst::instances_holder_interface& instances)
                 : m_class_instance{ class_instance }
                 , m_instances{ instances }
             {}

@@ -17,7 +17,7 @@ namespace cmsl
     {
         namespace builtin
         {
-            builtin_function_caller::builtin_function_caller(inst::instances_holder &instances, facade::cmake_facade& cmake_facade)
+            builtin_function_caller::builtin_function_caller(inst::instances_holder_interface &instances, facade::cmake_facade& cmake_facade)
                 : m_instances{instances}
                 , m_facade{ cmake_facade }
             {}
@@ -37,21 +37,25 @@ namespace cmsl
                 return nullptr;
             }
 
-            inst::instance *
-            builtin_function_caller::call_version_ctor(const ast::type &type, std::vector<inst::instance *> parameters)
+            void
+            builtin_function_caller::call_version_ctor(inst::instance& version_instance, std::vector<inst::instance *> parameters)
             {
                 const auto major = parameters[0];
                 const auto minor = parameters[1];
                 const auto patch = parameters[2];
                 const auto tweak = parameters[3];
 
-                inst::instance_members_t members;
-                members.emplace("major", major->copy());
-                members.emplace("minor", minor->copy());
-                members.emplace("patch", patch->copy());
-                members.emplace("tweak", tweak->copy());
+                auto major_member = version_instance.get_member("major");
+                major_member->assign(major->get_value());
 
-                return m_instances.create(type, std::move(members));
+                auto minor_member = version_instance.get_member("minor");
+                minor_member->assign(minor->get_value());
+
+                auto patch_member = version_instance.get_member("patch");
+                patch_member->assign(patch->get_value());
+
+                auto tweak_member = version_instance.get_member("tweak");
+                tweak_member->assign(tweak->get_value());
             }
 
             inst::instance *
@@ -61,7 +65,7 @@ namespace cmsl
                 const auto param = parameters[0];
                 auto visitor = push_back_visitor{*param};
                 visitor.visit(val);
-                return m_instances.create(true); // todo handle void return type. this true is to return any instance
+                return m_instances.create_void();
             }
 
             inst::instance *
@@ -69,11 +73,6 @@ namespace cmsl
             {
                 switch (fun)
                 {
-                    case ast::builtin_function_kind::cmake_minimum_required:
-                    {
-                        return call_cmake_minimum_required(std::move(parameters));
-                    }
-
                     default:
                         CMSL_UNREACHABLE("Unexpected member function call.");
                 }
@@ -100,26 +99,28 @@ namespace cmsl
                     }
                     case ast::builtin_function_kind::version_ctor:
                     {
-                        return call_version_ctor(class_instance->get_type(), parameters);
+                        call_version_ctor(*class_instance, parameters);
+                        return class_instance;
                     }
+                    case ast::builtin_function_kind::project_ctor:
+                    {
+                        call_project_ctor(*class_instance, parameters);
+                        return class_instance;
+                    }
+
+                    default:
+                        CMSL_UNREACHABLE("Unknown member function call.");
                 }
             }
 
-            inst::instance *
-            builtin_function_caller::call_cmake_minimum_required(std::vector<inst::instance *> parameters)
+            void
+            builtin_function_caller::call_project_ctor(inst::instance &instance, std::vector<inst::instance *> parameters)
             {
-                cmake_minimum_required cmr{ m_facade };
-                const auto value_getter = inst::instance_value_getter{};
-
-                const auto version = facade::cmake_facade::version{
-                        static_cast<size_t>(value_getter.int_(*parameters[0])), // major
-                        static_cast<size_t>(value_getter.int_(*parameters[1])), // minor
-                        static_cast<size_t>(value_getter.int_(*parameters[2])), // patch
-                        static_cast<size_t>(value_getter.int_(*parameters[3]))  // tweak
-                };
-
-                cmr.call(version);
-                return m_instances.create(true); // todo handle void return type. this true is to return any instance
+                const auto name_param = parameters[0];
+                auto name = boost::get<std::string>(name_param->get_value());
+                auto name_member = instance.get_member("name");
+                m_facade.register_project(name);
+                name_member->assign(std::move(name));
             }
         }
     }

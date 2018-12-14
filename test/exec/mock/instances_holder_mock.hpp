@@ -1,6 +1,8 @@
 #pragma once
 
 #include "exec/instance/instance_value.hpp"
+#include "exec/instance/instance.hpp"
+#include "exec/instance/instances_holder_interface.hpp"
 
 #include <gmock/gmock.h>
 
@@ -14,11 +16,8 @@ namespace cmsl
 
             namespace test
             {
-                struct instances_holder_mock
+                struct instances_holder_mock : public instances_holder_interface
                 {
-                    instances_holder_mock();
-                    ~instances_holder_mock();
-
                     MOCK_METHOD1(create, instance*(instance_value_t));
                     MOCK_METHOD2(create, instance*(const ast::type&, instance_members_t));
                     MOCK_METHOD1(create, instance*(const ast::type&));

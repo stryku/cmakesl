@@ -42,6 +42,7 @@ namespace cmsl
 
             virtual version get_cmake_version() const = 0;
             virtual void fatal_error(const std::string& what) const = 0;
+            virtual void register_project(const std::string& name) = 0;
         };
     }
 }
