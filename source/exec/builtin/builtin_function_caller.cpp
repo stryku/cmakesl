@@ -139,10 +139,10 @@ namespace cmsl
                 };
 
                 const auto& executable_name_param = *parameters[0];
-                const auto executable_name = boost::get<std::string>(executable_name_param);
+                const auto executable_name = boost::get<std::string>(executable_name_param.get_value_cref());
 
                 const auto& sources_list_param = *parameters[1];
-                const auto& generic_val = boost::get<inst::generic_instance_value>(sources_list_param);
+                const auto& generic_val = boost::get<inst::generic_instance_value>(sources_list_param.get_value_cref());
                 const auto sources_list = generic_val.apply_const(to_vector);
 
                 m_facade.add_executable(executable_name,sources_list);

@@ -52,7 +52,6 @@ set(CMAKESL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 
 include_directories(facade)
-add_subdirectory(facade)
 add_subdirectory(source)
 
 if(CMAKESL_WITH_TESTS)

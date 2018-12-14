@@ -1,3 +1,4 @@
+#[[
 set(FACADE_SOURCES
         cmake_facade.hpp
 )
@@ -15,3 +16,4 @@ set(CMAKESL_FACADE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
     source_group(TREE . PREFIX ast FILES ${FACADE_SOURCES})
 endif()
+]]
