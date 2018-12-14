@@ -113,7 +113,7 @@ namespace cmsl
                 {
                     auto operator_expr = operator_expr_16();
 
-                    if(curr_type() == token_type_t::dot)
+                    if(expect_not_at_end() && curr_type() == token_type_t::dot)
                     {
                         eat();
                         if(is_current_class_member_access())

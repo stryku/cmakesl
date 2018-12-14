@@ -17,8 +17,12 @@ set(SOURCES
     mock/function_caller_mock.hpp
     user_member_function_call_expression_test.cpp
     infix_expression_builder_test.cpp
-    mock/infix_expression_visitor_mock.hpp
-        fake/fake_function_caller.hpp mock/cmake_facade_mock.hpp cmake_minimum_required_test.cpp)
+        mock/infix_expression_visitor_mock.hpp
+        mock/instances_holder_mock.hpp
+        fake/fake_function_caller.hpp mock/cmake_facade_mock.hpp cmake_minimum_required_test.cpp
+
+        builtin_function_caller_test.cpp
+)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 

@@ -14,7 +14,7 @@ namespace cmsl
                                                                              std::unique_ptr<infix_expression> lhs,
                                                                              lexer::token::token name,
                                                                              member_function_call_expression::params_t params)
-                :call_expression{fun_caller, name, std::move(params) }
+                : call_expression{fun_caller, name, std::move(params) }
                 , m_lhs{ std::move(lhs) }
             {}
 

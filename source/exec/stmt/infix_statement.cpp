@@ -7,6 +7,7 @@
 #include "exec/infix/infix_evaluation_context.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/infix/infix_expression.hpp"
+#include "exec/builtin/builtin_function_factory.hpp"
 
 namespace cmsl
 {
@@ -21,9 +22,10 @@ namespace cmsl
 
             void infix_statement::execute(execution& e)
             {
-                inst::instances_holder instances{ e };
-                infix::infix_evaluation_context ctx { e, instances };
-                infix::function_call_evaluator caller{ ctx, e };
+                auto instances = std::make_unique<inst::instances_holder>(e);
+                infix::infix_evaluation_context ctx { e, *instances };
+                builtin::builtin_function_factory factory{e.get_cmake_facade()};
+                infix::function_call_evaluator caller{ factory, ctx, e };
                 infix::infix_expression_builder builder{ caller, m_node.get_tokens() };
 
                 // todo store built expression
