@@ -48,6 +48,11 @@ namespace cmsl
                 return m_instance.get_member(name);
             }
 
+            const instance *named_instance::get_cmember(cmsl::string_view name) const
+            {
+                return m_instance.get_cmember(name);
+            }
+
             bool named_instance::has_function(cmsl::string_view name) const
             {
                 return m_instance.has_function(name);
