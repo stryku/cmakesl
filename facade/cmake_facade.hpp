@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
 #include <tuple>
 #include <string>
+#include <vector>
 
 namespace cmsl
 {
@@ -43,6 +43,11 @@ namespace cmsl
             virtual version get_cmake_version() const = 0;
             virtual void fatal_error(const std::string& what) const = 0;
             virtual void register_project(const std::string& name) = 0;
+
+            virtual std::string get_current_binary_dir() const = 0;
+            virtual std::string get_current_source_dir() const = 0;
+
+            virtual void add_executable(const std::string& name, const std::vector<std::string>& sources) = 0;
         };
     }
 }
