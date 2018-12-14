@@ -53,6 +53,7 @@ namespace cmsl
 
                 void call_version_ctor(inst::instance& version_instance, std::vector<inst::instance *> parameters);
                 void call_project_ctor(inst::instance& instance, std::vector<inst::instance *> parameters);
+                inst::instance* call_project_add_executable(inst::instance& instance, std::vector<inst::instance *> parameters);
 
                 inst::instance *call_cmake_minimum_required(std::vector<inst::instance *> parameters);
 
