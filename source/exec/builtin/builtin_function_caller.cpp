@@ -107,6 +107,10 @@ namespace cmsl
                         call_project_ctor(*class_instance, parameters);
                         return class_instance;
                     }
+                    case ast::builtin_function_kind::project_add_executable:
+                    {
+                        return call_project_add_executable(*class_instance, parameters);
+                    }
 
                     default:
                         CMSL_UNREACHABLE("Unknown member function call.");
@@ -142,7 +146,8 @@ namespace cmsl
                 const auto executable_name = boost::get<std::string>(executable_name_param.get_value_cref());
 
                 const auto& sources_list_param = *parameters[1];
-                const auto& generic_val = boost::get<inst::generic_instance_value>(sources_list_param.get_value_cref());
+                const auto& source_list_instance_value = sources_list_param.get_value_cref();
+                const auto& generic_val = boost::get<inst::generic_instance_value>(source_list_instance_value);
                 const auto sources_list = generic_val.apply_const(to_vector);
 
                 m_facade.add_executable(executable_name,sources_list);

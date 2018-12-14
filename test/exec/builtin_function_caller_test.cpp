@@ -19,7 +19,11 @@ namespace cmsl
                 using ::testing::NiceMock;
                 using ::testing::StrictMock;
                 using ::testing::Return;
+                using ::testing::ReturnRef;
+                using ::testing::ByMove;
                 using ::testing::Eq;
+                using ::testing::NotNull;
+                using ::testing::Const;
 
                 // Todo: that's a functional test.
                 TEST(BuiltinFunctionCallerTest, VersionConstructor_StoresCorrectValuesInMembers)
@@ -133,6 +137,59 @@ namespace cmsl
 
                     const auto name_member_value = boost::get<std::string>(project_instance->get_member("name")->get_value());
                     EXPECT_THAT(name_member_value, Eq(expected_project_name));
+                }
+
+                TEST(BuiltinFunctionCallerTest, ProjectAddExecutable_AddsExecutableInCMakeFacade)
+                {
+                    StrictMock<exec::inst::test::instances_holder_mock> instances;
+                    ast::builtin_ast_context ast_ctx;
+
+                    // Setup name parameter.
+                    const auto expected_executable_name = std::string{"Executable Name"};
+                    inst::instance_value_t name_param_instance_value{expected_executable_name};
+                    StrictMock<exec::inst::test::instance_mock> name_param_instance;
+                    EXPECT_CALL(name_param_instance, get_value_cref())
+                            .WillOnce(ReturnRef(name_param_instance_value));
+
+                    // Setup source list parameter.
+                    const auto expected_source_file_name = std::string{"filename.cpp"};
+                    auto source_file_instance = std::make_unique<StrictMock<exec::inst::test::instance_mock>>();
+                    inst::instance_value_t val{expected_source_file_name};
+                    EXPECT_CALL(*source_file_instance, get_value_cref())
+                            .WillOnce(ReturnRef(val));
+
+                    const auto& list_type = *ast_ctx.find_type("list<string>");
+                    inst::generic_instance_value::list_t sources_list;
+                    sources_list.push_back(std::move(source_file_instance));
+                    inst::generic_instance_value generic_list_instance_value{ list_type,
+                                                                      inst::generic_instance_value::generic_instance_value_type::list,
+                                                                      std::move(sources_list) };
+                    inst::instance_value_t list_instance_value{std::move(generic_list_instance_value)};
+
+                    StrictMock<exec::inst::test::instance_mock> source_list_param_instance;
+                    EXPECT_CALL(Const(source_list_param_instance), get_value_cref())
+                            .WillOnce(ReturnRef(list_instance_value));
+
+                    // Setup facade calls.
+                    StrictMock<exec::test::cmake_facade_mock> facade;
+                    const auto expected_source_list = std::vector<std::string>{
+                            expected_source_file_name
+                    };
+                    EXPECT_CALL(facade, add_executable(expected_executable_name, expected_source_list));
+
+                    // Call the project::add_executable.
+                    const auto project_type = ast_ctx.find_type("project");
+                    auto project_instance = inst::instance_factory{}.create(*project_type);
+
+                    std::vector<inst::instance*> parameters{
+                            &name_param_instance,
+                            &source_list_param_instance
+                    };
+
+                    builtin_function_caller caller{instances, facade};
+                    auto result = caller.call_member_function(project_instance.get(), "add_executable", parameters);
+
+                    EXPECT_THAT(result, NotNull()); // Todo: check if result type is void.
                 }
             }
         }

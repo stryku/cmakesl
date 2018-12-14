@@ -7,10 +7,15 @@ namespace cmsl
     {
         namespace inst
         {
-            generic_instance_value::generic_instance_value(const ast::type &t, generic_instance_value_type value_type)
+            generic_instance_value::generic_instance_value(const ast::type &t, generic_instance_value::generic_instance_value_type value_type)
                     : m_type{ t }
                     , m_value_type{ value_type }
                     , m_generic_value{ get_init_value() }
+            {}
+            generic_instance_value::generic_instance_value(const ast::type &t, generic_instance_value_type value_type, generic_variant_t initial_value)
+                    : m_type{ t }
+                    , m_value_type{ value_type }
+                    , m_generic_value{ std::move(initial_value) }
             {}
 
             generic_instance_value::generic_instance_value(const generic_instance_value& other)
