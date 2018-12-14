@@ -8,3 +8,7 @@ add_subdirectory(lexer_error)
 add_subdirectory(parser)
 add_subdirectory(parser_error)
 add_subdirectory(source_location_manipulator)
+
+if( NOT WIN32)
+    add_custom_target(RUN_ALL_TEST COMMAND ${CMAKE_CTEST_COMMAND})
+endif()

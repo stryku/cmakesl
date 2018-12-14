@@ -15,7 +15,7 @@ namespace cmsl
     {
         namespace inst
         {
-            class instances_holder;
+            class instances_holder_interface;
         }
 
         namespace infix
@@ -26,7 +26,7 @@ namespace cmsl
                 using token_type_t = lexer::token::token_type;
                 using instance_t = inst::instance;
 
-                using arith_operator_handler_t = std::function<instance_t*(inst::instances_holder& instances, instance_t*, instance_t*)>;
+                using arith_operator_handler_t = std::function<instance_t*(inst::instances_holder_interface& instances, instance_t*, instance_t*)>;
                 using arith_operators_handlers_t = enum_unordered_map<token_type_t, arith_operator_handler_t>;
 
             public:
@@ -44,7 +44,7 @@ namespace cmsl
                 //todo remove static
                 static inst::instance_value_t apply_operator_visitor(instance_t* lhs, token_type_t  op, instance_t* rhs);
 
-                instance_t* handle_arith_operator(inst::instances_holder& instances, instance_t* lhs, token_type_t  op, instance_t* rhs) const;
+                instance_t* handle_arith_operator(inst::instances_holder_interface& instances, instance_t* lhs, token_type_t  op, instance_t* rhs) const;
 
                 arith_operators_handlers_t get_arith_operators_handlers();
                 arith_operator_handler_t get_arith_operator_handler(token_type_t op);

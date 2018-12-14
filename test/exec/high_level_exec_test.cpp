@@ -21,6 +21,8 @@ namespace cmsl
                 }
                 void fatal_error(const std::string&) const override
                 {}
+                void register_project(const std::string&) override
+                {}
             };
 
             fake_facade facade;
