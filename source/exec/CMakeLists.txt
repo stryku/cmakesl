@@ -44,7 +44,8 @@ set(EXEC_SOURCES
     instance/instance_converter.cpp
     instance/instance_converter.hpp
     instance/instances_holder.cpp
-    instance/instances_holder.hpp
+        instance/instances_holder.hpp
+        instance/instances_holder_interface.hpp
     instance/instance_factory.cpp
     instance/instance_factory.hpp
     instance/instance_value.hpp
@@ -71,7 +72,7 @@ set(EXEC_SOURCES
     stmt/statement.hpp
     stmt/while_statement.cpp
     stmt/while_statement.hpp
-        builtin/container.cpp builtin/container.hpp builtin/cmake_minimum_required.cpp builtin/cmake_minimum_required.hpp instance/instance_value_getter.hpp)
+        builtin/container.cpp builtin/container.hpp builtin/cmake_minimum_required.cpp builtin/cmake_minimum_required.hpp instance/instance_value_getter.hpp builtin/evaluatable_function.hpp builtin/builtin_function_factory.cpp builtin/builtin_function_factory.hpp builtin/evaluatable_member_function.hpp builtin/builtin_member_functions.cpp builtin/builtin_member_functions.hpp builtin/version.cpp builtin/version.hpp)
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR})

@@ -1,4 +1,5 @@
 #include "ast/builtin_ast_context.hpp"
+#include "ast/class_type.hpp"
 
 #include <gmock/gmock.h>
 
@@ -19,10 +20,13 @@ namespace cmsl
                     builtin_ast_context m_ctx;
                 };
 
-                TEST_F(BuiltinAstContext, HasProjectType)
+                TEST_F(BuiltinAstContext, HasProjectClassType)
                 {
                     const auto project_type = m_ctx.find_type("project");
                     ASSERT_THAT(project_type, NotNull());
+
+                    const auto project_class_type = dynamic_cast<const class_type*>(project_type);
+                    ASSERT_THAT(project_class_type, NotNull());
                 }
 
                 TEST_F(BuiltinAstContext, ProjectType_ConstructorSignature)
