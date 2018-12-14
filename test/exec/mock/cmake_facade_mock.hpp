@@ -16,6 +16,11 @@ namespace cmsl
                 MOCK_CONST_METHOD0(get_cmake_version, version());
                 MOCK_CONST_METHOD1(fatal_error, void(const std::string&));
                 MOCK_METHOD1(register_project, void(const std::string&));
+
+                MOCK_CONST_METHOD0(get_current_binary_dir, std::string());
+                MOCK_CONST_METHOD0(get_current_source_dir, std::string());
+
+                MOCK_METHOD2(add_executable, void(const std::string&, const std::vector<std::string>&));
             };
         }
     }

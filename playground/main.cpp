@@ -16,6 +16,19 @@ public:
     void register_project(const std::string& what) override
     {}
 
+
+    std::string get_current_binary_dir() const override
+    {
+        return {};
+    }
+    std::string get_current_source_dir() const override
+    {
+        return {};
+    }
+
+    void add_executable(const std::string& name, const std::vector<std::string>& sources) override
+    {
+    }
 };
 
 int main()

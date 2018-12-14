@@ -77,7 +77,6 @@ set(EXEC_SOURCES
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_FACADE_DIR})
 
-target_link_libraries(exec facade)
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX exec FILES ${EXEC_SOURCES})

@@ -23,6 +23,20 @@ namespace cmsl
                 {}
                 void register_project(const std::string&) override
                 {}
+
+
+                std::string get_current_binary_dir() const override
+                {
+                    return {};
+                }
+                std::string get_current_source_dir() const override
+                {
+                    return {};
+                }
+
+                void add_executable(const std::string& name, const std::vector<std::string>& sources) override
+                {
+                }
             };
 
             fake_facade facade;
