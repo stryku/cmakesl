@@ -89,12 +89,17 @@ namespace cmsl
             builtin_function_factory::create_cmake_minimum_required(inst::instances_holder_interface& instances, const std::vector<inst::instance *> &params) const
             {
                 const auto value_getter = inst::instance_value_getter{};
+                const auto& version_instance = *params[0];
+                const auto major_member = version_instance.get_cmember("major");
+                const auto minor_member = version_instance.get_cmember("minor");
+                const auto patch_member = version_instance.get_cmember("patch");
+                const auto tweak_member = version_instance.get_cmember("tweak");
 
                 const auto version = facade::cmake_facade::version{
-                    static_cast<size_t>(value_getter.int_(*params[0])), // major
-                    static_cast<size_t>(value_getter.int_(*params[1])), // minor
-                    static_cast<size_t>(value_getter.int_(*params[2])), // patch
-                    static_cast<size_t>(value_getter.int_(*params[3]))  // tweak
+                    static_cast<size_t>(value_getter.int_(*major_member)),
+                    static_cast<size_t>(value_getter.int_(*minor_member)),
+                    static_cast<size_t>(value_getter.int_(*patch_member)),
+                    static_cast<size_t>(value_getter.int_(*tweak_member))
                 };
 
                 return std::make_unique<cmake_minimum_required>(m_facade, instances, version);
