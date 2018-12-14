@@ -1,5 +1,4 @@
 set(FACADE_SOURCES
-        cmake_facade.cpp
         cmake_facade.hpp
 )
 
