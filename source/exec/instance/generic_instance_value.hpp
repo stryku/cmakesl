@@ -32,9 +32,13 @@ namespace cmsl
                 };
 
                 explicit generic_instance_value(const ast::type& t, generic_instance_value_type value_type);
+                explicit generic_instance_value(const ast::type& t, generic_instance_value_type value_type, generic_variant_t initial_value);
 
                 generic_instance_value(const generic_instance_value& other);
                 generic_instance_value& operator=(const generic_instance_value& other);
+
+                generic_instance_value(generic_instance_value&&) = default;
+                generic_instance_value& operator=(generic_instance_value&&) = default;
 
                 bool operator==(const generic_instance_value& rhs) const;
 
