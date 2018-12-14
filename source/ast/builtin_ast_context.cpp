@@ -142,9 +142,11 @@ namespace cmsl
 
             // add_executable
             {
+                const auto string_type = find_type("string");
                 const auto& sources_type = get_or_create_list_type("list<string>", *string_type);
                 builtin_function::params_declaration_t params {
-                        parameter_declaration{ &sources_type }, // sources
+                        parameter_declaration{ string_type }, // name
+                        parameter_declaration{ &sources_type } // sources
                 };
 
                 auto fun = std::make_unique<builtin_function>(builtin_function_kind::project_add_executable,
