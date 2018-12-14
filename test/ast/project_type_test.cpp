@@ -45,16 +45,20 @@ namespace cmsl
 
                 TEST_F(BuiltinAstContext, ProjectType_AddExecutableSignature)
                 {
+                    // project::add_executable(string name, list<string> sources)
+
                     const auto project_type = m_ctx.find_type("project");
                     const auto add_executable = project_type->get_function("add_executable");
                     ASSERT_THAT(add_executable, NotNull());
 
                     const auto params_declaration = add_executable->get_params_declarations();
 
-                    EXPECT_THAT(params_declaration.size(), Eq(1u));
+                    EXPECT_THAT(params_declaration.size(), Eq(2u));
 
+                    const auto string_type = m_ctx.find_type("string");
                     const auto source_list_type = m_ctx.find_type("list<string>");
-                    EXPECT_THAT(params_declaration[0].param_type, Eq(source_list_type));
+                    EXPECT_THAT(params_declaration[0].param_type, Eq(string_type));
+                    EXPECT_THAT(params_declaration[1].param_type, Eq(source_list_type));
                 }
             }
         }
