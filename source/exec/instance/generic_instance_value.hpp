@@ -23,7 +23,7 @@ namespace cmsl
             {
             public:
                 using instance_ptr_t = std::unique_ptr<instance>;
-                using list_t = std::list<instance_ptr_t>;
+                using list_t = std::list<instance_ptr_t>; // Todo: change to a std::vector.
                 using generic_variant_t = boost::variant<list_t>;
 
                 enum class generic_instance_value_type

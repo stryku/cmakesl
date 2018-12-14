@@ -69,6 +69,15 @@ namespace cmsl
                        : nullptr;
             }
 
+            const instance *complex_unnamed_instance::get_cmember(cmsl::string_view name) const
+            {
+                auto found = m_members.find(name);
+
+                return found != std::end(m_members)
+                       ? found->second.get()
+                       : nullptr;
+            }
+
             bool complex_unnamed_instance::is_fundamental() const
             {
                 return m_kind == kind::builtin;
