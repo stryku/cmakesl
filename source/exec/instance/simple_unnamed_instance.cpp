@@ -74,6 +74,11 @@ namespace cmsl
                 return nullptr;
             }
 
+            const instance *simple_unnamed_instance::get_cmember(cmsl::string_view name) const
+            {
+                return nullptr;
+            }
+
             std::unique_ptr<instance> simple_unnamed_instance::copy() const
             {
                 return std::make_unique<simple_unnamed_instance>(m_type, get_value());
