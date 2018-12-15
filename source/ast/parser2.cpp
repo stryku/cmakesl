@@ -7,6 +7,7 @@
 #include "ast/if_else_node.hpp"
 #include "ast/while_node.hpp"
 #include "ast/user_function_node.hpp"
+#include "ast/class_node.hpp"
 
 
 #include "common/algorithm.hpp"
@@ -32,6 +33,103 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::translation_unit()
         {
             return std::unique_ptr<ast_node>();
+        }
+
+        std::unique_ptr<ast_node> parser2::constructor(token_t class_name)
+        {
+            auto type_name = eat(token_type_t::identifier);
+            if(!type_name)
+            {
+                return nullptr;
+            }
+
+            auto parameters = param_declarations();
+            if (!parameters)
+            {
+                return nullptr;
+            }
+
+            auto block_expr = block();
+            if (!block_expr)
+            {
+                return nullptr;
+            }
+
+            // Let's pretend that ctors return something.
+            const auto return_type_reference = type_reference{class_name, class_name};
+            return std::make_unique<user_function_node2>(return_type_reference,
+                                                        *type_name,
+                                                        std::move(*parameters),
+                                                        std::move(block_expr));
+        }
+
+        std::unique_ptr<ast_node> parser2::class_()
+        {
+            if (!eat(token_type_t::kw_class))
+            {
+                return nullptr;
+            }
+
+            auto name = eat(token_type_t::identifier);
+            if (!name)
+            {
+                return nullptr;
+            }
+
+            if (!eat(token_type_t::open_brace))
+            {
+                return nullptr;
+            }
+
+            std::vector<std::unique_ptr<ast_node>> class_nodes;
+
+            while (!current_is(token_type_t::close_brace))
+            {
+                const auto class_ctor_starts = m_token->str() == name->str();
+                if(class_ctor_starts)
+                {
+                    auto ctor = constructor(*name);
+                    if(!ctor)
+                    {
+                        return nullptr;
+                    }
+                    class_nodes.emplace_back(std::move(ctor));
+                }
+                if(function_declaration_starts())
+                {
+                    auto fun = function();
+                    if(!fun)
+                    {
+                        return nullptr;
+                    }
+
+                    class_nodes.emplace_back(std::move(fun));
+                }
+                else
+                {
+                    auto member = variable_declaration();
+                    if (!member)
+                    {
+                        return nullptr;
+                    }
+
+                    class_nodes.emplace_back(std::move(member));
+                }
+            }
+
+            if (!eat(token_type_t::close_brace))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            if (!eat(token_type_t::semicolon))
+            {
+                raise_error();
+                return nullptr;
+            }
+
+            return std::make_unique<class_node2>(*name, std::move(class_nodes));
         }
 
         std::unique_ptr<ast_node> parser2::function()
@@ -994,6 +1092,12 @@ namespace cmsl
         {
             auto vals = get_function_call_values();
             return std::make_unique<function_call_node>(vals.name, std::move(vals.params));
+        }
+
+        bool parser2::function_declaration_starts() const
+        {
+            // return_type function_name (
+            return peek(2u) == token_type_t::open_paren;
         }
     }
 }

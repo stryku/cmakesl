@@ -35,6 +35,7 @@ namespace cmsl
             std::unique_ptr<ast_node> translation_unit();
             std::unique_ptr<ast_node> variable_declaration();
             std::unique_ptr<ast_node> function();
+            std::unique_ptr<ast_node> class_();
 
 
         private:
@@ -69,6 +70,7 @@ namespace cmsl
             bool current_is_function_call() const;
             bool current_is_fundamental_value() const;
             bool current_is_type() const;
+            bool function_declaration_starts() const;
             bool declaration_starts() const;
 
             // It is ugly, but it is better to keep it this way for grammar purpose. Consider refactor, though.
@@ -116,6 +118,7 @@ namespace cmsl
             std::unique_ptr<ast_node> get_if_else_node();
             std::unique_ptr<ast_node> get_while_node();
 
+            std::unique_ptr<ast_node> constructor(token_t class_name);
 
         private:
             errors::errors_observer& m_err_observer;
