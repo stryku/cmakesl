@@ -26,5 +26,18 @@ namespace cmsl
             cmsl::string_view m_name;
             std::vector<member_declaration> m_members;
         };
+
+        class class_node2 : public ast_node
+        {
+        public:
+            class_node2(lexer::token::token name, std::vector<std::unique_ptr<ast_node>> nodes)
+                : m_name{ name }
+                , m_nodes{ std::move(nodes) }
+            {}
+
+        private:
+            lexer::token::token m_name;
+            std::vector<std::unique_ptr<ast_node>> m_nodes;
+        };
     }
 }
