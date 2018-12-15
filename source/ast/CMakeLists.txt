@@ -58,7 +58,7 @@ set(AST_SOURCES
     builtin_function_kind.hpp
     variable_declaration_node.hpp
     type_reference.hpp
-        infix_nodes.hpp translation_unit_node.hpp)
+        infix_nodes.hpp translation_unit_node.hpp ast_node_visitor.hpp)
 
 add_library(ast ${AST_SOURCES})
 target_include_directories(ast PRIVATE ${CMAKESL_SOURCES_DIR})
