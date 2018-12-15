@@ -1124,6 +1124,7 @@ namespace cmsl
 
         bool parser2::function_declaration_starts() const
         {
+            // Check if there is an open paren
             // return_type function_name (
             return peek(2u) == token_type_t::open_paren;
         }
