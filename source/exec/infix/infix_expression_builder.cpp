@@ -93,14 +93,14 @@ namespace cmsl
                 return true;
             }
 
-            bool infix_expression_builder::expect_not_at_end() const
+            bool infix_expression_builder::is_at_end() const
             {
-                return m_token != m_end;
+                return m_token == m_end;
             }
 
             bool infix_expression_builder::expect_token(infix_expression_builder::token_type_t expected_type) const
             {
-                return expect_not_at_end() && m_token->get_type() == expected_type;
+                return !is_at_end() && m_token->get_type() == expected_type;
             }
 
             std::unique_ptr<infix_expression> infix_expression_builder::expr()
@@ -113,7 +113,7 @@ namespace cmsl
                 {
                     auto operator_expr = operator_expr_16();
 
-                    if(expect_not_at_end() && curr_type() == token_type_t::dot)
+                    if(!is_at_end() && curr_type() == token_type_t::dot)
                     {
                         eat();
                         if(is_current_class_member_access())
@@ -158,8 +158,7 @@ namespace cmsl
 
             bool infix_expression_builder::is_next(infix_expression_builder::token_type_t expected_type) const
             {
-                auto p = peek(1);
-                return expect_not_at_end() && peek(1) == expected_type;
+                return !is_at_end() && peek(1) == expected_type;
             }
 
             infix_expression_builder::token_type_t infix_expression_builder::peek(size_t n) const
@@ -292,7 +291,7 @@ namespace cmsl
             {
                 auto f = factor();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                         is_current_operator_2())
                 {
                     eat(); // dot
@@ -321,7 +320,7 @@ namespace cmsl
             {
                 auto f = operator_expr_2();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_3())
                 {
                     const auto op = *m_token;
@@ -340,7 +339,7 @@ namespace cmsl
             {
                 auto f = operator_expr_3();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_5())
                 {
                     const auto op = *m_token;
@@ -359,7 +358,7 @@ namespace cmsl
             {
                 auto f = operator_expr_5();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_6())
                 {
                     const auto op = *m_token;
@@ -378,7 +377,7 @@ namespace cmsl
             {
                 auto f = operator_expr_6();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_9())
                 {
                     const auto op = *m_token;
@@ -397,7 +396,7 @@ namespace cmsl
             {
                 auto f = operator_expr_9();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_10())
                 {
                     const auto op = *m_token;
@@ -416,7 +415,7 @@ namespace cmsl
             {
                 auto f = operator_expr_10();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_11())
                 {
                     const auto op = *m_token;
@@ -435,7 +434,7 @@ namespace cmsl
             {
                 auto f = operator_expr_11();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_12())
                 {
                     const auto op = *m_token;
@@ -454,7 +453,7 @@ namespace cmsl
             {
                 auto f = operator_expr_12();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_13())
                 {
                     const auto op = *m_token;
@@ -473,7 +472,7 @@ namespace cmsl
             {
                 auto f = operator_expr_13();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_14())
                 {
                     const auto op = *m_token;
@@ -492,7 +491,7 @@ namespace cmsl
             {
                 auto f = operator_expr_14();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_15())
                 {
                     const auto op = *m_token;
@@ -511,7 +510,7 @@ namespace cmsl
             {
                 auto f = operator_expr_15();
 
-                while(expect_not_at_end() &&
+                while(!is_at_end() &&
                       is_current_operator_16())
                 {
                     const auto op = *m_token;
