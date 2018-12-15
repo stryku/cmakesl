@@ -2,6 +2,13 @@
 
 #include "ast/variable_declaration_node.hpp"
 #include "ast/infix_nodes.hpp"
+#include "ast/return_node.hpp"
+#include "ast/conditional_node.hpp"
+#include "ast/if_else_node.hpp"
+#include "ast/while_node.hpp"
+#include "ast/user_function_node.hpp"
+
+
 #include "common/algorithm.hpp"
 
 #include "errors/error.hpp"
@@ -25,6 +32,300 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::translation_unit()
         {
             return std::unique_ptr<ast_node>();
+        }
+
+        std::unique_ptr<ast_node> parser2::function()
+        {
+            const auto ty = type();
+            if(!ty)
+            {
+                return nullptr;
+            }
+
+            const auto name = eat(token_type_t::identifier);
+            if(!name)
+            {
+                return nullptr;
+            }
+
+            auto parameters = param_declarations();
+            if (!parameters)
+            {
+                return nullptr;
+            }
+
+            auto block_node = block();
+
+            if (!block_node)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<user_function_node2>(*ty, *name, std::move(*parameters), std::move(block_node));
+        }
+
+        std::unique_ptr<ast_node> parser2::get_return_node()
+        {
+            if (!eat(token_type_t::kw_return))
+            {
+                return nullptr;
+            }
+
+            auto e = expr();
+            if (!e)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<return_node>(std::move(e));
+        }
+
+        bool parser2::current_is_type() const
+        {
+            return is_builtin_simple_type(curr_type()) || current_is(token_type_t::identifier);
+        }
+
+        bool parser2::declaration_starts() const
+        {
+            return current_is_type();
+        }
+
+        std::unique_ptr<conditional_node> parser2::get_conditional_node()
+        {
+            if(!eat(token_type_t::open_paren))
+            {
+                return nullptr;
+            }
+
+            auto condition = expr();
+            if(!condition)
+            {
+                return nullptr;
+            }
+
+            if(!eat(token_type_t::close_paren))
+            {
+                return nullptr;
+            }
+
+            auto b = block();
+            if(!b)
+            {
+                return nullptr;
+            }
+
+
+            return std::make_unique<conditional_node>(std::move(condition), std::move(b));
+        }
+
+        std::unique_ptr<ast_node> parser2::get_if_else_node()
+        {
+            if(!current_is(token_type_t::kw_if))
+            {
+                // Expected if
+                raise_error();
+                return nullptr;
+            }
+
+            std::vector<std::unique_ptr<conditional_node>> ifs;
+
+            while(current_is(token_type_t::kw_if))
+            {
+                if(!eat(token_type_t::kw_if))
+                {
+                    return nullptr;
+                }
+
+                auto if_node = get_conditional_node();
+                if(!if_node)
+                {
+                    return nullptr;
+                }
+
+                ifs.emplace_back(std::move(if_node));
+
+                if(current_is(token_type_t::kw_else))
+                {
+                    const auto next_type = peek();
+                    if(next_type == token_type_t::kw_if)
+                    {
+                        eat(token_type_t::kw_else);
+                    }
+                }
+            }
+
+            std::unique_ptr<block_node> else_block;
+            if(current_is(token_type_t::kw_else))
+            {
+                eat(token_type_t::kw_else);
+                else_block = block();
+            }
+
+            return std::make_unique<if_else_node>(std::move(ifs), std::move(else_block));
+        }
+
+        std::unique_ptr<ast_node> parser2::get_while_node()
+        {
+            if(!eat(token_type_t::kw_while))
+            {
+                return nullptr;
+            }
+
+            auto conditional_node = get_conditional_node();
+            if(!conditional_node)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<while_node>(std::move(conditional_node));
+        }
+
+        std::unique_ptr<block_node> parser2::block()
+        {
+            if (!eat(token_type_t::open_brace))
+            {
+                return nullptr;
+            }
+
+            std::vector<std::unique_ptr<ast_node>> nodes;
+
+            while (!is_at_end() && !current_is(token_type_t::close_brace))
+            {
+                std::unique_ptr<ast_node> node;
+
+                if (current_is(token_type_t::kw_return))
+                {
+                    node = get_return_node();
+                }
+                else if (declaration_starts())
+                {
+                    node = variable_declaration();
+                }
+                else if(current_is(token_type_t::kw_if))
+                {
+                    node = get_if_else_node();
+                }
+                else if(current_is(token_type_t::kw_while))
+                {
+                    node = get_while_node();
+                }
+                else
+                {
+                    node = expr();
+                }
+
+                if (!node)
+                {
+                    return nullptr;
+                }
+
+                nodes.emplace_back(std::move(node));
+            }
+
+            if (!eat(token_type_t::close_brace))
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<block_node>(std::move(nodes));
+        }
+
+        boost::optional<param_declaration> parser2::get_param_declaration()
+        {
+            auto t = type();
+
+            if (!t)
+            {
+                return{};
+            }
+
+            auto name = eat(token_type_t::identifier);
+            if (!name)
+            {
+                return{};
+            }
+
+            return param_declaration{ *t, *name };
+        }
+
+        bool parser2::prepare_for_next_parameter_declaration()
+        {
+            if (!expect_not_at_end())
+            {
+                return false;
+            }
+
+            if (!current_is(token_type_t::comma))
+            {
+                return true;
+            }
+
+            // At this point we have comma, so we expect next parameter
+
+            if (!eat(token_type_t::comma))
+            {
+                return false;
+            }
+
+            if (!expect_not_at_end())
+            {
+                return false;
+            }
+
+            if (!is_at_end() && current_is(token_type_t::close_paren))
+            {
+                // Missed last parameter declaration
+                raise_error();
+                return false;
+            }
+
+            return true;
+        }
+
+        boost::optional<std::vector<param_declaration>> parser2::param_declarations()
+        {
+            std::vector<param_declaration> params;
+
+            if (!eat(token_type_t::open_paren))
+            {
+                return {};
+            }
+
+            while (true)
+            {
+                if (is_at_end())
+                {
+                    // Unexpected end of tokens
+                    raise_error();
+                    return boost::none;
+                }
+
+                if (current_is(token_type_t::close_paren))
+                {
+                    // End of parameters
+                    break;
+                }
+
+                const auto param_decl = get_param_declaration();
+                if (!param_decl)
+                {
+                    return {};
+                }
+
+                params.push_back(std::move(*param_decl));
+
+                if (!prepare_for_next_parameter_declaration())
+                {
+                    return {};
+                }
+            }
+
+            if(!eat(token_type_t::close_paren))
+            {
+                return {};
+            }
+
+            return params;
         }
 
         std::unique_ptr<ast_node> parser2::variable_declaration()
