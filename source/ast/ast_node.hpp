@@ -9,6 +9,9 @@ namespace cmsl
         class ast_node
         {
         public:
+            ast_node()
+            {}
+
             ast_node(ast_node_type type)
                 : m_type{ type }
             {}

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lexer/token/token.hpp"
+
 namespace cmsl
 {
     namespace ast
