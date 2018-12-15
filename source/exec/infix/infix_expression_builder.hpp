@@ -31,7 +31,7 @@ namespace cmsl
 
             private:
                 void eat();
-                bool expect_not_at_end() const;
+                bool is_at_end() const;
                 bool expect_token(token_type_t expected_type) const;
                 bool eat(token_type_t expected_type);
                 bool is_current_fundamental_value() const;
