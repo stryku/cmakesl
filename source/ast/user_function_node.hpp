@@ -2,6 +2,7 @@
 
 #include "ast/function.hpp"
 #include "ast/block_node.hpp"
+#include "ast/type_reference.hpp"
 
 #include "lexer/token/token.hpp"
 
@@ -36,6 +37,26 @@ namespace cmsl
             const type& m_return_type;
             cmsl::string_view m_name;
             std::vector<parameter_declaration> m_params;
+            std::unique_ptr<block_node> m_body;
+        };
+
+        class user_function_node2 : public ast_node
+        {
+        public:
+            user_function_node2(type_reference return_type,
+                                lexer::token::token name,
+                                std::vector<param_declaration> params,
+                                std::unique_ptr<block_node> body)
+                    : m_return_type{ return_type }
+                    , m_name{ name }
+                    , m_params{ std::move(params) }
+                    , m_body{ std::move(body) }
+            {}
+
+        private:
+            type_reference m_return_type;
+            lexer::token::token m_name;
+            std::vector<param_declaration> m_params;
             std::unique_ptr<block_node> m_body;
         };
     }

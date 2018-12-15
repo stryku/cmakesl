@@ -7,22 +7,17 @@
 
 namespace cmsl
 {
-    namespace exec
-    {
-        class source_executor;
-    }
-
     namespace ast
     {
         class return_node : public ast_node
         {
         public:
-            explicit return_node(std::unique_ptr<infix_node> expr);
+            explicit return_node(std::unique_ptr<ast_node> expr);
 
-            infix_node& get_expression();
+            ast_node& get_expression();
 
         private:
-            std::unique_ptr<infix_node> m_expression;
+            std::unique_ptr<ast_node> m_expression;
         };
     }
 }

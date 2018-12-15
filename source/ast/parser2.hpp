@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast/type_reference.hpp"
+#include "ast/parameter_declaration.hpp"
 #include "lexer/token/token.hpp"
 
 #include <boost/optional.hpp>
@@ -17,6 +18,8 @@ namespace cmsl
     namespace ast
     {
         class ast_node;
+        class conditional_node;
+        class block_node;
 
         class parser2
         {
@@ -31,6 +34,7 @@ namespace cmsl
 
             std::unique_ptr<ast_node> translation_unit();
             std::unique_ptr<ast_node> variable_declaration();
+            std::unique_ptr<ast_node> function();
 
 
         private:
@@ -64,6 +68,8 @@ namespace cmsl
             bool current_is_class_member_access() const;
             bool current_is_function_call() const;
             bool current_is_fundamental_value() const;
+            bool current_is_type() const;
+            bool declaration_starts() const;
 
             // It is ugly, but it is better to keep it this way for grammar purpose. Consider refactor, though.
             bool is_current_operator_2() const;
@@ -98,6 +104,18 @@ namespace cmsl
 
             std::vector<std::unique_ptr<ast_node>> parameter_list();
             function_call_values get_function_call_values();
+
+            bool prepare_for_next_parameter_declaration();
+            boost::optional<param_declaration> get_param_declaration();
+            boost::optional<std::vector<param_declaration>> param_declarations();
+
+            std::unique_ptr<block_node> block();
+            std::unique_ptr<ast_node> get_return_node();
+
+            std::unique_ptr<conditional_node> get_conditional_node();
+            std::unique_ptr<ast_node> get_if_else_node();
+            std::unique_ptr<ast_node> get_while_node();
+
 
         private:
             errors::errors_observer& m_err_observer;
