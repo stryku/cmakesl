@@ -22,8 +22,8 @@ namespace cmsl
 
             void infix_statement::execute(execution& e)
             {
-                auto instances = std::make_unique<inst::instances_holder>(e);
-                infix::infix_evaluation_context ctx { e, *instances };
+                auto instances = inst::instances_holder{ e };
+                infix::infix_evaluation_context ctx { e, instances };
                 builtin::builtin_function_factory factory{e.get_cmake_facade()};
                 infix::function_call_evaluator caller{ factory, ctx, e };
                 infix::infix_expression_builder builder{ caller, m_node.get_tokens() };
