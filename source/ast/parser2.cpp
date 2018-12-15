@@ -8,6 +8,7 @@
 #include "ast/while_node.hpp"
 #include "ast/user_function_node.hpp"
 #include "ast/class_node.hpp"
+#include "ast/translation_unit_node.hpp"
 
 
 #include "common/algorithm.hpp"
@@ -32,7 +33,34 @@ namespace cmsl
 
         std::unique_ptr<ast_node> parser2::translation_unit()
         {
-            return std::unique_ptr<ast_node>();
+            std::vector<std::unique_ptr<ast_node>> nodes;
+
+            while(!is_at_end())
+            {
+                std::unique_ptr<ast_node> node;
+
+                if(function_declaration_starts())
+                {
+                    node = function();
+                }
+                else if(current_is(token_type_t::kw_class))
+                {
+                    node = class_();
+                }
+                else
+                {
+                    node = variable_declaration();
+                }
+
+                if(!node)
+                {
+                    return nullptr;
+                }
+
+                nodes.emplace_back(std::move(node));
+            }
+
+            return std::make_unique<translation_unit_node>(std::move(nodes));
         }
 
         std::unique_ptr<ast_node> parser2::constructor(token_t class_name)
