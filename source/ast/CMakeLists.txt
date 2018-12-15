@@ -1,6 +1,6 @@
 set(AST_SOURCES
     ast_builder.cpp
-    ast_builder.hpp 
+    ast_builder.hpp
     ast_context.cpp
     ast_context.hpp
     block_node.cpp
@@ -36,10 +36,13 @@ set(AST_SOURCES
     parameter_declaration.hpp
     parser.cpp
     parser.hpp
+    parser2.cpp
+    parser2.hpp
     return_node.cpp
     return_node.hpp
     type.cpp
     type.hpp
+    type_node.hpp
     type_conversion_check.cpp
     type_conversion_check.hpp
     type_kind.cpp
@@ -53,6 +56,8 @@ set(AST_SOURCES
     generic_type_factory.hpp
     generic_type_factory.cpp
     builtin_function_kind.hpp
+    variable_declaration_node.hpp
+    type_reference.hpp
 )
 
 add_library(ast ${AST_SOURCES})
