@@ -16,7 +16,7 @@ namespace cmsl
             explicit while_node(std::unique_ptr<conditional_node> node);
             ~while_node();
 
-            conditional_node& get_node() const;
+            const conditional_node& get_node() const;
 
         private:
             std::unique_ptr<conditional_node> m_node;

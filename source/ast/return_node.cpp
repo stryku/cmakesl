@@ -9,7 +9,7 @@ namespace cmsl
             , m_expression{ std::move(expr) }
         {}
 
-        ast_node& return_node::get_expression()
+        const ast_node& return_node::get_expression() const
         {
             return *m_expression;
         }

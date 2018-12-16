@@ -28,24 +28,24 @@ namespace cmsl
         public:
             virtual ~ast_node_visitor() = default;
 
-            virtual void visit(block_node& node) = 0;
-            virtual void visit(class_node2& node) = 0;
-            virtual void visit(conditional_node& node) = 0;
-            virtual void visit(if_else_node& node) = 0;
-            virtual void visit(binary_operator_node& node) = 0;
-            virtual void visit(class_member_access_node& node) = 0;
-            virtual void visit(function_call_node& node) = 0;
-            virtual void visit(member_function_call_node& node) = 0;
-            virtual void visit(bool_value_node& node) = 0;
-            virtual void visit(int_value_node& node) = 0;
-            virtual void visit(double_value_node& node) = 0;
-            virtual void visit(string_value_node& node) = 0;
-            virtual void visit(id_node& node) = 0;
-            virtual void visit(return_node& node) = 0;
-            virtual void visit(translation_unit_node& node) = 0;
-            virtual void visit(user_function_node2& node) = 0;
-            virtual void visit(variable_declaration_node& node) = 0;
-            virtual void visit(while_node& node) = 0;
+            virtual void visit(const block_node& node) = 0;
+            virtual void visit(const class_node2& node) = 0;
+            virtual void visit(const conditional_node& node) = 0;
+            virtual void visit(const if_else_node& node) = 0;
+            virtual void visit(const binary_operator_node& node) = 0;
+            virtual void visit(const class_member_access_node& node) = 0;
+            virtual void visit(const function_call_node& node) = 0;
+            virtual void visit(const member_function_call_node& node) = 0;
+            virtual void visit(const bool_value_node& node) = 0;
+            virtual void visit(const int_value_node& node) = 0;
+            virtual void visit(const double_value_node& node) = 0;
+            virtual void visit(const string_value_node& node) = 0;
+            virtual void visit(const id_node& node) = 0;
+            virtual void visit(const return_node& node) = 0;
+            virtual void visit(const translation_unit_node& node) = 0;
+            virtual void visit(const user_function_node2& node) = 0;
+            virtual void visit(const variable_declaration_node& node) = 0;
+            virtual void visit(const while_node& node) = 0;
         };
     }
 }

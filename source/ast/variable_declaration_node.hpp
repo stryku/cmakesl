@@ -16,6 +16,21 @@ namespace cmsl
                 , m_initialization{ std::move(initialization) }
             {}
 
+            type_reference get_type_reference() const
+            {
+                return m_ty;
+            }
+
+            lexer::token::token get_name() const
+            {
+                return m_name;
+            }
+
+            const ast_node* get_initialization() const
+            {
+                return m_initialization.get();
+            }
+
         private:
             type_reference m_ty;
             lexer::token::token m_name;

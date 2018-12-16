@@ -53,6 +53,26 @@ namespace cmsl
                     , m_body{ std::move(body) }
             {}
 
+            type_reference get_return_type_reference() const
+            {
+                return m_return_type;
+            }
+
+            lexer::token::token get_name() const
+            {
+                return m_name;
+            }
+
+            const std::vector<param_declaration>& get_param_declarations() const
+            {
+                return m_params;
+            }
+
+            const block_node& get_body() const
+            {
+                return *m_body;
+            }
+
         private:
             type_reference m_return_type;
             lexer::token::token m_name;

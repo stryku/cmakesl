@@ -18,6 +18,21 @@ namespace cmsl
                 , m_rhs{ std::move(rhs)}
             {}
 
+            const ast_node& get_lhs() const
+            {
+                return *m_lhs;
+            }
+
+            lexer::token::token get_operator() const
+            {
+                return m_operator;
+            }
+
+            const ast_node& get_rhs() const
+            {
+                return *m_rhs;
+            }
+
         private:
             std::unique_ptr<ast_node> m_lhs;
             lexer::token::token m_operator;
@@ -32,6 +47,16 @@ namespace cmsl
                 , m_member_name{ member_name }
             {}
 
+            const ast_node& get_lhs() const
+            {
+                return *m_lhs;
+            }
+
+            lexer::token::token get_member_name() const
+            {
+                return m_member_name;
+            }
+
         private:
             std::unique_ptr<ast_node> m_lhs;
             lexer::token::token m_member_name;
@@ -42,14 +67,24 @@ namespace cmsl
         public:
             using params_t = std::vector<std::unique_ptr<ast_node>>;
 
-            explicit call_node(lexer::token::token name, params_t parameter_expressions)
+            explicit call_node(lexer::token::token name, params_t parameter_nodes)
                 : m_name{ name }
-                , m_parameter_expressions{ std::move(parameter_expressions) }
+                , m_parameter_nodes{ std::move(parameter_nodes) }
             {}
+
+            lexer::token::token get_name() const
+            {
+                return m_name;
+            }
+
+            const params_t& get_param_nodes() const
+            {
+                return m_parameter_nodes;
+            }
 
         private:
             lexer::token::token m_name;
-            params_t m_parameter_expressions;
+            params_t m_parameter_nodes;
         };
 
         class function_call_node : public call_node
@@ -67,6 +102,11 @@ namespace cmsl
                 : call_node{ name, std::move(params) }
                 , m_lhs{ std::move(lhs) }
             {}
+
+            const ast_node& get_lhs() const
+            {
+                return *m_lhs;
+            }
 
         private:
             std::unique_ptr<ast_node> m_lhs;

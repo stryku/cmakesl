@@ -6,6 +6,8 @@ namespace cmsl
 {
     namespace ast
     {
+        class ast_node_visitor;
+
         class ast_node
         {
         public:
@@ -23,6 +25,8 @@ namespace cmsl
             {
                 return m_type;
             }
+
+            virtual void visit(ast_node_visitor& visitor) const = 0;
 
         private:
             ast_node_type m_type;
