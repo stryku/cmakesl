@@ -35,6 +35,26 @@ namespace cmsl
                 , m_nodes{ std::move(nodes) }
             {}
 
+            lexer::token::token get_name() const
+            {
+                return m_name;
+            }
+
+            std::vector<const ast_node*> get_nodes() const
+            {
+                std::vector<const ast_node*> nodes;
+
+                // Todo: lazy init and store
+                std::transform(std::begin(m_nodes), std::end(m_nodes),
+                              std::back_inserter(nodes),
+                              [](const auto& unique_node)
+                               {
+                                   return unique_node.get();
+                               });
+
+                return nodes;
+            }
+
         private:
             lexer::token::token m_name;
             std::vector<std::unique_ptr<ast_node>> m_nodes;

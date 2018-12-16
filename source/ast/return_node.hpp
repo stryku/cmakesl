@@ -14,7 +14,7 @@ namespace cmsl
         public:
             explicit return_node(std::unique_ptr<ast_node> expr);
 
-            ast_node& get_expression();
+            const ast_node& get_expression() const;
 
         private:
             std::unique_ptr<ast_node> m_expression;

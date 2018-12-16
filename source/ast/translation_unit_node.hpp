@@ -16,6 +16,20 @@ namespace cmsl
                 : m_nodes{ std::move(nodes)}
             {}
 
+            std::vector<const ast_node*> get_nodes() const
+            {
+                std::vector<const ast_node*> result;
+
+                std::transform(std::begin(m_nodes), std::end(m_nodes),
+                               std::back_inserter(result),
+                               [](const auto& node)
+                               {
+                                   return node.get();
+                               });
+
+                return result;
+            }
+
         private:
             std::vector<std::unique_ptr<ast_node>> m_nodes;
         };

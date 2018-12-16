@@ -14,7 +14,8 @@ namespace cmsl
         public:
             block_node(std::vector<std::unique_ptr<ast_node>> expressions);
 
-            std::vector<ast_node*> get_expressions() const;
+            // Todo: rename to get_nodes
+            std::vector<const ast_node*> get_expressions() const;
 
         private:
             std::vector<std::unique_ptr<ast_node>> m_expressions;
