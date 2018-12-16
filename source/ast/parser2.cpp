@@ -752,9 +752,14 @@ namespace cmsl
                 else // class member function call
                 {
                     auto vals = get_function_call_values();
+                    if(!vals)
+                    {
+                        return nullptr;
+                    }
+
                     f = std::make_unique<member_function_call_node>(std::move(lhs),
-                                                                    vals.name,
-                                                                    std::move(vals.params));
+                                                                    vals->name,
+                                                                    std::move(vals->params));
                 }
             }
 
@@ -1074,27 +1079,38 @@ namespace cmsl
                     else // class member function call
                     {
                         auto vals = get_function_call_values();
+
+                        if(!vals)
+                        {
+                            return nullptr;
+                        }
+
                         return std::make_unique<member_function_call_node>(std::move(operator_expr),
-                                                                           vals.name,
-                                                                           std::move(vals.params));
+                                                                           vals->name,
+                                                                           std::move(vals->params));
                     }
                 }
 
                 return std::move(operator_expr);
             }
         }
-
-        parser2::function_call_values parser2::get_function_call_values()
+        boost::optional<parser2::function_call_values> parser2::get_function_call_values()
         {
             function_call_values vals;
 
             vals.name = *eat(token_type_t::identifier);
-            vals.params = parameter_list();
+            auto params = parameter_list();
+            if(!params)
+            {
+                return {};
+            }
+
+            vals.params = std::move(*params);
 
             return std::move(vals);
         }
 
-        std::vector<std::unique_ptr<ast_node>> parser2::parameter_list()
+        boost::optional<std::vector<std::unique_ptr<ast_node>>> parser2::parameter_list()
         {
             eat(token_type_t::open_paren);
 
@@ -1103,6 +1119,14 @@ namespace cmsl
             while(!is_at_end() && !current_is(token_type_t::close_paren))
             {
                 auto param = expr();
+
+                if(!param)
+                {
+                    // Todo: Unexpected token e.g. semicolon
+                    raise_error();
+                    return {};
+                }
+
                 params.emplace_back(std::move(param));
 
                 if(current_is(token_type_t::comma))
@@ -1119,7 +1143,12 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::function_call()
         {
             auto vals = get_function_call_values();
-            return std::make_unique<function_call_node>(vals.name, std::move(vals.params));
+            if(!vals)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<function_call_node>(vals->name, std::move(vals->params));
         }
 
         bool parser2::function_declaration_starts() const

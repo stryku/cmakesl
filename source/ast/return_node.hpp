@@ -16,6 +16,8 @@ namespace cmsl
 
             const ast_node& get_expression() const;
 
+            void visit(ast_node_visitor &visitor) const override;
+
         private:
             std::unique_ptr<ast_node> m_expression;
         };

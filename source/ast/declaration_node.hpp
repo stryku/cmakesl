@@ -19,6 +19,11 @@ namespace cmsl
             cmsl::string_view get_name() const;
             const infix_node* get_expression() const;
 
+
+            void visit(ast_node_visitor &visitor) const
+            {
+            }
+
         private:
             const type& m_type;
             cmsl::string_view m_name;

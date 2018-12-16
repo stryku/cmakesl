@@ -1,4 +1,5 @@
 #include "ast/return_node.hpp"
+#include "ast/ast_node_visitor.hpp"
 
 namespace cmsl
 {
@@ -12,6 +13,11 @@ namespace cmsl
         const ast_node& return_node::get_expression() const
         {
             return *m_expression;
+        }
+
+        void return_node::visit(ast_node_visitor &visitor) const
+        {
+            visitor.visit(*this);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 #include "ast/ast_node.hpp"
 #include "ast/type_reference.hpp"
+#include "ast/ast_node_visitor.hpp" // todo: to cpp
 
 namespace cmsl
 {
@@ -29,6 +30,11 @@ namespace cmsl
             const ast_node* get_initialization() const
             {
                 return m_initialization.get();
+            }
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
             }
 
         private:

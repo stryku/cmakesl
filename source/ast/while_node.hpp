@@ -18,6 +18,8 @@ namespace cmsl
 
             const conditional_node& get_node() const;
 
+            void visit(ast_node_visitor &visitor) const override;
+
         private:
             std::unique_ptr<conditional_node> m_node;
         };

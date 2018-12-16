@@ -1,4 +1,5 @@
 #include "ast/block_node.hpp"
+#include "ast/ast_node_visitor.hpp"
 
 #include <algorithm>
 #include <iterator>
@@ -24,6 +25,11 @@ namespace cmsl
                            });
 
             return result;
+        }
+
+        void block_node::visit(ast_node_visitor &visitor) const
+        {
+            visitor.visit(*this);
         }
     }
 }

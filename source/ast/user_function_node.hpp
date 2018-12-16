@@ -3,6 +3,7 @@
 #include "ast/function.hpp"
 #include "ast/block_node.hpp"
 #include "ast/type_reference.hpp"
+#include "ast/ast_node_visitor.hpp" // todo: to cpp
 
 #include "lexer/token/token.hpp"
 
@@ -71,6 +72,11 @@ namespace cmsl
             const block_node& get_body() const
             {
                 return *m_body;
+            }
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
             }
 
         private:

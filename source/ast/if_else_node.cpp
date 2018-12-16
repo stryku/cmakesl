@@ -1,4 +1,5 @@
 #include "ast/if_else_node.hpp"
+#include "ast/ast_node_visitor.hpp"
 
 #include "ast/block_node.hpp"
 #include "ast/conditional_node.hpp"
@@ -24,6 +25,11 @@ namespace cmsl
         const block_node* if_else_node::get_else() const
         {
             return m_else.get();
+        }
+
+        void if_else_node::visit(ast_node_visitor &visitor) const
+        {
+            visitor.visit(*this);
         }
     }
 }
