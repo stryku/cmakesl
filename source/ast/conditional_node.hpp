@@ -19,6 +19,8 @@ namespace cmsl
             const ast_node& get_condition() const;
             const block_node& get_block() const;
 
+            void visit(ast_node_visitor &visitor) const override;
+
         private:
             std::unique_ptr<ast_node> m_condition;
             std::unique_ptr<block_node> m_block;

@@ -12,13 +12,17 @@ namespace cmsl
         class block_node : public ast_node
         {
         public:
-            block_node(std::vector<std::unique_ptr<ast_node>> expressions);
+            using expressions_t = std::vector<std::unique_ptr<ast_node>>;
+
+            block_node(expressions_t expressions);
 
             // Todo: rename to get_nodes
             std::vector<const ast_node*> get_expressions() const;
 
+            void visit(ast_node_visitor& visitor) const override;
+
         private:
-            std::vector<std::unique_ptr<ast_node>> m_expressions;
+            expressions_t m_expressions;
         };
     }
 }

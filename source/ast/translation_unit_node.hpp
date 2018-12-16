@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast/ast_node.hpp"
+#include "ast/ast_node_visitor.hpp" // Todo: to cpp
 
 #include <memory>
 #include <vector>
@@ -29,6 +30,11 @@ namespace cmsl
 
                 return result;
             }
+
+            void visit(ast_node_visitor& visitor) const override
+            {
+                visitor.visit(*this);
+            };
 
         private:
             std::vector<std::unique_ptr<ast_node>> m_nodes;

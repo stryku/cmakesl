@@ -21,6 +21,8 @@ namespace cmsl
             const std::vector<member_declaration>& get_members() const;
             const ast_context& get_ast_ctx() const;
 
+            // Todo: fixme
+            void visit(ast_node_visitor& visitor) const override {};
         private:
             std::unique_ptr<ast_context> m_ast_ctx;
             cmsl::string_view m_name;
@@ -53,6 +55,11 @@ namespace cmsl
                                });
 
                 return nodes;
+            }
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
             }
 
         private:

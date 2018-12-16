@@ -36,7 +36,11 @@ namespace cmsl
             std::unique_ptr<ast_node> variable_declaration();
             std::unique_ptr<ast_node> function();
             std::unique_ptr<ast_node> class_();
-
+            std::unique_ptr<ast_node> factor();
+            std::unique_ptr<ast_node> expr();
+            std::unique_ptr<ast_node> get_if_else_node();
+            std::unique_ptr<ast_node> get_while_node();
+            std::unique_ptr<ast_node> get_return_node();
 
         private:
             struct function_call_values
@@ -99,24 +103,19 @@ namespace cmsl
             std::unique_ptr<ast_node> operator_15();
             std::unique_ptr<ast_node> operator_16();
 
-            std::unique_ptr<ast_node> factor();
             std::unique_ptr<ast_node> fundamental_value();
-            std::unique_ptr<ast_node> expr();
             std::unique_ptr<ast_node> function_call();
 
-            std::vector<std::unique_ptr<ast_node>> parameter_list();
-            function_call_values get_function_call_values();
+            boost::optional<std::vector<std::unique_ptr<ast_node>>> parameter_list();
+            boost::optional<function_call_values> get_function_call_values();
 
             bool prepare_for_next_parameter_declaration();
             boost::optional<param_declaration> get_param_declaration();
             boost::optional<std::vector<param_declaration>> param_declarations();
 
             std::unique_ptr<block_node> block();
-            std::unique_ptr<ast_node> get_return_node();
 
             std::unique_ptr<conditional_node> get_conditional_node();
-            std::unique_ptr<ast_node> get_if_else_node();
-            std::unique_ptr<ast_node> get_while_node();
 
             std::unique_ptr<ast_node> constructor(token_t class_name);
 

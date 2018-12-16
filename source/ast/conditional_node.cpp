@@ -2,6 +2,7 @@
 
 #include "ast/infix_node.hpp"
 #include "ast/block_node.hpp"
+#include "ast/ast_node_visitor.hpp"
 
 namespace cmsl
 {
@@ -24,6 +25,11 @@ namespace cmsl
         const block_node &conditional_node::get_block() const
         {
             return *m_block;
+        }
+
+        void conditional_node::visit(ast_node_visitor &visitor) const
+        {
+            visitor.visit(*this);
         }
     }
 }

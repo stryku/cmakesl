@@ -33,6 +33,11 @@ namespace cmsl
                 return *m_rhs;
             }
 
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
+            }
+
         private:
             std::unique_ptr<ast_node> m_lhs;
             lexer::token::token m_operator;
@@ -55,6 +60,11 @@ namespace cmsl
             lexer::token::token get_member_name() const
             {
                 return m_member_name;
+            }
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
             }
 
         private:
@@ -93,6 +103,11 @@ namespace cmsl
             explicit function_call_node(lexer::token::token name, params_t params)
                 : call_node{ name, std::move(params) }
             {}
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
+            }
         };
 
         class member_function_call_node : public call_node
@@ -106,6 +121,11 @@ namespace cmsl
             const ast_node& get_lhs() const
             {
                 return *m_lhs;
+            }
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
             }
 
         private:
@@ -134,6 +154,11 @@ namespace cmsl
             explicit bool_value_node(lexer::token::token token)
                 : fundamental_value_node{token}
             {}
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
+            }
         };
 
         class int_value_node : public fundamental_value_node
@@ -142,6 +167,11 @@ namespace cmsl
             explicit int_value_node(lexer::token::token token)
                     : fundamental_value_node{token}
             {}
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
+            }
         };
 
         class double_value_node : public fundamental_value_node
@@ -150,6 +180,11 @@ namespace cmsl
             explicit double_value_node(lexer::token::token token)
                 : fundamental_value_node{token}
             {}
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
+            }
         };
 
         class string_value_node : public fundamental_value_node
@@ -158,6 +193,11 @@ namespace cmsl
             explicit string_value_node(lexer::token::token token)
                 : fundamental_value_node{token}
             {}
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
+            }
         };
 
         class id_node : public ast_node
@@ -170,6 +210,11 @@ namespace cmsl
             lexer::token::token get_identifier() const
             {
                 return m_identifer;
+            }
+
+            void visit(ast_node_visitor &visitor) const override
+            {
+                visitor.visit(*this);
             }
 
         private:

@@ -55,6 +55,8 @@ namespace cmsl
 
             token_t token_kw_int();
             token_t token_kw_double();
+            token_t token_kw_return();
+            token_t token_kw_class();
             token_t token_kw_if();
             token_t token_kw_else();
             token_t token_kw_while();
