@@ -474,6 +474,13 @@ namespace cmsl
             {
                 eat(); // equal
                 initialization = expr();
+                if(!initialization)
+                {
+                    // todo expected expression
+                    raise_error();
+                    return nullptr;
+                }
+                initialization = expr();
             }
 
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization));
