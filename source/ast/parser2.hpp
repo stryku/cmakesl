@@ -41,6 +41,7 @@ namespace cmsl
             std::unique_ptr<ast_node> get_if_else_node();
             std::unique_ptr<ast_node> get_while_node();
             std::unique_ptr<ast_node> get_return_node();
+            boost::optional<type_reference> type();
 
         private:
             struct function_call_values
@@ -60,7 +61,6 @@ namespace cmsl
             boost::optional<token_t> eat_simple_type();
 
 
-            boost::optional<type_reference> type();
             boost::optional<type_reference> generic_type();
             boost::optional<type_reference> simple_type();
             bool generic_type_starts() const;
