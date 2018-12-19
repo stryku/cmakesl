@@ -32,6 +32,7 @@ namespace cmsl
 
             using ::testing::NotNull;
             using ::testing::Ref;
+            using ::testing::Eq;
 
             class ast_tree_representation_visitor : public ast_node_visitor
             {
@@ -829,10 +830,29 @@ namespace cmsl
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
             }
 
-            TEST(Parser2Test, Variable_TypeId_GetVariableDeclaration)
+            namespace builtin_type
             {
+                using Type_BuiltingTypeToken = ::testing::TestWithParam<token_t>;
 
+                TEST_P(Type_BuiltingTypeToken, GetTypeReference)
+                {
+                    const auto token = token_kw_int();
+
+                    const auto expected_reference = type_reference{ token, token };
+
+                    const auto tokens = tokens_container_t{ token };
+                    auto parser = parser_t{ dummy_err_observer, tokens };
+                    auto result_type_reference = parser.type();
+
+                    ASSERT_TRUE(result_type_reference);
+                    EXPECT_THAT(result_type_reference->begin, Eq(expected_reference.begin));
+                    EXPECT_THAT(result_type_reference->end, Eq(expected_reference.end));
+                }
+
+                const auto values = ::testing::Values(token_kw_bool(), token_kw_int(), token_kw_double(), token_kw_string());
+                INSTANTIATE_TEST_CASE_P(Parser2Test, Type_BuiltingTypeToken, values);
             }
+
         }
     }
 }
