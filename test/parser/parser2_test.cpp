@@ -830,11 +830,11 @@ namespace cmsl
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
             }
 
-            namespace builtin_type
+            namespace type
             {
-                using Type_BuiltingTypeToken = ::testing::TestWithParam<token_t>;
+                using Type_SingleToken = ::testing::TestWithParam<token_t>;
 
-                TEST_P(Type_BuiltingTypeToken, GetTypeReference)
+                TEST_P(Type_SingleToken, GetTypeReference)
                 {
                     const auto token = token_kw_int();
 
@@ -849,10 +849,60 @@ namespace cmsl
                     EXPECT_THAT(result_type_reference->end, Eq(expected_reference.end));
                 }
 
-                const auto values = ::testing::Values(token_kw_bool(), token_kw_int(), token_kw_double(), token_kw_string());
-                INSTANTIATE_TEST_CASE_P(Parser2Test, Type_BuiltingTypeToken, values);
+                const auto values = ::testing::Values(token_kw_bool(), token_kw_int(), token_kw_double(), token_kw_string(),
+                                                     token_identifier("foo"), token_identifier("project"));
+                INSTANTIATE_TEST_CASE_P(Parser2Test, Type_SingleToken, values);
             }
 
+            TEST(Parser2Test, Type_GenericType_GetTypeReference)
+            {
+                cmsl::string_view source = "list<int>";
+                const auto list_token = token_from_larger_source(source, token_type_t::kw_list, 0u, 4u);
+                const auto less_token = token_from_larger_source(source, token_type_t::less, 4u, 5u);
+                const auto int_token = token_from_larger_source(source, token_type_t::kw_int, 5u, 8u);
+                const auto greater_token = token_from_larger_source(source, token_type_t::greater, 8u, 9u);
+
+                const auto expected_reference = type_reference{ list_token, greater_token };
+
+                const auto tokens = tokens_container_t{ list_token,
+                                                        less_token,
+                                                        int_token,
+                                                        greater_token };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_type_reference = parser.type();
+
+                ASSERT_TRUE(result_type_reference);
+                EXPECT_THAT(result_type_reference->begin, Eq(expected_reference.begin));
+                EXPECT_THAT(result_type_reference->end, Eq(expected_reference.end));
+            }
+
+            TEST(Parser2Test, Type_NestedGenericType_GetTypeReference)
+            {
+                cmsl::string_view source = "list<list<foo>>";
+                const auto list_token = token_from_larger_source(source, token_type_t::kw_list, 0u, 4u);
+                const auto less_token = token_from_larger_source(source, token_type_t::less, 4u, 5u);
+                const auto nested_list_token = token_from_larger_source(source, token_type_t::kw_list, 5u, 9u);
+                const auto nested_less_token = token_from_larger_source(source, token_type_t::less, 9u, 10u);
+                const auto foo_token = token_from_larger_source(source, token_type_t::identifier, 10u, 13u);
+                const auto nested_greater_token = token_from_larger_source(source, token_type_t::greater, 13u, 14u);
+                const auto greater_token = token_from_larger_source(source, token_type_t::greater, 14u, 15u);
+
+                const auto expected_reference = type_reference{ list_token, greater_token };
+
+                const auto tokens = tokens_container_t{ list_token,
+                                                        less_token,
+                                                        nested_list_token,
+                                                        nested_less_token,
+                                                        foo_token,
+                                                        nested_greater_token,
+                                                        greater_token };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_type_reference = parser.type();
+
+                ASSERT_TRUE(result_type_reference);
+                EXPECT_THAT(result_type_reference->begin, Eq(expected_reference.begin));
+                EXPECT_THAT(result_type_reference->end, Eq(expected_reference.end));
+            }
         }
     }
 }

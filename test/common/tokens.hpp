@@ -65,6 +65,8 @@ namespace cmsl
             token_t token_kw_false();
             token_t token_kw_string();
             token_t token_kw_list();
+
+            token_t token_from_larger_source(cmsl::string_view source, lexer::token::token_type type, unsigned begin, unsigned end);
         }
     }
 }
