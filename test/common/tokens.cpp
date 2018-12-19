@@ -161,6 +161,20 @@ namespace cmsl
             {
                 return details::token_from_source(token_type_t::identifier, str);
             }
+
+            token_t token_from_larger_source(cmsl::string_view source, token_type_t type, unsigned begin, unsigned end)
+            {
+                source_location begin_loc;
+                begin_loc.line = 1u;
+                begin_loc.column = begin_loc.absolute = begin;
+
+                source_location end_loc;
+                end_loc.line = 1u;
+                end_loc.column = end_loc.absolute = end;
+                const auto source_range = cmsl::source_range{ begin_loc, end_loc };
+
+                return token_t{ type, source_range, source };
+            }
         }
     }
 }
