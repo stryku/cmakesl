@@ -1,5 +1,6 @@
 #include "exec/infix/infix_expression_builder.hpp"
 
+#include "common/assert.hpp"
 
 #include "exec/infix/binary_operator_expression.hpp"
 #include "exec/infix/fundamental_value_expression.hpp"
@@ -7,7 +8,6 @@
 #include "exec/infix/function_call_expression.hpp"
 #include "exec/infix/member_function_call_expression.hpp"
 #include "exec/infix/class_member_access_expression.hpp"
-
 
 namespace cmsl
 {
@@ -47,6 +47,9 @@ namespace cmsl
                     eat();
                     return std::move(e);
                 }
+
+                CMSL_UNREACHABLE("Can not create a factor");
+                return nullptr;
             }
 
             infix_expression_builder::token_type_t infix_expression_builder::curr_type() const

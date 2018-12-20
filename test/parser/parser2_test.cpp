@@ -47,7 +47,7 @@ namespace cmsl
                     m_result += "}";
                 }
 
-                virtual void visit(const class_node2& node)
+                virtual void visit(const class_node2& node) override
                 {
                     m_result += "class{name:" + node.get_name().str().to_string() + ";members:";
 
