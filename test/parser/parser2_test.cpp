@@ -927,7 +927,7 @@ namespace cmsl
 
             TEST(Parser2Test, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
             {
-                // int foo;
+                // list<int> foo;
                 cmsl::string_view source = "list<int>";
                 const auto list_token = token_from_larger_source(source, token_type_t::kw_list, 0u, 4u);
                 const auto less_token = token_from_larger_source(source, token_type_t::less, 4u, 5u);
@@ -965,6 +965,37 @@ namespace cmsl
                 auto expected_ast = std::make_unique<variable_declaration_node>(type_ref, name_token, std::move(expr));
 
                 const auto tokens = tokens_container_t{ type_token,
+                                                        name_token,
+                                                        token_equal(),
+                                                        int_expr_token,
+                                                        token_semicolon() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.variable_declaration();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, VariableDeclaration_GenericTypeIdEqualExpression_GetVariableDeclaration)
+            {
+                // list<int> foo = 42;
+                cmsl::string_view source = "list<int>";
+                const auto list_token = token_from_larger_source(source, token_type_t::kw_list, 0u, 4u);
+                const auto less_token = token_from_larger_source(source, token_type_t::less, 4u, 5u);
+                const auto int_token = token_from_larger_source(source, token_type_t::kw_int, 5u, 8u);
+                const auto greater_token = token_from_larger_source(source, token_type_t::greater, 8u, 9u);
+                const auto name_token = token_identifier("foo");
+                const auto int_expr_token = token_integer("42");
+
+                const auto type_ref = type_reference{ list_token, greater_token };
+
+                auto expr = std::make_unique<int_value_node>(int_expr_token);
+                auto expected_ast = std::make_unique<variable_declaration_node>(type_ref, name_token, std::move(expr));
+
+                const auto tokens = tokens_container_t{ list_token,
+                                                        less_token,
+                                                        int_token,
+                                                        greater_token,
                                                         name_token,
                                                         token_equal(),
                                                         int_expr_token,
