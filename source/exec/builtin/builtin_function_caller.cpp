@@ -151,6 +151,8 @@ namespace cmsl
                 const auto sources_list = generic_val.apply_const(to_vector);
 
                 m_facade.add_executable(executable_name,sources_list);
+
+                return m_instances.create_void(); // Todo: we'd probably want to return the executable instance
             }
         }
     }

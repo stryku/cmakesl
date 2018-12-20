@@ -26,7 +26,7 @@ namespace cmsl
                     return *m_ast_ctx;
                 }
 
-                execution_context &get_exec_ctx()
+                execution_context &get_exec_ctx() override
                 {
                     return m_exec_ctx;
                 }

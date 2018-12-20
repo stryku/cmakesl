@@ -12,6 +12,7 @@
 
 
 #include "common/algorithm.hpp"
+#include "common/assert.hpp"
 
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
@@ -1062,6 +1063,9 @@ namespace cmsl
                 const auto id = eat(token_type_t::identifier);
                 return id ? std::make_unique<id_node>(*id) : nullptr;
             }
+
+            CMSL_UNREACHABLE("Can not create a factor");
+            return nullptr;
         }
 
         std::unique_ptr<ast_node> parser2::expr()

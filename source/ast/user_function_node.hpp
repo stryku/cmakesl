@@ -25,7 +25,7 @@ namespace cmsl
                                std::vector<parameter_declaration> params,
                                std::unique_ptr<block_node> body);
 
-            cmsl::string_view get_name() const;
+            cmsl::string_view get_name() const override;
             const block_node& get_body() const;
             const type& get_return_type() const;
 
