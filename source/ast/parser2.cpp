@@ -471,7 +471,7 @@ namespace cmsl
 
             std::unique_ptr<ast_node> initialization;
 
-            if(next_is(token_type_t::equal))
+            if(current_is(token_type_t::equal))
             {
                 eat(); // equal
                 initialization = expr();
@@ -481,7 +481,6 @@ namespace cmsl
                     raise_error();
                     return nullptr;
                 }
-                initialization = expr();
             }
 
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization));
