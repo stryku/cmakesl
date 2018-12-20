@@ -68,21 +68,21 @@ namespace cmsl
             execute_function_call(fun, std::move(parameters));
         }
 
-        bool execution::execute_function_expression(ast::ast_node& expr)
+        bool execution::execute_function_expression(const ast::ast_node& expr)
         {
             // todo change type to dynamic casts
             switch (expr.get_type())
             {
                 case ast::ast_node_type::ret:
                 {
-                    stmt::return_statement ret_stmt{ dynamic_cast<ast::return_node&>(expr) };
+                    stmt::return_statement ret_stmt{ dynamic_cast<const ast::return_node&>(expr) };
                     ret_stmt.execute(*this);
                     return true;
                 }
 
                 case ast::ast_node_type::declaration:
                 {
-                    stmt::declaration_statement decl_stmt{ dynamic_cast<ast::declaration_node&>(expr) };
+                    stmt::declaration_statement decl_stmt{ dynamic_cast<const ast::declaration_node&>(expr) };
                     decl_stmt.execute(*this);
                 }
                     break;
@@ -90,21 +90,21 @@ namespace cmsl
                 case ast::ast_node_type::infix:
                 {
                     std::unique_ptr<inst::instance> result;
-                    stmt::infix_statement infix_stmt{ dynamic_cast<ast::infix_node&>(expr), result };
+                    stmt::infix_statement infix_stmt{ dynamic_cast<const ast::infix_node&>(expr), result };
                     infix_stmt.execute(*this);
                 }
                     break;
 
                 case ast::ast_node_type::if_else:
                 {
-                    stmt::if_else_statement if_else{ dynamic_cast<ast::if_else_node&>(expr) };
+                    stmt::if_else_statement if_else{ dynamic_cast<const ast::if_else_node&>(expr) };
                     if_else.execute(*this);
                 }
                     break;
 
                 case ast::ast_node_type::while_:
                 {
-                    stmt::while_statement while_stmt{ dynamic_cast<ast::while_node&>(expr) };
+                    stmt::while_statement while_stmt{ dynamic_cast<const ast::while_node&>(expr) };
                     while_stmt.execute(*this);
                 }
                     break;
@@ -148,7 +148,7 @@ namespace cmsl
         void execution::execute_block(const ast::block_node &block_node)
         {
             const auto expressions = block_node.get_expressions();
-            for (auto expr : expressions)
+            for (const auto expr : expressions)
             {
                 execute_function_expression(*expr);
                 if (returning_from_function())

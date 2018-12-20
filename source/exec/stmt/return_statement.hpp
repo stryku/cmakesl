@@ -16,12 +16,12 @@ namespace cmsl
             class return_statement : public statement
             {
             public:
-                explicit return_statement(ast::return_node& node);
+                explicit return_statement(const ast::return_node& node);
 
                 virtual void execute(execution& e) override;
 
             private:
-                ast::return_node& m_node;
+                const ast::return_node& m_node;
             };
         }
     }
