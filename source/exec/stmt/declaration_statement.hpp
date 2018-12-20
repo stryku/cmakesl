@@ -16,12 +16,12 @@ namespace cmsl
             class declaration_statement : public statement
             {
             public:
-                explicit declaration_statement(ast::declaration_node& node);
+                explicit declaration_statement(const ast::declaration_node& node);
 
                 virtual void execute(execution& e) override;
 
             private:
-                ast::declaration_node& m_node;
+                const ast::declaration_node& m_node;
             };
         }
     }

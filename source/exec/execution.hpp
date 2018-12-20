@@ -49,7 +49,7 @@ namespace cmsl
 
         private:
             void return_from_function();
-            bool execute_function_expression(ast::ast_node& expr); // todo rename. Block also uses this
+            bool execute_function_expression(const ast::ast_node& expr); // todo rename. Block also uses this
             void execute_function_call(const ast::user_function_node& fun, std::vector<inst::instance*> parameters);
             void execute_block(const ast::block_node& block_node);
 

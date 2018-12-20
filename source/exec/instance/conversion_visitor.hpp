@@ -13,8 +13,10 @@ namespace cmsl
     {
         namespace inst
         {
-            struct conversion_visitor : boost::static_visitor<instance_value_t>
+            struct conversion_visitor
             {
+                typedef instance_value_t result_type;
+
                 instance_value_t visit(const instance_value_t& from, const instance_value_t& to) const
                 {
                     const auto from_val_type = get_inst_val_type(from);

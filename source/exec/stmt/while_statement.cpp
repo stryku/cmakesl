@@ -8,6 +8,7 @@
 #include "exec/instance/instances_holder.hpp"
 #include "exec/instance/instance_converter.hpp"
 #include "ast/ast_context.hpp"
+#include "ast/infix_node.hpp"
 
 namespace cmsl
 {
@@ -31,7 +32,7 @@ namespace cmsl
             {
                 const auto& condition = m_node.get_node().get_condition();
                 std::unique_ptr<inst::instance> infix_result;
-                auto infix = infix_statement{ condition, infix_result };
+                auto infix = infix_statement{dynamic_cast<const ast::infix_node&>(condition), infix_result }; // Todo: get rid of dynamic cast
                 infix.execute(e);
 
                 // Convert result to bool
