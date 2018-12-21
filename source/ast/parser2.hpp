@@ -37,11 +37,14 @@ namespace cmsl
             std::unique_ptr<ast_node> function();
             std::unique_ptr<ast_node> class_();
             std::unique_ptr<ast_node> factor();
+
+            // expr() doesn't eat terminating semicolon. Callee has to handle that if there is a need.
             std::unique_ptr<ast_node> expr();
             std::unique_ptr<ast_node> get_if_else_node();
             std::unique_ptr<ast_node> get_while_node();
             std::unique_ptr<ast_node> get_return_node();
             boost::optional<type_reference> type();
+            std::unique_ptr<block_node> block();
 
         private:
             struct function_call_values
@@ -112,8 +115,6 @@ namespace cmsl
             bool prepare_for_next_parameter_declaration();
             boost::optional<param_declaration> get_param_declaration();
             boost::optional<std::vector<param_declaration>> param_declarations();
-
-            std::unique_ptr<block_node> block();
 
             std::unique_ptr<conditional_node> get_conditional_node();
 

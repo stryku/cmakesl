@@ -818,14 +818,15 @@ namespace cmsl
 
             TEST(Parser2Test, Return_ReturnExpression_GetReturn)
             {
-                // return foo
+                // return foo;
                 const auto expression_token = token_identifier("foo");
 
                 auto expr_node = std::make_unique<id_node>(expression_token);
                 auto expected_ast = std::make_unique<return_node>(std::move(expr_node));
 
                 const auto tokens = tokens_container_t{ token_kw_return(),
-                                                        expression_token };
+                                                        expression_token,
+                                                        token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, tokens };
                 auto result_ast = parser.get_return_node();
 
@@ -1004,6 +1005,209 @@ namespace cmsl
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, tokens };
                 auto result_ast = parser.variable_declaration();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Block_OpenBraceCloseBrace_GetBlock)
+            {
+                // {}
+                auto expected_ast = std::make_unique<block_node>(block_node::expressions_t{});
+
+                const auto tokens = tokens_container_t{ token_open_brace(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.block();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Block_VariableDeclaration_GetBlock)
+            {
+                // { foo bar; }
+                const auto variable_type_token = token_identifier("foo");
+                const auto variable_name_token = token_identifier("bar");
+                const auto variable_type_ref = type_reference{ variable_type_token, variable_type_token };
+                auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, nullptr);
+
+                block_node::expressions_t exprs;
+                exprs.emplace_back(std::move(variable_decl_node));
+
+                auto expected_ast = std::make_unique<block_node>(std::move(exprs));
+
+                const auto tokens = tokens_container_t{ token_open_brace(),
+                                                        variable_type_token,
+                                                        variable_name_token,
+                                                        token_semicolon(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.block();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Block_IfElse_GetBlock)
+            {
+                // { if(foo) {} else if(bar) else {} }
+                const auto if_condition_token = token_identifier("foo");
+                const auto elseif_condition_token = token_identifier("bar");
+
+                auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
+                auto if_block = std::make_unique<block_node>(block_node::expressions_t{});
+                auto if_condition_node = std::make_unique<conditional_node>(std::move(if_condition_expr_node), std::move(if_block));
+
+                auto elseif_condition_expr_node = std::make_unique<id_node>(elseif_condition_token);
+                auto elseif_block = std::make_unique<block_node>(block_node::expressions_t{});
+                auto elseif_condition_node = std::make_unique<conditional_node>(std::move(elseif_condition_expr_node), std::move(elseif_block));
+
+                if_else_node::ifs_t ifs;
+                ifs.emplace_back(std::move(if_condition_node));
+                ifs.emplace_back(std::move(elseif_condition_node));
+
+                auto else_node = std::make_unique<block_node>(block_node::expressions_t{});
+
+                auto if_else = std::make_unique<if_else_node>(std::move(ifs), std::move(else_node));
+
+                block_node::expressions_t exprs;
+                exprs.emplace_back(std::move(if_else));
+
+                auto expected_ast = std::make_unique<block_node>(std::move(exprs));
+
+                const auto tokens = tokens_container_t{ token_open_brace(),
+
+                                                        token_kw_if(),
+                                                        token_open_paren(),
+                                                        if_condition_token,
+                                                        token_close_paren(),
+                                                        token_open_brace(),
+                                                        token_close_brace(),
+
+                                                        token_kw_else(),
+                                                        token_kw_if(),
+                                                        token_open_paren(),
+                                                        elseif_condition_token,
+                                                        token_close_paren(),
+                                                        token_open_brace(),
+                                                        token_close_brace(),
+
+                                                        token_kw_else(),
+                                                        token_open_brace(),
+                                                        token_close_brace(),
+
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.block();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Block_Expression_GetBlock)
+            {
+                // { foo + bar; }
+                const auto lhs_token = token_integer("1");
+                const auto op_token = token_plus();
+                const auto rhs_token = token_integer("2");
+
+                auto lhs_node = std::make_unique<int_value_node>(lhs_token);
+                auto rhs_node = std::make_unique<int_value_node>(rhs_token);
+                auto expr_node = std::make_unique<binary_operator_node>(std::move(lhs_node),
+                                                                        op_token,
+                                                                        std::move(rhs_node));
+
+                block_node::expressions_t exprs;
+                exprs.emplace_back(std::move(expr_node));
+
+                auto expected_ast = std::make_unique<block_node>(std::move(exprs));
+
+                const auto tokens = tokens_container_t{ token_open_brace(),
+                                                        lhs_token,
+                                                        op_token,
+                                                        rhs_token,
+                                                        token_semicolon(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.block();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Block_While_GetBlock)
+            {
+                // { while(foo) {} }
+                const auto condition_token = token_identifier("foo");
+
+                auto condition_expr_node = std::make_unique<id_node>(condition_token);
+                auto block = std::make_unique<block_node>(block_node::expressions_t{});
+                auto condition_node = std::make_unique<conditional_node>(std::move(condition_expr_node), std::move(block));
+
+                auto while_ast_node = std::make_unique<while_node>(std::move(condition_node));
+
+                block_node::expressions_t exprs;
+                exprs.emplace_back(std::move(while_ast_node));
+
+                auto expected_ast = std::make_unique<block_node>(std::move(exprs));
+
+                const auto tokens = tokens_container_t{ token_open_brace(),
+                                                        token_kw_while(),
+                                                        token_open_paren(),
+                                                        condition_token,
+                                                        token_close_paren(),
+                                                        token_open_brace(),
+                                                        token_close_brace(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.block();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Block_Return_GetBlock)
+            {
+                // { return foo; }
+                const auto expression_token = token_identifier("foo");
+
+                auto expr_node = std::make_unique<id_node>(expression_token);
+                auto return_ast_node = std::make_unique<return_node>(std::move(expr_node));
+
+                block_node::expressions_t exprs;
+                exprs.emplace_back(std::move(return_ast_node));
+
+                auto expected_ast = std::make_unique<block_node>(std::move(exprs));
+
+                const auto tokens = tokens_container_t{ token_open_brace(),
+                                                        token_kw_return(),
+                                                        expression_token,
+                                                        token_semicolon(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.block();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Block_NestedBlock_GetBlock)
+            {
+                // { {} }
+
+                auto nested_block_node = std::make_unique<block_node>(block_node::expressions_t{});
+                block_node::expressions_t exprs;
+                exprs.emplace_back(std::move(nested_block_node));
+
+                auto expected_ast = std::make_unique<block_node>(std::move(exprs));
+
+                const auto tokens = tokens_container_t{ token_open_brace(),
+                                                        token_open_brace(),
+                                                        token_close_brace(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
