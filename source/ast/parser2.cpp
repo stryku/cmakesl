@@ -204,6 +204,11 @@ namespace cmsl
                 return nullptr;
             }
 
+            if(!eat(token_type_t::semicolon))
+            {
+                return nullptr;
+            }
+
             return std::make_unique<return_node>(std::move(e));
         }
 
@@ -336,9 +341,17 @@ namespace cmsl
                 {
                     node = get_while_node();
                 }
+                else if(current_is(token_type_t::open_brace))
+                {
+                    node = block();
+                }
                 else
                 {
                     node = expr();
+                    if(!eat(token_type_t::semicolon))
+                    {
+                        return nullptr;
+                    }
                 }
 
                 if (!node)
