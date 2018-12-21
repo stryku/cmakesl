@@ -8,6 +8,8 @@
 #include "ast/translation_unit_node.hpp"
 #include "ast/variable_declaration_node.hpp"
 #include "ast/while_node.hpp"
+#include "ast/class_node.hpp"
+#include "ast/user_function_node.hpp"
 #include "ast/parser2.hpp"
 
 #include "errors/errors_observer.hpp"
@@ -20,6 +22,7 @@ namespace cmsl
 {
     namespace ast
     {
+        // Todo: Consider adding semicolon at the end of all test tokens
         namespace test
         {
             using token_t = cmsl::lexer::token::token;
@@ -909,7 +912,6 @@ namespace cmsl
                 // int foo;
                 const auto type_token = token_kw_int();
                 const auto name_token = token_identifier("foo");
-                const auto semicolon_token = token_semicolon();
 
                 const auto type_ref = type_reference{ type_token, type_token };
 
@@ -1002,6 +1004,103 @@ namespace cmsl
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, tokens };
                 auto result_ast = parser.variable_declaration();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Class_ClassIdEmptyBlock_GetClass)
+            {
+                // class foo {};
+                const auto name_token = token_identifier("foo");
+
+                auto expected_ast = std::make_unique<class_node2>(name_token, class_node2::nodes_t{});
+
+                const auto tokens = tokens_container_t{ token_kw_class(),
+                                                        name_token,
+                                                        token_open_brace(),
+                                                        token_close_brace(),
+                                                        token_semicolon() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.class_();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Class_ClassIdVariableDeclaration_GetClass)
+            {
+                // class foo { int bar; };
+                const auto name_token = token_identifier("foo");
+                const auto variable_type_token = token_kw_int();
+                const auto variable_name_token = token_identifier("bar");
+                const auto variable_type_ref = type_reference{ variable_type_token, variable_type_token };
+                auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, nullptr);
+
+                class_node2::nodes_t nodes;
+                nodes.emplace_back(std::move(variable_decl_node));
+
+                auto expected_ast = std::make_unique<class_node2>(name_token, std::move(nodes));
+
+                const auto tokens = tokens_container_t{ token_kw_class(),
+                                                        name_token,
+                                                        token_open_brace(),
+                                                        variable_type_token,
+                                                        variable_name_token,
+                                                        token_semicolon(),
+                                                        token_close_brace(),
+                                                        token_semicolon() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.class_();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Class_ClassIdFunctionVariableDeclaration_GetClass)
+            {
+                // class foo { double bar() {} baz qux; };
+                const auto name_token = token_identifier("foo");
+
+                const auto function_type_token = token_kw_double();
+                const auto function_name_token = token_identifier("bar");
+                const auto function_type_ref = type_reference{ function_type_token, function_type_token };
+                auto function_block_node = std::make_unique<block_node>(block_node::expressions_t{});
+                auto fun_node = std::make_unique<user_function_node2>(function_type_ref,
+                                                                      function_name_token,
+                                                                      user_function_node2::params_t{},
+                                                                      std::move(function_block_node));
+
+                const auto variable_type_token = token_identifier("baz");
+                const auto variable_name_token = token_identifier("qux");
+                const auto variable_type_ref = type_reference{ variable_type_token, variable_type_token };
+                auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, nullptr);
+
+                class_node2::nodes_t nodes;
+                nodes.emplace_back(std::move(fun_node));
+                nodes.emplace_back(std::move(variable_decl_node));
+
+                auto expected_ast = std::make_unique<class_node2>(name_token, std::move(nodes));
+
+                const auto tokens = tokens_container_t{ token_kw_class(),
+                                                        name_token,
+                                                        token_open_brace(),
+
+                                                        function_type_token,
+                                                        function_name_token,
+                                                        token_open_paren(),
+                                                        token_close_paren(),
+                                                        token_open_brace(),
+                                                        token_close_brace(),
+
+                                                        variable_type_token,
+                                                        variable_name_token,
+                                                        token_semicolon(),
+
+                                                        token_close_brace(),
+                                                        token_semicolon() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.class_();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));

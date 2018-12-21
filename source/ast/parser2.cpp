@@ -483,6 +483,11 @@ namespace cmsl
                 }
             }
 
+            if(!eat(token_type_t::semicolon))
+            {
+                return nullptr;
+            }
+
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization));
         }
 

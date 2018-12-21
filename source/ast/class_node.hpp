@@ -29,10 +29,13 @@ namespace cmsl
             std::vector<member_declaration> m_members;
         };
 
+        // Todo: change name
         class class_node2 : public ast_node
         {
         public:
-            class_node2(lexer::token::token name, std::vector<std::unique_ptr<ast_node>> nodes)
+            using nodes_t = std::vector<std::unique_ptr<ast_node>>;
+
+            class_node2(lexer::token::token name, nodes_t nodes)
                 : m_name{ name }
                 , m_nodes{ std::move(nodes) }
             {}
@@ -64,7 +67,7 @@ namespace cmsl
 
         private:
             lexer::token::token m_name;
-            std::vector<std::unique_ptr<ast_node>> m_nodes;
+            nodes_t m_nodes;
         };
     }
 }
