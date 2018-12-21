@@ -1009,6 +1009,117 @@ namespace cmsl
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
             }
 
+            TEST(Parser2Test, Function_TypeIdOpenParenCloseParen_GetFunction)
+            {
+                // double foo() {}
+                const auto function_type_token = token_kw_double();
+                const auto function_name_token = token_identifier("foo");
+                const auto function_type_ref = type_reference{ function_type_token, function_type_token };
+                auto function_block_node = std::make_unique<block_node>(block_node::expressions_t{});
+                auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
+                                                                          function_name_token,
+                                                                          user_function_node2::params_t{},
+                                                                          std::move(function_block_node));
+
+                const auto tokens = tokens_container_t{ function_type_token,
+                                                        function_name_token,
+                                                        token_open_paren(),
+                                                        token_close_paren(),
+                                                        token_open_brace(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.function();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
+            {
+                // double foo(bar baz) {}
+                const auto function_type_token = token_kw_double();
+                const auto function_name_token = token_identifier("foo");
+                const auto function_type_ref = type_reference{ function_type_token, function_type_token };
+
+                const auto param_type_token = token_identifier("bar");
+                const auto param_name_token = token_identifier("baz");
+                const auto param_type_ref = type_reference{ param_type_token, param_type_token };
+
+                user_function_node2::params_t params{
+                        param_declaration{param_type_ref, param_name_token }
+                };
+
+                auto function_block_node = std::make_unique<block_node>(block_node::expressions_t{});
+                auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
+                                                                          function_name_token,
+                                                                          std::move(params),
+                                                                          std::move(function_block_node));
+
+                const auto tokens = tokens_container_t{ function_type_token,
+                                                        function_name_token,
+                                                        token_open_paren(),
+
+                                                        param_type_token,
+                                                        param_name_token,
+
+                                                        token_close_paren(),
+                                                        token_open_brace(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.function();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
+            TEST(Parser2Test, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
+            {
+                // double foo(bar baz, qux out_of_fancy_identifiers) {}
+                const auto function_type_token = token_kw_double();
+                const auto function_name_token = token_identifier("foo");
+                const auto function_type_ref = type_reference{ function_type_token, function_type_token };
+
+                const auto param_type_token = token_identifier("bar");
+                const auto param_name_token = token_identifier("baz");
+                const auto param_type_ref = type_reference{ param_type_token, param_type_token };
+
+                const auto param2_type_token = token_identifier("qux");
+                const auto param2_name_token = token_identifier("out_of_fancy_identifiers");
+                const auto param2_type_ref = type_reference{ param2_type_token, param2_type_token };
+
+                user_function_node2::params_t params{
+                        param_declaration{param_type_ref, param_name_token },
+                        param_declaration{param2_type_ref, param2_name_token }
+                };
+
+                auto function_block_node = std::make_unique<block_node>(block_node::expressions_t{});
+                auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
+                                                                          function_name_token,
+                                                                          std::move(params),
+                                                                          std::move(function_block_node));
+
+                const auto tokens = tokens_container_t{ function_type_token,
+                                                        function_name_token,
+                                                        token_open_paren(),
+
+                                                        param_type_token,
+                                                        param_name_token,
+
+                                                        token_comma(),
+
+                                                        param2_type_token,
+                                                        param2_name_token,
+
+                                                        token_close_paren(),
+                                                        token_open_brace(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto result_ast = parser.function();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
+
             TEST(Parser2Test, Class_ClassIdEmptyBlock_GetClass)
             {
                 // class foo {};
