@@ -22,6 +22,7 @@ namespace cmsl
             using ::testing::_;
             using ::testing::IsNull;
             using ::testing::Values;
+            using ::testing::TestWithParam;
 
             using namespace cmsl::test::common;
 
@@ -35,7 +36,7 @@ namespace cmsl
 
             namespace factor
             {
-                using Factor = testing::TestWithParam<token_t>;
+                using Factor = TestWithParam<token_t>;
 
                 TEST_P(Factor, UnexpectedToken_ReportError)
                 {
@@ -97,6 +98,35 @@ namespace cmsl
                                             token_kw_list() );
 
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorsTest, Factor, values);
+            }
+
+            namespace expr
+            {
+                using Expr = TestWithParam<tokens_container_t>;
+
+                TEST_P(Expr, MissingBinaryOpOperand_ReportError)
+                {
+                    errs_t errs;
+                    EXPECT_CALL(errs.mock, notify_error(_));
+
+                    const auto tokens = GetParam();
+                    parser2 p{ errs.err_observer, tokens };
+                    auto result = p.expr();
+
+                    EXPECT_THAT(result, IsNull());
+                }
+
+                const auto id_token = token_identifier("foo");
+                const auto op_token = token_star();
+                const auto values = Values(
+                        tokens_container_t{ id_token, op_token }, // foo *
+                        tokens_container_t{ op_token, id_token }, // * foo
+                        tokens_container_t{ id_token, op_token, token_semicolon() }, // foo * ;
+                        tokens_container_t{ id_token, op_token, token_close_brace() }, // foo * }
+                        tokens_container_t{ id_token, op_token, token_close_paren() }, // foo * )
+                        tokens_container_t{ id_token, op_token, token_close_square() } // foo * ]
+                );
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorsTest, Expr, values);
             }
         }
     }

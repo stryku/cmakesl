@@ -762,6 +762,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_2()
         {
             auto f = factor();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_2())
@@ -794,6 +798,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_3()
         {
             auto f = operator_2();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_3())
@@ -802,6 +810,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_2();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -813,6 +825,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_5()
         {
             auto f = operator_3();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_5())
@@ -821,6 +837,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_3();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -832,6 +852,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_6()
         {
             auto f = operator_5();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_6())
@@ -840,6 +864,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_5();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -851,6 +879,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_9()
         {
             auto f = operator_6();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_9())
@@ -859,6 +891,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_6();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -870,6 +906,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_10()
         {
             auto f = operator_9();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_10())
@@ -878,6 +918,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_9();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -889,6 +933,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_11()
         {
             auto f = operator_10();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_11())
@@ -897,6 +945,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_10();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -908,6 +960,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_12()
         {
             auto f = operator_11();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_12())
@@ -916,6 +972,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_11();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -927,6 +987,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_13()
         {
             auto f = operator_12();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_13())
@@ -935,6 +999,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_12();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -946,6 +1014,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_14()
         {
             auto f = operator_13();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_14())
@@ -954,6 +1026,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_13();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -965,6 +1041,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_15()
         {
             auto f = operator_14();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_15())
@@ -973,6 +1053,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_14();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
@@ -984,6 +1068,10 @@ namespace cmsl
         std::unique_ptr<ast_node> parser2::operator_16()
         {
             auto f = operator_15();
+            if(!f)
+            {
+                return nullptr;
+            }
 
             while(!is_at_end() &&
                   is_current_operator_16())
@@ -992,6 +1080,10 @@ namespace cmsl
                 eat(); // eat operator
 
                 auto rhs = operator_15();
+                if(!rhs)
+                {
+                    return nullptr;
+                }
 
                 auto lhs = std::move(f);
                 f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
