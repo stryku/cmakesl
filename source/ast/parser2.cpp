@@ -1081,7 +1081,8 @@ namespace cmsl
                 return id ? std::make_unique<id_node>(*id) : nullptr;
             }
 
-            CMSL_UNREACHABLE("Can not create a factor");
+            // Todo: Unexpected token
+            raise_error();
             return nullptr;
         }
 

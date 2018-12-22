@@ -1,7 +1,7 @@
 set(CMAKESL_PARSER_ERROR_TEST_SOURCES 
     main.cpp
     parser_error_test.cpp
-)
+        parser2_error_test.cpp)
 
 set(TEST_NAME parser_error_test)
 
