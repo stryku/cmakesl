@@ -491,13 +491,13 @@ namespace cmsl
                 if(!initialization)
                 {
                     // todo expected expression
-                    raise_error();
                     return nullptr;
                 }
             }
 
             if(!eat(token_type_t::semicolon))
             {
+                // Todo: expected semicolon
                 return nullptr;
             }
 
