@@ -193,6 +193,53 @@ namespace cmsl
 
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Block, values);
             }
+
+            namespace function
+            {
+                using Function = TestWithParam<tokens_container_t>;
+
+                TEST_P(Function, Malformed_ReportError)
+                {
+                    errs_t errs;
+                    EXPECT_CALL(errs.mock, notify_error(_));
+
+                    const auto tokens = GetParam();
+                    parser2 p{ errs.err_observer, tokens };
+                    auto result = p.function();
+
+                    EXPECT_THAT(result, IsNull());
+                }
+
+                const auto ret_type_token = token_identifier("ret");
+                const auto name_token = token_identifier("foo");
+                const auto op_token = token_open_paren();
+                const auto cp_token = token_open_paren();
+                const auto ob_token = token_open_brace();
+                const auto cb_token = token_open_brace();
+                const auto param1_type_token = token_identifier("param1_type");
+                const auto param1_name_token = token_identifier("param1_name");
+                const auto param2_type_token = token_identifier("param2_type");
+                const auto param2_name_token = token_identifier("param2_name");
+                const auto comma_token = token_comma();
+
+
+                const auto values = Values(
+                        tokens_container_t{ ret_type_token, op_token, cp_token, ob_token, cb_token },// ret () {}
+                        tokens_container_t{ name_token, op_token, cp_token, ob_token, cb_token },// foo(){}
+                        tokens_container_t{ ret_type_token, name_token, op_token, ob_token, cb_token },//ret foo( {}
+                        tokens_container_t{ ret_type_token, name_token, cp_token, ob_token, cb_token },//ret foo) {}
+                        tokens_container_t{ ret_type_token, name_token, op_token, cp_token, ob_token },//ret foo() {
+                        tokens_container_t{ ret_type_token, name_token, op_token, cp_token, cb_token },//ret foo() }
+                        tokens_container_t{ ret_type_token, name_token, op_token, param1_type_token, cp_token, ob_token, cb_token },//ret foo(param1_type) {}
+                        tokens_container_t{ ret_type_token, name_token, op_token, param1_type_token,comma_token, param2_type_token, param2_name_token, cp_token, ob_token, cb_token },//ret foo(param1_type,param2_type name) {}
+                        tokens_container_t{ ret_type_token, name_token, op_token, param1_type_token, param1_name_token,comma_token, param2_type_token, cp_token, ob_token, cb_token },//ret foo(param1_type name,param2_type) {}
+                        tokens_container_t{ ret_type_token, name_token, op_token, param1_type_token, param1_name_token,comma_token, cp_token, ob_token, cb_token },//ret foo(param1_type name,) {}
+                        tokens_container_t{ ret_type_token, name_token, op_token, comma_token, param2_type_token, param2_name_token, cp_token, ob_token, cb_token },//ret foo(,param1_type name) {}
+                        tokens_container_t{ ret_type_token, name_token, op_token, comma_token, cp_token, ob_token, cb_token } //ret foo(,) {}
+                                          );
+
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Function, values);
+            }
         }
     }
 }
