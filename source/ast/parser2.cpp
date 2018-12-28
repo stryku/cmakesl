@@ -154,7 +154,7 @@ namespace cmsl
 
             if (!eat(token_type_t::semicolon))
             {
-                raise_error();
+                // Todo: expected semicolon
                 return nullptr;
             }
 

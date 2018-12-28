@@ -130,6 +130,7 @@ namespace cmsl
             token_t token_semicolon() { return details::simple_token(token_type_t::semicolon); }
             token_t token_comma() { return details::simple_token(token_type_t::comma); }
 
+            token_t token_kw_void() { return details::simple_token(token_type_t::kw_int); }
             token_t token_kw_int() { return details::simple_token(token_type_t::kw_int); }
             token_t token_kw_double() { return details::simple_token(token_type_t::kw_double); }
             token_t token_kw_return() { return details::simple_token(token_type_t::kw_return); }

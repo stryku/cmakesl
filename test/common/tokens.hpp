@@ -53,6 +53,7 @@ namespace cmsl
             token_t token_greater();
             token_t token_greaterequal();
 
+            token_t token_kw_void();
             token_t token_kw_int();
             token_t token_kw_double();
             token_t token_kw_return();
