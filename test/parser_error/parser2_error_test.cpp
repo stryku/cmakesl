@@ -163,6 +163,42 @@ namespace cmsl
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorsTest, FunctionCall, values);
             }
 
+            namespace variable_declaration
+            {
+                using VariableDeclaration = TestWithParam<tokens_container_t>;
+
+                TEST_P(VariableDeclaration, Malformed_ReportError)
+                {
+                    errs_t errs;
+                    EXPECT_CALL(errs.mock, notify_error(_));
+
+                    const auto tokens = GetParam();
+                    parser2 p{ errs.err_observer, tokens };
+                    auto result = p.variable_declaration();
+
+                    EXPECT_THAT(result, IsNull());
+                }
+
+                const auto type_token = token_identifier("type");
+                const auto name_token = token_identifier("foo");
+                const auto semicolon_token = token_semicolon();
+                const auto eq_token = token_equal();
+                const auto expr_token = token_integer("1");
+
+                const auto values = Values(
+                        tokens_container_t{ type_token,  },// type
+                        tokens_container_t{ type_token, semicolon_token },// type;
+                        tokens_container_t{ type_token, eq_token, semicolon_token },// type =;
+                        tokens_container_t{ type_token, eq_token, expr_token, semicolon_token },// type = 1;
+                        tokens_container_t{ type_token, name_token},// type name
+                        tokens_container_t{ type_token, name_token, eq_token },// type name =
+                        tokens_container_t{ type_token, name_token, eq_token, semicolon_token },// type name =;
+                        tokens_container_t{ type_token, name_token, eq_token, expr_token }// type name = 1
+                                          );
+
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, VariableDeclaration, values);
+            }
+
             namespace block
             {
                 using Block = TestWithParam<tokens_container_t>;
