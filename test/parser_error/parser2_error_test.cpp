@@ -365,6 +365,50 @@ namespace cmsl
 
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Function, values);
             }
+
+            namespace class_
+            {
+                using Class = TestWithParam<tokens_container_t>;
+
+                TEST_P(Class, Malformed_ReportError)
+                {
+                    errs_t errs;
+                    EXPECT_CALL(errs.mock, notify_error(_));
+
+                    const auto tokens = GetParam();
+                    parser2 p{ errs.err_observer, tokens };
+                    auto result = p.class_();
+
+                    EXPECT_THAT(result, IsNull());
+                }
+
+                const auto class_token = token_kw_class();
+                const auto name_token = token_identifier("foo");
+                const auto op_token = token_open_paren();
+                const auto cp_token = token_close_paren();
+                const auto ob_token = token_open_brace();
+                const auto cb_token = token_close_brace();
+                const auto semicolon_token = token_semicolon();
+                const auto member_type_token = token_kw_int();
+                const auto member_name_token = token_identifier("bar");
+                const auto method_type_token = token_kw_void();
+                const auto method_name_token = token_identifier("baz");
+                const auto expr_token = token_integer("1");
+
+                const auto values = Values(
+                        tokens_container_t{ name_token, ob_token, cb_token, semicolon_token }, // foo {};
+                        tokens_container_t{ class_token, ob_token, cb_token, semicolon_token }, // class {};
+                        tokens_container_t{ class_token, name_token, ob_token, semicolon_token },// class foo {;
+                        tokens_container_t{ class_token, name_token, cb_token, semicolon_token },// class foo };
+                        tokens_container_t{ class_token, name_token, ob_token, cb_token },// class foo {}
+                        tokens_container_t{ class_token, name_token, ob_token, expr_token, semicolon_token, cb_token, semicolon_token },// class foo { 1; };
+                        tokens_container_t{ class_token, name_token, ob_token, member_type_token, member_name_token, cb_token, semicolon_token },// class foo { int bar };
+                        tokens_container_t{ class_token, name_token, ob_token, member_type_token, member_name_token, method_type_token, method_name_token, op_token, cp_token, ob_token, cb_token, cb_token, semicolon_token },// class foo { int bar void baz() {} };
+                        tokens_container_t{ class_token, name_token, ob_token, method_type_token, method_name_token, op_token, cp_token, ob_token, cb_token, member_type_token, member_name_token, cb_token, semicolon_token } // class foo { void baz() {} int bar };
+                                          );
+
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Class, values);
+            }
         }
     }
 }

@@ -51,6 +51,7 @@ namespace cmsl
                 semicolon,
                 comma,
 
+                kw_void,
                 kw_int,
                 kw_double,
                 kw_bool,
