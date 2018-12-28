@@ -199,6 +199,42 @@ namespace cmsl
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, VariableDeclaration, values);
             }
 
+            namespace while_
+            {
+                using While = TestWithParam<tokens_container_t>;
+
+                TEST_P(While, Malformed_ReportError)
+                {
+                    errs_t errs;
+                    EXPECT_CALL(errs.mock, notify_error(_));
+
+                    const auto tokens = GetParam();
+                    parser2 p{ errs.err_observer, tokens };
+                    auto result = p.get_while_node();
+
+                    EXPECT_THAT(result, IsNull());
+                }
+
+                const auto while_token = token_kw_while();
+                const auto op_token = token_open_paren();
+                const auto cp_token = token_close_paren();
+                const auto ob_token = token_open_brace();
+                const auto cb_token = token_close_brace();
+                const auto expr_token = token_integer("1");
+
+                const auto values = Values(
+                        tokens_container_t{ while_token, op_token, ob_token, cb_token },// while({}
+                        tokens_container_t{ while_token, cp_token, ob_token, cb_token },// while){}
+                        tokens_container_t{ while_token, op_token, cp_token, ob_token, cb_token },// while(){}
+                        tokens_container_t{ while_token, op_token, expr_token, ob_token, cb_token },// while(1{}
+                        tokens_container_t{ while_token, expr_token, cp_token, ob_token, cb_token },// while 1){}
+                        tokens_container_t{ while_token, op_token, expr_token, cp_token, ob_token },// while(1){
+                        tokens_container_t{ while_token, op_token, expr_token, cp_token, cb_token } // while(1)}
+                                          );
+
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, While, values);
+            }
+
             namespace block
             {
                 using Block = TestWithParam<tokens_container_t>;
@@ -249,9 +285,9 @@ namespace cmsl
                 const auto ret_type_token = token_identifier("ret");
                 const auto name_token = token_identifier("foo");
                 const auto op_token = token_open_paren();
-                const auto cp_token = token_open_paren();
+                const auto cp_token = token_close_paren();
                 const auto ob_token = token_open_brace();
-                const auto cb_token = token_open_brace();
+                const auto cb_token = token_close_brace();
                 const auto param1_type_token = token_identifier("param1_type");
                 const auto param1_name_token = token_identifier("param1_name");
                 const auto param2_type_token = token_identifier("param2_type");
