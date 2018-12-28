@@ -1,5 +1,5 @@
 set(SEMA_SOURCES
-        sema_builder.cpp sema_builder.hpp)
+        sema_builder.cpp sema_builder.hpp sema_node.hpp)
 
 add_library(sema ${SEMA_SOURCES})
 target_include_directories(sema PRIVATE ${CMAKESL_SOURCES_DIR})
