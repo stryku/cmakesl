@@ -21,6 +21,7 @@ namespace cmsl
         class conditional_node;
         class block_node;
 
+        // Todo: rename methods to parse_*
         class parser2
         {
         private:

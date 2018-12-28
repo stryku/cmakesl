@@ -223,6 +223,7 @@ namespace cmsl
                 const auto expr_token = token_integer("1");
 
                 const auto values = Values(
+                        tokens_container_t{ while_token, ob_token, cb_token },// while {}
                         tokens_container_t{ while_token, op_token, ob_token, cb_token },// while({}
                         tokens_container_t{ while_token, cp_token, ob_token, cb_token },// while){}
                         tokens_container_t{ while_token, op_token, cp_token, ob_token, cb_token },// while(){}
@@ -233,6 +234,58 @@ namespace cmsl
                                           );
 
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, While, values);
+            }
+
+            namespace if_else
+            {
+                using IfElse = TestWithParam<tokens_container_t>;
+
+                TEST_P(IfElse, Malformed_ReportError)
+                {
+                    errs_t errs;
+                    EXPECT_CALL(errs.mock, notify_error(_));
+
+                    const auto tokens = GetParam();
+                    parser2 p{ errs.err_observer, tokens };
+                    auto result = p.get_if_else_node();
+
+                    EXPECT_THAT(result, IsNull());
+                }
+
+                const auto if_token = token_kw_if();
+                const auto else_token = token_kw_else();
+                const auto op_token = token_open_paren();
+                const auto cp_token = token_close_paren();
+                const auto ob_token = token_open_brace();
+                const auto cb_token = token_close_brace();
+                const auto if_expr_token = token_integer("1");
+                const auto elseif_expr_token = token_integer("2");
+
+                const auto values = Values(
+                        tokens_container_t{ if_token, ob_token, cb_token }, // if {}
+                        tokens_container_t{ if_token, op_token, ob_token, cb_token }, // if({}
+                        tokens_container_t{ if_token, cp_token, ob_token, cb_token }, // if){}
+                        tokens_container_t{ if_token, op_token, cp_token }, // if()
+                        tokens_container_t{ if_token, op_token, cp_token, ob_token }, // if(){
+                        tokens_container_t{ if_token, op_token, cp_token, cb_token }, // if()}
+                        tokens_container_t{ if_token, op_token, cp_token, ob_token, cb_token }, // if(){}
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token }, // if(1){}else
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, ob_token }, // if(1){}else{
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, cb_token }, // if(1){}else}
+
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, ob_token, cb_token }, // if(1){} else if {}
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, op_token, ob_token, cb_token  }, // if(1){} else if({}
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, cp_token, ob_token, cb_token }, // if(1){} else if){}
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, op_token, cp_token }, // if(1){} else if()
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, op_token, cp_token, ob_token }, // if(1){} else if(){
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, op_token, cp_token, cb_token }, // if(1){} else if()}
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, op_token, cp_token, ob_token, cb_token }, // if(1){} else if(){}
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token }, // if(1){} else if(2){}else
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, ob_token }, // if(1){} else if(2){}else{
+                        tokens_container_t{ if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, if_token, op_token, if_expr_token, cp_token, ob_token, cb_token, else_token, cb_token } // if(1){} else if(2){}else}
+                                          );
+
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, IfElse, values);
             }
 
             namespace block
