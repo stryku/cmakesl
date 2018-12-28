@@ -1244,19 +1244,32 @@ namespace cmsl
                 if(!param)
                 {
                     // Todo: Unexpected token e.g. semicolon
-                    raise_error();
                     return {};
                 }
 
                 params.emplace_back(std::move(param));
 
+                // Todo: move to its own function
+                // Todo: Introduce try_eat(type) method to simplify such checks
                 if(current_is(token_type_t::comma))
                 {
                     eat(token_type_t::comma);
+
+                    if(is_at_end() || current_is(token_type_t::close_paren))
+                    {
+                        // Todo: expected parameter
+                        raise_error();
+                        return {};
+                    }
                 }
             }
 
-            eat(token_type_t::close_paren);
+            if(!eat(token_type_t::close_paren))
+            {
+                // Todo: missing close paren
+                return {};
+            }
+
 
             return std::move(params);
         }

@@ -100,11 +100,11 @@ namespace cmsl
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorsTest, Factor, values);
             }
 
-            namespace expr
-            {
-                using Expr = TestWithParam<tokens_container_t>;
 
-                TEST_P(Expr, MissingBinaryOpOperand_ReportError)
+            namespace binary_op
+            {
+                using BinaryOperator = TestWithParam<tokens_container_t>;
+                TEST_P(BinaryOperator, MissingOperand_ReportError)
                 {
                     errs_t errs;
                     EXPECT_CALL(errs.mock, notify_error(_));
@@ -126,7 +126,40 @@ namespace cmsl
                         tokens_container_t{ id_token, op_token, token_close_paren() }, // foo * )
                         tokens_container_t{ id_token, op_token, token_close_square() } // foo * ]
                 );
-                INSTANTIATE_TEST_CASE_P(Parser2ErrorsTest, Expr, values);
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorsTest, BinaryOperator, values);
+            }
+
+            namespace function_call
+            {
+                using FunctionCall = TestWithParam<tokens_container_t>;
+                TEST_P(FunctionCall, Malformed_ReportError)
+                {
+                    errs_t errs;
+                    EXPECT_CALL(errs.mock, notify_error(_));
+
+                    const auto tokens = GetParam();
+                    parser2 p{ errs.err_observer, tokens };
+                    auto result = p.expr();
+
+                    EXPECT_THAT(result, IsNull());
+                }
+
+                // Todo: change all *_token to *_tok
+                const auto id_token = token_identifier("foo");
+                const auto param_token = token_identifier("bar");
+                const auto op_token = token_open_paren();
+                const auto cp_token = token_close_paren();
+                const auto comma_token = token_comma();
+                const auto values = Values(
+                        tokens_container_t{ id_token, op_token }, // foo(
+                        tokens_container_t{ id_token, op_token, token_close_brace() }, // foo(}
+                        tokens_container_t{ id_token, op_token, token_close_square() }, // foo(]
+                        tokens_container_t{ id_token, op_token, comma_token, cp_token }, // foo(,)
+                        tokens_container_t{ id_token, op_token, param_token,  comma_token, cp_token }, // foo(bar,)
+                        tokens_container_t{ id_token, op_token, comma_token, param_token, cp_token }, // foo(,bar)
+                        tokens_container_t{ id_token, op_token, comma_token, cp_token } //foo(,)
+                  );
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorsTest, FunctionCall, values);
             }
         }
     }
