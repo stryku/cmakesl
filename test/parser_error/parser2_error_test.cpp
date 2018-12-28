@@ -1,5 +1,6 @@
 #include "ast/parser2.hpp"
 #include "ast/ast_node.hpp"
+#include "ast/block_node.hpp"
 
 #include "errors/errors_observer.hpp"
 
@@ -160,6 +161,37 @@ namespace cmsl
                         tokens_container_t{ id_token, op_token, comma_token, cp_token } //foo(,)
                   );
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorsTest, FunctionCall, values);
+            }
+
+            namespace block
+            {
+                using Block = TestWithParam<tokens_container_t>;
+
+                TEST_P(Block, Malformed_ReportError)
+                {
+                    errs_t errs;
+                    EXPECT_CALL(errs.mock, notify_error(_));
+
+                    const auto tokens = GetParam();
+                    parser2 p{ errs.err_observer, tokens };
+                    auto result = p.block();
+
+                    EXPECT_THAT(result, IsNull());
+                }
+
+                const auto ob_token = token_open_brace();
+                const auto cb_token = token_open_brace();
+
+                const auto values = Values(
+                        tokens_container_t{ ob_token }, // {
+                        tokens_container_t{ cb_token }, // }
+                        tokens_container_t{ ob_token, token_integer("1"), token_integer("2"), cb_token }, // Missing semicolon after expression { 1 2 }
+                        tokens_container_t{ ob_token, token_integer("1"), token_integer("2"), cb_token }, // Missing semicolon after expression { 1 2 }
+                        tokens_container_t{ ob_token, token_kw_return(), token_integer("1"), cb_token }, // Missing semicolon after expression { return 1 }
+                        tokens_container_t{ ob_token, token_kw_return(), cb_token } // Missing semicolon after expression { return }
+                );
+
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Block, values);
             }
         }
     }
