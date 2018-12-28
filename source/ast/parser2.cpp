@@ -291,6 +291,12 @@ namespace cmsl
             {
                 eat(token_type_t::kw_else);
                 else_block = block();
+
+                if(!else_block)
+                {
+                    // Todo: expected block
+                    return nullptr;
+                }
             }
 
             return std::make_unique<if_else_node>(std::move(ifs), std::move(else_block));
