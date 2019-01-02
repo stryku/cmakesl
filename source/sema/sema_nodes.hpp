@@ -49,12 +49,29 @@ namespace cmsl
             std::unique_ptr<sema_node> m_initialization;
         };
 
-        template <typename T>
-        class value_node : public sema_node
+        class expression_node : public sema_node
         {
         public:
-            explicit value_node(T val)
-                : m_value{ val }
+            explicit expression_node(const ast::type& t)
+                : m_type{ t }
+            {}
+
+            const ast::type& type() const
+            {
+                return m_type;
+            }
+
+        private:
+            const ast::type& m_type;
+        };
+
+        template <typename T>
+        class value_node : public expression_node
+        {
+        public:
+            explicit value_node(const ast::type& t, T val)
+                : expression_node{ t }
+                , m_value{ val }
             {}
 
             T value() const
@@ -69,8 +86,8 @@ namespace cmsl
         class bool_value_node : public value_node<bool>
         {
         public:
-            explicit bool_value_node(bool val)
-                : value_node{ val }
+            explicit bool_value_node(const ast::type& t, bool val)
+                : value_node{ t, val }
             {}
 
             void visit(sema_node_visitor& visitor) override
@@ -83,8 +100,8 @@ namespace cmsl
         class int_value_node : public value_node<std::int64_t>
         {
         public:
-            explicit int_value_node(std::int64_t val)
-                    : value_node{ val }
+            explicit int_value_node(const ast::type& t, std::int64_t val)
+                    : value_node{ t, val }
             {}
 
             void visit(sema_node_visitor& visitor) override
@@ -96,8 +113,8 @@ namespace cmsl
         class double_value_node : public value_node<double>
         {
         public:
-            explicit double_value_node(double val)
-                    : value_node{ val }
+            explicit double_value_node(const ast::type& t, double val)
+                    : value_node{ t, val }
             {}
 
             void visit(sema_node_visitor& visitor) override
@@ -109,8 +126,8 @@ namespace cmsl
         class string_value_node : public value_node<cmsl::string_view>
         {
         public:
-            explicit string_value_node(cmsl::string_view val)
-                    : value_node{ val }
+            explicit string_value_node(const ast::type& t, cmsl::string_view val)
+                    : value_node{ t, val }
             {}
 
             void visit(sema_node_visitor& visitor) override
