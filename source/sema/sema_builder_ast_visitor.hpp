@@ -4,7 +4,9 @@
 #include "ast/ast_context.hpp"
 
 #include "ast/variable_declaration_node.hpp"
+#include "ast/infix_nodes.hpp"
 
+#include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
 
 #include "sema/sema_nodes.hpp"
@@ -30,7 +32,14 @@ namespace cmsl
             void visit(const ast::function_call_node& node) override {}
             void visit(const ast::member_function_call_node& node) override {}
             void visit(const ast::bool_value_node& node) override {}
-            void visit(const ast::int_value_node& node) override {}
+
+            void visit(const ast::int_value_node& node) override
+            {
+                const auto token = node.get_token();
+                const auto int_val = std::atol(token.str().data());
+                m_result_node = std::make_unique<int_value_node>(int_val);
+            }
+
             void visit(const ast::double_value_node& node) override {}
             void visit(const ast::string_value_node& node) override {}
             void visit(const ast::id_node& node) override {}
@@ -42,8 +51,10 @@ namespace cmsl
             {
                 const auto type = m_ctx.find_type(node.get_type_reference().to_string());
 
+                // Todo: handle generic types
                 if(!type)
                 {
+                    // Todo: type not found
                     raise_error();
                     return;
                 }
@@ -66,6 +77,8 @@ namespace cmsl
 
             void visit(const ast::while_node& node) override {}
 
+            std::unique_ptr<sema_node> m_result_node;
+
         private:
             void raise_error()
             {
@@ -80,7 +93,6 @@ namespace cmsl
         private:
             ast::ast_context& m_ctx;
             errors::errors_observer& m_errors_observer;
-            std::unique_ptr<sema_node> m_result_node;
         };
     }
 }

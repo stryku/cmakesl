@@ -48,6 +48,28 @@ namespace cmsl
             const lexer::token::token m_name;
             std::unique_ptr<sema_node> m_initialization;
         };
+
+        // Todo: move int alias to a common file
+        class int_value_node : public sema_node
+        {
+        public:
+            explicit int_value_node(std::int64_t val)
+                : m_value{ val }
+            {}
+
+            std::int64_t value() const
+            {
+                return m_value;
+            }
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+        private:
+            std::int64_t m_value;
+        };
     }
 }
 
