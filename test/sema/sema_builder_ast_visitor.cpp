@@ -51,6 +51,9 @@ namespace cmsl
                 const auto token = token_kw_true();
                 ast::bool_value_node node(token);
 
+                EXPECT_CALL(ctx, find_type(cmsl::string_view{"bool"}))
+                        .WillOnce(Return(&valid_type));
+
                 visitor.visit(node);
 
                 ASSERT_THAT(visitor.m_result_node, NotNull());
@@ -69,6 +72,9 @@ namespace cmsl
                 const auto value = std::int64_t{ 42 };
                 const auto token = token_integer("42");
                 ast::int_value_node node(token);
+
+                EXPECT_CALL(ctx, find_type(cmsl::string_view{"int"}))
+                        .WillOnce(Return(&valid_type));
 
                 visitor.visit(node);
 
@@ -89,6 +95,9 @@ namespace cmsl
                 const auto token = token_double("4.2");
                 ast::double_value_node node(token);
 
+                EXPECT_CALL(ctx, find_type(cmsl::string_view{"double"}))
+                        .WillOnce(Return(&valid_type));
+
                 visitor.visit(node);
 
                 ASSERT_THAT(visitor.m_result_node, NotNull());
@@ -107,6 +116,9 @@ namespace cmsl
                 const auto value = cmsl::string_view{ "\"42\"" };
                 const auto token = token_string("\"42\"");
                 ast::string_value_node node(token);
+
+                EXPECT_CALL(ctx, find_type(cmsl::string_view{"string"}))
+                        .WillOnce(Return(&valid_type));
 
                 visitor.visit(node);
 
@@ -157,7 +169,7 @@ namespace cmsl
                 ast::variable_declaration_node variable_node(type_ref, name_token, std::move(initializaton_node));
 
                 EXPECT_CALL(ctx, find_type(_))
-                        .WillOnce(Return(&valid_type));
+                        .WillRepeatedly(Return(&valid_type));
 
                 visitor.visit(variable_node);
 
