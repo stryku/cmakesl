@@ -55,6 +55,11 @@ namespace cmsl
                 return out;
             }
 
+            source_range token::src_range() const
+            {
+                return m_source_range;
+            }
+
         }
     }
 }

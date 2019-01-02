@@ -44,7 +44,8 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer };
+                identifiers_context ids_ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 // Todo: use int alias
                 const auto value = true;
@@ -66,7 +67,8 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer };
+                identifiers_context ids_ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 // Todo: use int alias
                 const auto value = std::int64_t{ 42 };
@@ -88,7 +90,8 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer };
+                identifiers_context ids_ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 // Todo: use int alias
                 const auto value = double{ 4.2 };
@@ -110,7 +113,8 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer };
+                identifiers_context ids_ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 // Todo: use int alias
                 const auto value = cmsl::string_view{ "\"42\"" };
@@ -132,7 +136,8 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer };
+                identifiers_context ids_ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
                 const auto type_ref = ast::type_reference{ token_identifier(), token_identifier() };
                 const auto name_token = token_identifier("foo");
 
@@ -157,7 +162,8 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer };
+                identifiers_context ids_ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
                 const auto type_ref = ast::type_reference{ token_identifier(), token_identifier() };
                 const auto name_token = token_identifier("foo");
 

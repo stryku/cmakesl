@@ -135,6 +135,29 @@ namespace cmsl
                 visitor.visit(*this);
             }
         };
+
+        class id_node : public expression_node
+        {
+        public:
+            explicit id_node(const ast::type& t, lexer::token::token id)
+                : expression_node{ t }
+                , m_id{ id }
+            {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+            // Todo: consider renaming getters to get_*
+            lexer::token::token id() const
+            {
+                return m_id;
+            }
+
+        private:
+            lexer::token::token m_id;
+        };
     }
 }
 
