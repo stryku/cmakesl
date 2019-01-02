@@ -31,17 +31,34 @@ namespace cmsl
             void visit(const ast::class_member_access_node& node) override {}
             void visit(const ast::function_call_node& node) override {}
             void visit(const ast::member_function_call_node& node) override {}
-            void visit(const ast::bool_value_node& node) override {}
+
+            void visit(const ast::bool_value_node& node) override
+            {
+                const auto value = node.get_token().str() == "true";
+                m_result_node = std::make_unique<bool_value_node>(value);
+            }
 
             void visit(const ast::int_value_node& node) override
             {
                 const auto token = node.get_token();
-                const auto int_val = std::atol(token.str().data());
-                m_result_node = std::make_unique<int_value_node>(int_val);
+                char* end;
+                const auto value = std::strtol(token.str().data(), &end, 10); // todo: handle hex etc
+                m_result_node = std::make_unique<int_value_node>(value);
             }
 
-            void visit(const ast::double_value_node& node) override {}
-            void visit(const ast::string_value_node& node) override {}
+            void visit(const ast::double_value_node& node) override
+            {
+                const auto token = node.get_token();
+                char* end;
+                const auto value = std::strtod(token.str().data(), &end); // todo: handle hex etc
+                m_result_node = std::make_unique<double_value_node>(value);
+            }
+
+            void visit(const ast::string_value_node& node) override
+            {
+                m_result_node = std::make_unique<string_value_node>(node.get_token().str());
+            }
+
             void visit(const ast::id_node& node) override {}
             void visit(const ast::return_node& node) override {}
             void visit(const ast::translation_unit_node& node) override {}

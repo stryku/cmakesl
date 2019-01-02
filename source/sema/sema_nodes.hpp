@@ -49,26 +49,74 @@ namespace cmsl
             std::unique_ptr<sema_node> m_initialization;
         };
 
-        // Todo: move int alias to a common file
-        class int_value_node : public sema_node
+        template <typename T>
+        class value_node : public sema_node
         {
         public:
-            explicit int_value_node(std::int64_t val)
+            explicit value_node(T val)
                 : m_value{ val }
             {}
 
-            std::int64_t value() const
+            T value() const
             {
                 return m_value;
             }
+
+        private:
+            T m_value;
+        };
+
+        class bool_value_node : public value_node<bool>
+        {
+        public:
+            explicit bool_value_node(bool val)
+                : value_node{ val }
+            {}
 
             void visit(sema_node_visitor& visitor) override
             {
                 visitor.visit(*this);
             }
+        };
 
-        private:
-            std::int64_t m_value;
+        // Todo: move int alias to a common file
+        class int_value_node : public value_node<std::int64_t>
+        {
+        public:
+            explicit int_value_node(std::int64_t val)
+                    : value_node{ val }
+            {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+        };
+
+        class double_value_node : public value_node<double>
+        {
+        public:
+            explicit double_value_node(double val)
+                    : value_node{ val }
+            {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+        };
+
+        class string_value_node : public value_node<cmsl::string_view>
+        {
+        public:
+            explicit string_value_node(cmsl::string_view val)
+                    : value_node{ val }
+            {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
         };
     }
 }

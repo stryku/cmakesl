@@ -40,6 +40,25 @@ namespace cmsl
                 return arg == valid_type;
             }
 
+            TEST(SemaBuilderAstVisitorTest, Visit_BoolValue_GetCorrectBoolValue)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer };
+
+                // Todo: use int alias
+                const auto value = true;
+                const auto token = token_kw_true();
+                ast::bool_value_node node(token);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+                const auto casted_node = dynamic_cast<const bool_value_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+                EXPECT_THAT(casted_node->value(), Eq(value));
+            }
+
             TEST(SemaBuilderAstVisitorTest, Visit_IntValue_GetCorrectIntValue)
             {
                 errs_t errs;
@@ -47,16 +66,54 @@ namespace cmsl
                 sema_builder_ast_visitor visitor{ ctx, errs.observer };
 
                 // Todo: use int alias
-                const auto initialization_value = std::int64_t{ 42 };
-                const auto initialization_token = token_integer("42");
-                ast::int_value_node int_node(initialization_token);
+                const auto value = std::int64_t{ 42 };
+                const auto token = token_integer("42");
+                ast::int_value_node node(token);
 
-                visitor.visit(int_node);
+                visitor.visit(node);
 
                 ASSERT_THAT(visitor.m_result_node, NotNull());
-                const auto casted_initialization_node = dynamic_cast<const int_value_node*>(visitor.m_result_node.get());
-                ASSERT_THAT(casted_initialization_node, NotNull());
-                EXPECT_THAT(casted_initialization_node->value(), Eq(initialization_value));
+                const auto casted_node = dynamic_cast<const int_value_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+                EXPECT_THAT(casted_node->value(), Eq(value));
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_DoubleValue_GetCorrectDoubleValue)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer };
+
+                // Todo: use int alias
+                const auto value = double{ 4.2 };
+                const auto token = token_double("4.2");
+                ast::double_value_node node(token);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+                const auto casted_node = dynamic_cast<const double_value_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+                EXPECT_NEAR(casted_node->value(), value, 0.00001);
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_StringValue_GetCorrectStringValue)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer };
+
+                // Todo: use int alias
+                const auto value = cmsl::string_view{ "\"42\"" };
+                const auto token = token_string("\"42\"");
+                ast::string_value_node node(token);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+                const auto casted_node = dynamic_cast<const string_value_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+                EXPECT_THAT(casted_node->value(), Eq(value));
             }
 
             TEST(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithoutInitialization_GetVariableDeclarationNodeWithoutInitialization)
