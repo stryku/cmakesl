@@ -132,6 +132,17 @@ namespace cmsl
                 EXPECT_THAT(casted_node->value(), Eq(value));
             }
 
+            TEST(SemaBuilderAstVisitorTest, Visit_IdentifierInSameScope_GetCorrectIdentifierNode)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                identifiers_context ids_ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+
+                const auto token = token_identifier("foo");
+                ids_ctx.add(token, &valid_type);
+            }
+
             TEST(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithoutInitialization_GetVariableDeclarationNodeWithoutInitialization)
             {
                 errs_t errs;
