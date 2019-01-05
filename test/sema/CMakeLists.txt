@@ -1,4 +1,5 @@
-set(CMAKESL_TEST_SOURCES 
+set(CMAKESL_TEST_SOURCES
+        mock/identifiers_context_mock.hpp
     main.cpp
     sema_builder_ast_visitor.cpp
 )

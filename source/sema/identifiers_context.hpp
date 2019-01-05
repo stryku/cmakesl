@@ -18,7 +18,7 @@ namespace cmsl
         public:
             virtual ~identifiers_context() = default;
 
-            virtual void add(token_t name, const ast::type* ty) = 0;
+            virtual void register_identifier(token_t name, const ast::type* ty) = 0;
             virtual const ast::type* type_of(cmsl::string_view name) const = 0;
             virtual void enter_ctx() = 0;
             virtual void leave_ctx() = 0;
@@ -32,7 +32,7 @@ namespace cmsl
             using id_map_t = std::unordered_map<token_t, const ast::type*>;
 
         public:
-            void add(token_t name, const ast::type* ty) override
+            void register_identifier(token_t name, const ast::type* ty) override
             {
                 // Todo: handle empty
                 auto& ctx = m_contextes.back();
