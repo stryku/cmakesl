@@ -62,6 +62,7 @@ namespace cmsl
                 const auto casted_node = dynamic_cast<const bool_value_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
                 EXPECT_THAT(casted_node->value(), Eq(value));
+                EXPECT_THAT(casted_node->type(), IsValidType());
             }
 
             TEST(SemaBuilderAstVisitorTest, Visit_IntValue_GetCorrectIntValue)
@@ -85,6 +86,7 @@ namespace cmsl
                 const auto casted_node = dynamic_cast<const int_value_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
                 EXPECT_THAT(casted_node->value(), Eq(value));
+                EXPECT_THAT(casted_node->type(), IsValidType());
             }
 
             TEST(SemaBuilderAstVisitorTest, Visit_DoubleValue_GetCorrectDoubleValue)
@@ -108,6 +110,7 @@ namespace cmsl
                 const auto casted_node = dynamic_cast<const double_value_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
                 EXPECT_NEAR(casted_node->value(), value, 0.00001);
+                EXPECT_THAT(casted_node->type(), IsValidType());
             }
 
             TEST(SemaBuilderAstVisitorTest, Visit_StringValue_GetCorrectStringValue)
@@ -131,9 +134,10 @@ namespace cmsl
                 const auto casted_node = dynamic_cast<const string_value_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
                 EXPECT_THAT(casted_node->value(), Eq(value));
+                EXPECT_THAT(casted_node->type(), IsValidType());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_IdentifierInSameScope_GetCorrectIdentifierNode)
+            TEST(SemaBuilderAstVisitorTest, Visit_Identifier_GetCorrectIdentifierNode)
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
