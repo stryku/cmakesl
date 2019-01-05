@@ -52,17 +52,7 @@ namespace cmsl
         class expression_node : public sema_node
         {
         public:
-            explicit expression_node(const ast::type& t)
-                : m_type{ t }
-            {}
-
-            const ast::type& type() const
-            {
-                return m_type;
-            }
-
-        private:
-            const ast::type& m_type;
+            virtual const ast::type& type() const = 0;
         };
 
         template <typename T>
@@ -70,7 +60,7 @@ namespace cmsl
         {
         public:
             explicit value_node(const ast::type& t, T val)
-                : expression_node{ t }
+                : m_type{ t }
                 , m_value{ val }
             {}
 
@@ -79,7 +69,13 @@ namespace cmsl
                 return m_value;
             }
 
+            const ast::type& type() const override
+            {
+                return m_type;
+            }
+
         private:
+            const ast::type& m_type;
             T m_value;
         };
 
@@ -140,13 +136,18 @@ namespace cmsl
         {
         public:
             explicit id_node(const ast::type& t, lexer::token::token id)
-                : expression_node{ t }
+                : m_type{ t }
                 , m_id{ id }
             {}
 
             void visit(sema_node_visitor& visitor) override
             {
                 visitor.visit(*this);
+            }
+
+            const ast::type& type() const override
+            {
+                return m_type;
             }
 
             // Todo: consider renaming getters to get_*
@@ -156,7 +157,34 @@ namespace cmsl
             }
 
         private:
+            const ast::type& m_type;
             lexer::token::token m_id;
+        };
+
+        class return_node : public expression_node
+        {
+        public:
+            explicit return_node(std::unique_ptr<expression_node> expr)
+                : m_expr{ std::move(expr) }
+            {}
+
+            const ast::type& type() const override
+            {
+                return m_expr->type();
+            }
+
+            const expression_node& expression() const
+            {
+                return *m_expr;
+            }
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+        private:
+            std::unique_ptr<expression_node> m_expr;
         };
     }
 }

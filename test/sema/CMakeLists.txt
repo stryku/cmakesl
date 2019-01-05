@@ -2,7 +2,7 @@ set(CMAKESL_TEST_SOURCES
         mock/identifiers_context_mock.hpp
     main.cpp
     sema_builder_ast_visitor.cpp
-)
+        mock/expression_node_mock.hpp)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 

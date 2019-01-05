@@ -5,6 +5,7 @@
 
 #include "ast/variable_declaration_node.hpp"
 #include "ast/infix_nodes.hpp"
+#include "ast/return_node.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -84,7 +85,19 @@ namespace cmsl
                 m_result_node = std::make_unique<id_node>(*type, id_token);
             }
 
-            void visit(const ast::return_node& node) override {}
+            void visit(const ast::return_node& node) override
+            {
+                auto v = clone();
+                node.get_expression().visit(v);
+                if(!v.m_result_node)
+                {
+                    return;
+                }
+
+                std::unique_ptr<expression_node> expr(dynamic_cast<expression_node*>(v.m_result_node.release()));
+                m_result_node = std::make_unique<return_node>(std::move(expr));
+            }
+
             void visit(const ast::translation_unit_node& node) override {}
             void visit(const ast::user_function_node2& node) override {}
 
