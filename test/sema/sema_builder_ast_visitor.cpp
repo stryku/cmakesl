@@ -1,6 +1,7 @@
 #include "sema/sema_builder_ast_visitor.hpp"
 
 #include "ast/infix_nodes.hpp"
+#include "ast/return_node.hpp"
 
 #include "errors/errors_observer.hpp"
 
@@ -224,6 +225,29 @@ namespace cmsl
                 ASSERT_THAT(casted_initialization_node, NotNull());
 
                 EXPECT_THAT(casted_initialization_node->value(), Eq(initialization_value));
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_Return)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+
+                auto expr_node = std::make_unique<ast::int_value_node>( token_integer("42") );
+                ast::return_node ret_node(std::move(expr_node));
+
+                EXPECT_CALL(ctx, find_type(_))
+                .WillOnce(Return(&valid_type));
+
+                visitor.visit(ret_node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<return_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                EXPECT_THAT(casted_node->type(), IsValidType());
             }
         }
     }
