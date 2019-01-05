@@ -7,6 +7,7 @@
 #include "test/ast/mock/ast_context_mock.hpp"
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
+#include "test/sema/mock/identifiers_context_mock.hpp"
 
 #include <gmock/gmock.h>
 
@@ -44,7 +45,7 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                identifiers_context ids_ctx;
+                identifiers_context_mock ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 // Todo: use int alias
@@ -67,7 +68,7 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                identifiers_context ids_ctx;
+                identifiers_context_mock ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 // Todo: use int alias
@@ -90,7 +91,7 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                identifiers_context ids_ctx;
+                identifiers_context_mock ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 // Todo: use int alias
@@ -113,7 +114,7 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                identifiers_context ids_ctx;
+                identifiers_context_mock ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 // Todo: use int alias
@@ -136,23 +137,24 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                identifiers_context ids_ctx;
+                identifiers_context_mock ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 const auto token = token_identifier("foo");
-                ids_ctx.add(token, &valid_type);
             }
 
             TEST(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithoutInitialization_GetVariableDeclarationNodeWithoutInitialization)
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                identifiers_context ids_ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
                 const auto type_ref = ast::type_reference{ token_identifier(), token_identifier() };
                 const auto name_token = token_identifier("foo");
 
                 ast::variable_declaration_node variable_node(type_ref, name_token, nullptr);
+
+                EXPECT_CALL(ids_ctx, register_identifier(name_token, &valid_type));
 
                 EXPECT_CALL(ctx, find_type(_))
                         .WillOnce(Return(&valid_type));
@@ -173,7 +175,7 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                identifiers_context ids_ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
                 const auto type_ref = ast::type_reference{ token_identifier(), token_identifier() };
                 const auto name_token = token_identifier("foo");
@@ -187,6 +189,8 @@ namespace cmsl
 
                 EXPECT_CALL(ctx, find_type(_))
                         .WillRepeatedly(Return(&valid_type));
+
+                EXPECT_CALL(ids_ctx, register_identifier(name_token, &valid_type));
 
                 visitor.visit(variable_node);
 

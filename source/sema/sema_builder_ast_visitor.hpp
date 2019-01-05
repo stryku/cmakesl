@@ -113,6 +113,7 @@ namespace cmsl
                     initialization = std::move(v.m_result_node);
                 }
 
+                m_ids_context.register_identifier(node.get_name(), type);
                 m_result_node = std::make_unique<variable_declaration_node>(*type, node.get_name(), std::move(initialization));
             }
 

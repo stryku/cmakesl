@@ -1,5 +1,5 @@
 set(SEMA_SOURCES
-        sema_builder.cpp sema_builder.hpp sema_node.hpp sema_nodes.cpp sema_nodes.hpp sema_node_visitor.hpp sema_builder_ast_visitor.cpp sema_builder_ast_visitor.hpp identifiers_context.hpp mock/identifiers_context_mock.hpp)
+        sema_builder.cpp sema_builder.hpp sema_node.hpp sema_nodes.cpp sema_nodes.hpp sema_node_visitor.hpp sema_builder_ast_visitor.cpp sema_builder_ast_visitor.hpp identifiers_context.hpp )
 
 add_library(sema ${SEMA_SOURCES})
 target_include_directories(sema PRIVATE ${CMAKESL_SOURCES_DIR})
