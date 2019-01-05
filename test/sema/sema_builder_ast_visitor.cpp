@@ -26,7 +26,7 @@ namespace cmsl
 
             using namespace cmsl::test::common;
 
-            // Todo: to a common fole
+            // Todo: to a common file
             struct errors_observer_and_mock
             {
                 StrictMock<errors::test::errors_observer_mock> mock;
@@ -137,10 +137,23 @@ namespace cmsl
             {
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
-                identifiers_context_mock ids_ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
-                const auto token = token_identifier("foo");
+                const auto id_token = token_identifier("foo");
+                const ast::id_node node{ id_token };
+
+                EXPECT_CALL(ids_ctx, type_of(id_token.str()))
+                    .WillOnce(Return(&valid_type));
+
+                visitor.visit(node);
+
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+                const auto casted_node = dynamic_cast<const id_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+                EXPECT_THAT(casted_node->id(), Eq(id_token));
+                EXPECT_THAT(casted_node->type(), IsValidType()); // Todo: compare by reference
             }
 
             TEST(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithoutInitialization_GetVariableDeclarationNodeWithoutInitialization)
