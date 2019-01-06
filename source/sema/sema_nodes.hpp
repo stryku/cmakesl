@@ -14,41 +14,6 @@ namespace cmsl
 
     namespace sema
     {
-        class variable_declaration_node : public sema_node
-        {
-        public:
-            explicit variable_declaration_node(const ast::type& type, const lexer::token::token name, std::unique_ptr<sema_node> initialization)
-                : m_type{ type }
-                , m_name{ name }
-                , m_initialization{ std::move(initialization) }
-            {}
-
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
-
-            const ast::type& type() const
-            {
-                return m_type;
-            }
-
-            lexer::token::token name() const
-            {
-                return m_name;
-            }
-
-            const sema_node* initialization() const
-            {
-                return m_initialization.get();
-            }
-
-        private:
-            const ast::type& m_type;
-            const lexer::token::token m_name;
-            std::unique_ptr<sema_node> m_initialization;
-        };
-
         class expression_node : public sema_node
         {
         public:
@@ -185,6 +150,83 @@ namespace cmsl
 
         private:
             std::unique_ptr<expression_node> m_expr;
+        };
+
+        class binary_operator_node : public expression_node
+        {
+        public:
+            explicit binary_operator_node(std::unique_ptr<expression_node> lhs, lexer::token::token op, std::unique_ptr<expression_node> rhs, const ast::type& result_type)
+                : m_lhs{ std::move(lhs) }
+                , m_operator{ op }
+                , m_rhs{ std::move(rhs) }
+                , m_type{ result_type }
+            {}
+
+            const expression_node& lhs() const
+            {
+                return *m_lhs;
+            }
+
+            lexer::token::token op() const
+            {
+                return m_operator;
+            }
+
+            const expression_node& rhs() const
+            {
+                return *m_rhs;
+            }
+
+            const ast::type& type() const override
+            {
+                return m_type;
+            }
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+        private:
+            std::unique_ptr<expression_node> m_lhs;
+            lexer::token::token m_operator; // Todo: introduce an operator struct that holds token and operator type
+            std::unique_ptr<expression_node> m_rhs;
+            const ast::type& m_type;
+        };
+
+        class variable_declaration_node : public sema_node
+        {
+        public:
+            explicit variable_declaration_node(const ast::type& type, const lexer::token::token name, std::unique_ptr<expression_node> initialization)
+                    : m_type{ type }
+                    , m_name{ name }
+                    , m_initialization{ std::move(initialization) }
+            {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+            const ast::type& type() const
+            {
+                return m_type;
+            }
+
+            lexer::token::token name() const
+            {
+                return m_name;
+            }
+
+            const sema_node* initialization() const
+            {
+                return m_initialization.get();
+            }
+
+        private:
+            const ast::type& m_type;
+            const lexer::token::token m_name;
+            std::unique_ptr<expression_node> m_initialization;
         };
     }
 }

@@ -2,6 +2,9 @@
 
 #include "ast/ast_node_visitor.hpp"
 #include "ast/ast_context.hpp"
+#include "ast/type_operator_support_check.hpp"
+#include "ast/common_type_finder.hpp"
+
 
 #include "ast/variable_declaration_node.hpp"
 #include "ast/infix_nodes.hpp"
@@ -34,7 +37,54 @@ namespace cmsl
             void visit(const ast::class_node2& node) override {}
             void visit(const ast::conditional_node& node) override {}
             void visit(const ast::if_else_node& node) override {}
-            void visit(const ast::binary_operator_node& node) override {}
+
+            void visit(const ast::binary_operator_node& node) override
+            {
+                const auto op = node.get_operator().get_type();
+
+                ast::type_operator_support_check check;
+
+                auto lhs = visit_child_expr(node.get_lhs());
+                if(!lhs)
+                {
+                    return;
+                }
+
+                if(!check.type_supports_operator(lhs->type().get_kind(), op))
+                {
+                    // Todo: lhs type doesn't support this operator
+                    raise_error();
+                    return;
+                }
+
+                auto rhs = visit_child_expr(node.get_rhs());
+                if(!rhs)
+                {
+                    return;
+                }
+
+                if(!check.type_supports_operator(rhs->type().get_kind(), op))
+                {
+                    // Todo: lhs type doesn't support this operator
+                    raise_error();
+                    return;
+                }
+
+                const ast::type* common_type = &lhs->type();
+                if(lhs->type() != rhs->type())
+                {
+                    common_type = ast::common_type_finder{}.find_common_type(lhs->type(), rhs->type());
+                    if(common_type == nullptr)
+                    {
+                        // Todo: can't apply operator to these types
+                        raise_error();
+                        return;
+                    }
+                }
+
+                m_result_node = std::make_unique<binary_operator_node>(std::move(lhs), node.get_operator(), std::move(rhs), *common_type);
+            }
+
             void visit(const ast::class_member_access_node& node) override {}
             void visit(const ast::function_call_node& node) override {}
             void visit(const ast::member_function_call_node& node) override {}
@@ -94,7 +144,7 @@ namespace cmsl
                     return;
                 }
 
-                std::unique_ptr<expression_node> expr(dynamic_cast<expression_node*>(v.m_result_node.release()));
+                auto expr = to_expression(std::move(v.m_result_node));
                 m_result_node = std::make_unique<return_node>(std::move(expr));
             }
 
@@ -113,17 +163,22 @@ namespace cmsl
                     return;
                 }
 
-                std::unique_ptr<sema_node> initialization;
+                std::unique_ptr<expression_node> initialization;
                 if(auto init_node = node.get_initialization())
                 {
-                    auto v = clone();
-                    init_node->visit(v);
-                    if(!v.m_result_node)
+                    initialization = visit_child_expr(*init_node);
+                    if(!initialization)
                     {
                         return;
                     }
 
-                    initialization = std::move(v.m_result_node);
+                    // Todo: detect implicit conversion and raise a warning
+                    if(!ast::type_conversion_check{}.can_convert(initialization->type().get_kind(), type->get_kind()))
+                    {
+                        // Todo cannot convert from init to declared type
+                        raise_error();
+                        return;
+                    }
                 }
 
                 m_ids_context.register_identifier(node.get_name(), type);
@@ -135,6 +190,11 @@ namespace cmsl
             std::unique_ptr<sema_node> m_result_node;
 
         private:
+            std::unique_ptr<expression_node> to_expression(std::unique_ptr<sema_node> node) const
+            {
+                return std::unique_ptr<expression_node>(dynamic_cast<expression_node*>(node.release()));
+            }
+
             void raise_error()
             {
                 m_errors_observer.nofify_error({}); // todo: get error via parameter
@@ -143,6 +203,18 @@ namespace cmsl
             sema_builder_ast_visitor clone() const
             {
                 return sema_builder_ast_visitor{ m_ctx, m_errors_observer, m_ids_context };
+            }
+
+            std::unique_ptr<expression_node> visit_child_expr(const ast::ast_node& node)
+            {
+                return to_expression(visit_child(node));
+            }
+
+            std::unique_ptr<sema_node> visit_child(const ast::ast_node& node)
+            {
+                auto v = clone();
+                node.visit(v);
+                return std::move(v.m_result_node);
             }
 
         private:
