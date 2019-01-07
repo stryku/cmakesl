@@ -15,6 +15,7 @@ namespace cmsl
             public:
                 MOCK_CONST_METHOD0(get_name, cmsl::string_view());
                 MOCK_CONST_METHOD0(get_params_declarations, const params_declaration_t&());
+                MOCK_CONST_METHOD0(get_type, const type&());
             };
         }
     }

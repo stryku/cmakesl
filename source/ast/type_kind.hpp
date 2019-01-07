@@ -8,6 +8,7 @@ namespace cmsl
     {
         enum class type_kind
         {
+            k_void,
             k_int,
             k_double,
             k_bool,

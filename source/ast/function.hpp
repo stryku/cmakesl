@@ -23,6 +23,7 @@ namespace cmsl
 
             virtual cmsl::string_view get_name() const = 0;
             virtual const params_declaration_t& get_params_declarations() const = 0;
+            virtual const type& get_type() const = 0;
 
             // Todo: fixme
             void visit(ast_node_visitor& visitor) const override {};

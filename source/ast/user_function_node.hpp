@@ -33,6 +33,8 @@ namespace cmsl
 
             const std::vector<parameter_declaration>& get_params_declarations() const override;
 
+            const type& get_type() const override;
+
         private:
             ast_context& m_ast_context;
             const type& m_return_type;
