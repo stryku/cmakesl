@@ -126,6 +126,7 @@ namespace cmsl
             lexer::token::token m_id;
         };
 
+        // Todo: handle return without expression
         class return_node : public expression_node
         {
         public:
@@ -197,7 +198,7 @@ namespace cmsl
         class variable_declaration_node : public sema_node
         {
         public:
-            explicit variable_declaration_node(const ast::type& type, const lexer::token::token name, std::unique_ptr<expression_node> initialization)
+            explicit variable_declaration_node(const ast::type& type, lexer::token::token name, std::unique_ptr<expression_node> initialization)
                     : m_type{ type }
                     , m_name{ name }
                     , m_initialization{ std::move(initialization) }
@@ -227,6 +228,38 @@ namespace cmsl
             const ast::type& m_type;
             const lexer::token::token m_name;
             std::unique_ptr<expression_node> m_initialization;
+        };
+
+        class function_call_node : public expression_node
+        {
+        public:
+            using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
+
+            explicit function_call_node(const ast::type& return_type, lexer::token::token name, param_expressions_t params)
+                : m_return_type{ return_type }
+                    , m_name{ name }
+                    , m_params{ std::move(params) }
+            {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+            const ast::type& type() const override
+            {
+                return m_return_type;
+            }
+
+            const param_expressions_t& param_expressions() const
+            {
+                return m_params;
+            }
+
+        private:
+            const ast::type& m_return_type;
+            lexer::token::token m_name;
+            param_expressions_t m_params;
         };
     }
 }
