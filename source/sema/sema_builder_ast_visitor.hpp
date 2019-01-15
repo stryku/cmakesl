@@ -86,7 +86,50 @@ namespace cmsl
             }
 
             void visit(const ast::class_member_access_node& node) override {}
-            void visit(const ast::function_call_node& node) override {}
+            void visit(const ast::function_call_node& node) override
+            {
+                const auto name = node.get_name();
+                const auto found_fun = m_ctx.find_function(name.str());
+                if(!found_fun)
+                {
+                    // Todo function can't find function with such name.
+                    raise_error();
+                    return;
+                }
+
+                const auto& param_declarations = found_fun->get_params_declarations();
+                const auto& passed_params = node.get_param_nodes();
+
+                if(param_declarations.size() != passed_params.size())
+                {
+                    // Todo passed wrong number of parameters
+                    raise_error();
+                    return;
+                }
+
+                std::vector<std::unique_ptr<expression_node>> params;
+
+                for(auto i = 0u; i < param_declarations.size(); ++i)
+                {
+                    auto param = visit_child_expr(*passed_params[i]);
+                    if(!param)
+                    {
+                        return;
+                    }
+
+                    if(*param_declarations[i].param_type != param->type())
+                    {
+                        //Todo passed param type mismatch
+                        raise_error();
+                        return;
+                    }
+
+                    params.emplace_back(std::move(param));
+                }
+
+                m_result_node = std::make_unique<function_call_node>(found_fun->get_type(), name, std::move(params));
+            }
+
             void visit(const ast::member_function_call_node& node) override {}
 
             void visit(const ast::bool_value_node& node) override

@@ -12,6 +12,7 @@ namespace cmsl
         class id_node;
         class return_node;
         class binary_operator_node;
+        class function_call_node;
 
         class sema_node_visitor
         {
@@ -26,6 +27,7 @@ namespace cmsl
             virtual void visit(const id_node& node) = 0;
             virtual void visit(const return_node& node) = 0;
             virtual void visit(const binary_operator_node& node) = 0;
+            virtual void visit(const function_call_node& node) = 0;
         };
     }
 }
