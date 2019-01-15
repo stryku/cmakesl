@@ -297,13 +297,13 @@ namespace cmsl
                 StrictMock<ast::test::ast_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 StrictMock<ast::test::function_mock> function_mock;
-                ast::function::params_declaration_t param_declarations;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
                 const auto fun_name_token = token_identifier("foo");
                 const auto param1_id_token = token_identifier("bar");
                 const auto param2_id_token = token_identifier("baz");
 
+                ast::function::params_declaration_t param_declarations;
                 param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param1_id_token});
                 param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param2_id_token});
 
@@ -336,6 +336,107 @@ namespace cmsl
                 ASSERT_THAT(visitor.m_result_node, NotNull());
 
                 const auto casted_node = dynamic_cast<function_call_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                EXPECT_THAT(casted_node->type(), IsValidType());
+                const auto expected_number_of_params{ 2u };
+                EXPECT_THAT(casted_node->param_expressions().size(), Eq(expected_number_of_params));
+
+                // Todo: consider checking params one by one
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithoutParameters_GetMemberFunctionCallNodeWithoutParameters)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<ast::test::function_mock> function_mock;
+                const ast::function::params_declaration_t param_declarations;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto lhs_id_token = token_identifier("foo");
+                const ast::type lhs_type{ lhs_id_token.str(), ast::type_kind::k_user, &ctx };
+                auto lhs_ast_node = std::make_unique<ast::id_node>(lhs_id_token);
+
+                const auto fun_name_token = token_identifier("bar");
+                const ast::member_function_call_node node{ std::move(lhs_ast_node), fun_name_token, {} };
+
+                EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
+                        .WillOnce(Return(&lhs_type));
+
+                EXPECT_CALL(ctx, find_function(fun_name_token.str()))
+                        .WillOnce(Return(&function_mock));
+
+                EXPECT_CALL(function_mock, get_params_declarations())
+                        .WillOnce(ReturnRef(param_declarations));
+
+                EXPECT_CALL(function_mock, get_type())
+                        .WillOnce(ReturnRef(valid_type));
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<member_function_call_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                EXPECT_THAT(casted_node->type(), IsValidType());
+                const auto expected_number_of_params{ 0u };
+                EXPECT_THAT(casted_node->param_expressions().size(), Eq(expected_number_of_params));
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithParameters_GetMemberFunctionCallNodeWithParameters)
+            {
+
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<ast::test::function_mock> function_mock;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto lhs_id_token = token_identifier("foo");
+                const ast::type lhs_type{ lhs_id_token.str(), ast::type_kind::k_user, &ctx };
+                auto lhs_ast_node = std::make_unique<ast::id_node>(lhs_id_token);
+
+                const auto param1_id_token = token_identifier("baz");
+                const auto param2_id_token = token_identifier("qux");
+
+                ast::function::params_declaration_t param_declarations;
+                param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param1_id_token});
+                param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param2_id_token});
+                // Todo: use mocks
+                auto param1_ast_node = std::make_unique<ast::id_node>(param1_id_token);
+                auto param2_ast_node = std::make_unique<ast::id_node>(param2_id_token);
+                ast::function_call_node::params_t ast_params;
+                ast_params.emplace_back(std::move(param1_ast_node));
+                ast_params.emplace_back(std::move(param2_ast_node));
+
+                const auto fun_name_token = token_identifier("bar");
+                const ast::member_function_call_node node{ std::move(lhs_ast_node), fun_name_token, std::move(ast_params) };
+
+                EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
+                        .WillOnce(Return(&lhs_type));
+
+                EXPECT_CALL(ctx, find_function(fun_name_token.str()))
+                        .WillOnce(Return(&function_mock));
+
+                EXPECT_CALL(function_mock, get_params_declarations())
+                        .WillOnce(ReturnRef(param_declarations));
+
+                EXPECT_CALL(ids_ctx, type_of(param1_id_token.str()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ids_ctx, type_of(param2_id_token.str()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(function_mock, get_type())
+                        .WillOnce(ReturnRef(valid_type));
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<member_function_call_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
 
                 EXPECT_THAT(casted_node->type(), IsValidType());
