@@ -230,21 +230,16 @@ namespace cmsl
             std::unique_ptr<expression_node> m_initialization;
         };
 
-        class function_call_node : public expression_node
+        class call_node : public expression_node
         {
         public:
             using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
-            explicit function_call_node(const ast::type& return_type, lexer::token::token name, param_expressions_t params)
-                : m_return_type{ return_type }
+            explicit call_node(const ast::type& return_type, lexer::token::token name, param_expressions_t params)
+                    : m_return_type{ return_type }
                     , m_name{ name }
                     , m_params{ std::move(params) }
             {}
-
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
 
             const ast::type& type() const override
             {
@@ -261,6 +256,40 @@ namespace cmsl
             lexer::token::token m_name;
             param_expressions_t m_params;
         };
+
+        class function_call_node : public call_node
+        {
+        public:
+            explicit function_call_node(const ast::type& return_type, lexer::token::token name, param_expressions_t params)
+                : call_node{ return_type, name, std::move(params) }
+            {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+        };
+
+        class member_function_call_node : public call_node
+        {
+        public:
+            explicit member_function_call_node(std::unique_ptr<expression_node> lhs, const ast::type& return_type, lexer::token::token name, param_expressions_t params)
+                : call_node{ return_type, name, std::move(params) }
+                , m_lhs{ std::move(lhs) }
+            {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+            const expression_node& lhs() const
+            {
+                return *m_lhs;
+            }
+
+        private:
+            std::unique_ptr<expression_node> m_lhs;
+        };
     }
 }
-
