@@ -13,7 +13,7 @@ namespace cmsl
             class expression_node_mock : public expression_node
             {
             public:
-                MOCK_CONST_METHOD0(type, const ast::type*());
+                MOCK_CONST_METHOD0(type, const ast::type&());
             };
         }
     }
