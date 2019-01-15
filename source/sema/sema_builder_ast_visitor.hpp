@@ -26,6 +26,9 @@ namespace cmsl
 
         class sema_builder_ast_visitor : public ast::ast_node_visitor
         {
+        private:
+            using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
+
         public:
             explicit sema_builder_ast_visitor(ast::ast_context& ctx, errors::errors_observer& errs, identifiers_context& ids_context)
                 : m_ctx{ ctx }
@@ -92,45 +95,45 @@ namespace cmsl
                 const auto found_fun = m_ctx.find_function(name.str());
                 if(!found_fun)
                 {
-                    // Todo function can't find function with such name.
+                    // Todo: can't find function with such name.
                     raise_error();
                     return;
                 }
 
-                const auto& param_declarations = found_fun->get_params_declarations();
-                const auto& passed_params = node.get_param_nodes();
-
-                if(param_declarations.size() != passed_params.size())
+                auto params = get_function_call_params(*found_fun, node.get_param_nodes());
+                if(!params)
                 {
-                    // Todo passed wrong number of parameters
-                    raise_error();
                     return;
                 }
 
-                std::vector<std::unique_ptr<expression_node>> params;
-
-                for(auto i = 0u; i < param_declarations.size(); ++i)
-                {
-                    auto param = visit_child_expr(*passed_params[i]);
-                    if(!param)
-                    {
-                        return;
-                    }
-
-                    if(*param_declarations[i].param_type != param->type())
-                    {
-                        //Todo passed param type mismatch
-                        raise_error();
-                        return;
-                    }
-
-                    params.emplace_back(std::move(param));
-                }
-
-                m_result_node = std::make_unique<function_call_node>(found_fun->get_type(), name, std::move(params));
+                m_result_node = std::make_unique<function_call_node>(found_fun->get_type(), name, std::move(*params));
             }
 
-            void visit(const ast::member_function_call_node& node) override {}
+            void visit(const ast::member_function_call_node& node) override
+            {
+                const auto name = node.get_name();
+                auto lhs = visit_child_expr(node.get_lhs());
+                if(!lhs)
+                {
+                    return;
+                }
+
+                auto function = lhs->type().get_function(name.str());
+                if(!function)
+                {
+                    // Todo: type has no such function
+                    raise_error();
+                    return;
+                }
+
+                auto params = get_function_call_params(*function, node.get_param_nodes());
+                if(!params)
+                {
+                    return;
+                }
+
+                m_result_node = std::make_unique<member_function_call_node>(std::move(lhs), function->get_type(), name, std::move(*params));
+            }
 
             void visit(const ast::bool_value_node& node) override
             {
@@ -258,6 +261,40 @@ namespace cmsl
                 auto v = clone();
                 node.visit(v);
                 return std::move(v.m_result_node);
+            }
+
+            boost::optional<param_expressions_t> get_function_call_params(const ast::function& function, const ast::call_node::params_t& passed_params)
+            {
+                const auto& param_declarations = function.get_params_declarations();
+
+                if(param_declarations.size() != passed_params.size())
+                {
+                    // Todo passed wrong number of parameters
+                    raise_error();
+                    return {};
+                }
+
+                std::vector<std::unique_ptr<expression_node>> params;
+
+                for(auto i = 0u; i < param_declarations.size(); ++i)
+                {
+                    auto param = visit_child_expr(*passed_params[i]);
+                    if(!param)
+                    {
+                        return {};
+                    }
+
+                    if(*param_declarations[i].param_type != param->type())
+                    {
+                        //Todo passed param type mismatch
+                        raise_error();
+                        return {};
+                    }
+
+                    params.emplace_back(std::move(param));
+                }
+
+                return params;
             }
 
         private:
