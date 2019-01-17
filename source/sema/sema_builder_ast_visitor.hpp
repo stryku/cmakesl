@@ -122,7 +122,7 @@ namespace cmsl
                     }
                 }
 
-//                m_result_node = std::make_unique<class_node>(std::move(members), std::move(functions));
+                m_result_node = std::make_unique<class_node>(name, std::move(members));
             }
 
             void visit(const ast::conditional_node& node) override {}

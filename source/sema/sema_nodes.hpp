@@ -364,10 +364,21 @@ namespace cmsl
             using functions_t = std::vector<std::unique_ptr<function_node>>;
 
         public:
-            explicit class_node(members_t members/*, functions_t functions*/)
-                : m_members{ std::move(members) }
+            explicit class_node(lexer::token::token name, members_t members/*, functions_t functions*/)
+                : m_name{ name }
+                , m_members{ std::move(members) }
                 //, m_functions{ std::move(functions) }
             {}
+
+            lexer::token::token name() const
+            {
+                return m_name;
+            }
+
+            const members_t& members() const
+            {
+                return m_members;
+            }
 
             void visit(sema_node_visitor& visitor) override
             {
@@ -375,6 +386,7 @@ namespace cmsl
             }
 
         private:
+            lexer::token::token m_name;
             members_t m_members;
             //functions_t m_functions;
         };
