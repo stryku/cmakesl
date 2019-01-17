@@ -295,12 +295,22 @@ namespace cmsl
         class block_node : public sema_node
         {
         private:
-            using nodes_t = std::vector<std::unique_ptr<variable_declaration_node>>;
+            using nodes_t = std::vector<std::unique_ptr<sema_node>>;
 
         public:
             explicit block_node(nodes_t nodes)
                 : m_nodes{ std::move(nodes) }
             {}
+
+            const nodes_t& nodes() const
+            {
+                return m_nodes;
+            }
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
 
         private:
             nodes_t m_nodes;
@@ -314,21 +324,42 @@ namespace cmsl
                 const ast::type& type;
                 lexer::token::token name;
             };
+
+            explicit function_node(std::vector<parameter_declaration> params, std::unique_ptr<block_node> body)
+            : m_params{ std::move(params) }
+            , m_body{ std::move(body) }
+            {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+        private:
+            std::vector<parameter_declaration> m_params;
+            std::unique_ptr<block_node> m_body;
         };
 
         class class_node : public sema_node
         {
         private:
             using members_t = std::vector<std::unique_ptr<variable_declaration_node>>;
+            using functions_t = std::vector<std::unique_ptr<function_node>>;
 
-            explicit class_node(members_t members, std::unique_ptr<block_node> body)
+        public:
+            explicit class_node(members_t members, functions_t functions)
                 : m_members{ std::move(members) }
-                , m_body{ std::move(body) }
+                , m_functions{ std::move(functions) }
             {}
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
 
         private:
             members_t m_members;
-            std::unique_ptr<block_node> m_body;
+            functions_t m_functions;
         };
     }
 }
