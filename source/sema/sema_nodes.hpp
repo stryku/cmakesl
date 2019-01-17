@@ -325,10 +325,26 @@ namespace cmsl
                 lexer::token::token name;
             };
 
-            explicit function_node(std::vector<parameter_declaration> params, std::unique_ptr<block_node> body)
-            : m_params{ std::move(params) }
+            explicit function_node(const ast::type& return_type, std::vector<parameter_declaration> params, std::unique_ptr<block_node> body)
+            : m_return_type{ return_type }
+            ,m_params{ std::move(params) }
             , m_body{ std::move(body) }
             {}
+
+            const std::vector<parameter_declaration>& params() const
+            {
+                return m_params;
+            }
+
+            const block_node& body() const
+            {
+                return *m_body;
+            }
+
+            const ast::type& return_type() const
+            {
+                return m_return_type;
+            }
 
             void visit(sema_node_visitor& visitor) override
             {
@@ -336,6 +352,7 @@ namespace cmsl
             }
 
         private:
+            const ast::type& m_return_type;
             std::vector<parameter_declaration> m_params;
             std::unique_ptr<block_node> m_body;
         };
@@ -347,9 +364,9 @@ namespace cmsl
             using functions_t = std::vector<std::unique_ptr<function_node>>;
 
         public:
-            explicit class_node(members_t members, functions_t functions)
+            explicit class_node(members_t members/*, functions_t functions*/)
                 : m_members{ std::move(members) }
-                , m_functions{ std::move(functions) }
+                //, m_functions{ std::move(functions) }
             {}
 
             void visit(sema_node_visitor& visitor) override
@@ -359,7 +376,7 @@ namespace cmsl
 
         private:
             members_t m_members;
-            functions_t m_functions;
+            //functions_t m_functions;
         };
     }
 }

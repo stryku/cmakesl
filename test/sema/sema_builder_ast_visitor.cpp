@@ -465,8 +465,86 @@ namespace cmsl
                 const auto casted_node = dynamic_cast<block_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
 
+                const auto expected_number_of_nodes{ 0u };
+                EXPECT_THAT(casted_node->nodes().size(), Eq(expected_number_of_nodes));
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_FunctionWithoutParameters_GetFunctionNodeWithoutParameters)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                auto return_type_token = token_identifier("foo");
+                auto return_type_reference = ast::type_reference{ return_type_token, return_type_token};
+                auto name_token = token_identifier("bar");
+                auto block = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                ast::user_function_node2 node{ return_type_reference, name_token, {}, std::move(block) };
+
+                EXPECT_CALL(ctx, find_type(return_type_reference.to_string()))
+                        .WillOnce(Return(&valid_type));
+
+                // Two scopes: parameters and block
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(2);
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(2);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<function_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
                 const auto expected_number_of_params{ 0u };
-                EXPECT_THAT(casted_node->nodes().size(), Eq(expected_number_of_params));
+                EXPECT_THAT(casted_node->params().size(), Eq(expected_number_of_params));
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_FunctionWithParameters_GetFunctionNodeWithParameters)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                auto return_type_token = token_identifier("foo");
+                auto return_type_reference = ast::type_reference{ return_type_token, return_type_token};
+                auto name_token = token_identifier("bar");
+                auto param_type_token = token_identifier("baz");
+                auto param_type_reference = ast::type_reference{ param_type_token, param_type_token};
+                auto param_name_token = token_identifier("baz");
+
+                ast::user_function_node2::params_t params;
+                params.emplace_back(ast::param_declaration{param_type_reference, param_name_token});
+
+                auto block = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                ast::user_function_node2 node{ return_type_reference, name_token, std::move(params), std::move(block) };
+
+
+                EXPECT_CALL(ctx, find_type(return_type_reference.to_string()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ctx, find_type(param_type_reference.to_string()))
+                        .WillOnce(Return(&valid_type));
+
+                // Two scopes: parameters and block
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(2);
+                EXPECT_CALL(ids_ctx, register_identifier(param_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(2);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<function_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                const auto expected_number_of_params{ 1u };
+                EXPECT_THAT(casted_node->params().size(), Eq(expected_number_of_params));
             }
         }
     }
