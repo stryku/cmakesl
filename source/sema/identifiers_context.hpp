@@ -18,6 +18,7 @@ namespace cmsl
         public:
             virtual ~identifiers_context() = default;
 
+            // Todo: type, name
             virtual void register_identifier(token_t name, const ast::type* ty) = 0;
             virtual const ast::type* type_of(cmsl::string_view name) const = 0;
             virtual void enter_ctx() = 0;

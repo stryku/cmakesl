@@ -291,5 +291,44 @@ namespace cmsl
         private:
             std::unique_ptr<expression_node> m_lhs;
         };
+
+        class block_node : public sema_node
+        {
+        private:
+            using nodes_t = std::vector<std::unique_ptr<variable_declaration_node>>;
+
+        public:
+            explicit block_node(nodes_t nodes)
+                : m_nodes{ std::move(nodes) }
+            {}
+
+        private:
+            nodes_t m_nodes;
+        };
+
+        class function_node : public sema_node
+        {
+        public:
+            struct parameter_declaration
+            {
+                const ast::type& type;
+                lexer::token::token name;
+            };
+        };
+
+        class class_node : public sema_node
+        {
+        private:
+            using members_t = std::vector<std::unique_ptr<variable_declaration_node>>;
+
+            explicit class_node(members_t members, std::unique_ptr<block_node> body)
+                : m_members{ std::move(members) }
+                , m_body{ std::move(body) }
+            {}
+
+        private:
+            members_t m_members;
+            std::unique_ptr<block_node> m_body;
+        };
     }
 }

@@ -23,23 +23,14 @@ namespace cmsl
 
         const type* ast_context_impl::find_type(cmsl::string_view name) const
         {
-            const auto it = std::find_if(std::begin(m_types), std::end(m_types),
-                                         [name](const auto& t)
-            {
-                return t->get_name() == name;
-            });
+            const auto found = find_type_in_this_scope(name);
 
-            if (it == std::end(m_types))
+            if(found)
             {
-                if (m_parent == nullptr)
-                {
-                    return nullptr;
-                }
-
-                return m_parent->find_type(name);
+                return found;
             }
 
-            return it->get();
+            return m_parent ? m_parent->find_type(name) : nullptr;
         }
 
         void ast_context_impl::add_function(std::unique_ptr<function> fun)
@@ -66,6 +57,17 @@ namespace cmsl
             }
 
             return it->get();
+        }
+
+        const type *ast_context_impl::find_type_in_this_scope(cmsl::string_view name) const
+        {
+            const auto found = std::find_if(std::begin(m_types), std::end(m_types),
+                                         [name](const auto& t)
+                                         {
+                                             return t->get_name() == name;
+                                         });
+
+            return found != std::cend(m_types) ? found->get() : nullptr;
         }
     }
 }

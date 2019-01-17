@@ -19,6 +19,7 @@ namespace cmsl
 
             virtual void add_type(std::unique_ptr<type> t) = 0;
             virtual const type* find_type(cmsl::string_view name) const = 0;
+            virtual const type* find_type_in_this_scope(cmsl::string_view name) const = 0;
 
             virtual void add_function(std::unique_ptr<function> fun) = 0;
             virtual const function* find_function(cmsl::string_view name) const = 0;
@@ -32,6 +33,7 @@ namespace cmsl
 
             void add_type(std::unique_ptr<type> t) override;
             const type* find_type(cmsl::string_view name) const override;
+            const type* find_type_in_this_scope(cmsl::string_view name) const override;
 
             void add_function(std::unique_ptr<function> fun) override;
             const function* find_function(cmsl::string_view name) const override;

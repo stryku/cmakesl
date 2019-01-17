@@ -4,11 +4,13 @@
 #include "ast/ast_context.hpp"
 #include "ast/type_operator_support_check.hpp"
 #include "ast/common_type_finder.hpp"
+#include "ast/class_type.hpp"
 
 
 #include "ast/variable_declaration_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/return_node.hpp"
+#include "ast/class_node.hpp"
 
 #include "common/algorithm.hpp"
 
@@ -36,8 +38,93 @@ namespace cmsl
                 , m_ids_context{ ids_context }
             {}
 
-            void visit(const ast::block_node& node) override {}
-            void visit(const ast::class_node2& node) override {}
+            void visit(const ast::block_node& node) override
+            {
+                auto ig = ids_guard();
+
+                std::vector<std::unique_ptr<sema_node>> nodes;
+
+                const auto ast_nodes = node.get_expressions();
+
+                for(auto n : node.get_expressions())
+                {
+                    auto child = visit_child(*n);
+                    if(!child)
+                    {
+                        return;
+                    }
+
+                    nodes.emplace_back(std::move(child));
+                }
+
+                m_result_node = std::make_unique<block_node>(std::move(nodes));
+            }
+
+            void visit(const ast::class_node2& node) override
+            {
+                const auto name = node.get_name();
+                if(const auto found_type = m_ctx.find_type_in_this_scope(name.str()))
+                {
+                    // Todo: type redefinition
+                    raise_error();
+                    return;
+                }
+
+                auto class_ids_guard = ids_guard();
+
+                auto created_class_ast_ctx = std::make_unique<ast::ast_context_impl>(&m_ctx);
+                auto class_ast_ctx = created_class_ast_ctx.get();
+
+                // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
+                auto created_class_type = std::make_unique<ast::class_type2>(name, std::move(created_class_ast_ctx));
+                auto class_type = created_class_type.get();
+
+                // Same as with ast context. class_type raw pointer will be valid. We move it to context to make this class findable as a regular type (so e.g. inside this class methods, the type will appear as a regular type).
+                m_ctx.add_type(std::move(created_class_type));
+
+                std::vector<std::unique_ptr<variable_declaration_node>> members;
+                std::vector<std::unique_ptr<function_node>> functions;
+
+                for(auto n : node.get_nodes())
+                {
+                    if(auto variable_decl = dynamic_cast<const ast::variable_declaration_node*>(n))
+                    {
+                        auto member = visit_child_node<variable_declaration_node>(*variable_decl);
+                        if(!member)
+                        {
+                            return;
+                        }
+
+                        if(member->type() == *class_type)
+                        {
+                            // Todo: class cannot have itself as a member
+                            raise_error();
+                            return;
+                        }
+
+                        members.emplace_back(std::move(member));
+                    }
+                    else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))
+                    {
+                        auto fun = visit_child_node<function_node>(*fun_node);
+                        if(!fun)
+                        {
+                            return;
+                        }
+
+                        functions.emplace_back(std::move(fun));
+                    }
+                    else
+                    {
+                        // Todo: shouldn't reach here
+                        raise_error();
+                        return;
+                    }
+                }
+
+                m_result_node = std::make_unique<class_node>(std::move(members), std::move(functions));
+            }
+
             void visit(const ast::conditional_node& node) override {}
             void visit(const ast::if_else_node& node) override {}
 
@@ -195,7 +282,34 @@ namespace cmsl
             }
 
             void visit(const ast::translation_unit_node& node) override {}
-            void visit(const ast::user_function_node2& node) override {}
+            void visit(const ast::user_function_node2& node) override
+            {
+                auto params_ids_guard = ids_guard();
+
+                std::vector<function_node::parameter_declaration> params;
+
+                for(const auto& param_decl : node.get_param_declarations())
+                {
+                    auto param_type = m_ctx.find_type(param_decl.ty.to_string());
+                    if(!param_type)
+                    {
+                        //Todo: unknown parameter type
+                        raise_error();
+                        return;
+                    }
+
+                    params.emplace_back({*param_type, param_decl.name});
+                    m_ids_context.register_identifier(param_decl.name, param_type);
+                }
+
+                auto block = visit_child_node<block_node>(node.get_body());
+                if(!block)
+                {
+                    return;
+                }
+
+                m_result_node = std::make_unique<function_node>(std::move(params))
+            }
 
             void visit(const ast::variable_declaration_node& node) override
             {
@@ -236,6 +350,12 @@ namespace cmsl
             std::unique_ptr<sema_node> m_result_node;
 
         private:
+            template <typename T>
+            std::unique_ptr<T> to_node(std::unique_ptr<sema_node> node) const
+            {
+                return std::unique_ptr<T>(dynamic_cast<T*>(node.release()));
+            }
+
             std::unique_ptr<expression_node> to_expression(std::unique_ptr<sema_node> node) const
             {
                 return std::unique_ptr<expression_node>(dynamic_cast<expression_node*>(node.release()));
@@ -253,7 +373,13 @@ namespace cmsl
 
             std::unique_ptr<expression_node> visit_child_expr(const ast::ast_node& node)
             {
-                return to_expression(visit_child(node));
+                return to_node<expression_node>(visit_child(node));
+            }
+
+            template <typename T>
+            std::unique_ptr<T> visit_child_node(const ast::ast_node& node)
+            {
+                return to_node<T>(visit_child(node));
             }
 
             std::unique_ptr<sema_node> visit_child(const ast::ast_node& node)
@@ -295,6 +421,27 @@ namespace cmsl
                 }
 
                 return params;
+            }
+
+            struct ids_ctx_guard
+            {
+                explicit ids_ctx_guard(identifiers_context& ids_context)
+                    : m_ids_ctx{ ids_context }
+                {
+                    m_ids_ctx.enter_ctx();
+                }
+
+                ~ids_ctx_guard()
+                {
+                    m_ids_ctx.leave_ctx();
+                }
+
+                identifiers_context& m_ids_ctx;
+            };
+
+            ids_ctx_guard ids_guard()
+            {
+                return ids_ctx_guard{ m_ids_context };
             }
 
         private:
