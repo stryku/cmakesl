@@ -122,7 +122,7 @@ namespace cmsl
                     }
                 }
 
-                m_result_node = std::make_unique<class_node>(std::move(members), std::move(functions));
+//                m_result_node = std::make_unique<class_node>(std::move(members), std::move(functions));
             }
 
             void visit(const ast::conditional_node& node) override {}
@@ -284,6 +284,14 @@ namespace cmsl
             void visit(const ast::translation_unit_node& node) override {}
             void visit(const ast::user_function_node2& node) override
             {
+                auto return_type = m_ctx.find_type(node.get_return_type_reference().to_string());
+                if(!return_type)
+                {
+                    // Todo: unknown return type
+                    raise_error();
+                    return;
+                }
+
                 auto params_ids_guard = ids_guard();
 
                 using param_decl_t = function_node::parameter_declaration;
@@ -309,7 +317,7 @@ namespace cmsl
                     return;
                 }
 
-                m_result_node = std::make_unique<function_node>(std::move(params), std::move(block));
+                m_result_node = std::make_unique<function_node>(*return_type, std::move(params), std::move(block));
             }
 
             void visit(const ast::variable_declaration_node& node) override
