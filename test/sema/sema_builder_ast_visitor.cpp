@@ -387,7 +387,6 @@ namespace cmsl
 
             TEST(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithParameters_GetMemberFunctionCallNodeWithParameters)
             {
-
                 errs_t errs;
                 StrictMock<ast::test::ast_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
@@ -444,6 +443,30 @@ namespace cmsl
                 EXPECT_THAT(casted_node->param_expressions().size(), Eq(expected_number_of_params));
 
                 // Todo: consider checking params one by one
+            }
+
+            // Todo: consider test with nodes inside block
+            TEST(SemaBuilderAstVisitorTest, Visit_Block_GetBlockNode)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                ast::block_node block{ {} };
+
+                EXPECT_CALL(ids_ctx, enter_ctx());
+                EXPECT_CALL(ids_ctx, leave_ctx());
+
+                visitor.visit(block);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<block_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                const auto expected_number_of_params{ 0u };
+                EXPECT_THAT(casted_node->nodes().size(), Eq(expected_number_of_params));
             }
         }
     }

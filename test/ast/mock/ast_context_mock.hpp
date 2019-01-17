@@ -15,6 +15,7 @@ namespace cmsl
             public:
                 MOCK_METHOD1(add_type, void(std::unique_ptr<type>));
                 MOCK_CONST_METHOD1(find_type, const type*(cmsl::string_view));
+                MOCK_CONST_METHOD1(find_type_in_this_scope, const type*(cmsl::string_view));
 
                 MOCK_METHOD1(add_function, void(std::unique_ptr<function>));
                 MOCK_CONST_METHOD1(find_function, const function*(cmsl::string_view));

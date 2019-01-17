@@ -286,7 +286,8 @@ namespace cmsl
             {
                 auto params_ids_guard = ids_guard();
 
-                std::vector<function_node::parameter_declaration> params;
+                using param_decl_t = function_node::parameter_declaration;
+                std::vector<param_decl_t> params;
 
                 for(const auto& param_decl : node.get_param_declarations())
                 {
@@ -298,7 +299,7 @@ namespace cmsl
                         return;
                     }
 
-                    params.emplace_back({*param_type, param_decl.name});
+                    params.emplace_back(param_decl_t{*param_type, param_decl.name});
                     m_ids_context.register_identifier(param_decl.name, param_type);
                 }
 
@@ -308,7 +309,7 @@ namespace cmsl
                     return;
                 }
 
-                m_result_node = std::make_unique<function_node>(std::move(params))
+                m_result_node = std::make_unique<function_node>(std::move(params), std::move(block));
             }
 
             void visit(const ast::variable_declaration_node& node) override
