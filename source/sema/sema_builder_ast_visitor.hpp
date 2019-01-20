@@ -213,7 +213,15 @@ namespace cmsl
                 }
 
                 const auto& lhs_type = lhs->type();
+                auto member_info = lhs_type.get_member(node.get_member_name().str());
+                if(!member_info)
+                {
+                    // Todo: type does not have such member.
+                    raise_error();
+                    return;
+                }
 
+                m_result_node = std::make_unique<class_member_access_node>(std::move(lhs), *member_info);
             }
 
             void visit(const ast::function_call_node& node) override

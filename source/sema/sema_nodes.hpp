@@ -469,5 +469,38 @@ namespace cmsl
             ifs_t m_ifs;
             std::unique_ptr<block_node> m_else;
         };
+
+        class class_member_access_node : public expression_node
+        {
+        public:
+            explicit class_member_access_node(std::unique_ptr<expression_node> lhs, ast::type::member_info member_info)
+                : m_lhs{ std::move(lhs) }
+                , m_member_info{ member_info }
+            {}
+
+            const expression_node& lhs() const
+            {
+                return *m_lhs;
+            }
+
+            const ast::type& type() const override
+            {
+                return m_member_info.ty;
+            }
+
+            lexer::token::token member_name() const
+            {
+                return m_member_info.name;
+            }
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+        private:
+            std::unique_ptr<expression_node> m_lhs;
+            ast::type::member_info m_member_info;
+        };
     }
 }
