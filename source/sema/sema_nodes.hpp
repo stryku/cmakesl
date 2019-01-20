@@ -503,12 +503,12 @@ namespace cmsl
             ast::type::member_info m_member_info;
         };
 
-        class translation_node : public sema_node
+        class translation_unit_node : public sema_node
         {
         public:
             using nodes_t = std::vector<std::unique_ptr<sema_node>>;
 
-            explicit translation_node(nodes_t nodes)
+            explicit translation_unit_node(nodes_t nodes)
                 : m_nodes{std::move(nodes)}
             {}
 
