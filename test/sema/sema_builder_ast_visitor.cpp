@@ -971,6 +971,73 @@ namespace cmsl
                 EXPECT_THAT(casted_node->type(), IsValidType());
                 EXPECT_THAT(casted_node->member_name(), Eq(member_name_token));
             }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto variable_name_token = token_identifier("foo");
+                const auto variable_type_token = token_kw_int();
+                const auto variable_type_reference = ast::type_reference{ variable_type_token, variable_type_token};
+                auto variable_declaration_ast_node = std::make_unique<ast::variable_declaration_node>(variable_type_reference, variable_name_token, nullptr);
+
+                const auto function_return_type_token = token_kw_double();
+                const auto function_return_type_reference = ast::type_reference{ function_return_type_token, function_return_type_token };
+                const auto function_name_token = token_identifier("bar");
+                auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto function_ast_node = std::make_unique<ast::user_function_node2>(function_return_type_reference, function_name_token, ast::user_function_node2::params_t{}, std::move(function_body));
+
+                const auto class_name_token = token_identifier("baz");
+                auto class_ast_node = std::make_unique<ast::class_node2>(class_name_token, ast::class_node2::nodes_t{});
+
+                ast::translation_unit_node::nodes_t nodes;
+                nodes.emplace_back(std::move(variable_declaration_ast_node));
+                nodes.emplace_back(std::move(function_ast_node));
+                nodes.emplace_back(std::move(class_ast_node));
+
+                ast::translation_unit_node node{ std::move(nodes) };
+
+                EXPECT_CALL(ctx, find_type(variable_type_reference.to_string()))
+                        .WillOnce(Return(&valid_type));
+                EXPECT_CALL(ctx, find_type(function_return_type_reference.to_string()))
+                        .WillOnce(Return(&valid_type));
+                EXPECT_CALL(ctx, find_type_in_this_scope(class_name_token.str()))
+                        .WillOnce(Return(nullptr));
+
+                EXPECT_CALL(ctx, add_type(_));
+
+                EXPECT_CALL(ids_ctx, register_identifier(variable_name_token, &valid_type));
+
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(3);
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(3);
+
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<translation_unit_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                const auto& translation_unit_nodes = casted_node->nodes();
+                const auto expected_number_of_nodes{ 3u };
+                ASSERT_THAT(translation_unit_nodes.size(), Eq(expected_number_of_nodes));
+
+                const auto casted_variable_node = dynamic_cast<variable_declaration_node*>(translation_unit_nodes[0].get());
+                EXPECT_THAT(casted_variable_node, NotNull());
+
+                const auto casted_function_node = dynamic_cast<function_node*>(translation_unit_nodes[1].get());
+                EXPECT_THAT(casted_function_node, NotNull());
+
+                const auto casted_class_node = dynamic_cast<class_node*>(translation_unit_nodes[2].get());
+                EXPECT_THAT(casted_class_node, NotNull());
+
+            }
         }
     }
 }

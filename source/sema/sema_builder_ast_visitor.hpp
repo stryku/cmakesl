@@ -341,9 +341,11 @@ namespace cmsl
                     {
                         return;
                     }
+
+                    nodes.emplace_back(std::move(visited_node));
                 }
 
-
+                m_result_node = std::make_unique<translation_unit_node>(std::move(nodes));
             }
 
             void visit(const ast::user_function_node2& node) override

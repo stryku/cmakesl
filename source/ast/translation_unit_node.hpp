@@ -13,7 +13,9 @@ namespace cmsl
         class translation_unit_node : public ast_node
         {
         public:
-            explicit translation_unit_node(std::vector<std::unique_ptr<ast_node>> nodes)
+            using nodes_t = std::vector<std::unique_ptr<ast_node>>;
+
+            explicit translation_unit_node(nodes_t nodes)
                 : m_nodes{ std::move(nodes)}
             {}
 
@@ -37,7 +39,7 @@ namespace cmsl
             };
 
         private:
-            std::vector<std::unique_ptr<ast_node>> m_nodes;
+            nodes_t m_nodes;
         };
     }
 }
