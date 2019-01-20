@@ -21,6 +21,7 @@ namespace cmsl
         class while_node;
         class if_else_node;
         class class_member_access_node;
+        class translation_node;
 
         class sema_node_visitor
         {
@@ -44,6 +45,7 @@ namespace cmsl
             virtual void visit(const while_node& node) = 0;
             virtual void visit(const if_else_node& node) = 0;
             virtual void visit(const class_member_access_node& node) = 0;
+            virtual void visit(const translation_node& node) = 0;
         };
     }
 }

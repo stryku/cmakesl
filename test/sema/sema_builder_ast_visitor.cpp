@@ -939,6 +939,38 @@ namespace cmsl
 
                 EXPECT_THAT(casted_node->else_body(), NotNull());
             }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_ClassMemberAccess_GetClassMemberAccessNode)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto lhs_id_token = token_identifier("foo");
+                auto lhs_node = std::make_unique<ast::id_node>(lhs_id_token);
+
+                const auto member_name_token = token_identifier("bar");
+                // Todo: use initializer list
+                std::vector<ast::type::member_info> members;
+                members.emplace_back(ast::type::member_info{member_name_token, valid_type});
+                ast::type lhs_type{ "baz", ast::type_kind::k_user, &ctx, std::move(members)};
+
+                ast::class_member_access_node node{ std::move(lhs_node), member_name_token };
+
+                EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
+                        .WillOnce(Return(&lhs_type));
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<class_member_access_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                EXPECT_THAT(casted_node->type(), IsValidType());
+                EXPECT_THAT(casted_node->member_name(), Eq(member_name_token));
+            }
         }
     }
 }

@@ -502,5 +502,28 @@ namespace cmsl
             std::unique_ptr<expression_node> m_lhs;
             ast::type::member_info m_member_info;
         };
+
+        class translation_node : public sema_node
+        {
+        public:
+            using nodes_t = std::vector<std::unique_ptr<sema_node>>;
+
+            explicit translation_node(nodes_t nodes)
+                : m_nodes{std::move(nodes)}
+            {}
+
+            const nodes_t& nodes() const
+            {
+                return m_nodes;
+            }
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+        private:
+            nodes_t m_nodes;
+        };
     }
 }
