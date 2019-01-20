@@ -13,7 +13,7 @@ namespace cmsl
         class conditional_node : public ast_node
         {
         public:
-            explicit conditional_node(std::unique_ptr<ast_node> condition, std::unique_ptr<block_node> block);
+            explicit conditional_node(std::unique_ptr<ast_node> condition, std::unique_ptr<block_node> block); // Todo: rename to body
             ~conditional_node();
 
             const ast_node& get_condition() const;
