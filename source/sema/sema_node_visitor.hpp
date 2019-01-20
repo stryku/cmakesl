@@ -17,6 +17,8 @@ namespace cmsl
         class block_node;
         class function_node;
         class class_node;
+        class conditional_node;
+        class while_node;
 
         class sema_node_visitor
         {
@@ -36,6 +38,8 @@ namespace cmsl
             virtual void visit(const block_node& node) = 0;
             virtual void visit(const function_node& node) = 0;
             virtual void visit(const class_node& node) = 0;
+            virtual void visit(const conditional_node& node) = 0;
+            virtual void visit(const while_node& node) = 0;
         };
     }
 }

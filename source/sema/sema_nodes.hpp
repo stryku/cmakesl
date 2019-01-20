@@ -390,5 +390,54 @@ namespace cmsl
             members_t m_members;
             //functions_t m_functions;
         };
+
+        class conditional_node : public sema_node
+        {
+        public:
+            explicit conditional_node(std::unique_ptr<expression_node> condition, std::unique_ptr<block_node> body)
+                : m_condition{ std::move(condition)}
+                , m_body{ std::move(body)}
+            {}
+
+            const expression_node& get_condition() const
+            {
+                return *m_condition;
+            }
+
+            const block_node& get_body() const
+            {
+                return *m_body;
+            }
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+        private:
+            std::unique_ptr<expression_node> m_condition;
+            std::unique_ptr<block_node> m_body;
+        };
+
+        class while_node : public sema_node
+        {
+        public:
+            explicit while_node(std::unique_ptr<conditional_node> condition)
+                : m_conditional{ std::move(condition)}
+            {}
+
+            const conditional_node& get_condition() const
+            {
+                return *m_conditional;
+            }
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+        private:
+            std::unique_ptr<conditional_node> m_conditional;
+        };
     }
 }
