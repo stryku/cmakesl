@@ -1,6 +1,8 @@
 #include "ast/type_operator_support_check.hpp"
 #include "ast/type_kind.hpp"
 #include "lexer/token/token_type.hpp"
+#include "type_operator_support_check.hpp"
+
 
 namespace cmsl
 {
@@ -94,6 +96,19 @@ namespace cmsl
                     token_type_t::equalequal,
                     token_type_t::exclaimequal
             };
+        }
+
+        bool type_operator_support_check::type_supports_operator(type_kind t,
+                                                                 type_operator_support_check::token_type_t op) const
+                                                                 {
+            auto group_pair = m_types_operators_support.find(t);
+            if(group_pair == std::cend(m_types_operators_support))
+            {
+                return false;
+            }
+
+            const auto& group = group_pair->second;
+            return group.find(op) != std::cend(group);
         }
     }
 }

@@ -1,5 +1,6 @@
 #include "ast/while_node.hpp"
-#include "conditional_node.hpp"
+#include "ast/conditional_node.hpp"
+#include "ast/ast_node_visitor.hpp"
 
 namespace cmsl
 {
@@ -14,9 +15,14 @@ namespace cmsl
         while_node::~while_node()
         {}
 
-        conditional_node &while_node::get_node() const
+        const conditional_node &while_node::get_node() const
         {
             return *m_node;
+        }
+
+        void while_node::visit(ast_node_visitor &visitor) const
+        {
+            visitor.visit(*this);
         }
     }
 }

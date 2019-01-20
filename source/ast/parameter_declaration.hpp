@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "ast/type_reference.hpp"
 
 #include <boost/optional.hpp>
 
@@ -13,6 +13,12 @@ namespace cmsl
         {
             const type* param_type;
             boost::optional<lexer::token::token> name;
+        };
+
+        struct param_declaration
+        {
+            type_reference ty;
+            lexer::token::token name;
         };
     }
 }

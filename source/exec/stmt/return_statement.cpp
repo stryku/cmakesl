@@ -10,7 +10,7 @@ namespace cmsl
     {
         namespace stmt
         {
-            return_statement::return_statement(ast::return_node& node)
+            return_statement::return_statement(const ast::return_node& node)
                 : m_node{ node }
             {}
 
@@ -18,7 +18,7 @@ namespace cmsl
             {
                 auto& expr = m_node.get_expression();
                 std::unique_ptr<inst::instance> infix_result;
-                auto infix = infix_statement{ expr, infix_result };
+                auto infix = infix_statement{ dynamic_cast<const ast::infix_node&>(expr), infix_result }; // Todo: get rid of dynamic_cast
                 infix.execute(e);
                 e.return_from_function(std::move(infix_result));
             }

@@ -130,6 +130,7 @@ namespace cmsl
             token_t token_semicolon() { return details::simple_token(token_type_t::semicolon); }
             token_t token_comma() { return details::simple_token(token_type_t::comma); }
 
+            token_t token_kw_void() { return details::simple_token(token_type_t::kw_int); }
             token_t token_kw_int() { return details::simple_token(token_type_t::kw_int); }
             token_t token_kw_double() { return details::simple_token(token_type_t::kw_double); }
             token_t token_kw_return() { return details::simple_token(token_type_t::kw_return); }
@@ -160,6 +161,20 @@ namespace cmsl
             token_t token_identifier(cmsl::string_view str)
             {
                 return details::token_from_source(token_type_t::identifier, str);
+            }
+
+            token_t token_from_larger_source(cmsl::string_view source, token_type_t type, unsigned begin, unsigned end)
+            {
+                source_location begin_loc;
+                begin_loc.line = 1u;
+                begin_loc.column = begin_loc.absolute = begin;
+
+                source_location end_loc;
+                end_loc.line = 1u;
+                end_loc.column = end_loc.absolute = end;
+                const auto source_range = cmsl::source_range{ begin_loc, end_loc };
+
+                return token_t{ type, source_range, source };
             }
         }
     }

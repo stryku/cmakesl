@@ -93,6 +93,10 @@ namespace cmsl
                         auto visitor = onp::logical_operator_evaluation_visitor{ op };
                         return visitor.visit(lhs_val, rhs_val);
                     }
+
+                    default:
+                        CMSL_UNREACHABLE("Applying unknown operator");
+                        return {};
                 }
             }
 
