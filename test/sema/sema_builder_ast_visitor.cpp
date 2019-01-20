@@ -764,7 +764,6 @@ namespace cmsl
 
                 const auto casted_node = dynamic_cast<while_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
-
             }
         }
     }

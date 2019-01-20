@@ -7,6 +7,7 @@
 #include "ast/class_type.hpp"
 #include "ast/while_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/if_else_node.hpp"
 
 
 #include "ast/variable_declaration_node.hpp"
@@ -146,7 +147,36 @@ namespace cmsl
                 m_result_node = std::make_unique<conditional_node>(std::move(condition), std::move(body));
             }
 
-            void visit(const ast::if_else_node& node) override {}
+            void visit(const ast::if_else_node& node) override
+            {
+                std::vector<std::unique_ptr<conditional_node>> ifs;
+
+                for(const auto& cond_node : node.get_ifs())
+                {
+                    auto cond = visit_child_node<conditional_node>(*cond_node);
+                    if(!cond)
+                    {
+                        return;
+                    }
+
+                    ifs.emplace_back(std::move(cond));
+                }
+
+                std::unique_ptr<block_node> else_body;
+
+                if(auto else_node = node.get_else())
+                {
+                    auto ig = ids_guard();
+
+                    else_body = visit_child_node<block_node>(*else_node);
+                    if(!else_body)
+                    {
+                        return;
+                    }
+                }
+
+                m_result_node = std::make_unique<if_else_node>(std::move(ifs), std::move(else_body));
+            }
 
             void visit(const ast::binary_operator_node& node) override
             {
