@@ -426,7 +426,7 @@ namespace cmsl
                 : m_conditional{ std::move(condition)}
             {}
 
-            const conditional_node& get_condition() const
+            const conditional_node& condition() const
             {
                 return *m_conditional;
             }
@@ -438,6 +438,36 @@ namespace cmsl
 
         private:
             std::unique_ptr<conditional_node> m_conditional;
+        };
+
+        class if_else_node : public sema_node
+        {
+        public:
+            using ifs_t = std::vector<std::unique_ptr<conditional_node>>;
+
+            explicit if_else_node(ifs_t ifs, std::unique_ptr<block_node> else_node)
+                : m_ifs{ std::move(ifs) }
+                , m_else{ std::move(else_node) }
+            {}
+
+            const ifs_t& ifs() const
+            {
+                return m_ifs;
+            }
+
+            const block_node* else_body() const
+            {
+                return m_else.get();
+            }
+
+            void visit(sema_node_visitor& visitor) override
+            {
+                visitor.visit(*this);
+            }
+
+        private:
+            ifs_t m_ifs;
+            std::unique_ptr<block_node> m_else;
         };
     }
 }
