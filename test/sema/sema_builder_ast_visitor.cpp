@@ -765,6 +765,180 @@ namespace cmsl
                 const auto casted_node = dynamic_cast<while_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
             }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_IfNode_GetIfNode)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto condition_identifier_token = token_identifier("foo");
+                auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
+                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+
+                ast::if_else_node::ifs_t ifs;
+                ifs.emplace_back(std::move(conditional_ast_node));
+
+                ast::if_else_node node(std::move(ifs), nullptr);
+
+                EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(2);
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(2);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<if_else_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                const auto expected_number_of_ifs{ 1u };
+                EXPECT_THAT(casted_node->ifs().size(), Eq(expected_number_of_ifs));
+
+                EXPECT_THAT(casted_node->else_body(), IsNull());
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_IfElseNode_GetIfElseNode)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto condition_identifier_token = token_identifier("foo");
+                auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
+                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+
+                ast::if_else_node::ifs_t ifs;
+                ifs.emplace_back(std::move(conditional_ast_node));
+
+                auto else_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+
+                ast::if_else_node node(std::move(ifs), std::move(else_body));
+
+                EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(4);
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(4);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<if_else_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                const auto expected_number_of_ifs{ 1u };
+                EXPECT_THAT(casted_node->ifs().size(), Eq(expected_number_of_ifs));
+
+                ASSERT_THAT(casted_node->else_body(), NotNull());
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_IfElseIfNode_GetIfElseIfNode)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto condition_identifier_token = token_identifier("foo");
+                auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
+                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+
+                const auto condition_identifier_token_2 = token_identifier("bar");
+                auto condition_ast_node_2 = std::make_unique<ast::id_node>(condition_identifier_token_2);
+                auto body_2 = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto conditional_ast_node_2 = std::make_unique<ast::conditional_node>(std::move(condition_ast_node_2), std::move(body_2));
+
+                ast::if_else_node::ifs_t ifs;
+                ifs.emplace_back(std::move(conditional_ast_node));
+                ifs.emplace_back(std::move(conditional_ast_node_2));
+
+                ast::if_else_node node(std::move(ifs), nullptr);
+
+                EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ids_ctx, type_of(condition_identifier_token_2.str()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(4);
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(4);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<if_else_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                const auto expected_number_of_ifs{ 2u };
+                EXPECT_THAT(casted_node->ifs().size(), Eq(expected_number_of_ifs));
+
+                EXPECT_THAT(casted_node->else_body(), IsNull());
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_IfElseIfElseNode_GetIfElseIfElseNode)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto condition_identifier_token = token_identifier("foo");
+                auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
+                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+
+                const auto condition_identifier_token_2 = token_identifier("bar");
+                auto condition_ast_node_2 = std::make_unique<ast::id_node>(condition_identifier_token_2);
+                auto body_2 = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto conditional_ast_node_2 = std::make_unique<ast::conditional_node>(std::move(condition_ast_node_2), std::move(body_2));
+
+                ast::if_else_node::ifs_t ifs;
+                ifs.emplace_back(std::move(conditional_ast_node));
+                ifs.emplace_back(std::move(conditional_ast_node_2));
+
+                auto else_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+
+                ast::if_else_node node(std::move(ifs), std::move(else_body));
+
+                EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ids_ctx, type_of(condition_identifier_token_2.str()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(6);
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(6);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<if_else_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                const auto expected_number_of_ifs{ 2u };
+                EXPECT_THAT(casted_node->ifs().size(), Eq(expected_number_of_ifs));
+
+                EXPECT_THAT(casted_node->else_body(), NotNull());
+            }
         }
     }
 }
