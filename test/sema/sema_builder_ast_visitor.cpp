@@ -735,6 +735,37 @@ namespace cmsl
                 const auto expected_number_of_members{ 1u };
                 EXPECT_THAT(casted_node->members().size(), Eq(expected_number_of_members));
             }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_WhileNode)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto condition_identifier_token = token_identifier("foo");
+                auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
+                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+
+                ast::while_node node(std::move(conditional_ast_node));
+
+                EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(2);
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(2);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<while_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+            }
         }
     }
 }
