@@ -17,6 +17,12 @@ namespace cmsl
 
             const lexer::token::token_container_t& get_tokens() const;
 
+
+            // todo
+            void visit(ast_node_visitor& visitor) const override
+            {
+            };
+
         private:
             lexer::token::token_container_t m_tokens;
         };

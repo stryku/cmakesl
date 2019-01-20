@@ -18,15 +18,16 @@ namespace cmsl
         {
             auto ctx = std::make_unique<ast_context_impl>(&parent) ;
 
-            const auto function_kinds = {
-                builtin_function_kind::size,
-                builtin_function_kind::empty
+            const auto functions = {
+                    std::make_pair(builtin_function_kind::size, "int"),
+                    std::make_pair(builtin_function_kind::empty, "bool")
             };
 
-            for(const auto kind : function_kinds)
+            for(const auto fun_pair : functions)
             {
-                builtin_function::params_declaration_t params{};
-                auto fun = std::make_unique<builtin_function>(kind, params);
+                const auto kind = fun_pair.first;
+                const auto return_type = parent.find_type(fun_pair.second);
+                auto fun = std::make_unique<builtin_function>(*return_type, kind, builtin_function::params_declaration_t{});
                 ctx->add_function(std::move(fun));
             }
 
@@ -36,7 +37,7 @@ namespace cmsl
                     parameter_declaration{ &value_type, lexer::token::token{ lexer::token::token_type::identifier } }
                 };
 
-                auto fun = std::make_unique<builtin_function>(builtin_function_kind::push_back, std::move(params));
+                auto fun = std::make_unique<builtin_function>(*parent.find_type("void"), builtin_function_kind::push_back, std::move(params));
                 ctx->add_function(std::move(fun));
             }
 

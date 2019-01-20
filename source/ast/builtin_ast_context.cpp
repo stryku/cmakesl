@@ -22,6 +22,7 @@ namespace cmsl
         void builtin_ast_context::add_types()
         {
             const auto builtin_types_kind = {
+                    std::make_pair("void", type_kind::k_void),
                     std::make_pair("int", type_kind::k_int),
                     std::make_pair("double", type_kind::k_double),
                     std::make_pair("bool", type_kind::k_bool)
@@ -42,13 +43,15 @@ namespace cmsl
             class_builder builder{ *this, "string" };
 
             const auto string_functions = {
-                builtin_function_kind::size,
-                builtin_function_kind::empty
+                    std::make_pair(builtin_function_kind::size, "int"),
+                    std::make_pair(builtin_function_kind::empty, "bool")
             };
 
-            for(const auto fun_kind : string_functions)
+            for(const auto fun_pair : string_functions)
             {
-                auto fun = std::make_unique<builtin_function>(fun_kind, builtin_function::params_declaration_t{});
+                const auto kind = fun_pair.first;
+                const auto return_type = find_type(fun_pair.second);
+                auto fun = std::make_unique<builtin_function>(*return_type, kind, builtin_function::params_declaration_t{});
                 builder.with_function(std::move(fun));
             }
 
@@ -84,8 +87,9 @@ namespace cmsl
                     parameter_declaration{ int_type }  // tweak
             };
 
-            auto fun = std::make_unique<builtin_function>(builtin_function_kind::version_ctor,
-                                                              std::move(params));
+            auto fun = std::make_unique<builtin_function>(*find_type("void"),  // Todo proper return type
+                                                          builtin_function_kind::version_ctor,
+                                                          std::move(params));
 
             builder.with_function(std::move(fun));
 
@@ -113,8 +117,9 @@ namespace cmsl
                     parameter_declaration{ version_type } // version
             };
 
-            auto fun = std::make_unique<builtin_function>(builtin_function_kind::cmake_minimum_required,
-                                                              std::move(params));
+            auto fun = std::make_unique<builtin_function>(*find_type("void"),
+                                                          builtin_function_kind::cmake_minimum_required,
+                                                          std::move(params));
 
             add_function(std::move(fun));
         }
@@ -134,7 +139,8 @@ namespace cmsl
                         parameter_declaration{string_type}, // name
                 };
 
-                auto fun = std::make_unique<builtin_function>(builtin_function_kind::project_ctor,
+                auto fun = std::make_unique<builtin_function>(*find_type("void"),
+                                                              builtin_function_kind::project_ctor,
                                                               std::move(params));
 
                 builder.with_function(std::move(fun));
@@ -149,8 +155,10 @@ namespace cmsl
                         parameter_declaration{ &sources_type } // sources
                 };
 
-                auto fun = std::make_unique<builtin_function>(builtin_function_kind::project_add_executable,
-                                                                std::move(params));
+
+                auto fun = std::make_unique<builtin_function>(*find_type("void"), // Todo proper return type
+                                                              builtin_function_kind::project_add_executable,
+                                                              std::move(params));
 
                 builder.with_function(std::move(fun));
             }

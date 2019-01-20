@@ -11,7 +11,7 @@ namespace cmsl
     {
         namespace stmt
         {
-            declaration_statement::declaration_statement(ast::declaration_node& node)
+            declaration_statement::declaration_statement(const ast::declaration_node& node)
                 : m_node{ node }
             {}
 

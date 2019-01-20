@@ -13,10 +13,11 @@ namespace cmsl
             , m_ast_ctx{ nullptr }
         {}
 
-        type::type(cmsl::string_view name, type_kind kind, const ast_context* ast_ctx)
+        type::type(cmsl::string_view name, type_kind kind, const ast_context* ast_ctx, std::vector<member_info> members)
             : m_name{ name }
             , m_kind{ kind }
             , m_ast_ctx{ ast_ctx }
+            , m_members{ std::move(members) }
         {}
 
         bool type::is_fundamental() const
@@ -78,6 +79,22 @@ namespace cmsl
             };
 
             return is_user() || contains(builtin_complex_type_kinds, m_kind);
+        }
+
+        boost::optional<type::member_info> type::get_member(cmsl::string_view name) const
+        {
+            const auto pred = [name](const auto& member)
+            {
+                return member.name.str() == name;
+            };
+
+            auto found = std::find_if(std::cbegin(m_members), std::cend(m_members), pred);
+            if(found == std::cend(m_members))
+            {
+                return {};
+            }
+
+            return *found;
         }
     }
 }

@@ -53,8 +53,11 @@ namespace cmsl
             token_t token_greater();
             token_t token_greaterequal();
 
+            token_t token_kw_void();
             token_t token_kw_int();
             token_t token_kw_double();
+            token_t token_kw_return();
+            token_t token_kw_class();
             token_t token_kw_if();
             token_t token_kw_else();
             token_t token_kw_while();
@@ -63,6 +66,8 @@ namespace cmsl
             token_t token_kw_false();
             token_t token_kw_string();
             token_t token_kw_list();
+
+            token_t token_from_larger_source(cmsl::string_view source, lexer::token::token_type type, unsigned begin, unsigned end);
         }
     }
 }

@@ -13,8 +13,9 @@ namespace cmsl
         {
         public:
             // todo accept name as parameter
-            explicit builtin_function(builtin_function_kind k, params_declaration_t params_declaration)
-                : m_kind{ k }
+            explicit builtin_function(const type& return_type, builtin_function_kind k, params_declaration_t params_declaration)
+                : m_return_type{ return_type }
+                 ,   m_kind{ k }
                 , m_params_declaration{ std::move(params_declaration) }
             {}
 
@@ -46,7 +47,13 @@ namespace cmsl
                 return m_params_declaration;
             }
 
+            const type& get_type() const override
+            {
+                return m_return_type;
+            }
+
         private:
+            const type& m_return_type;
             builtin_function_kind m_kind;
             params_declaration_t m_params_declaration;
         };

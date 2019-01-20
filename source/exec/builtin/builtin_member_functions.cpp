@@ -127,6 +127,8 @@ namespace cmsl
                     default:
                         CMSL_UNREACHABLE("Called push_back() on type that does not support it");
                 }
+
+                return nullptr;
             }
         }
     }

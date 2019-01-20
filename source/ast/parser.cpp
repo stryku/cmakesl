@@ -335,6 +335,8 @@ namespace cmsl
             {
                 return ctx.find_type(m_token->str()) != nullptr;
             }
+
+            return false;
         }
 
         bool parser::current_is_infix_token() const
