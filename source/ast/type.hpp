@@ -19,7 +19,7 @@ namespace cmsl
             struct member_info
             {
                 lexer::token::token name;
-                const type* ty;
+                const type& ty;
             };
 
             explicit type(lexer::token::token token);

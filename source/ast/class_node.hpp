@@ -45,6 +45,7 @@ namespace cmsl
                 return m_name;
             }
 
+            // Todo: return const vector ref
             std::vector<const ast_node*> get_nodes() const
             {
                 std::vector<const ast_node*> nodes;

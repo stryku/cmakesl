@@ -24,8 +24,8 @@ namespace cmsl
         class class_type2 : public type
         {
         public:
-            class_type2(lexer::token::token name, std::unique_ptr<ast_context> ctx, type_kind kind = type_kind::k_user)
-                : type{ name.str(), kind, ctx.get() }
+            class_type2(lexer::token::token name, std::unique_ptr<ast_context> ctx, std::vector<member_info> members, type_kind kind = type_kind::k_user)
+                : type{ name.str(), kind, ctx.get(), std::move(members) }
                 , m_ctx{ std::move(ctx) }
             {}
 
