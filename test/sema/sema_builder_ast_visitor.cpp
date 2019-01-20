@@ -588,14 +588,13 @@ namespace cmsl
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
                 auto class_name_token = token_identifier("foo");
-                auto member_name_token = token_identifier("bar");
-                auto member_type_token = token_kw_int();
-                auto member_type_reference = ast::type_reference{ member_type_token, member_type_token };
+                const auto member_name_token = token_identifier("bar");
+                const auto member_type_token = token_kw_int();
+                const auto member_type_reference = ast::type_reference{ member_type_token, member_type_token };
 
                 auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, nullptr);
                 ast::class_node2::nodes_t nodes;
                 nodes.emplace_back(std::move(member_declaration));
-
 
                 ast::class_node2 node{class_name_token, std::move(nodes)};
 
@@ -610,6 +609,118 @@ namespace cmsl
                 EXPECT_CALL(ids_ctx, enter_ctx());
                 EXPECT_CALL(ids_ctx, register_identifier(member_name_token, &valid_type));
                 EXPECT_CALL(ids_ctx, leave_ctx());
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<class_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                EXPECT_THAT(casted_node->name().str(), Eq(class_name_token.str()));
+                ASSERT_THAT(casted_node, NotNull());
+
+                const auto expected_number_of_members{ 1u };
+                EXPECT_THAT(casted_node->members().size(), Eq(expected_number_of_members));
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_ClassWithFunctions_GetClassNodeWithFunctions)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto class_name_token = token_identifier("foo");
+
+                const auto function_return_type_token = token_kw_int();
+                const auto function_return_type_reference = ast::type_reference{ function_return_type_token, function_return_type_token};
+                const auto function_name_token = token_identifier("bar");
+                auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto function = std::make_unique<ast::user_function_node2>(function_return_type_reference,
+                                                                           function_name_token,
+                                                                           ast::user_function_node2::params_t{},
+                                                                           std::move(function_body));
+                ast::class_node2::nodes_t nodes;
+                nodes.emplace_back(std::move(function));
+                ast::class_node2 node{ class_name_token, std::move(nodes)};
+
+                // Class type lookup
+                EXPECT_CALL(ctx, find_type_in_this_scope(class_name_token.str()))
+                        .WillOnce(Return(nullptr));
+
+                // Function return type lookup
+                EXPECT_CALL(ctx, find_type(function_return_type_reference.to_string()))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ctx, add_type(_));
+
+                // There are three identifier contextes: class, function parameters and function body.
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(3);
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(3);
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<class_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                EXPECT_THAT(casted_node->name().str(), Eq(class_name_token.str()));
+                ASSERT_THAT(casted_node, NotNull());
+
+                const auto expected_number_of_members{ 0u };
+                EXPECT_THAT(casted_node->members().size(), Eq(expected_number_of_members));
+            }
+
+            TEST(SemaBuilderAstVisitorTest, Visit_ClassWithFunctionsAndMembers_GetClassNodeWithFunctionsAndMembers)
+            {
+                errs_t errs;
+                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+
+                const auto class_name_token = token_identifier("foo");
+
+                const auto member_name_token = token_identifier("baz");
+                const auto member_type_token = token_kw_int();
+                const auto member_type_reference = ast::type_reference{ member_type_token, member_type_token };
+                auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, nullptr);
+
+                const auto function_return_type_token = token_kw_int();
+                const auto function_return_type_reference = ast::type_reference{ function_return_type_token, function_return_type_token};
+                const auto function_name_token = token_identifier("bar");
+                auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto function = std::make_unique<ast::user_function_node2>(function_return_type_reference,
+                                                                           function_name_token,
+                                                                           ast::user_function_node2::params_t{},
+                                                                           std::move(function_body));
+
+                ast::class_node2::nodes_t nodes;
+                nodes.emplace_back(std::move(member_declaration));
+                nodes.emplace_back(std::move(function));
+                ast::class_node2 node{ class_name_token, std::move(nodes)};
+
+                // Class type lookup.
+                EXPECT_CALL(ctx, find_type_in_this_scope(class_name_token.str()))
+                        .WillOnce(Return(nullptr));
+
+                // Function return type and member type lookup.
+                EXPECT_CALL(ctx, find_type(member_type_reference.to_string()))
+                        .Times(2)
+                        .WillOnce(Return(&valid_type))
+                        .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ctx, add_type(_));
+
+                // There are three identifier contextes: class, function parameters and function body. Member is registered in class context.
+                EXPECT_CALL(ids_ctx, enter_ctx())
+                        .Times(3);
+                EXPECT_CALL(ids_ctx, register_identifier(member_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, leave_ctx())
+                        .Times(3);
 
                 visitor.visit(node);
 

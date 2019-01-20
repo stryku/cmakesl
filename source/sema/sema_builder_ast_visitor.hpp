@@ -292,6 +292,7 @@ namespace cmsl
                     return;
                 }
 
+                // Todo: parameters need to be in the same ids context as function body.
                 auto params_ids_guard = ids_guard();
 
                 using param_decl_t = function_node::parameter_declaration;
