@@ -8,6 +8,7 @@
 #include "ast/while_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/if_else_node.hpp"
+#include "ast/translation_unit_node.hpp"
 
 
 #include "ast/variable_declaration_node.hpp"
@@ -329,7 +330,22 @@ namespace cmsl
                 m_result_node = std::make_unique<return_node>(std::move(expr));
             }
 
-            void visit(const ast::translation_unit_node& node) override {}
+            void visit(const ast::translation_unit_node& node) override
+            {
+                std::vector<std::unique_ptr<sema_node>> nodes;
+
+                for(auto n : node.get_nodes())
+                {
+                    auto visited_node = visit_child(*n);
+                    if(!visited_node)
+                    {
+                        return;
+                    }
+                }
+
+
+            }
+
             void visit(const ast::user_function_node2& node) override
             {
                 auto return_type = m_ctx.find_type(node.get_return_type_reference().to_string());
@@ -414,6 +430,7 @@ namespace cmsl
                 m_result_node = std::make_unique<while_node>(std::move(conditional));
             }
 
+        public:
             std::unique_ptr<sema_node> m_result_node;
 
         private:
