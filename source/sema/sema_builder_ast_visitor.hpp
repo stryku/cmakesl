@@ -5,6 +5,8 @@
 #include "ast/type_operator_support_check.hpp"
 #include "ast/common_type_finder.hpp"
 #include "ast/class_type.hpp"
+#include "ast/while_node.hpp"
+#include "ast/conditional_node.hpp"
 
 
 #include "ast/variable_declaration_node.hpp"
@@ -125,7 +127,25 @@ namespace cmsl
                 m_result_node = std::make_unique<class_node>(name, std::move(members));
             }
 
-            void visit(const ast::conditional_node& node) override {}
+            void visit(const ast::conditional_node& node) override
+            {
+                auto ig = ids_guard();
+
+                auto condition = visit_child_expr(node.get_condition());
+                if(!condition)
+                {
+                    return;
+                }
+
+                auto body = visit_child_node<block_node>(node.get_block());
+                if(!body)
+                {
+                    return;
+                }
+
+                m_result_node = std::make_unique<conditional_node>(std::move(condition), std::move(body));
+            }
+
             void visit(const ast::if_else_node& node) override {}
 
             void visit(const ast::binary_operator_node& node) override
@@ -355,7 +375,16 @@ namespace cmsl
                 m_result_node = std::make_unique<variable_declaration_node>(*type, node.get_name(), std::move(initialization));
             }
 
-            void visit(const ast::while_node& node) override {}
+            void visit(const ast::while_node& node) override
+            {
+                auto conditional = visit_child_node<conditional_node>(node.get_node());
+                if(!conditional)
+                {
+                    return;
+                }
+
+                m_result_node = std::make_unique<while_node>(std::move(conditional));
+            }
 
             std::unique_ptr<sema_node> m_result_node;
 

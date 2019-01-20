@@ -48,6 +48,7 @@ namespace cmsl
             virtual void visit(const while_node& node) = 0;
         };
 
+        // Todo: Is this still needed?
         class empty_ast_node_visitor : public ast_node_visitor
         {
         public:
