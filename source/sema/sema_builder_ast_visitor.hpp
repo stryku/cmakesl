@@ -78,36 +78,21 @@ namespace cmsl
                 auto created_class_ast_ctx = std::make_unique<ast::ast_context_impl>(&m_ctx);
                 auto class_ast_ctx = created_class_ast_ctx.get();
 
+                auto members = collect_class_members(node);
+
                 // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
-                auto created_class_type = std::make_unique<ast::class_type2>(name, std::move(created_class_ast_ctx));
+                // Todo: ast shouldn't store ast ctx somewhere else?
+                auto created_class_type = std::make_unique<ast::class_type2>(name, std::move(created_class_ast_ctx), std::move(members.info));
                 auto class_type = created_class_type.get();
 
                 // Same as with ast context. class_type raw pointer will be valid. We move it to context to make this class findable as a regular type (so e.g. inside this class methods, the type will appear as a regular type).
                 m_ctx.add_type(std::move(created_class_type));
 
-                std::vector<std::unique_ptr<variable_declaration_node>> members;
                 std::vector<std::unique_ptr<function_node>> functions;
 
                 for(auto n : node.get_nodes())
                 {
-                    if(auto variable_decl = dynamic_cast<const ast::variable_declaration_node*>(n))
-                    {
-                        auto member = visit_child_node<variable_declaration_node>(*variable_decl);
-                        if(!member)
-                        {
-                            return;
-                        }
-
-                        if(member->type() == *class_type)
-                        {
-                            // Todo: class cannot have itself as a member
-                            raise_error();
-                            return;
-                        }
-
-                        members.emplace_back(std::move(member));
-                    }
-                    else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))
+                    if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))
                     {
                         auto fun = visit_child_node<function_node>(*fun_node);
                         if(!fun)
@@ -117,15 +102,9 @@ namespace cmsl
 
                         functions.emplace_back(std::move(fun));
                     }
-                    else
-                    {
-                        // Todo: shouldn't reach here
-                        raise_error();
-                        return;
-                    }
                 }
 
-                m_result_node = std::make_unique<class_node>(name, std::move(members));
+                m_result_node = std::make_unique<class_node>(name, std::move(members.declarations));
             }
 
             void visit(const ast::conditional_node& node) override
@@ -225,7 +204,18 @@ namespace cmsl
                 m_result_node = std::make_unique<binary_operator_node>(std::move(lhs), node.get_operator(), std::move(rhs), *common_type);
             }
 
-            void visit(const ast::class_member_access_node& node) override {}
+            void visit(const ast::class_member_access_node& node) override
+            {
+                auto lhs = visit_child_expr(node.get_lhs());
+                if(!lhs)
+                {
+                    return;
+                }
+
+                const auto& lhs_type = lhs->type();
+
+            }
+
             void visit(const ast::function_call_node& node) override
             {
                 const auto name = node.get_name();
@@ -511,6 +501,34 @@ namespace cmsl
             ids_ctx_guard ids_guard()
             {
                 return ids_ctx_guard{ m_ids_context };
+            }
+
+            struct class_members
+            {
+                std::vector<ast::type::member_info> info;
+                std::vector<std::unique_ptr<variable_declaration_node>> declarations;
+            };
+
+            class_members collect_class_members(const ast::class_node2& node)
+            {
+                class_members members;
+
+                for(auto n : node.get_nodes())
+                {
+                    if (auto variable_decl = dynamic_cast<const ast::variable_declaration_node *>(n))
+                    {
+                        auto member = visit_child_node<variable_declaration_node>(*variable_decl);
+                        if (!member)
+                        {
+                            return {};
+                        }
+
+                        members.info.emplace_back(ast::type::member_info{member->name(), member->type()});
+                        members.declarations.emplace_back(std::move(member));
+                    }
+                }
+
+                return members;
             }
 
         private:
