@@ -28,8 +28,6 @@ namespace cmsl
 {
     namespace sema
     {
-
-
         class sema_builder_ast_visitor : public ast::ast_node_visitor
         {
         private:
