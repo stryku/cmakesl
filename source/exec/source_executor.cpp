@@ -8,6 +8,7 @@
 #include "ast/parser2.hpp"
 #include "sema/sema_builder.hpp"
 #include "sema/identifiers_context.hpp"
+#include "sema/sema_node.hpp"
 
 namespace cmsl
 {
