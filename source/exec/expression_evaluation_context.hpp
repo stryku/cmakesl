@@ -5,6 +5,7 @@ namespace cmsl
     namespace exec
     {
         class context_provider;
+        class value_operations_factory;
 
         namespace inst
         {
@@ -15,6 +16,7 @@ namespace cmsl
         {
             context_provider& ctx_provider;
             inst::instances_holder_interface& instances;
+            value_operations_factory& operations_factory;
         };
     }
 }

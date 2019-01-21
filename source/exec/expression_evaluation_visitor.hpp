@@ -7,6 +7,7 @@
 #include "exec/expression_evaluation_context.hpp"
 #include "exec/context_provider.hpp"
 #include "exec/execution_context.hpp"
+#include "exec/value_operations_factory.hpp"
 
 namespace cmsl
 {
@@ -45,7 +46,20 @@ namespace cmsl
                 result = exec_ctx.get_variable(node.id().str());
             }
 
-            void visit(const sema::binary_operator_node& node) override {}
+            void visit(const sema::binary_operator_node& node) override
+            {
+                auto lhs = evaluate_child(node.lhs());
+                auto rhs = evaluate_child(node.rhs());
+
+                auto operations = m_ctx.operations_factory.create(lhs->get_type());
+                const auto operator_string = operator_to_str(node.op());
+
+                value_operations::parameters_t params;
+                params.emplace_back(rhs->get_value());
+
+                auto operation_result = operations->execute_operation(operator_string, lhs->get_value_ref(), params);
+                result = m_ctx.instances.create(std::move(operation_result));
+            }
 
             void visit(const sema::function_call_node& node) override {}
             void visit(const sema::member_function_call_node& node) override {}
@@ -66,6 +80,46 @@ namespace cmsl
             expression_evaluation_visitor clone()
             {
                 return expression_evaluation_visitor{ m_ctx };
+            }
+
+            std::string operator_to_str(lexer::token::token op)
+            {
+                switch(op.get_type())
+                {
+                    case lexer::token::token_type::equal:
+                    case lexer::token::token_type::equalequal:
+                    case lexer::token::token_type::minus:
+                    case lexer::token::token_type::minusminus:
+                    case lexer::token::token_type::minusequal:
+                    case lexer::token::token_type::plus:
+                    case lexer::token::token_type::plusplus:
+                    case lexer::token::token_type::plusequal:
+                    case lexer::token::token_type::amp:
+                    case lexer::token::token_type::ampamp:
+                    case lexer::token::token_type::ampequal:
+                    case lexer::token::token_type::pipe:
+                    case lexer::token::token_type::pipepipe:
+                    case lexer::token::token_type::pipeequal:
+                    case lexer::token::token_type::slash:
+                    case lexer::token::token_type::slashequal:
+                    case lexer::token::token_type::star:
+                    case lexer::token::token_type::starequal:
+                    case lexer::token::token_type::percent:
+                    case lexer::token::token_type::percentequal:
+                    case lexer::token::token_type::exclaimequal:
+                    case lexer::token::token_type::xor_:
+                    case lexer::token::token_type::xorequal:
+                    case lexer::token::token_type::less:
+                    case lexer::token::token_type::lessequal:
+                    case lexer::token::token_type::greater:
+                    case lexer::token::token_type::greaterequal:
+                    {
+                        return op.str().to_string();
+                    }
+                }
+
+                CMSL_UNREACHABLE("Unknown operator token");
+                return "";
             }
 
         private:

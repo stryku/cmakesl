@@ -1,5 +1,8 @@
 #pragma once
 
+// Todo: change name
+
+
 #include "common/assert.hpp"
 #include "exec/instance/instance_value.hpp"
 
@@ -13,13 +16,20 @@ namespace cmsl
 {
     namespace exec
     {
-        template <typename ValueType>
-        class value_operations_implementation
+        class value_operations
         {
         public:
             using parameters_t = std::vector<inst::instance_value_t>;
+            virtual ~value_operations() = default;
 
-            boost::optional<inst::instance_value_t> execute_operation(std::string name, inst::instance_value_t& val, const parameters_t& params)
+            virtual boost::optional<inst::instance_value_t> execute_operation(std::string name, inst::instance_value_t& val, const parameters_t& params) const = 0;
+        };
+
+        template <typename ValueType>
+        class value_operations_implementation : public value_operations
+        {
+        public:
+            boost::optional<inst::instance_value_t> execute_operation(std::string name, inst::instance_value_t& val, const parameters_t& params) const override
             {
                 auto found = m_operations.find(name);
                 if(found == std::cend(m_operations))
