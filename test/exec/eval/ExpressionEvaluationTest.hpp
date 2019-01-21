@@ -68,7 +68,7 @@ namespace cmsl
 
                     exec::test::test_context_provider m_ctx_provider;
                     inst::instances_holder m_instances{m_ctx_provider};
-                    infix_evaluation_context m_eval_ctx{
+                    expression_evaluation_context m_eval_ctx{
                             m_ctx_provider,
                             m_instances
                     };

@@ -72,7 +72,9 @@ set(EXEC_SOURCES
     stmt/statement.hpp
     stmt/while_statement.cpp
     stmt/while_statement.hpp
-        builtin/container.cpp builtin/container.hpp builtin/cmake_minimum_required.cpp builtin/cmake_minimum_required.hpp instance/instance_value_getter.hpp builtin/evaluatable_function.hpp builtin/builtin_function_factory.cpp builtin/builtin_function_factory.hpp builtin/evaluatable_member_function.hpp builtin/builtin_member_functions.cpp builtin/builtin_member_functions.hpp builtin/version.cpp builtin/version.hpp)
+        builtin/container.cpp builtin/container.hpp builtin/cmake_minimum_required.cpp builtin/cmake_minimum_required.hpp instance/instance_value_getter.hpp builtin/evaluatable_function.hpp builtin/builtin_function_factory.cpp builtin/builtin_function_factory.hpp builtin/evaluatable_member_function.hpp builtin/builtin_member_functions.cpp builtin/builtin_member_functions.hpp builtin/version.cpp builtin/version.hpp execution2.hpp expression_evaluation_visitor.hpp
+        expression_evaluation_context.hpp
+        )
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_FACADE_DIR})

@@ -5,6 +5,9 @@
 #include "ast/ast_builder.hpp"
 #include "ast/builtin_ast_context.hpp"
 #include "exec/execution.hpp"
+#include "ast/parser2.hpp"
+#include "sema/sema_builder.hpp"
+#include "sema/identifiers_context.hpp"
 
 namespace cmsl
 {
@@ -13,6 +16,31 @@ namespace cmsl
         source_executor::source_executor(facade::cmake_facade &f)
             : m_cmake_facade{ f }
         {}
+
+        int source_executor::execute2(cmsl::string_view source)
+        {
+            errors::errors_observer err_observer;
+            lexer::lexer lex{ err_observer , source };
+            const auto tokens = lex.lex();
+
+            ast::parser2 parser{ err_observer, tokens };
+            auto ast_tree = parser.translation_unit();
+
+            ast::builtin_ast_context ctx;
+            sema::identifiers_context_impl ids_ctx;
+            sema::sema_builder sema_builder{ ctx, err_observer, ids_ctx };
+            auto sema_tree = sema_builder.build(*ast_tree);
+
+
+            const auto main_function = ctx.find_function("main");
+            const auto casted = dynamic_cast<const ast::user_function_node2*>(main_function);
+
+            execution e{ m_cmake_facade };
+
+
+
+
+        }
 
         int source_executor::execute(cmsl::string_view source)
         {
