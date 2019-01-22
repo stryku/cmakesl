@@ -61,7 +61,13 @@ namespace cmsl
                 result = m_ctx.instances.create(std::move(operation_result));
             }
 
-            void visit(const sema::function_call_node& node) override {}
+            void visit(const sema::function_call_node& node) override
+            {
+                auto evaluated_params = evaluate_call_parameters(node.param_expressions());
+
+
+            }
+
             void visit(const sema::member_function_call_node& node) override {}
             void visit(const sema::class_member_access_node& node) override
             {
@@ -79,6 +85,20 @@ namespace cmsl
                 auto c = clone();
                 child.visit(c);
                 return c.result;
+            }
+
+            std::vector<inst::instance*> evaluate_call_parameters(const sema::call_node::param_expressions_t& params)
+            {
+                std::vector<inst::instance*> evaluated_params;
+
+                std::transform(std::cbegin(params), std::cend(params),
+                               std::back_inserter(evaluated_params),
+                               [this](const auto& param_expression)
+                               {
+                                   return evaluate_child(param_expression);
+                               });
+
+                return evaluated_params;
             }
 
             expression_evaluation_visitor clone()

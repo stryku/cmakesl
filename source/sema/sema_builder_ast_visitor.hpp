@@ -46,8 +46,6 @@ namespace cmsl
 
                 std::vector<std::unique_ptr<sema_node>> nodes;
 
-                const auto ast_nodes = node.get_expressions();
-
                 for(auto n : node.get_expressions())
                 {
                     auto child = visit_child(*n);
