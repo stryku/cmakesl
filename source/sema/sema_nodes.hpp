@@ -251,6 +251,11 @@ namespace cmsl
                 return m_params;
             }
 
+            lexer::token::token name() const
+            {
+                return m_name;
+            }
+
         private:
             const ast::type& m_return_type;
             lexer::token::token m_name;

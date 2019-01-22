@@ -11,7 +11,7 @@ namespace cmsl
         class execution2
         {
         public:
-            void function_call(const sema::function_node& fun)
+            void function_call(const sema::function_node& fun, std::vector<inst::instance*> params)
             {
                 auto &body = fun.body();
             }
