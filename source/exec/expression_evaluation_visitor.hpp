@@ -8,6 +8,7 @@
 #include "exec/context_provider.hpp"
 #include "exec/execution_context.hpp"
 #include "exec/value_operations_factory.hpp"
+#include "sema/sema_context.hpp"
 
 namespace cmsl
 {
@@ -64,6 +65,8 @@ namespace cmsl
             void visit(const sema::function_call_node& node) override
             {
                 auto evaluated_params = evaluate_call_parameters(node.param_expressions());
+
+                auto fun = m_ctx.ctx_provider.get_sema_ctx().find_function(node.)
 
 
             }

@@ -11,6 +11,7 @@
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"
 #include "test/sema/mock/identifiers_context_mock.hpp"
+#include "test/sema/mock/sema_context_mock.hpp"
 
 #include <gmock/gmock.h>
 
@@ -38,7 +39,9 @@ namespace cmsl
             };
             using errs_t = errors_observer_and_mock;
 
-            const ast::type valid_type{ token_kw_int() };
+
+            const sema_context valid_context;
+            const sema_type valid_type(valid_context, token_identifier("foo"), {});
 
             MATCHER(IsValidType, "")
             {
@@ -53,7 +56,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_BoolValue_GetCorrectBoolValue)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 identifiers_context_mock ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
@@ -77,7 +80,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_IntValue_GetCorrectIntValue)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 identifiers_context_mock ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
@@ -101,7 +104,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_DoubleValue_GetCorrectDoubleValue)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 identifiers_context_mock ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
@@ -125,7 +128,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_StringValue_GetCorrectStringValue)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 identifiers_context_mock ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
@@ -149,7 +152,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_Identifier_GetCorrectIdentifierNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
@@ -172,7 +175,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithoutInitialization_GetVariableDeclarationNodeWithoutInitialization)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
                 const auto type_ref = ast::type_reference{ token_identifier(), token_identifier() };
@@ -200,7 +203,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithInitialization_GetVariableDeclarationNodeWithInitialization)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
                 const auto type_ref = ast::type_reference{ token_identifier(), token_identifier() };
@@ -238,7 +241,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_Return)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
 
@@ -262,7 +265,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_FunctionCallWithoutParameters_GetFunctionCallNodeWithoutParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 StrictMock<ast::test::function_mock> function_mock;
                 const ast::function::params_declaration_t param_declarations;
@@ -294,7 +297,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_FunctionCallWithParameters_GetFunctionCallNodeWithParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 StrictMock<ast::test::function_mock> function_mock;
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
@@ -303,7 +306,7 @@ namespace cmsl
                 const auto param1_id_token = token_identifier("bar");
                 const auto param2_id_token = token_identifier("baz");
 
-                ast::function::params_declaration_t param_declarations;
+                sema_function::params_declaration_t param_declarations;
                 param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param1_id_token});
                 param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param2_id_token});
 
@@ -348,7 +351,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithoutParameters_GetMemberFunctionCallNodeWithoutParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 StrictMock<ast::test::function_mock> function_mock;
                 const ast::function::params_declaration_t param_declarations;
@@ -388,7 +391,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithParameters_GetMemberFunctionCallNodeWithParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 StrictMock<ast::test::function_mock> function_mock;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
@@ -449,7 +452,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_Block_GetBlockNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -472,7 +475,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_FunctionWithoutParameters_GetFunctionNodeWithoutParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -505,7 +508,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_FunctionWithParameters_GetFunctionNodeWithParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -550,7 +553,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_ClassEmpty_GetEmptyClassNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -583,7 +586,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_ClassWithMembers_GetClassNodeWithMembers)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -627,7 +630,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_ClassWithFunctions_GetClassNodeWithFunctions)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -678,7 +681,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_ClassWithFunctionsAndMembers_GetClassNodeWithFunctionsAndMembers)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -739,7 +742,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_WhileNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -769,7 +772,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_IfNode_GetIfNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -807,7 +810,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_IfElseNode_GetIfElseNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -847,7 +850,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_IfElseIfNode_GetIfElseIfNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -894,7 +897,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_IfElseIfElseNode_GetIfElseIfElseNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -943,7 +946,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_ClassMemberAccess_GetClassMemberAccessNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
@@ -975,7 +978,7 @@ namespace cmsl
             TEST(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
 
