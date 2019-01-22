@@ -23,6 +23,9 @@
 
 #include "sema/sema_nodes.hpp"
 #include "sema/identifiers_context.hpp"
+#include "sema/sema_function_builder.hpp"
+#include "sema/sema_context.hpp"
+#include "sema/sema_type.hpp"
 
 namespace cmsl
 {
@@ -34,7 +37,7 @@ namespace cmsl
             using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
         public:
-            explicit sema_builder_ast_visitor(ast::ast_context& ctx, errors::errors_observer& errs, identifiers_context& ids_context)
+            explicit sema_builder_ast_visitor(sema_context_interface& ctx, errors::errors_observer& errs, identifiers_context& ids_context)
                 : m_ctx{ ctx }
                 , m_errors_observer{ errs }
                 , m_ids_context{ ids_context }
@@ -72,14 +75,19 @@ namespace cmsl
 
                 auto class_ids_guard = ids_guard();
 
-                auto created_class_ast_ctx = std::make_unique<ast::ast_context_impl>(&m_ctx);
-                auto class_ast_ctx = created_class_ast_ctx.get();
+                auto created_class_sema_ctx = std::make_unique<sema_context>(&m_ctx);
+                auto class_sema_ctx = created_class_sema_ctx.get();
 
-                auto members = collect_class_members(node);
+                auto members = collect_class_members_and_add_functions_to_ctx(node);
+
+                if(!members)
+                {
+                    return;
+                }
 
                 // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
                 // Todo: ast shouldn't store ast ctx somewhere else?
-                auto created_class_type = std::make_unique<ast::class_type2>(name, std::move(created_class_ast_ctx), std::move(members.info));
+                auto created_class_type = std::make_unique<sema_type>(*class_sema_ctx, name, std::move(members->info));
                 auto class_type = created_class_type.get();
 
                 // Same as with ast context. class_type raw pointer will be valid. We move it to context to make this class findable as a regular type (so e.g. inside this class methods, the type will appear as a regular type).
@@ -87,21 +95,19 @@ namespace cmsl
 
                 std::vector<std::unique_ptr<function_node>> functions;
 
-                for(auto n : node.get_nodes())
+                for(auto function_declaration : members->functions)
                 {
-                    if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))
+                    auto body = visit_child_node<block_node>(function_declaration.body_to_visit);
+                    if(!body)
                     {
-                        auto fun = visit_child_node<function_node>(*fun_node);
-                        if(!fun)
-                        {
-                            return;
-                        }
-
-                        functions.emplace_back(std::move(fun));
+                        return;
                     }
+
+                    function_declaration.fun->set_body(*body);
+                    functions.emplace_back(std::make_unique<function_node>(*function_declaration.fun));
                 }
 
-                m_result_node = std::make_unique<class_node>(name, std::move(members.declarations));
+                m_result_node = std::make_unique<class_node>(name, std::move(members->declarations));
             }
 
             void visit(const ast::conditional_node& node) override
@@ -166,12 +172,13 @@ namespace cmsl
                     return;
                 }
 
-                if(!check.type_supports_operator(lhs->type().get_kind(), op))
-                {
-                    // Todo: lhs type doesn't support this operator
-                    raise_error();
-                    return;
-                }
+                // Todo: add check for whether operator is supported
+                //if(!check.type_supports_operator(lhs->type().get_kind(), op))
+                //{
+                //    // Todo: lhs type doesn't support this operator
+                //    raise_error();
+                //    return;
+                //}
 
                 auto rhs = visit_child_expr(node.get_rhs());
                 if(!rhs)
@@ -179,26 +186,28 @@ namespace cmsl
                     return;
                 }
 
-                if(!check.type_supports_operator(rhs->type().get_kind(), op))
-                {
-                    // Todo: lhs type doesn't support this operator
-                    raise_error();
-                    return;
-                }
+                // Todo: add check for whether operator is supported
+                //if(!check.type_supports_operator(rhs->type().get_kind(), op))
+                //{
+                //    // Todo: lhs type doesn't support this operator
+                ///    raise_error();
+                //    return;
+                //}
 
-                const ast::type* common_type = &lhs->type();
-                if(lhs->type() != rhs->type())
-                {
-                    common_type = ast::common_type_finder{}.find_common_type(lhs->type(), rhs->type());
-                    if(common_type == nullptr)
-                    {
-                        // Todo: can't apply operator to these types
-                        raise_error();
-                        return;
-                    }
-                }
+                // Todo: introduce cast nodes
+                //const auto* common_type = &lhs->type();
+                //if(lhs->type() != rhs->type())
+                //{
+                //    common_type = ast::common_type_finder{}.find_common_type(lhs->type(), rhs->type());
+                //    if(common_type == nullptr)
+                //    {
+                //       // Todo: can't apply operator to these types
+                //      raise_error();
+                //      return;
+                //  }
+                //}
 
-                m_result_node = std::make_unique<binary_operator_node>(std::move(lhs), node.get_operator(), std::move(rhs), *common_type);
+                m_result_node = std::make_unique<binary_operator_node>(std::move(lhs), node.get_operator(), std::move(rhs), lhs->type());
             }
 
             void visit(const ast::class_member_access_node& node) override
@@ -210,7 +219,7 @@ namespace cmsl
                 }
 
                 const auto& lhs_type = lhs->type();
-                auto member_info = lhs_type.get_member(node.get_member_name().str());
+                auto member_info = lhs_type.find_member(node.get_member_name().str());
                 if(!member_info)
                 {
                     // Todo: type does not have such member.
@@ -232,13 +241,13 @@ namespace cmsl
                     return;
                 }
 
-                auto params = get_function_call_params(*found_fun, node.get_param_nodes());
+                auto params = get_function_call_params(found_fun->signature(), node.get_param_nodes());
                 if(!params)
                 {
                     return;
                 }
 
-                m_result_node = std::make_unique<function_call_node>(found_fun->get_type(), name, std::move(*params));
+                m_result_node = std::make_unique<function_call_node>(*found_fun, std::move(*params));
             }
 
             void visit(const ast::member_function_call_node& node) override
@@ -250,7 +259,7 @@ namespace cmsl
                     return;
                 }
 
-                auto function = lhs->type().get_function(name.str());
+                auto function = lhs->type().find_member_function(name.str());
                 if(!function)
                 {
                     // Todo: type has no such function
@@ -258,13 +267,13 @@ namespace cmsl
                     return;
                 }
 
-                auto params = get_function_call_params(*function, node.get_param_nodes());
+                auto params = get_function_call_params(function->signature(), node.get_param_nodes());
                 if(!params)
                 {
                     return;
                 }
 
-                m_result_node = std::make_unique<member_function_call_node>(std::move(lhs), function->get_type(), name, std::move(*params));
+                m_result_node = std::make_unique<member_function_call_node>(std::move(lhs), *function, std::move(*params));
             }
 
             void visit(const ast::bool_value_node& node) override
@@ -357,7 +366,7 @@ namespace cmsl
                 // Todo: parameters need to be in the same ids context as function body.
                 auto params_ids_guard = ids_guard();
 
-                using param_decl_t = function_node::parameter_declaration;
+                using param_decl_t = sema_function::parameter_declaration;
                 std::vector<param_decl_t> params;
 
                 for(const auto& param_decl : node.get_param_declarations())
@@ -374,13 +383,23 @@ namespace cmsl
                     m_ids_context.register_identifier(param_decl.name, param_type);
                 }
 
+
+                auto function = std::make_unique<sema_function>( m_ctx, *return_type, node.get_name(), std::move(params) );
+                auto function_ptr = function.get();
+
+                // Add function (without a body yet) to context, so it will be visible inside function body in case of a recursive call.
+                m_ctx.add_function(std::move(function));
+
                 auto block = visit_child_node<block_node>(node.get_body());
                 if(!block)
                 {
                     return;
                 }
 
-                m_result_node = std::make_unique<function_node>(*return_type, std::move(params), std::move(block));
+                // And set the body.
+                function_ptr->set_body(*block);
+
+                m_result_node = std::make_unique<function_node>(*function_ptr);
             }
 
             void visit(const ast::variable_declaration_node& node) override
@@ -405,12 +424,12 @@ namespace cmsl
                     }
 
                     // Todo: detect implicit conversion and raise a warning
-                    if(!ast::type_conversion_check{}.can_convert(initialization->type().get_kind(), type->get_kind()))
-                    {
-                        // Todo cannot convert from init to declared type
-                        raise_error();
-                        return;
-                    }
+                    //if(!ast::type_conversion_check{}.can_convert(initialization->type().get_kind(), type->get_kind()))
+                    //{
+                    //    // Todo cannot convert from init to declared type
+                    //    raise_error();
+                    //    return;
+                    //}
                 }
 
                 m_ids_context.register_identifier(node.get_name(), type);
@@ -471,9 +490,9 @@ namespace cmsl
                 return std::move(v.m_result_node);
             }
 
-            boost::optional<param_expressions_t> get_function_call_params(const ast::function& function, const ast::call_node::params_t& passed_params)
+            boost::optional<param_expressions_t> get_function_call_params(const sema_function::function_signature& signature, const ast::call_node::params_t& passed_params)
             {
-                const auto& param_declarations = function.get_params_declarations();
+                const auto& param_declarations = signature.params;
 
                 if(param_declarations.size() != passed_params.size())
                 {
@@ -492,7 +511,7 @@ namespace cmsl
                         return {};
                     }
 
-                    if(*param_declarations[i].param_type != param->type())
+                    if(param_declarations[i].ty != param->type())
                     {
                         //Todo passed param type mismatch
                         raise_error();
@@ -526,13 +545,60 @@ namespace cmsl
                 return ids_ctx_guard{ m_ids_context };
             }
 
+            struct function_declaration
+            {
+                sema_function* fun{ nullptr };
+                const ast::block_node& body_to_visit;
+            };
+
             struct class_members
             {
                 std::vector<ast::type::member_info> info;
                 std::vector<std::unique_ptr<variable_declaration_node>> declarations;
+                std::vector<function_declaration> functions;
             };
 
-            class_members collect_class_members(const ast::class_node2& node)
+            boost::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node)
+            {
+                auto return_type = m_ctx.find_type(node.get_return_type_reference().to_string());
+                if(!return_type)
+                {
+                    // Todo: unknown return type
+                    raise_error();
+                    return {};
+                }
+
+                // Todo: parameters need to be in the same ids context as function body.
+                auto params_ids_guard = ids_guard();
+
+                using param_decl_t = sema_function::parameter_declaration;
+                std::vector<param_decl_t> params;
+
+                for(const auto& param_decl : node.get_param_declarations())
+                {
+                    auto param_type = m_ctx.find_type(param_decl.ty.to_string());
+                    if(!param_type)
+                    {
+                        //Todo: unknown parameter type
+                        raise_error();
+                        return {};
+                    }
+
+                    params.emplace_back(param_decl_t{*param_type, param_decl.name});
+                    m_ids_context.register_identifier(param_decl.name, param_type);
+                }
+
+                auto function = std::make_unique<sema_function>( m_ctx, *return_type, node.get_name(), std::move(params) );
+                auto ptr = function.get();
+                m_ctx.add_function(std::move(function));
+
+                return function_declaration{
+                        ptr,
+                        node.get_body()
+                };
+            }
+
+            boost::optional<class_members> collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node)
             {
                 class_members members;
 
@@ -546,8 +612,18 @@ namespace cmsl
                             return {};
                         }
 
-                        members.info.emplace_back(ast::type::member_info{member->name(), member->type()});
+                        members.info.emplace_back(sema_type::member_info{member->name(), member->type()});
                         members.declarations.emplace_back(std::move(member));
+                    }
+                    else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))
+                    {
+                        auto function_declaration = get_function_declaration_and_add_to_ctx(*fun_node);
+                        if(function_declaration)
+                        {
+                            return {};
+                        }
+
+                        members.functions.emplace_back(*function_declaration);
                     }
                 }
 
@@ -555,7 +631,7 @@ namespace cmsl
             }
 
         private:
-            ast::ast_context& m_ctx;
+            sema_context_interface& m_ctx;
             errors::errors_observer& m_errors_observer;
             identifiers_context& m_ids_context;
         };
