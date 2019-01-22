@@ -63,7 +63,11 @@ namespace cmsl
 
             void visit(const sema::function_call_node& node) override {}
             void visit(const sema::member_function_call_node& node) override {}
-            void visit(const sema::class_member_access_node& node) override {}
+            void visit(const sema::class_member_access_node& node) override
+            {
+                auto lhs = evaluate_child(node.lhs());
+                result = lhs->get_member(node.member_name().str());
+            }
 
         public:
             inst::instance* result;
