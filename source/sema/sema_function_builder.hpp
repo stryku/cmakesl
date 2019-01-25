@@ -16,7 +16,7 @@ namespace cmsl
         {
         public:
             explicit sema_function_builder(const sema_context& ctx, lexer::token::token name, std::vector<sema_function::parameter_declaration> parameters)
-                : m_function{ std::make_unique<sema_function>(ctx, name, std::move(parameters)) }
+                : m_function{ std::make_unique<sema_function_impl>(ctx, name, std::move(parameters)) }
             {}
 
             sema_function_builder& with_body(block_node& block)
@@ -31,7 +31,7 @@ namespace cmsl
             }
 
         private:
-            std::unique_ptr<sema_function> m_function;
+            std::unique_ptr<sema_function_impl> m_function;
         };
     }
 }

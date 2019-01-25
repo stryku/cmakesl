@@ -384,7 +384,7 @@ namespace cmsl
                 }
 
 
-                auto function = std::make_unique<sema_function>( m_ctx, *return_type, node.get_name(), std::move(params) );
+                auto function = std::make_unique<sema_function_impl>( m_ctx, *return_type, node.get_name(), std::move(params) );
                 auto function_ptr = function.get();
 
                 // Add function (without a body yet) to context, so it will be visible inside function body in case of a recursive call.
@@ -547,7 +547,7 @@ namespace cmsl
 
             struct function_declaration
             {
-                sema_function* fun{ nullptr };
+                sema_function_impl* fun{ nullptr };
                 const ast::block_node& body_to_visit;
             };
 
@@ -588,7 +588,7 @@ namespace cmsl
                     m_ids_context.register_identifier(param_decl.name, param_type);
                 }
 
-                auto function = std::make_unique<sema_function>( m_ctx, *return_type, node.get_name(), std::move(params) );
+                auto function = std::make_unique<sema_function_impl>( m_ctx, *return_type, node.get_name(), std::move(params) );
                 auto ptr = function.get();
                 m_ctx.add_function(std::move(function));
 
