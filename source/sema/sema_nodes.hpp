@@ -4,27 +4,24 @@
 
 #include "sema/sema_node.hpp"
 #include "sema/sema_node_visitor.hpp"
+#include "sema/sema_function.hpp"
+#include "sema/sema_type.hpp"
 
 namespace cmsl
 {
-    namespace ast
-    {
-        class type;
-    }
-
     namespace sema
     {
         class expression_node : public sema_node
         {
         public:
-            virtual const ast::type& type() const = 0;
+            virtual const sema_type& type() const = 0;
         };
 
         template <typename T>
         class value_node : public expression_node
         {
         public:
-            explicit value_node(const ast::type& t, T val)
+            explicit value_node(const sema_type& t, T val)
                 : m_type{ t }
                 , m_value{ val }
             {}
@@ -34,20 +31,20 @@ namespace cmsl
                 return m_value;
             }
 
-            const ast::type& type() const override
+            const sema_type& type() const override
             {
                 return m_type;
             }
 
         private:
-            const ast::type& m_type;
+            const sema_type& m_type;
             T m_value;
         };
 
         class bool_value_node : public value_node<bool>
         {
         public:
-            explicit bool_value_node(const ast::type& t, bool val)
+            explicit bool_value_node(const sema_type& t, bool val)
                 : value_node{ t, val }
             {}
 
@@ -61,7 +58,7 @@ namespace cmsl
         class int_value_node : public value_node<std::int64_t>
         {
         public:
-            explicit int_value_node(const ast::type& t, std::int64_t val)
+            explicit int_value_node(const sema_type& t, std::int64_t val)
                     : value_node{ t, val }
             {}
 
@@ -74,7 +71,7 @@ namespace cmsl
         class double_value_node : public value_node<double>
         {
         public:
-            explicit double_value_node(const ast::type& t, double val)
+            explicit double_value_node(const sema_type& t, double val)
                     : value_node{ t, val }
             {}
 
@@ -87,7 +84,7 @@ namespace cmsl
         class string_value_node : public value_node<cmsl::string_view>
         {
         public:
-            explicit string_value_node(const ast::type& t, cmsl::string_view val)
+            explicit string_value_node(const sema_type& t, cmsl::string_view val)
                     : value_node{ t, val }
             {}
 
@@ -100,7 +97,7 @@ namespace cmsl
         class id_node : public expression_node
         {
         public:
-            explicit id_node(const ast::type& t, lexer::token::token id)
+            explicit id_node(const sema_type& t, lexer::token::token id)
                 : m_type{ t }
                 , m_id{ id }
             {}
@@ -110,7 +107,7 @@ namespace cmsl
                 visitor.visit(*this);
             }
 
-            const ast::type& type() const override
+            const sema_type& type() const override
             {
                 return m_type;
             }
@@ -122,7 +119,7 @@ namespace cmsl
             }
 
         private:
-            const ast::type& m_type;
+            const sema_type& m_type;
             lexer::token::token m_id;
         };
 
@@ -134,7 +131,7 @@ namespace cmsl
                 : m_expr{ std::move(expr) }
             {}
 
-            const ast::type& type() const override
+            const sema_type& type() const override
             {
                 return m_expr->type();
             }
@@ -156,7 +153,7 @@ namespace cmsl
         class binary_operator_node : public expression_node
         {
         public:
-            explicit binary_operator_node(std::unique_ptr<expression_node> lhs, lexer::token::token op, std::unique_ptr<expression_node> rhs, const ast::type& result_type)
+            explicit binary_operator_node(std::unique_ptr<expression_node> lhs, lexer::token::token op, std::unique_ptr<expression_node> rhs, const sema_type& result_type)
                 : m_lhs{ std::move(lhs) }
                 , m_operator{ op }
                 , m_rhs{ std::move(rhs) }
@@ -178,7 +175,7 @@ namespace cmsl
                 return *m_rhs;
             }
 
-            const ast::type& type() const override
+            const sema_type& type() const override
             {
                 return m_type;
             }
@@ -192,13 +189,13 @@ namespace cmsl
             std::unique_ptr<expression_node> m_lhs;
             lexer::token::token m_operator; // Todo: introduce an operator struct that holds token and operator type
             std::unique_ptr<expression_node> m_rhs;
-            const ast::type& m_type;
+            const sema_type& m_type;
         };
 
         class variable_declaration_node : public sema_node
         {
         public:
-            explicit variable_declaration_node(const ast::type& type, lexer::token::token name, std::unique_ptr<expression_node> initialization)
+            explicit variable_declaration_node(const sema_type& type, lexer::token::token name, std::unique_ptr<expression_node> initialization)
                     : m_type{ type }
                     , m_name{ name }
                     , m_initialization{ std::move(initialization) }
@@ -209,7 +206,7 @@ namespace cmsl
                 visitor.visit(*this);
             }
 
-            const ast::type& type() const
+            const sema_type& type() const
             {
                 return m_type;
             }
@@ -225,7 +222,7 @@ namespace cmsl
             }
 
         private:
-            const ast::type& m_type;
+            const sema_type& m_type;
             const lexer::token::token m_name;
             std::unique_ptr<expression_node> m_initialization;
         };
@@ -235,15 +232,14 @@ namespace cmsl
         public:
             using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
-            explicit call_node(const ast::type& return_type, lexer::token::token name, param_expressions_t params)
-                    : m_return_type{ return_type }
-                    , m_name{ name }
+            explicit call_node(const sema_function& function, param_expressions_t params)
+                    : m_function{ function }
                     , m_params{ std::move(params) }
             {}
 
-            const ast::type& type() const override
+            const sema_type& type() const override
             {
-                return m_return_type;
+                return m_function.return_type();
             }
 
             const param_expressions_t& param_expressions() const
@@ -253,20 +249,19 @@ namespace cmsl
 
             lexer::token::token name() const
             {
-                return m_name;
+                return m_function.signature().name;
             }
 
         private:
-            const ast::type& m_return_type;
-            lexer::token::token m_name;
+            const sema_function& m_function;
             param_expressions_t m_params;
         };
 
         class function_call_node : public call_node
         {
         public:
-            explicit function_call_node(const ast::type& return_type, lexer::token::token name, param_expressions_t params)
-                : call_node{ return_type, name, std::move(params) }
+            explicit function_call_node(const sema_function& function, param_expressions_t params)
+                : call_node{ function, std::move(params) }
             {}
 
             void visit(sema_node_visitor& visitor) override
@@ -278,8 +273,8 @@ namespace cmsl
         class member_function_call_node : public call_node
         {
         public:
-            explicit member_function_call_node(std::unique_ptr<expression_node> lhs, const ast::type& return_type, lexer::token::token name, param_expressions_t params)
-                : call_node{ return_type, name, std::move(params) }
+            explicit member_function_call_node(std::unique_ptr<expression_node> lhs, const sema_function& function, param_expressions_t params)
+                : call_node{ function, std::move(params) }
                 , m_lhs{ std::move(lhs) }
             {}
 
@@ -324,31 +319,23 @@ namespace cmsl
         class function_node : public sema_node
         {
         public:
-            struct parameter_declaration
-            {
-                const ast::type& type;
-                lexer::token::token name;
-            };
-
-            explicit function_node(const ast::type& return_type, std::vector<parameter_declaration> params, std::unique_ptr<block_node> body)
-            : m_return_type{ return_type }
-            ,m_params{ std::move(params) }
-            , m_body{ std::move(body) }
+            explicit function_node(const sema_function& function)
+                : m_function{ function }
             {}
 
-            const std::vector<parameter_declaration>& params() const
+            const sema_function::function_signature& signature() const
             {
-                return m_params;
+                return m_function.signature();
             }
 
             const block_node& body() const
             {
-                return *m_body;
+                return m_function.body();
             }
 
-            const ast::type& return_type() const
+            const sema_type& return_type() const
             {
-                return m_return_type;
+                return m_function.return_type();
             }
 
             void visit(sema_node_visitor& visitor) override
@@ -357,9 +344,7 @@ namespace cmsl
             }
 
         private:
-            const ast::type& m_return_type;
-            std::vector<parameter_declaration> m_params;
-            std::unique_ptr<block_node> m_body;
+            const sema_function& m_function;
         };
 
         class class_node : public sema_node
@@ -478,7 +463,7 @@ namespace cmsl
         class class_member_access_node : public expression_node
         {
         public:
-            explicit class_member_access_node(std::unique_ptr<expression_node> lhs, ast::type::member_info member_info)
+            explicit class_member_access_node(std::unique_ptr<expression_node> lhs, sema_type::member_info member_info)
                 : m_lhs{ std::move(lhs) }
                 , m_member_info{ member_info }
             {}
@@ -488,7 +473,7 @@ namespace cmsl
                 return *m_lhs;
             }
 
-            const ast::type& type() const override
+            const sema_type& type() const override
             {
                 return m_member_info.ty;
             }
@@ -505,7 +490,7 @@ namespace cmsl
 
         private:
             std::unique_ptr<expression_node> m_lhs;
-            ast::type::member_info m_member_info;
+            sema_type::member_info m_member_info;
         };
 
         class translation_unit_node : public sema_node
