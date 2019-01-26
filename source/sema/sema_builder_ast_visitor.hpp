@@ -24,6 +24,8 @@
 #include "sema/sema_nodes.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_function_builder.hpp"
+#include "sema/sema_function_impl.hpp"
+#include "sema/sema_function_factory.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
 
@@ -37,10 +39,11 @@ namespace cmsl
             using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
         public:
-            explicit sema_builder_ast_visitor(sema_context_interface& ctx, errors::errors_observer& errs, identifiers_context& ids_context)
+            explicit sema_builder_ast_visitor(sema_context_interface& ctx, errors::errors_observer& errs, identifiers_context& ids_context, sema_function_factory& function_factory)
                 : m_ctx{ ctx }
                 , m_errors_observer{ errs }
                 , m_ids_context{ ids_context }
+                , m_function_factory{ function_factory }
             {}
 
             void visit(const ast::block_node& node) override
@@ -383,12 +386,14 @@ namespace cmsl
                     m_ids_context.register_identifier(param_decl.name, param_type);
                 }
 
-
-                auto function = std::make_unique<sema_function_impl>( m_ctx, *return_type, node.get_name(), std::move(params) );
-                auto function_ptr = function.get();
+                sema_function::function_signature signature{
+                        node.get_name(),
+                        std::move(params)
+                };
+                auto& function = m_function_factory.create( m_ctx, *return_type, std::move(signature) );
 
                 // Add function (without a body yet) to context, so it will be visible inside function body in case of a recursive call.
-                m_ctx.add_function(std::move(function));
+                m_ctx.add_function(function);
 
                 auto block = visit_child_node<block_node>(node.get_body());
                 if(!block)
@@ -397,9 +402,9 @@ namespace cmsl
                 }
 
                 // And set the body.
-                function_ptr->set_body(*block);
+                function.set_body(*block);
 
-                m_result_node = std::make_unique<function_node>(*function_ptr);
+                m_result_node = std::make_unique<function_node>(function);
             }
 
             void visit(const ast::variable_declaration_node& node) override
@@ -469,7 +474,7 @@ namespace cmsl
 
             sema_builder_ast_visitor clone() const
             {
-                return sema_builder_ast_visitor{ m_ctx, m_errors_observer, m_ids_context };
+                return sema_builder_ast_visitor{ m_ctx, m_errors_observer, m_ids_context, m_function_factory };
             }
 
             std::unique_ptr<expression_node> visit_child_expr(const ast::ast_node& node)
@@ -553,7 +558,7 @@ namespace cmsl
 
             struct class_members
             {
-                std::vector<ast::type::member_info> info;
+                std::vector<sema_type::member_info> info;
                 std::vector<std::unique_ptr<variable_declaration_node>> declarations;
                 std::vector<function_declaration> functions;
             };
@@ -588,12 +593,15 @@ namespace cmsl
                     m_ids_context.register_identifier(param_decl.name, param_type);
                 }
 
-                auto function = std::make_unique<sema_function_impl>( m_ctx, *return_type, node.get_name(), std::move(params) );
-                auto ptr = function.get();
-                m_ctx.add_function(std::move(function));
+                sema_function::function_signature signature{
+                        node.get_name(),
+                        std::move(params)
+                };
+                auto& function = m_function_factory.create( m_ctx, *return_type, std::move(signature) );
+                m_ctx.add_function(function);
 
                 return function_declaration{
-                        ptr,
+                        &function,
                         node.get_body()
                 };
             }
@@ -618,7 +626,7 @@ namespace cmsl
                     else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))
                     {
                         auto function_declaration = get_function_declaration_and_add_to_ctx(*fun_node);
-                        if(function_declaration)
+                        if(!function_declaration)
                         {
                             return {};
                         }
@@ -634,6 +642,7 @@ namespace cmsl
             sema_context_interface& m_ctx;
             errors::errors_observer& m_errors_observer;
             identifiers_context& m_ids_context;
+            sema_function_factory& m_function_factory;
         };
     }
 }

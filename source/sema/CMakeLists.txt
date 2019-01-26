@@ -1,5 +1,5 @@
 set(SEMA_SOURCES
-        sema_builder.cpp sema_builder.hpp sema_node.hpp sema_nodes.cpp sema_nodes.hpp sema_node_visitor.hpp sema_builder_ast_visitor.cpp sema_builder_ast_visitor.hpp identifiers_context.hpp sema_type.hpp sema_context.hpp sema_function.hpp sema_function_builder.hpp sema_type.cpp)
+        sema_builder.cpp sema_builder.hpp sema_node.hpp sema_nodes.cpp sema_nodes.hpp sema_node_visitor.hpp sema_builder_ast_visitor.cpp sema_builder_ast_visitor.hpp identifiers_context.hpp sema_type.hpp sema_context.hpp sema_function_impl.hpp sema_function_builder.hpp sema_type.cpp sema_context.cpp sema_function_factory.hpp sema_function.hpp sema_function_factory.cpp)
 
 add_library(sema ${SEMA_SOURCES})
 target_include_directories(sema PRIVATE ${CMAKESL_SOURCES_DIR})

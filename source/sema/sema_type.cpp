@@ -5,13 +5,13 @@ namespace cmsl
 {
     namespace sema
     {
-        explicit sema_type::sema_type(const sema_context_interface& ctx, token_t name, std::vector<member_info> members)
+        sema_type::sema_type(const sema_context_interface& ctx, token_t name, std::vector<member_info> members)
                 : m_ctx{ ctx }
                 , m_name{ name }
                 , m_members{ std::move(members) }
         {}
 
-        token_t sema_type::name() const
+        sema_type::token_t sema_type::name() const
         {
             return m_name;
         }
