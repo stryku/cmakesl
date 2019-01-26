@@ -33,15 +33,17 @@ namespace cmsl
             const sema_context_interface& context() const;
             boost::optional<member_info> find_member(cmsl::string_view name) const;
             const sema_function* find_member_function(cmsl::string_view name) const;
+
+            bool is_builtin() const;
             bool operator==(const sema_type& rhs) const;
             bool operator!=(const sema_type& rhs) const;
 
         private:
             friend class sema_type_builder;
 
+            const sema_context_interface& m_ctx;
             token_t m_name;
             std::vector<member_info> m_members;
-            const sema_context_interface& m_ctx;
         };
     }
 }
