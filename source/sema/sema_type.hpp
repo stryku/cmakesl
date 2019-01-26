@@ -29,6 +29,9 @@ namespace cmsl
 
             explicit sema_type(const sema_context_interface& ctx, token_t name, std::vector<member_info> members);
 
+            sema_type(const sema_type&) = delete;
+            sema_type& operator=(sema_type&&) = delete;
+
             token_t name() const;
             const sema_context_interface& context() const;
             boost::optional<member_info> find_member(cmsl::string_view name) const;
