@@ -30,7 +30,7 @@ namespace cmsl
             explicit sema_type(const sema_context_interface& ctx, token_t name, std::vector<member_info> members);
 
             token_t name() const;
-            const sema_context& context() const;
+            const sema_context_interface& context() const;
             boost::optional<member_info> find_member(cmsl::string_view name) const;
             const sema_function* find_member_function(cmsl::string_view name) const;
             bool operator==(const sema_type& rhs) const;
