@@ -252,6 +252,11 @@ namespace cmsl
                 return m_function.signature().name;
             }
 
+            const sema_function& function() const
+            {
+                return m_function;
+            }
+
         private:
             const sema_function& m_function;
             param_expressions_t m_params;
