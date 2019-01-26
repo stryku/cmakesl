@@ -6,9 +6,9 @@ namespace cmsl
     namespace sema
     {
         sema_type::sema_type(const sema_context_interface& ctx, token_t name, std::vector<member_info> members)
-                : m_ctx{ ctx }
-                , m_name{ name }
-                , m_members{ std::move(members) }
+            : m_ctx{ ctx }
+            , m_name{ name }
+            , m_members{ std::move(members) }
         {}
 
         sema_type::token_t sema_type::name() const
@@ -50,6 +50,12 @@ namespace cmsl
         bool sema_type::operator!=(const sema_type &rhs) const
         {
             return !(*this == rhs);
+        }
+
+        bool sema_type::is_builtin() const
+        {
+            // Todo: handle user
+            return true;
         }
     }
 }

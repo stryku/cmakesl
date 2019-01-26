@@ -189,26 +189,12 @@ namespace cmsl
                     return;
                 }
 
-                // Todo: add check for whether operator is supported
-                //if(!check.type_supports_operator(rhs->type().get_kind(), op))
-                //{
-                //    // Todo: lhs type doesn't support this operator
-                ///    raise_error();
-                //    return;
-                //}
-
-                // Todo: introduce cast nodes
-                //const auto* common_type = &lhs->type();
-                //if(lhs->type() != rhs->type())
-                //{
-                //    common_type = ast::common_type_finder{}.find_common_type(lhs->type(), rhs->type());
-                //    if(common_type == nullptr)
-                //    {
-                //       // Todo: can't apply operator to these types
-                //      raise_error();
-                //      return;
-                //  }
-                //}
+                if(lhs->type() != rhs->type())
+                {
+                    // Todo: can not apply operator to different types
+                    raise_error();
+                    return;
+                }
 
                 m_result_node = std::make_unique<binary_operator_node>(std::move(lhs), node.get_operator(), std::move(rhs), lhs->type());
             }
@@ -428,13 +414,13 @@ namespace cmsl
                         return;
                     }
 
-                    // Todo: detect implicit conversion and raise a warning
-                    //if(!ast::type_conversion_check{}.can_convert(initialization->type().get_kind(), type->get_kind()))
-                    //{
-                    //    // Todo cannot convert from init to declared type
-                    //    raise_error();
-                    //    return;
-                    //}
+                    if(initialization->type() != *type)
+                    {
+                        // Todo: Init does not have same type as declared.
+                        // Todo: introduce auto
+                        raise_error();
+                        return;
+                    }
                 }
 
                 m_ids_context.register_identifier(node.get_name(), type);
