@@ -9,6 +9,7 @@
 #include "exec/execution_context.hpp"
 #include "exec/value_operations_factory.hpp"
 #include "sema/sema_context.hpp"
+#include "exec/function_caller.hpp"
 
 namespace cmsl
 {
@@ -49,29 +50,34 @@ namespace cmsl
 
             void visit(const sema::binary_operator_node& node) override
             {
-                auto lhs = evaluate_child(node.lhs());
-                auto rhs = evaluate_child(node.rhs());
+                auto lhs_result = evaluate_child(node.lhs());
+                auto rhs_result = evaluate_child(node.rhs());
 
-                auto operations = m_ctx.operations_factory.create(lhs->get_type());
+                auto operations = m_ctx.operations_factory.create(lhs_result->get_type());
                 const auto operator_string = operator_to_str(node.op());
 
                 value_operations::parameters_t params;
-                params.emplace_back(rhs->get_value());
+                params.emplace_back(rhs_result->get_value());
 
-                auto operation_result = operations->execute_operation(operator_string, lhs->get_value_ref(), params);
+                auto operation_result = operations->execute_operation(operator_string, lhs_result->get_value_ref(), params);
                 result = m_ctx.instances.create(std::move(operation_result));
             }
 
             void visit(const sema::function_call_node& node) override
             {
                 auto evaluated_params = evaluate_call_parameters(node.param_expressions());
-
-                auto fun = m_ctx.ctx_provider.get_sema_ctx().find_function(node.)
-
-
+                const auto& function = node.function();
+                result = m_ctx.function_caller.call(function, evaluated_params);
             }
 
-            void visit(const sema::member_function_call_node& node) override {}
+            void visit(const sema::member_function_call_node& node) override
+            {
+                auto lhs_result = evaluate_child(node.lhs());
+                auto evaluated_params = evaluate_call_parameters(node.param_expressions());
+                const auto& function = node.function();
+                result = m_ctx.function_caller.call_member(*lhs_result, function, evaluated_params);
+            }
+
             void visit(const sema::class_member_access_node& node) override
             {
                 auto lhs = evaluate_child(node.lhs());
