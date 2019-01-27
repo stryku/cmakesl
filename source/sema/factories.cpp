@@ -4,7 +4,7 @@ namespace cmsl
 {
     namespace sema
     {
-        sema_function_impl&
+        user_sema_function&
         sema_function_factory::create(const sema_context_interface &ctx, const sema_type &return_type, function_signature s)
         {
             return create_impl(ctx, return_type, std::move(s));

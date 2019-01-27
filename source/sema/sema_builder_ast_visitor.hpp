@@ -24,7 +24,7 @@
 #include "sema/sema_nodes.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_function_builder.hpp"
-#include "sema/sema_function_impl.hpp"
+#include "sema/user_sema_function.hpp"
 #include "sema/factories.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
@@ -538,7 +538,7 @@ namespace cmsl
 
             struct function_declaration
             {
-                sema_function_impl* fun{ nullptr };
+                user_sema_function* fun{ nullptr };
                 const ast::block_node& body_to_visit;
             };
 

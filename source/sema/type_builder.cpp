@@ -1,7 +1,7 @@
 #include "sema/type_builder.hpp"
 #include "sema/factories.hpp"
 #include "sema/sema_context.hpp"
-#include "sema/sema_function_impl.hpp"
+#include "sema/user_sema_function.hpp"
 
 namespace cmsl
 {
