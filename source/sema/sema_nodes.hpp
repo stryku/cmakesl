@@ -333,9 +333,9 @@ namespace cmsl
                 return m_function.signature();
             }
 
-            const block_node& body() const
+            const sema_function& function() const
             {
-                return m_function.body();
+                return m_function;
             }
 
             const sema_type& return_type() const
