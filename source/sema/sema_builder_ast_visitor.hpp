@@ -25,7 +25,7 @@
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_function_builder.hpp"
 #include "sema/sema_function_impl.hpp"
-#include "sema/sema_function_factory.hpp"
+#include "sema/factories.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
 

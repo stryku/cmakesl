@@ -21,7 +21,7 @@ namespace cmsl
             return m_ctx;
         }
 
-        boost::optional<sema_type::member_info> sema_type::find_member(cmsl::string_view name) const
+        boost::optional<member_info> sema_type::find_member(cmsl::string_view name) const
         {
             const auto pred = [name](const auto& member)
             {

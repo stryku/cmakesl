@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lexer/token/token.hpp"
+#include "sema/function_signature.hpp"
 
 namespace cmsl
 {
@@ -13,18 +14,6 @@ namespace cmsl
         class sema_function
         {
         public:
-            struct parameter_declaration
-            {
-                const sema_type& ty;
-                lexer::token::token name;
-            };
-
-            struct function_signature
-            {
-                lexer::token::token name;
-                std::vector<parameter_declaration> params;
-            };
-
             virtual ~sema_function() = default;
             virtual const block_node& body() const = 0;
             virtual const function_signature& signature() const = 0;
