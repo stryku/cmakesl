@@ -5,7 +5,7 @@
 
 #include "errors/errors_observer.hpp"
 
-#include "sema/sema_function_factory.hpp"
+#include "sema/factories.hpp"
 
 #include "test/ast/mock/ast_context_mock.hpp"
 #include "test/common/tokens.hpp"
@@ -283,7 +283,7 @@ namespace cmsl
                 sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx, function_factory };
 
                 const auto fun_name_token = token_identifier("foo");
-                sema_function::function_signature signature;
+                function_signature signature;
                 signature.name = fun_name_token;
                 const ast::function_call_node node{fun_name_token, {}};
 
@@ -320,10 +320,10 @@ namespace cmsl
                 const auto param1_id_token = token_identifier("bar");
                 const auto param2_id_token = token_identifier("baz");
 
-                sema_function::function_signature signature;
+                function_signature signature;
                 signature.name = fun_name_token;
-                signature.params .emplace_back(sema_function::parameter_declaration{valid_type, param1_id_token});
-                signature.params .emplace_back(sema_function::parameter_declaration{valid_type, param2_id_token});
+                signature.params .emplace_back(parameter_declaration{valid_type, param1_id_token});
+                signature.params .emplace_back(parameter_declaration{valid_type, param2_id_token});
 
                 EXPECT_CALL(ctx, find_function(fun_name_token.str()))
                         .WillOnce(Return(&function_mock));
@@ -378,7 +378,7 @@ namespace cmsl
                 auto lhs_ast_node = std::make_unique<ast::id_node>(lhs_id_token);
 
                 const auto fun_name_token = token_identifier("bar");
-                sema_function::function_signature signature;
+                function_signature signature;
                 signature.name = fun_name_token;
                 const ast::member_function_call_node node{ std::move(lhs_ast_node), fun_name_token, {} };
 
@@ -430,10 +430,10 @@ namespace cmsl
                 ast_params.emplace_back(std::move(param2_ast_node));
 
                 const auto fun_name_token = token_identifier("bar");
-                sema_function::function_signature signature;
+                function_signature signature;
                 signature.name = fun_name_token;
-                signature.params .emplace_back(sema_function::parameter_declaration{valid_type, param1_id_token});
-                signature.params .emplace_back(sema_function::parameter_declaration{valid_type, param2_id_token});
+                signature.params .emplace_back(parameter_declaration{valid_type, param1_id_token});
+                signature.params .emplace_back(parameter_declaration{valid_type, param2_id_token});
                 const ast::member_function_call_node node{ std::move(lhs_ast_node), fun_name_token, std::move(ast_params) };
 
                 EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
@@ -994,8 +994,8 @@ namespace cmsl
 
                 const auto member_name_token = token_identifier("bar");
                 // Todo: use initializer list
-                std::vector<sema_type::member_info> members;
-                members.emplace_back(sema_type::member_info{member_name_token, valid_type});
+                std::vector<member_info> members;
+                members.emplace_back(member_info{member_name_token, valid_type});
                 const auto lhs_type_name_token = token_identifier("baz");
                 sema_type lhs_type{ ctx, lhs_type_name_token, std::move(members)};
 

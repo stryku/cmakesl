@@ -15,7 +15,7 @@ namespace cmsl
             : m_type_factory{ type_factory }
             , m_function_factory{ function_factory }
             , m_context_factory{ context_factory }
-            , m_ctx{ context_factory.create(&parent_ast_ctx) }
+            , m_ctx{ m_context_factory.create(&parent_ast_ctx) }
             , m_name{ name }
         {}
 

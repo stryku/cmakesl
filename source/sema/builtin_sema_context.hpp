@@ -18,10 +18,15 @@ namespace cmsl
                                           sema_context_factory &context_factory);
 
         private:
+            using token_type_t = lexer::token::token_type;
+
             void add_types();
             void add_functions();
 
             void add_bool_type();
+
+            template <unsigned N>
+            lexer::token::token make_token(token_type_t token_type, const char(&tok)[N]);
 
         private:
             sema_type_factory &m_type_factory;
