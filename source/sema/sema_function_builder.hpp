@@ -17,7 +17,7 @@ namespace cmsl
         {
         public:
             explicit sema_function_builder(const sema_context& ctx, const sema_type& return_type, sema_function::function_signature signature)
-                : m_function{ std::make_unique<sema_function_impl>(ctx, return_type, std::move(signature)) }
+                : m_function{ std::make_unique<user_sema_function>(ctx, return_type, std::move(signature)) }
             {}
 
             sema_function_builder& with_body(block_node& block)
@@ -32,7 +32,7 @@ namespace cmsl
             }
 
         private:
-            std::unique_ptr<sema_function_impl> m_function;
+            std::unique_ptr<user_sema_function> m_function;
         };
          */
     }

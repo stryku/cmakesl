@@ -8,11 +8,11 @@ namespace cmsl
     {
         class sema_function_builder;
 
-        class sema_function_impl : public sema_function
+        class user_sema_function : public sema_function
         {
         public:
 
-            explicit sema_function_impl(const sema_context_interface& ctx, const sema_type& return_type, function_signature s)
+            explicit user_sema_function(const sema_context_interface& ctx, const sema_type& return_type, function_signature s)
                 : m_ctx{ ctx }
                 , m_return_type{ return_type }
                 , m_signature{ std::move(s) }

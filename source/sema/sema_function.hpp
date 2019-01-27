@@ -19,5 +19,6 @@ namespace cmsl
             virtual const function_signature& signature() const = 0;
             virtual const sema_type& return_type() const = 0;
         };
+
     }
 }
