@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lexer/token/token.hpp"
+#include "sema/type_member_info.hpp"
 
 #include <boost/optional.hpp>
 
@@ -21,12 +22,6 @@ namespace cmsl
             using token_t = lexer::token::token;
 
         public:
-            struct member_info
-            {
-                lexer::token::token name;
-                const sema_type& ty;
-            };
-
             explicit sema_type(const sema_context_interface& ctx, token_t name, std::vector<member_info> members);
 
             sema_type(const sema_type&) = delete;

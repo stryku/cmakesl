@@ -18,6 +18,7 @@ namespace cmsl
         public:
             virtual ~sema_context_interface() = default;
 
+            // Todo: add_* probably should be moved to a builder or so.
             virtual void add_function(const sema_function& function) = 0;
             virtual void add_type(std::unique_ptr<sema_type> type) = 0;
             virtual const sema_type* find_type(cmsl::string_view name) const = 0;

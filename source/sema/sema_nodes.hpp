@@ -328,7 +328,7 @@ namespace cmsl
                 : m_function{ function }
             {}
 
-            const sema_function::function_signature& signature() const
+            const function_signature& signature() const
             {
                 return m_function.signature();
             }
@@ -468,7 +468,7 @@ namespace cmsl
         class class_member_access_node : public expression_node
         {
         public:
-            explicit class_member_access_node(std::unique_ptr<expression_node> lhs, sema_type::member_info member_info)
+            explicit class_member_access_node(std::unique_ptr<expression_node> lhs, member_info member_info)
                 : m_lhs{ std::move(lhs) }
                 , m_member_info{ member_info }
             {}
