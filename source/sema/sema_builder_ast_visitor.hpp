@@ -355,7 +355,7 @@ namespace cmsl
                 // Todo: parameters need to be in the same ids context as function body.
                 auto params_ids_guard = ids_guard();
 
-                using param_decl_t = sema_function::parameter_declaration;
+                using param_decl_t = parameter_declaration;
                 std::vector<param_decl_t> params;
 
                 for(const auto& param_decl : node.get_param_declarations())
@@ -372,7 +372,7 @@ namespace cmsl
                     m_ids_context.register_identifier(param_decl.name, param_type);
                 }
 
-                sema_function::function_signature signature{
+                function_signature signature{
                         node.get_name(),
                         std::move(params)
                 };
@@ -481,7 +481,7 @@ namespace cmsl
                 return std::move(v.m_result_node);
             }
 
-            boost::optional<param_expressions_t> get_function_call_params(const sema_function::function_signature& signature, const ast::call_node::params_t& passed_params)
+            boost::optional<param_expressions_t> get_function_call_params(const function_signature& signature, const ast::call_node::params_t& passed_params)
             {
                 const auto& param_declarations = signature.params;
 
@@ -544,7 +544,7 @@ namespace cmsl
 
             struct class_members
             {
-                std::vector<sema_type::member_info> info;
+                std::vector<member_info> info;
                 std::vector<std::unique_ptr<variable_declaration_node>> declarations;
                 std::vector<function_declaration> functions;
             };
@@ -562,8 +562,7 @@ namespace cmsl
                 // Todo: parameters need to be in the same ids context as function body.
                 auto params_ids_guard = ids_guard();
 
-                using param_decl_t = sema_function::parameter_declaration;
-                std::vector<param_decl_t> params;
+                std::vector<parameter_declaration> params;
 
                 for(const auto& param_decl : node.get_param_declarations())
                 {
@@ -575,11 +574,11 @@ namespace cmsl
                         return {};
                     }
 
-                    params.emplace_back(param_decl_t{*param_type, param_decl.name});
+                    params.emplace_back(parameter_declaration{*param_type, param_decl.name});
                     m_ids_context.register_identifier(param_decl.name, param_type);
                 }
 
-                sema_function::function_signature signature{
+                function_signature signature{
                         node.get_name(),
                         std::move(params)
                 };
@@ -606,7 +605,7 @@ namespace cmsl
                             return {};
                         }
 
-                        members.info.emplace_back(sema_type::member_info{member->name(), member->type()});
+                        members.info.emplace_back(member_info{member->name(), member->type()});
                         members.declarations.emplace_back(std::move(member));
                     }
                     else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))

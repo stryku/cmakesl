@@ -11,29 +11,30 @@ namespace cmsl
     namespace sema
     {
         class sema_context_interface;
+        class sema_context;
         class user_sema_function;
         class sema_function;
         class sema_type;
         struct member_info;
 
-        template <typename Ty>
+        template <typename StoredType>
         class factory
         {
         protected:
-            template <typename... Args>
-            Ty& create_impl(Args&&... args)
+            template <typename TypeImplementation, typename... Args>
+            TypeImplementation& create_impl(Args&&... args)
             {
-                auto val= std::make_unique<Ty>(std::forward<Args>(args)...);
+                auto val= std::make_unique<TypeImplementation>(std::forward<Args>(args)...);
                 auto ptr = val.get();
-                m_storage.emplace_back(std::move(m_storage));
+                m_storage.emplace_back(std::move(val));
                 return *ptr;
             }
 
         private:
-            std::vector<std::unique_ptr<sema_function>> m_storage;
+            std::vector<std::unique_ptr<StoredType>> m_storage;
         };
 
-        class sema_function_factory : public factory<user_sema_function>
+        class sema_function_factory : public factory<sema_function>
         {
         public:
             user_sema_function& create(const sema_context_interface& ctx, const sema_type& return_type, function_signature s);
@@ -48,7 +49,7 @@ namespace cmsl
         class sema_context_factory : public factory<sema_context_interface>
         {
         public:
-            const sema_context_interface& create(const sema_context_interface* parent);
+            sema_context& create(const sema_context_interface* parent);
         };
     }
 }

@@ -495,7 +495,7 @@ namespace cmsl
 
         private:
             std::unique_ptr<expression_node> m_lhs;
-            sema_type::member_info m_member_info;
+            member_info m_member_info;
         };
 
         class translation_unit_node : public sema_node
