@@ -175,8 +175,6 @@ namespace cmsl
 
             void visit(const ast::binary_operator_node& node) override
             {
-                const auto op = node.get_operator().get_type();
-
                 ast::type_operator_support_check check;
 
                 auto lhs = visit_child_expr(node.get_lhs());
@@ -185,13 +183,14 @@ namespace cmsl
                     return;
                 }
 
-                // Todo: add check for whether operator is supported
-                //if(!check.type_supports_operator(lhs->type().get_kind(), op))
-                //{
-                //    // Todo: lhs type doesn't support this operator
-                //    raise_error();
-                //    return;
-                //}
+                // Todo: handle operators like ++ and ++(int)
+                auto operator_function = lhs->type().find_member_function(node.get_operator().str());
+                if(!operator_function)
+                {
+                    // Todo: lhs's type doesn't support such operator
+                    raise_error();
+                    return;
+                }
 
                 auto rhs = visit_child_expr(node.get_rhs());
                 if(!rhs)
@@ -206,7 +205,11 @@ namespace cmsl
                     return;
                 }
 
-                m_result_node = std::make_unique<binary_operator_node>(std::move(lhs), node.get_operator(), std::move(rhs), lhs->type());
+                m_result_node = std::make_unique<binary_operator_node>(std::move(lhs),
+                                                                       node.get_operator(),
+                                                                       *operator_function,
+                                                                       std::move(rhs),
+                                                                       lhs->type());
             }
 
             void visit(const ast::class_member_access_node& node) override

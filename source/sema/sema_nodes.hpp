@@ -153,9 +153,14 @@ namespace cmsl
         class binary_operator_node : public expression_node
         {
         public:
-            explicit binary_operator_node(std::unique_ptr<expression_node> lhs, lexer::token::token op, std::unique_ptr<expression_node> rhs, const sema_type& result_type)
+            explicit binary_operator_node(std::unique_ptr<expression_node> lhs,
+                                          lexer::token::token op,
+                                          const sema_function& operator_function,
+                                          std::unique_ptr<expression_node> rhs,
+                                          const sema_type& result_type)
                 : m_lhs{ std::move(lhs) }
                 , m_operator{ op }
+                , m_operator_function{ operator_function }
                 , m_rhs{ std::move(rhs) }
                 , m_type{ result_type }
             {}
@@ -168,6 +173,11 @@ namespace cmsl
             lexer::token::token op() const
             {
                 return m_operator;
+            }
+
+            const sema_function& operator_function() const
+            {
+                return m_operator_function;
             }
 
             const expression_node& rhs() const
@@ -188,6 +198,7 @@ namespace cmsl
         private:
             std::unique_ptr<expression_node> m_lhs;
             lexer::token::token m_operator; // Todo: introduce an operator struct that holds token and operator type
+            const sema_function& m_operator_function;
             std::unique_ptr<expression_node> m_rhs;
             const sema_type& m_type;
         };
