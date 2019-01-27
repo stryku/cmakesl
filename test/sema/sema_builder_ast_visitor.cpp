@@ -1076,7 +1076,47 @@ namespace cmsl
 
                 const auto casted_class_node = dynamic_cast<class_node*>(translation_unit_nodes[2].get());
                 EXPECT_THAT(casted_class_node, NotNull());
+            }
 
+            TEST_F(SemaBuilderAstVisitorTest, Visit_BinaryOperatorNode)
+            {
+                errs_t errs;
+                StrictMock<sema_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<sema_function_mock> function_mock;
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+                const sema_type lhs_and_rhs_type{ ctx, token_kw_int(), {} };
+                const auto lhs_id_token = token_identifier("foo");
+                auto lhs_node = std::make_unique<ast::id_node>(lhs_id_token);
+                const auto rhs_id_token = token_identifier("bar");
+                auto rhs_node = std::make_unique<ast::id_node>(rhs_id_token);
+
+                const auto operator_token = token_plus();
+                StrictMock<sema_function_mock> operator_function;
+
+                ast::binary_operator_node node{ std::move(lhs_node),
+                                                operator_token,
+                                                std::move(rhs_node)};
+
+                EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
+                        .WillOnce(Return(&lhs_and_rhs_type));
+
+                EXPECT_CALL(ids_ctx, type_of(rhs_id_token.str()))
+                        .WillOnce(Return(&lhs_and_rhs_type));
+
+                // Find operator member function.
+                EXPECT_CALL(ctx, find_function_in_this_scope(operator_token.str()))
+                        .WillOnce(Return(&function_mock));
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<binary_operator_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+                EXPECT_THAT(&casted_node->lhs().type(), Eq(&lhs_and_rhs_type));
+                EXPECT_THAT(&casted_node->rhs().type(), Eq(&lhs_and_rhs_type));
             }
         }
     }
