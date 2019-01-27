@@ -28,6 +28,7 @@
 #include "sema/factories.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
+#include "sema/type_builder.hpp"
 
 namespace cmsl
 {
@@ -39,11 +40,18 @@ namespace cmsl
             using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
         public:
-            explicit sema_builder_ast_visitor(sema_context_interface& ctx, errors::errors_observer& errs, identifiers_context& ids_context, sema_function_factory& function_factory)
+            explicit sema_builder_ast_visitor(sema_context_interface& ctx,
+                                              errors::errors_observer& errs,
+                                              identifiers_context& ids_context,
+                                              sema_type_factory& type_factory,
+                                              sema_function_factory& function_factory,
+                                              sema_context_factory& context_factory)
                 : m_ctx{ ctx }
                 , m_errors_observer{ errs }
                 , m_ids_context{ ids_context }
                 , m_function_factory{ function_factory }
+                , m_context_factory{ context_factory }
+                , m_type_factory{ type_factory }
             {}
 
             void visit(const ast::block_node& node) override
@@ -78,8 +86,9 @@ namespace cmsl
 
                 auto class_ids_guard = ids_guard();
 
-                auto created_class_sema_ctx = std::make_unique<sema_context>(&m_ctx);
-                auto class_sema_ctx = created_class_sema_ctx.get();
+                auto& class_context = m_context_factory.create(&m_ctx);
+//                auto created_class_sema_ctx = std::make_unique<sema_context>(&m_ctx);
+//                auto class_sema_ctx = created_class_sema_ctx.get();
 
                 auto members = collect_class_members_and_add_functions_to_ctx(node);
 
@@ -90,11 +99,12 @@ namespace cmsl
 
                 // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
                 // Todo: ast shouldn't store ast ctx somewhere else?
-                auto created_class_type = std::make_unique<sema_type>(*class_sema_ctx, name, std::move(members->info));
-                auto class_type = created_class_type.get();
+                auto& class_type = m_type_factory.create(class_context, name, std::move(members->info));
+//                auto created_class_type = std::make_unique<sema_type>(class_context, name, std::move(members->info));
+//                auto class_type = created_class_type.get();
 
                 // Same as with ast context. class_type raw pointer will be valid. We move it to context to make this class findable as a regular type (so e.g. inside this class methods, the type will appear as a regular type).
-                m_ctx.add_type(std::move(created_class_type));
+                m_ctx.add_type(class_type);
 
                 std::vector<std::unique_ptr<function_node>> functions;
 
@@ -376,7 +386,7 @@ namespace cmsl
                         node.get_name(),
                         std::move(params)
                 };
-                auto& function = m_function_factory.create( m_ctx, *return_type, std::move(signature) );
+                auto& function = m_function_factory.create_user( m_ctx, *return_type, std::move(signature) );
 
                 // Add function (without a body yet) to context, so it will be visible inside function body in case of a recursive call.
                 m_ctx.add_function(function);
@@ -460,7 +470,7 @@ namespace cmsl
 
             sema_builder_ast_visitor clone() const
             {
-                return sema_builder_ast_visitor{ m_ctx, m_errors_observer, m_ids_context, m_function_factory };
+                return sema_builder_ast_visitor{ m_ctx, m_errors_observer, m_ids_context, m_type_factory, m_function_factory, m_context_factory };
             }
 
             std::unique_ptr<expression_node> visit_child_expr(const ast::ast_node& node)
@@ -582,7 +592,7 @@ namespace cmsl
                         node.get_name(),
                         std::move(params)
                 };
-                auto& function = m_function_factory.create( m_ctx, *return_type, std::move(signature) );
+                auto& function = m_function_factory.create_user( m_ctx, *return_type, std::move(signature) );
                 m_ctx.add_function(function);
 
                 return function_declaration{
@@ -627,7 +637,9 @@ namespace cmsl
             sema_context_interface& m_ctx;
             errors::errors_observer& m_errors_observer;
             identifiers_context& m_ids_context;
+            sema_type_factory& m_type_factory;
             sema_function_factory& m_function_factory;
+            sema_context_factory& m_context_factory;
         };
     }
 }

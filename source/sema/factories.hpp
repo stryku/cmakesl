@@ -13,6 +13,8 @@ namespace cmsl
         class sema_context_interface;
         class sema_context;
         class user_sema_function;
+        enum class builtin_function_kind;
+        class builtin_sema_function;
         class sema_function;
         class sema_type;
         struct member_info;
@@ -37,7 +39,8 @@ namespace cmsl
         class sema_function_factory : public factory<sema_function>
         {
         public:
-            user_sema_function& create(const sema_context_interface& ctx, const sema_type& return_type, function_signature s);
+            user_sema_function& create_user(const sema_context_interface& ctx, const sema_type& return_type, function_signature s);
+            builtin_sema_function& create_builtin(const sema_context_interface& ctx, const sema_type& return_type, function_signature s, builtin_function_kind kind);
         };
 
         class sema_type_factory : public factory<sema_type>
