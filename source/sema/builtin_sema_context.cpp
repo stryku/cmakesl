@@ -1,10 +1,11 @@
 #include "sema/builtin_sema_context.hpp"
 #include "sema/factories.hpp"
 #include "sema/type_builder.hpp"
-#include <algorithm>
+#include "sema/builtin_function_kind.hpp"
 
 namespace cmsl
 {
+
     namespace sema
     {
         builtin_sema_context::builtin_sema_context(sema_type_factory &type_factory,
@@ -18,24 +19,6 @@ namespace cmsl
             add_functions();
         }
 
-        void builtin_sema_context::add_types()
-        {
-            add_bool_type();
-
-        }
-
-        void builtin_sema_context::add_functions()
-        {
-
-        }
-
-        void builtin_sema_context::add_bool_type()
-        {
-            const auto token = make_token(token_type_t::kw_bool, "bool");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
-
-        }
-
         template<unsigned N>
         lexer::token::token builtin_sema_context::make_token(lexer::token::token_type token_type, const char (&tok)[N])
         {
@@ -44,6 +27,102 @@ namespace cmsl
                     source_location{ 1u, 1u + N, N }
             };
             return lexer::token::token{ token_type, src_range, tok };
+        }
+
+        template<unsigned N>
+        lexer::token::token builtin_sema_context::make_id_token(const char (&tok)[N])
+        {
+            return make_token(token_type_t::identifier, tok);
+        }
+
+        void builtin_sema_context::add_types()
+        {
+            auto bool_manipulator = add_bool_type();
+            auto int_manipulator = add_int_type();
+            auto double_manipulator = add_double_type();
+
+            add_bool_member_functions(bool_manipulator);
+            add_int_member_functions(int_manipulator);
+            add_double_member_functions(double_manipulator);
+        }
+
+        void builtin_sema_context::add_functions()
+        {
+
+        }
+
+        template<typename Functions>
+        void builtin_sema_context::add_type_member_functions(type_builder &manipulator, Functions &&functions)
+        {
+            for(const auto& function : functions)
+            {
+                manipulator.with_builtin_function(function.return_type,
+                                                  std::move(function.signature),
+                                                  function.kind);
+            }
+        }
+
+        type_builder builtin_sema_context::add_bool_type()
+        {
+            const auto token = make_token(token_type_t::kw_bool, "bool");
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            builder.build_and_register_in_context();
+            return builder;
+        }
+
+        void builtin_sema_context::add_bool_member_functions(type_builder &bool_manipulator)
+        {
+            const auto functions = {
+                builtin_function_info{
+                        *find_type("string"),
+                        function_signature{ make_id_token("to_string"), {} },
+                        builtin_function_kind::bool_to_string
+                }
+            };
+
+            add_type_member_functions(bool_manipulator, functions);
+        }
+
+        type_builder builtin_sema_context::add_int_type()
+        {
+            const auto token = make_token(token_type_t::kw_int, "bool");
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            builder.build_and_register_in_context();
+            return builder;
+        }
+
+        void builtin_sema_context::add_int_member_functions(type_builder &int_manipulator)
+        {
+            const auto functions = {
+                builtin_function_info{
+                        *find_type("string"),
+                        function_signature{ make_id_token("to_string"), {} },
+                        builtin_function_kind::int_to_string
+                }
+            };
+
+            add_type_member_functions(int_manipulator, functions);
+        }
+
+        type_builder builtin_sema_context::add_double_type()
+        {
+            const auto token = make_token(token_type_t::kw_double, "double");
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            builder.build_and_register_in_context();
+            return builder;
+        }
+
+        void builtin_sema_context::add_double_member_functions(type_builder &double_manipulator)
+        {
+            const auto functions = {
+                    builtin_function_info{
+                            *find_type("string"),
+                            function_signature{ make_id_token("to_string"), {} },
+                            builtin_function_kind::double_to_string
+                    }
+            };
+
+            add_type_member_functions(double_manipulator, functions);
         }
     }
 }

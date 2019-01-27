@@ -20,7 +20,7 @@ namespace cmsl
 
             // Todo: add_* probably should be moved to a builder or so.
             virtual void add_function(const sema_function& function) = 0;
-            virtual void add_type(std::unique_ptr<sema_type> type) = 0;
+            virtual void add_type(const sema_type& type) = 0;
             virtual const sema_type* find_type(cmsl::string_view name) const = 0;
             virtual const sema_type* find_type_in_this_scope(cmsl::string_view name) const = 0;
             virtual const sema_function* find_function(cmsl::string_view name) const = 0;
@@ -33,7 +33,7 @@ namespace cmsl
             explicit sema_context(const sema_context_interface* parent = nullptr);
 
             void add_function(const sema_function& function);
-            void add_type(std::unique_ptr<sema_type> type);
+            void add_type(const sema_type& type);
             const sema_type* find_type(cmsl::string_view name) const;
             const sema_type* find_type_in_this_scope(cmsl::string_view name) const;
             const sema_function* find_function(cmsl::string_view name) const;
@@ -42,7 +42,7 @@ namespace cmsl
         private:
             const sema_context_interface* m_parent;
             std::vector<const sema_function*> m_functions;
-            std::vector<std::unique_ptr<sema_type>> m_types;
+            std::vector<const sema_type*> m_types;
         };
     }
 }

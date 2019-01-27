@@ -15,9 +15,9 @@ namespace cmsl
                 m_functions.push_back(&function);
             }
 
-            void sema_context::add_type(std::unique_ptr<sema_type> type)
+            void sema_context::add_type(const sema_type& type)
             {
-                m_types.emplace_back(std::move(type));
+                m_types.emplace_back(&type);
             }
 
             const sema_type* sema_context::find_type(cmsl::string_view name) const
@@ -39,7 +39,7 @@ namespace cmsl
 
                 const auto found = std::find_if(std::cbegin(m_types), std::cend(m_types), pred);
 
-                return found != std::cend(m_types) ? found->get() : nullptr;
+                return found != std::cend(m_types) ? *found : nullptr;
             }
 
             const sema_function* sema_context::find_function(cmsl::string_view name) const
