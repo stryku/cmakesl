@@ -6,12 +6,12 @@ namespace cmsl
 {
     namespace sema
     {
+        class block_node;
         class sema_function_builder;
 
         class user_sema_function : public sema_function
         {
         public:
-
             explicit user_sema_function(const sema_context_interface& ctx, const sema_type& return_type, function_signature s)
                 : m_ctx{ ctx }
                 , m_return_type{ return_type }
@@ -24,7 +24,7 @@ namespace cmsl
                 m_body = &body;
             }
 
-            const block_node& body() const override
+            const block_node& body() const
             {
                 return *m_body;
             }
