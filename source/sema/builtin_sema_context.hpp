@@ -37,20 +37,13 @@ namespace cmsl
                 function_signature signature;
                 builtin_function_kind kind;
             };
-            struct created_function_data
-            {
-                lexer::token::token name;
-                sema_function* return_type;
 
-            };
-
-            struct created_type_data
-            {
-                const sema_type& type;
-                sema_context_interface& ctx;
-            };
-
-
+            // Types are added in two phases:
+            // 1. Adding types with its members to sema context.
+            // 2. Adding member functions to already created members.
+            // It's done this way because member function can refer to type that has not been created yet.
+            // E.g. bool has method `string to_string()` which returns `string`,
+            // and string has method `bool empty()` which returns `bool`
             void add_types();
             void add_functions();
 
