@@ -9,6 +9,7 @@ namespace cmsl
             bool_to_string,
 
             int_to_string,
+            int_operator_plus,
 
             double_to_string
 
