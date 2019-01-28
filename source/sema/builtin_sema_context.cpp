@@ -93,12 +93,20 @@ namespace cmsl
 
         void builtin_sema_context::add_int_member_functions(type_builder &int_manipulator)
         {
+            const auto& int_type = *find_type("int");
+
             const auto functions = {
-                builtin_function_info{
-                        *find_type("string"),
-                        function_signature{ make_id_token("to_string"), {} },
-                        builtin_function_kind::int_to_string
-                }
+                    builtin_function_info{
+                            *find_type("string"),
+                            function_signature{ make_id_token("to_string"), {} },
+                            builtin_function_kind::int_to_string
+                    },
+                    builtin_function_info{
+                            int_type,
+                            function_signature{ make_token(token_type_t::plus, "+"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_plus
+                    }
             };
 
             add_type_member_functions(int_manipulator, functions);
