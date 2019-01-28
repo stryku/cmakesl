@@ -15,6 +15,12 @@ namespace cmsl
         class type;
     }
 
+    namespace sema
+    {
+        class sema_function;
+        class sema_type;
+    }
+
     namespace exec
     {
         namespace inst
@@ -41,6 +47,8 @@ namespace cmsl
                 virtual bool is_ctor(cmsl::string_view name) const = 0;
                 virtual const ast::function* get_function(cmsl::string_view name) const = 0;
                 virtual const ast::type& get_type() const = 0;
+                virtual const sema::sema_function* get_sema_function(cmsl::string_view name) const = 0;
+                virtual const sema::sema_type& get_sema_type() const = 0;
             };
         }
     }

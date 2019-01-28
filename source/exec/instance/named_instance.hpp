@@ -28,6 +28,8 @@ namespace cmsl
                 bool is_ctor(cmsl::string_view name) const override;
                 const ast::function* get_function(cmsl::string_view name) const override;
                 const ast::type& get_type() const override;
+                const sema::sema_function* get_sema_function(cmsl::string_view name) const override;
+                const sema::sema_type& get_sema_type() const override;
 
             private:
                 cmsl::string_view m_name;

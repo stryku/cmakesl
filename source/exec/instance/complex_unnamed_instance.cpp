@@ -3,6 +3,7 @@
 #include "ast/class_type.hpp"
 #include "common/assert.hpp"
 #include "exec/instance/instance_factory.hpp"
+#include "sema/sema_type.hpp"
 
 namespace cmsl
 {
@@ -141,6 +142,16 @@ namespace cmsl
             bool complex_unnamed_instance::is_ctor(cmsl::string_view name) const
             {
                 return get_type().get_name() == name;
+            }
+
+            const sema::sema_function *complex_unnamed_instance::get_sema_function(cmsl::string_view name) const
+            {
+                return m_sema_type->find_member_function(name);
+            }
+
+            const sema::sema_type &complex_unnamed_instance::get_sema_type() const
+            {
+                return *m_sema_type;
             }
         }
     }

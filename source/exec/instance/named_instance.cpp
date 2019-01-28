@@ -72,6 +72,16 @@ namespace cmsl
             {
                 return get_type().get_name() == name;
             }
+
+            const sema::sema_function *named_instance::get_sema_function(cmsl::string_view name) const
+            {
+                return m_instance.get_sema_function(name);
+            }
+
+            const sema::sema_type &named_instance::get_sema_type() const
+            {
+                return m_instance.get_sema_type();
+            }
         }
     }
 }
