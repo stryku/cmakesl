@@ -7,6 +7,12 @@
 #include "sema/sema_function.hpp"
 #include "sema/sema_type.hpp"
 
+#define VISIT_METHOD \
+void visit(sema_node_visitor& visitor) const override \
+{ \
+    visitor.visit(*this); \
+}
+
 namespace cmsl
 {
     namespace sema
@@ -48,10 +54,7 @@ namespace cmsl
                 : value_node{ t, val }
             {}
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
         };
 
         // Todo: move int alias to a common file
@@ -62,10 +65,7 @@ namespace cmsl
                     : value_node{ t, val }
             {}
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
         };
 
         class double_value_node : public value_node<double>
@@ -75,10 +75,7 @@ namespace cmsl
                     : value_node{ t, val }
             {}
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
         };
 
         class string_value_node : public value_node<cmsl::string_view>
@@ -88,10 +85,7 @@ namespace cmsl
                     : value_node{ t, val }
             {}
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
         };
 
         class id_node : public expression_node
@@ -101,11 +95,6 @@ namespace cmsl
                 : m_type{ t }
                 , m_id{ id }
             {}
-
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
 
             const sema_type& type() const override
             {
@@ -117,6 +106,8 @@ namespace cmsl
             {
                 return m_id;
             }
+
+            VISIT_METHOD
 
         private:
             const sema_type& m_type;
@@ -141,10 +132,7 @@ namespace cmsl
                 return *m_expr;
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             std::unique_ptr<expression_node> m_expr;
@@ -190,10 +178,7 @@ namespace cmsl
                 return m_type;
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             std::unique_ptr<expression_node> m_lhs;
@@ -212,11 +197,6 @@ namespace cmsl
                     , m_initialization{ std::move(initialization) }
             {}
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
-
             const sema_type& type() const
             {
                 return m_type;
@@ -231,6 +211,8 @@ namespace cmsl
             {
                 return m_initialization.get();
             }
+
+            VISIT_METHOD
 
         private:
             const sema_type& m_type;
@@ -280,10 +262,7 @@ namespace cmsl
                 : call_node{ function, std::move(params) }
             {}
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
         };
 
         class member_function_call_node : public call_node
@@ -294,15 +273,12 @@ namespace cmsl
                 , m_lhs{ std::move(lhs) }
             {}
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
-
             const expression_node& lhs() const
             {
                 return *m_lhs;
             }
+
+            VISIT_METHOD
 
         private:
             std::unique_ptr<expression_node> m_lhs;
@@ -323,10 +299,7 @@ namespace cmsl
                 return m_nodes;
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             nodes_t m_nodes;
@@ -354,10 +327,7 @@ namespace cmsl
                 return m_function.return_type();
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             const sema_function& m_function;
@@ -386,10 +356,7 @@ namespace cmsl
                 return m_members;
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             lexer::token::token m_name;
@@ -415,10 +382,7 @@ namespace cmsl
                 return *m_body;
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             std::unique_ptr<expression_node> m_condition;
@@ -437,10 +401,7 @@ namespace cmsl
                 return *m_conditional;
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             std::unique_ptr<conditional_node> m_conditional;
@@ -466,10 +427,7 @@ namespace cmsl
                 return m_else.get();
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             ifs_t m_ifs;
@@ -499,10 +457,7 @@ namespace cmsl
                 return m_member_info.name;
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             std::unique_ptr<expression_node> m_lhs;
@@ -523,10 +478,7 @@ namespace cmsl
                 return m_nodes;
             }
 
-            void visit(sema_node_visitor& visitor) override
-            {
-                visitor.visit(*this);
-            }
+            VISIT_METHOD
 
         private:
             nodes_t m_nodes;
