@@ -52,15 +52,13 @@ namespace cmsl
             {
                 auto lhs_result = evaluate_child(node.lhs());
                 auto rhs_result = evaluate_child(node.rhs());
+                const auto operator_string = node.op().str();
+                const auto& operator_function = node.operator_function();
 
-                auto operations = m_ctx.operations_factory.create(lhs_result->get_type());
-                const auto operator_string = operator_to_str(node.op());
-
-                value_operations::parameters_t params;
-                params.emplace_back(rhs_result->get_value());
-
-                auto operation_result = operations->execute_operation(operator_string, lhs_result->get_value_ref(), params);
-                result = m_ctx.instances.create(std::move(operation_result));
+                // Todo: use small vector.
+                std::vector<inst::instance*> params;
+                params.emplace_back(rhs_result);
+                result = m_ctx.function_caller.call_member(*lhs_result, operator_function, std::move(params));
             }
 
             void visit(const sema::function_call_node& node) override
