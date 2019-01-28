@@ -76,7 +76,7 @@ namespace cmsl
                 return create(int_type);
             }
 
-            inst::instance *instances_holder::create(bool value)
+            inst::instance *instances_holder::create2(instance_value_t value)
             {
                 // Todo: implement
                 CMSL_UNREACHABLE("Not implemented");
