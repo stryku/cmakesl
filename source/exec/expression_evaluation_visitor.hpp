@@ -10,6 +10,7 @@
 #include "exec/value_operations_factory.hpp"
 #include "sema/sema_context.hpp"
 #include "exec/function_caller.hpp"
+#include "exec/identifiers_context.hpp"
 
 namespace cmsl
 {
@@ -44,8 +45,7 @@ namespace cmsl
 
             void visit(const sema::id_node& node) override
             {
-                auto& exec_ctx = m_ctx.ctx_provider.get_exec_ctx();
-                result = exec_ctx.get_variable(node.id().str());
+                result = m_ctx.ids_context.lookup_identifier(node.id().str());
             }
 
             void visit(const sema::binary_operator_node& node) override
@@ -102,7 +102,7 @@ namespace cmsl
                                std::back_inserter(evaluated_params),
                                [this](const auto& param_expression)
                                {
-                                   return evaluate_child(param_expression);
+                                   return evaluate_child(*param_expression);
                                });
 
                 return evaluated_params;
