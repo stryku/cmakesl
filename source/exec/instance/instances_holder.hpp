@@ -36,6 +36,8 @@ namespace cmsl
 
                 std::unique_ptr<instance> gather_ownership(inst::instance* instance_ptr) override;
 
+                inst::instance* create(bool value) override;
+
             private:
                 contexted_instance_factory get_factory();
 

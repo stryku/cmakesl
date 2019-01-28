@@ -27,7 +27,8 @@ namespace cmsl
         template <typename Container, typename Value>
         bool contains_impl(Container&& container, Value&& value, contains_helper<0>)
         {
-            return std::find(std::cbegin(container), std::cend(container), value) != std::cend(container);
+            // Todo: use cbegin/cend
+            return std::find(std::begin(container), std::end(container), value) != std::end(container);
         }
     }
 

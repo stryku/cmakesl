@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(CMAKE_CXX_STANDARD 17)
 
 project(CMakeSL)
+
+add_definitions(--std=c++17)
 
 # Todo: get rid of boost
 find_package(Boost REQUIRED)
