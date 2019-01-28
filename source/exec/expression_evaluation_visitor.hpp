@@ -25,7 +25,7 @@ namespace cmsl
 
             void visit(const sema::bool_value_node& node) override
             {
-                result = m_ctx.instances.create(node.value());
+                result = m_ctx.instances.create2(node.value());
             }
 
             void visit(const sema::int_value_node& node) override
