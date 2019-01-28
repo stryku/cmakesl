@@ -4,9 +4,8 @@ namespace cmsl
 {
     namespace exec
     {
-        class context_provider;
         class function_caller2;
-        class value_operations_factory;
+        class identifiers_context;
 
         namespace inst
         {
@@ -15,10 +14,9 @@ namespace cmsl
 
         struct expression_evaluation_context
         {
-            context_provider& ctx_provider;
             function_caller2& function_caller;
             inst::instances_holder_interface& instances;
-            value_operations_factory& operations_factory;
+            identifiers_context& ids_context;
         };
     }
 }

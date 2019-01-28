@@ -2,13 +2,14 @@
 
 #include "sema/sema_nodes.hpp"
 
+#include "exec/identifiers_context.hpp"
 #include "exec/instance/instance.hpp"
 
 namespace cmsl
 {
     namespace exec
     {
-        class execution2
+        class execution2 : public identifiers_context
         {
         public:
             void function_call(const sema::function_node& fun, std::vector<inst::instance*> params)
