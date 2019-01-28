@@ -24,6 +24,8 @@ namespace cmsl
                     MOCK_METHOD0(create_void, instance*());
                     MOCK_METHOD1(store, void(std::unique_ptr<instance>));
                     MOCK_METHOD1(gather_ownership, std::unique_ptr<instance>(inst::instance*));
+
+                    MOCK_METHOD1(create, instance*(bool));
                 };
             }
         }

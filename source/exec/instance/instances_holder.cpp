@@ -4,6 +4,8 @@
 #include "exec/context_provider.hpp"
 #include "ast/ast_context.hpp"
 
+#include "common/assert.hpp"
+
 namespace cmsl
 {
     namespace exec
@@ -72,6 +74,13 @@ namespace cmsl
                 // todo create one static instance of void type
                 const auto& int_type = m_ctx_provider.get_ast_ctx().find_type("int");
                 return create(int_type);
+            }
+
+            inst::instance *instances_holder::create(bool value)
+            {
+                // Todo: implement
+                CMSL_UNREACHABLE("Not implemented");
+                return nullptr;
             }
         }
     }

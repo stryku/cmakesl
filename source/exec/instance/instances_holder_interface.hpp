@@ -28,6 +28,8 @@ namespace cmsl
                 virtual inst::instance *create_void() = 0;
                 virtual void store(std::unique_ptr<instance> i) = 0;
                 virtual std::unique_ptr<instance> gather_ownership(inst::instance *instance_ptr) = 0;
+
+                virtual inst::instance *create(bool value) = 0;
             };
         }
     }

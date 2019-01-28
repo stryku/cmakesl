@@ -45,7 +45,7 @@ namespace cmsl
                 {
                     sema::bool_value_node true_node{valid_type, true};
 
-                    EXPECT_CALL(instances, create(ByRef(valid_type)))
+                    EXPECT_CALL(instances, create(true))
                     .WillOnce(Return(&instance_mock));
                     visitor.visit(true_node);
 
