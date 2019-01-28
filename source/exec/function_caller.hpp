@@ -36,7 +36,7 @@ namespace cmsl
         class function_caller2
         {
         public:
-            virtual ~function_caller() = default;
+            virtual ~function_caller2() = default;
 
             virtual inst::instance* call(const sema::sema_function& fun, const std::vector<inst::instance*>& params) = 0;
             virtual inst::instance* call_member(inst::instance& class_instance,

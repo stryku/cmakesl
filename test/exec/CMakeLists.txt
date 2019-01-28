@@ -31,6 +31,6 @@ endif()
 
 
 add_executable(${TESTS_NAME} ${SOURCES} )
-target_link_libraries(${TESTS_NAME} gmock_main exec lexer errors ast tests_common)
+target_link_libraries(${TESTS_NAME} gmock_main exec sema lexer errors ast tests_common)
 target_include_directories(${TESTS_NAME} PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_DIR})
 add_test(NAME ${TESTS_NAME} COMMAND ${TESTS_NAME}) 
