@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sema/sema_function.hpp>
 #include "ast/type.hpp"
 #include "exec/instance/instance.hpp"
 #include "exec/instance/instance_members_alias.hpp"
@@ -30,6 +31,8 @@ namespace cmsl
                 bool is_fundamental() const;
                 const ast::function* get_function(cmsl::string_view name) const override;
                 const ast::type& get_type() const override;
+                const sema::sema_function* get_sema_function(cmsl::string_view name) const override;
+                const sema::sema_type& get_sema_type() const override;
 
             private:
                 instance_members_t get_init_data() const;
@@ -41,6 +44,7 @@ namespace cmsl
             private:
                 kind m_kind;
                 const ast::type &m_type;
+                const sema::sema_type* m_sema_type;
                 instance_members_t m_members;
             };
         }
