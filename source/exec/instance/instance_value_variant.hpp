@@ -1,6 +1,8 @@
 #pragma once
 
 #include "exec/instance/int_alias.hpp"
+#include "exec/instance/generic_instance_value.hpp"
+#include "exec/instance/instance.hpp"
 
 #include <string>
 
@@ -20,12 +22,14 @@ namespace cmsl
                     value(int_t val) : m_int{ val } {}
                     value(double val) : m_double{ val } {}
                     value(std::string val) : m_string{ std::move(val) } {}
+                    value(generic_instance_value val) : m_generic{ std::move(val) } {}
                     ~value() {}
 
                     bool m_bool;
                     int_t m_int;
                     double m_double;
                     std::string m_string;
+                    generic_instance_value m_generic;
                 } m_value;
 
             public:
@@ -34,7 +38,8 @@ namespace cmsl
                     bool_,
                     int_,
                     double_,
-                    string
+                    string,
+                    generic
                 };
 
                 instance_value_variant(const instance_value_variant& other)
@@ -82,6 +87,11 @@ namespace cmsl
                 instance_value_variant(std::string val)
                 {
                     assign(std::move(val), which_type::string);
+                }
+
+                instance_value_variant(generic_instance_value val)
+                {
+                    assign(std::move(val), which_type::generic);
                 }
 
                 ~instance_value_variant()
@@ -134,6 +144,16 @@ namespace cmsl
                     reassign(std::move(value), which_type::string);
                 }
 
+                const generic_instance_value& get_generic_cref() const
+                {
+                    return m_value.m_generic;
+                }
+
+                void set_generic(generic_instance_value value)
+                {
+                    reassign(std::move(value), which_type::generic);
+                }
+
             private:
                 template <typename T>
                 void reassign(T&& val, which_type w)
@@ -161,6 +181,10 @@ namespace cmsl
                         case which_type::string:
                         {
                             assign(other.m_string, w);
+                        }break;
+                        case which_type::generic:
+                        {
+                            assign(other.m_generic, w);
                         }break;
                     }
                 }
@@ -192,21 +216,28 @@ namespace cmsl
                     new (&m_value.m_string) std::string{ std::move(value) };
                 }
 
+                void construct(generic_instance_value value)
+                {
+                    new (&m_value.m_generic) generic_instance_value{ std::move(value) };
+                }
+
                 void destruct()
                 {
                     switch (m_which)
                     {
-                        case which_type::string:
-                        {
-                            m_value.m_string.std::string::~string();
-                        }
-                            break;
-
                         case which_type::bool_:
                         case which_type::int_:
                         case which_type::double_:
                             // Primitives, do nothing.
                             break;
+                        case which_type::string:
+                        {
+                            m_value.m_string.std::string::~string();
+                        } break;
+                        case which_type::generic:
+                        {
+                            m_value.m_generic.generic_instance_value::~generic_instance_value();
+                        } break;
                     }
                 }
 
