@@ -29,7 +29,7 @@ namespace cmsl
             const sema::sema_context valid_context;
             const sema::sema_type valid_type{ valid_context, token_identifier("foo"), {} };
 
-            TEST(ExpressionEvaluationVisitorTest, Visit_BoolValue_CreatesInstanceAndStoresAsResult)
+            TEST(ExpressionEvaluationVisitorTest, DISABLED_Visit_BoolValue_CreatesInstanceAndStoresAsResult)
             {
                 StrictMock<inst::test::instance_mock> instance_mock;
                 StrictMock<identifiers_context_mock> ids_ctx;

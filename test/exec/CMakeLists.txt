@@ -22,7 +22,7 @@ set(SOURCES
         fake/fake_function_caller.hpp mock/cmake_facade_mock.hpp cmake_minimum_required_test.cpp
 
         builtin_function_caller_test.cpp
-        expression_evaluation_visitor_test.cpp mock/identifiers_context_mock.hpp)
+        expression_evaluation_visitor_test.cpp mock/identifiers_context_mock.hpp instance_value_variant_test.cpp)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
