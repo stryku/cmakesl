@@ -238,13 +238,19 @@ namespace cmsl
                             break;
                         case which_type::string:
                         {
-                            m_value.m_string.std::string::~string();
+                            call_dtor(m_value.m_string);
                         } break;
                         case which_type::generic:
                         {
-                            m_value.m_generic.generic_instance_value::~generic_instance_value();
+                            call_dtor(m_value.m_generic);
                         } break;
                     }
+                }
+
+                template <typename T>
+                void call_dtor(T& val)
+                {
+                    val.~T();
                 }
 
             private:
