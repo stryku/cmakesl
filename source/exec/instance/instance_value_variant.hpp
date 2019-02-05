@@ -2,7 +2,6 @@
 
 #include "exec/instance/int_alias.hpp"
 #include "exec/instance/generic_instance_value.hpp"
-#include "exec/instance/instance.hpp"
 
 #include <string>
 
@@ -83,6 +82,8 @@ namespace cmsl
                 void set_string(std::string value);
 
                 const generic_instance_value& get_generic_cref() const;
+
+                generic_instance_value& get_generic_ref();
 
                 void set_generic(generic_instance_value value);
 
