@@ -213,18 +213,18 @@ namespace cmsl
 
                 void construct(std::string value)
                 {
-                    construct(&m_value.m_string, std::move(value));
+                    construct(m_value.m_string, std::move(value));
                 }
 
                 void construct(generic_instance_value value)
                 {
-                    construct(&m_value.m_generic, std::move(value));
+                    construct(m_value.m_generic, std::move(value));
                 }
 
                 template <typename Value>
-                void construct(Value* destination_ptr, Value&& value)
+                void construct(Value& destination_ptr, Value&& value)
                 {
-                    new (destination_ptr) Value{ std::move(value) };
+                    new (&destination_ptr) Value{ std::move(value) };
                 }
 
                 void destruct()
