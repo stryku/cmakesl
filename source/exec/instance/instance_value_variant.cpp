@@ -112,6 +112,11 @@ namespace cmsl
                 return m_value.m_generic;
             }
 
+            generic_instance_value& instance_value_variant::get_generic_ref()
+            {
+                return m_value.m_generic;
+            }
+
             void instance_value_variant::set_generic(generic_instance_value value)
             {
                 reassign(std::move(value), which_type::generic);
