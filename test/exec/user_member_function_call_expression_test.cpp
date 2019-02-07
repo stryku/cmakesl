@@ -30,7 +30,7 @@ namespace cmsl
                     return &arg == function_mock_ptr;
                 };
 
-                TEST_F(MemberFunctionCallExpression, CorrectParametersPassAndReturn)
+                TEST_F(MemberFunctionCallExpression, DISABLED_CorrectParametersPassAndReturn)
                 {
                     auto caller_mock = std::make_unique<exec::test::function_caller_mock>();
                     auto param_1_expr_mock = std::make_unique<infix_expression_mock>();

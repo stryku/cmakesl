@@ -28,14 +28,14 @@ namespace cmsl
                         }
                     };
 
-                    TEST_F(BuiltinTypeDefaultValue, Bool_GetFalse)
+                    TEST_F(BuiltinTypeDefaultValue, DISABLED_Bool_GetFalse)
                     {
                         const auto val = get_value_of_type("bool");
                         const auto bool_value = val.get_bool();
                         ASSERT_THAT(bool_value, Eq(false));
                     }
 
-                    TEST_F(BuiltinTypeDefaultValue, Int_GetZero)
+                    TEST_F(BuiltinTypeDefaultValue, DISABLED_Int_GetZero)
                     {
                         using int_t = cmsl::exec::inst::int_t;
                         const auto val = get_value_of_type("int");
@@ -43,14 +43,14 @@ namespace cmsl
                         ASSERT_THAT(int_value, Eq(int_t{0}));
                     }
 
-                    TEST_F(BuiltinTypeDefaultValue, Double_GetZero)
+                    TEST_F(BuiltinTypeDefaultValue, DISABLED_Double_GetZero)
                     {
                         const auto val = get_value_of_type("double");
                         const auto double_value = val.get_double();
                         ASSERT_THAT(double_value, Eq(0.0));
                     }
 
-                    TEST_F(BuiltinTypeDefaultValue, String_GetEmpty)
+                    TEST_F(BuiltinTypeDefaultValue, DISABLED_String_GetEmpty)
                     {
                         const auto val = get_value_of_type("string");
                         const auto string_value = val.get_string_cref();

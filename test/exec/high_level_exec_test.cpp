@@ -41,7 +41,7 @@ namespace cmsl
 
             fake_facade facade;
 
-            TEST(Exec, VariableAssign)
+            TEST(Exec, DISABLED_VariableAssign)
             {
                 const auto source =
                     "int main()"
@@ -55,7 +55,7 @@ namespace cmsl
                 EXPECT_THAT(result, 2);
             }
 
-            TEST(Exec, VariableSelfAssign)
+            TEST(Exec, DISABLED_VariableSelfAssign)
             {
                 const auto source =
                     "int main()"
@@ -69,7 +69,7 @@ namespace cmsl
                 EXPECT_THAT(result, 4);
             }
 
-            TEST(Exec, ClassMemberAssign)
+            TEST(Exec, DISABLED_ClassMemberAssign)
             {
                 const auto source =
                     "class Foo"
@@ -88,7 +88,7 @@ namespace cmsl
                 EXPECT_THAT(result, 2);
             }
 
-            TEST(Exec, ClassMemberFunction)
+            TEST(Exec, DISABLED_ClassMemberFunction)
             {
                 const auto source =
                     "class Foo"
@@ -109,7 +109,7 @@ namespace cmsl
                 EXPECT_THAT(result, 2);
             }
 
-            TEST(Exec, ClassMemberFunctionUsingClassMember)
+            TEST(Exec, DISABLED_ClassMemberFunctionUsingClassMember)
             {
                 const auto source =
                     "class Foo"
@@ -135,7 +135,7 @@ namespace cmsl
                 EXPECT_THAT(result, 5);
             }
 
-            TEST(Exec, UserTypeClassMember)
+            TEST(Exec, DISABLED_UserTypeClassMember)
             {
                 const auto source =
                     "class Foo"
@@ -159,7 +159,7 @@ namespace cmsl
                 EXPECT_THAT(result, 2);
             }
 
-            TEST(Exec, ListPushBack)
+            TEST(Exec, DISABLED_ListPushBack)
             {
                 const auto source =
                     "int main()"
@@ -177,7 +177,7 @@ namespace cmsl
                 EXPECT_THAT(result, 5);
             }
 
-            TEST(Exec, ListOfListPushBack)
+            TEST(Exec, DISABLED_ListOfListPushBack)
             {
                 const auto source =
                     "int main()"
@@ -196,7 +196,7 @@ namespace cmsl
                 EXPECT_THAT(result, 5);
             }
 
-            TEST(Exec, UserDefinedConstructor)
+            TEST(Exec, DISABLED_UserDefinedConstructor)
             {
                 const auto source =
                     "class Foo"
@@ -218,7 +218,7 @@ namespace cmsl
                 EXPECT_THAT(result, 4);
             }
 
-            TEST(Exec, VersionCreation)
+            TEST(Exec, DISABLED_VersionCreation)
             {
                 const auto source =
                     "int main()"

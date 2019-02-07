@@ -27,7 +27,7 @@ namespace cmsl
                     {
                     };
 
-                    TEST_P(ConvertToType, FundamentalArithmetic_GetCorrectValue)
+                    TEST_P(ConvertToType, DISABLED_FundamentalArithmetic_GetCorrectValue)
                     {
                         exec::test::test_context_provider ctx_provider;
                         instances_holder instances{ctx_provider};
