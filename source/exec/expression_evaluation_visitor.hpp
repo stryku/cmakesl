@@ -147,6 +147,9 @@ namespace cmsl
                     {
                         return op.str().to_string();
                     }
+
+                    default:
+                        break;
                 }
 
                 CMSL_UNREACHABLE("Unknown operator token");
