@@ -48,9 +48,88 @@ namespace cmsl
                 inst::instance_value_t value{true};
 
                 EXPECT_CALL(instances, create2(_))
-                    .WillOnce(Return(&instance_mock));
+                        .WillOnce(Return(&instance_mock));
 
                 visitor.visit(true_node);
+
+                EXPECT_THAT(visitor.result, Eq(&instance_mock));
+            }
+
+            TEST(ExpressionEvaluationVisitorTest, Visit_IntValue_CreatesInstanceAndStoresAsResult)
+            {
+                StrictMock<inst::test::instance_mock> instance_mock;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<function_caller2_mock> caller;
+                StrictMock<inst::test::instances_holder_mock> instances;
+                expression_evaluation_context ctx{
+                        caller,
+                        instances,
+                        ids_ctx
+                };
+
+                expression_evaluation_visitor visitor{ ctx };
+
+                // Todo: use int alias instead of std::int64_t
+                const auto test_value = std::int64_t{42};
+                sema::int_value_node node{valid_type, test_value };
+                inst::instance_value_t value{test_value};
+
+                EXPECT_CALL(instances, create2(_))
+                        .WillOnce(Return(&instance_mock));
+
+                visitor.visit(node);
+
+                EXPECT_THAT(visitor.result, Eq(&instance_mock));
+            }
+
+            TEST(ExpressionEvaluationVisitorTest, Visit_DoubleValue_CreatesInstanceAndStoresAsResult)
+            {
+                StrictMock<inst::test::instance_mock> instance_mock;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<function_caller2_mock> caller;
+                StrictMock<inst::test::instances_holder_mock> instances;
+                expression_evaluation_context ctx{
+                        caller,
+                        instances,
+                        ids_ctx
+                };
+
+                expression_evaluation_visitor visitor{ ctx };
+
+                const auto test_value = 42.42;
+                sema::double_value_node node{valid_type, test_value };
+                inst::instance_value_t value{test_value};
+
+                EXPECT_CALL(instances, create2(_))
+                        .WillOnce(Return(&instance_mock));
+
+                visitor.visit(node);
+
+                EXPECT_THAT(visitor.result, Eq(&instance_mock));
+            }
+
+            TEST(ExpressionEvaluationVisitorTest, Visit_StringValue_CreatesInstanceAndStoresAsResult)
+            {
+                StrictMock<inst::test::instance_mock> instance_mock;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<function_caller2_mock> caller;
+                StrictMock<inst::test::instances_holder_mock> instances;
+                expression_evaluation_context ctx{
+                        caller,
+                        instances,
+                        ids_ctx
+                };
+
+                expression_evaluation_visitor visitor{ ctx };
+
+                const auto test_value = std::string{"42"};
+                sema::string_value_node node{valid_type, test_value };
+                inst::instance_value_t value{test_value};
+
+                EXPECT_CALL(instances, create2(_))
+                        .WillOnce(Return(&instance_mock));
+
+                visitor.visit(node);
 
                 EXPECT_THAT(visitor.result, Eq(&instance_mock));
             }

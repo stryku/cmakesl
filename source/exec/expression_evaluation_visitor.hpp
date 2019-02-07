@@ -30,17 +30,17 @@ namespace cmsl
 
             void visit(const sema::int_value_node& node) override
             {
-                result = m_ctx.instances.create(node.value());
+                result = m_ctx.instances.create2(node.value());
             }
 
             void visit(const sema::double_value_node& node) override
             {
-                result = m_ctx.instances.create(node.value());
+                result = m_ctx.instances.create2(node.value());
             }
 
             void visit(const sema::string_value_node& node) override
             {
-                result = m_ctx.instances.create(node.value().to_string());
+                result = m_ctx.instances.create2(node.value().to_string());
             }
 
             void visit(const sema::id_node& node) override
