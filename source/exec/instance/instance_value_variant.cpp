@@ -1,6 +1,8 @@
 #include "exec/instance/instance_value_variant.hpp"
 #include "exec/instance/generic_instance_value.hpp"
 #include "exec/instance/instance.hpp"
+#include "instance_value_variant.hpp"
+
 
 namespace cmsl
 {
@@ -218,6 +220,28 @@ namespace cmsl
             void instance_value_variant::call_dtor(T& val)
             {
                 val.~T();
+            }
+
+            bool instance_value_variant::operator==(const instance_value_variant &rhs) const
+            {
+                if(m_which != rhs.which())
+                {
+                    return false;
+                }
+
+                switch (m_which)
+                {
+                    case which_type::bool_: return get_bool() == rhs.get_bool();
+                    case which_type::int_: return get_int() == rhs.get_int();
+                    case which_type::double_:  return get_double() == rhs.get_double();
+                    case which_type::string: return get_string_cref() == rhs.get_string_cref();
+                    case which_type::generic: return get_generic_cref() == rhs.get_generic_cref();
+                }
+            }
+
+            bool instance_value_variant::operator!=(const instance_value_variant &rhs) const
+            {
+                return !(*this == rhs);
             }
         }
     }

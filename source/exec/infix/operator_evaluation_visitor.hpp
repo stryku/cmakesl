@@ -69,13 +69,29 @@ namespace cmsl
                     switch(values_type)
                     {
                         case inst::instance_value_type::bool_:
-                            return apply_with_cast<bool, inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            const auto rhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            return lhs_value + rhs_value;
+                        }
                         case inst::instance_value_type::int_:
-                            return apply<inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_int();
+                            const auto rhs_value = lhs.get_int();
+                            return lhs_value + rhs_value;
+                        }
                         case inst::instance_value_type::double_:
-                            return apply<double>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_double();
+                            const auto rhs_value = lhs.get_double();
+                            return lhs_value + rhs_value;
+                        }
                         case inst::instance_value_type::string:
-                            return apply<std::string>(lhs, rhs, operation);
+                        {
+                            const auto& lhs_value = lhs.get_string_cref();
+                            const auto& rhs_value = lhs.get_string_cref();
+                            return lhs_value + rhs_value;
+                        }
 
                         default:
                             CMSL_UNREACHABLE("Applying plus operator to types that doesn't support it.");
@@ -96,12 +112,23 @@ namespace cmsl
                     switch(values_type)
                     {
                         case inst::instance_value_type::bool_:
-                            return apply_with_cast<bool, inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            const auto rhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            return lhs_value - rhs_value;
+                        }
                         case inst::instance_value_type::int_:
-                            return apply<inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_int();
+                            const auto rhs_value = lhs.get_int();
+                            return lhs_value - rhs_value;
+                        }
                         case inst::instance_value_type::double_:
-                            return apply<double>(lhs, rhs, operation);
-
+                        {
+                            const auto lhs_value = lhs.get_double();
+                            const auto rhs_value = lhs.get_double();
+                            return lhs_value - rhs_value;
+                        }
                         default:
                             CMSL_UNREACHABLE("Applying minus operator to types that doesn't support it.");
                     }
@@ -132,12 +159,23 @@ namespace cmsl
                     switch(values_type)
                     {
                         case inst::instance_value_type::bool_:
-                            return apply_with_cast<bool, inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            const auto rhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::int_:
-                            return apply<inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_int();
+                            const auto rhs_value = lhs.get_int();
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::double_:
-                            return apply<double>(lhs, rhs, operation);
-
+                        {
+                            const auto lhs_value = lhs.get_double();
+                            const auto rhs_value = lhs.get_double();
+                            return operation(lhs_value, rhs_value);
+                        }
                         default:
                             CMSL_UNREACHABLE("Applying multiplicative operator to types that doesn't support it.");
                     }
@@ -172,15 +210,31 @@ namespace cmsl
                     switch(values_type)
                     {
                         case inst::instance_value_type::bool_:
-                            return apply<bool>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            const auto rhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::int_:
-                            return apply<inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_int();
+                            const auto rhs_value = lhs.get_int();
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::double_:
-                            return apply<double>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_double();
+                            const auto rhs_value = lhs.get_double();
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::string:
-                            return apply<std::string>(lhs, rhs, operation);
-                        case inst::instance_value_type::generic:
-                            return apply_generic(lhs, rhs, operation);
+                        {
+                            const auto& lhs_value = lhs.get_string_cref();
+                            const auto& rhs_value = lhs.get_string_cref();
+                            return operation(lhs_value, rhs_value);
+                        }
+                        //case inst::instance_value_type::generic:
+                        //    return apply_generic(lhs, rhs, operation);
 
                         default:
                             CMSL_UNREACHABLE("Applying equalequal operator to types that doesn't support it.");
@@ -217,13 +271,29 @@ namespace cmsl
                     switch(values_type)
                     {
                         case inst::instance_value_type::bool_:
-                            return apply_with_cast<bool, inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            const auto rhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::int_:
-                            return apply<inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_int();
+                            const auto rhs_value = lhs.get_int();
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::double_:
-                            return apply<double>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_double();
+                            const auto rhs_value = lhs.get_double();
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::string:
-                            return apply<std::string>(lhs, rhs, operation);
+                        {
+                            const auto& lhs_value = lhs.get_string_cref();
+                            const auto& rhs_value = lhs.get_string_cref();
+                            return operation(lhs_value, rhs_value);
+                        }
 
                         default:
                             CMSL_UNREACHABLE("Applying relation operator to types that doesn't support it.");
@@ -258,9 +328,17 @@ namespace cmsl
                     switch(values_type)
                     {
                         case inst::instance_value_type::bool_:
-                            return apply<bool>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            const auto rhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::int_:
-                            return apply<inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_int();
+                            const auto rhs_value = lhs.get_int();
+                            return operation(lhs_value, rhs_value);
+                        }
 
                         default:
                             CMSL_UNREACHABLE("Applying logical operator to types that doesn't support it.");
@@ -285,9 +363,17 @@ namespace cmsl
                     switch(values_type)
                     {
                         case inst::instance_value_type::bool_:
-                            return apply_with_cast<bool, inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            const auto rhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::int_:
-                            return apply<inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_int();
+                            const auto rhs_value = lhs.get_int();
+                            return operation(lhs_value, rhs_value);
+                        }
 
                         default:
                             CMSL_UNREACHABLE("Applying reminder operator to types that doesn't support it.");
@@ -320,9 +406,17 @@ namespace cmsl
                     switch(values_type)
                     {
                         case inst::instance_value_type::bool_:
-                            return apply_with_cast<bool, inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            const auto rhs_value = static_cast<inst::int_t>(lhs.get_bool());
+                            return operation(lhs_value, rhs_value);
+                        }
                         case inst::instance_value_type::int_:
-                            return apply<inst::int_t>(lhs, rhs, operation);
+                        {
+                            const auto lhs_value = lhs.get_int();
+                            const auto rhs_value = lhs.get_int();
+                            return operation(lhs_value, rhs_value);
+                        }
 
                         default:
                             CMSL_UNREACHABLE("Applying bitwise operator to types that doesn't support it.");

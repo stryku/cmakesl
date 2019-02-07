@@ -54,7 +54,23 @@ namespace cmsl
                     const ast::ast_context& m_ctx;
                 };
 
-                const auto& t = boost::apply_visitor(type_getter_visitor{ ast_ctx }, value);
+                const auto& t = [&value, &ast_ctx]() -> const ast::type&
+                {
+                    switch(value.which())
+                    {
+
+                        // Todo: store found types somewhere
+                        case instance_value_variant::which_type::bool_: return *ast_ctx.find_type("bool");
+                        case instance_value_variant::which_type::int_: return *ast_ctx.find_type("int");
+                        case instance_value_variant::which_type::double_: return *ast_ctx.find_type("int");
+                        case instance_value_variant::which_type::string: return *ast_ctx.find_type("int");
+                        case instance_value_variant::which_type::generic:
+                        {
+                            return value.get_generic_cref().get_type();
+                        }
+                    }
+                }();
+
                 return std::make_unique<simple_unnamed_instance>(t, value);
             }
 

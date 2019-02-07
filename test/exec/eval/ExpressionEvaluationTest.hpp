@@ -39,31 +39,24 @@ namespace cmsl
                     using instance_t = inst::instance;
                     using int_t = inst::int_t;
 
-                    template<typename Result>
-                    Result result_val(instance_t *result)
-                    {
-                        auto result_val = result->get_value();
-                        return boost::get<Result>(result_val);
-                    }
-
                     auto result_int_val(instance_t *result)
                     {
-                        return result_val<int_t>(result);
+                        return result->get_value_cref().get_int();
                     }
 
                     auto result_bool_val(instance_t *result)
                     {
-                        return result_val<bool>(result);
+                        return result->get_value_cref().get_bool();
                     }
 
                     auto result_string_val(instance_t *result)
                     {
-                        return result_val<std::string>(result);
+                        return result->get_value_cref().get_string_cref();
                     }
 
                     auto result_double_val(instance_t *result)
                     {
-                        return result_val<double>(result);
+                        return result->get_value_cref().get_double();
                     }
 
                     exec::test::test_context_provider m_ctx_provider;
