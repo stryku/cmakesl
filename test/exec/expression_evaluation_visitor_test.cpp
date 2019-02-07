@@ -29,7 +29,7 @@ namespace cmsl
             const sema::sema_context valid_context;
             const sema::sema_type valid_type{ valid_context, token_identifier("foo"), {} };
 
-            TEST(ExpressionEvaluationVisitorTest, DISABLED_Visit_BoolValue_CreatesInstanceAndStoresAsResult)
+            TEST(ExpressionEvaluationVisitorTest, Visit_BoolValue_CreatesInstanceAndStoresAsResult)
             {
                 StrictMock<inst::test::instance_mock> instance_mock;
                 StrictMock<identifiers_context_mock> ids_ctx;
@@ -46,9 +46,9 @@ namespace cmsl
                 // Todo: consider testing false too.
                 sema::bool_value_node true_node{valid_type, true};
                 inst::instance_value_t value{true};
-                // Todo: uncomment when variant is implemented
-                //EXPECT_CALL(instances, create2(_))
-                //    .WillOnce(Return(&instance_mock));
+
+                EXPECT_CALL(instances, create2(_))
+                    .WillOnce(Return(&instance_mock));
 
                 visitor.visit(true_node);
 
