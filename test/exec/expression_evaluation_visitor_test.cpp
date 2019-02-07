@@ -8,6 +8,8 @@
 #include "test/exec/mock/identifiers_context_mock.hpp"
 #include "test/exec/mock/instances_holder_mock.hpp"
 #include "test/exec/mock/instance_mock.hpp"
+#include "test/sema/mock/sema_function_mock.hpp"
+#include "test/sema/mock/expression_node_mock.hpp"
 
 #include <gmock/gmock.h>
 #include "exec/instance/int_alias.hpp"
@@ -32,7 +34,6 @@ namespace cmsl
             class ExpressionEvaluationVisitorTest : public ::testing::Test
             {
             protected:
-                StrictMock<inst::test::instance_mock> m_instance_mock;
                 StrictMock<identifiers_context_mock> m_ids_ctx;
                 StrictMock<function_caller2_mock> m_caller;
                 StrictMock<inst::test::instances_holder_mock> m_instances;
@@ -43,8 +44,15 @@ namespace cmsl
                 };
             };
 
+            // Todo: move to a common file.
+            MATCHER_P(MatchRef, ptr, "")
+            {
+                return &arg == ptr;
+            }
+
             TEST_F(ExpressionEvaluationVisitorTest, Visit_BoolValue_CreatesInstanceAndStoresAsResult)
             {
+                StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
                 // Todo: consider testing false too.
@@ -52,15 +60,16 @@ namespace cmsl
                 inst::instance_value_t value{true};
 
                 EXPECT_CALL(m_instances, create2(_))
-                        .WillOnce(Return(&m_instance_mock));
+                        .WillOnce(Return(&instance_mock));
 
                 visitor.visit(true_node);
 
-                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
+                EXPECT_THAT(visitor.result, Eq(&instance_mock));
             }
 
             TEST_F(ExpressionEvaluationVisitorTest, Visit_IntValue_CreatesInstanceAndStoresAsResult)
             {
+                StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
                 // Todo: use int alias instead of std::int64_t
@@ -69,15 +78,16 @@ namespace cmsl
                 inst::instance_value_t value{test_value};
 
                 EXPECT_CALL(m_instances, create2(_))
-                        .WillOnce(Return(&m_instance_mock));
+                        .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
+                EXPECT_THAT(visitor.result, Eq(&instance_mock));
             }
 
             TEST_F(ExpressionEvaluationVisitorTest, Visit_DoubleValue_CreatesInstanceAndStoresAsResult)
             {
+                StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
                 const auto test_value = 42.42;
@@ -85,15 +95,16 @@ namespace cmsl
                 inst::instance_value_t value{test_value};
 
                 EXPECT_CALL(m_instances, create2(_))
-                        .WillOnce(Return(&m_instance_mock));
+                        .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
+                EXPECT_THAT(visitor.result, Eq(&instance_mock));
             }
 
             TEST_F(ExpressionEvaluationVisitorTest, Visit_StringValue_CreatesInstanceAndStoresAsResult)
             {
+                StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
                 const auto test_value = std::string{"42"};
@@ -101,26 +112,66 @@ namespace cmsl
                 inst::instance_value_t value{test_value};
 
                 EXPECT_CALL(m_instances, create2(_))
-                        .WillOnce(Return(&m_instance_mock));
+                        .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
+                EXPECT_THAT(visitor.result, Eq(&instance_mock));
             }
 
             TEST_F(ExpressionEvaluationVisitorTest, Visit_Identifier_CreatesInstanceAndStoresAsResult)
             {
+                StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
                 const auto id_token = token_identifier("foo");
                 sema::id_node node{valid_type, id_token };
 
                 EXPECT_CALL(m_ids_ctx, lookup_identifier(id_token.str()))
-                        .WillOnce(Return(&m_instance_mock));
+                        .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
+                EXPECT_THAT(visitor.result, Eq(&instance_mock));
+            }
+
+            TEST_F(ExpressionEvaluationVisitorTest, Visit_BinaryOperator_EvaluatesLhsAndRhsAndCallsLhsMethodWithRhsAsAParameter)
+            {
+                StrictMock<inst::test::instance_mock> lhs_instance;
+                StrictMock<inst::test::instance_mock> rhs_instance;
+                StrictMock<inst::test::instance_mock> result_instance;
+                StrictMock<sema::test::sema_function_mock> function;
+
+                const auto operator_token = token_plus();
+
+                const auto lhs_expression_token = token_identifier("foo");
+                auto lhs_expression = std::make_unique<sema::id_node>(valid_type, lhs_expression_token);
+                const auto rhs_expression_token = token_identifier("bar");
+                auto rhs_expression = std::make_unique<sema::id_node>(valid_type, rhs_expression_token);
+
+                sema::binary_operator_node node{ std::move(lhs_expression),
+                                                 operator_token,
+                                                 function,
+                                                 std::move(rhs_expression),
+                                                 valid_type };
+
+                // Evaluation of lhs expression.
+                EXPECT_CALL(m_ids_ctx, lookup_identifier(lhs_expression_token.str()))
+                        .WillOnce(Return(&lhs_instance));
+
+                // Evaluation of rhs expression.
+                EXPECT_CALL(m_ids_ctx, lookup_identifier(rhs_expression_token.str()))
+                        .WillOnce(Return(&rhs_instance));
+
+                const std::vector<inst::instance*> expected_params = { &rhs_instance };
+                EXPECT_CALL(m_caller, call_member(MatchRef(&lhs_instance), MatchRef(&function), expected_params))
+                        .WillOnce(Return(&result_instance));
+
+                expression_evaluation_visitor visitor{ m_ctx };
+
+                visitor.visit(node);
+
+                EXPECT_THAT(visitor.result, Eq(&result_instance));
             }
         }
     }
