@@ -24,19 +24,19 @@ namespace cmsl
                     switch(from_val_type)
                     {
                         case instance_value_type::bool_:
-                            return convert_from_arithmetic(boost::get<bool>(from), to);
+                            return convert_from_arithmetic(from.get_bool(), to);
 
                         case instance_value_type::int_:
-                            return convert_from_arithmetic(boost::get<inst::int_t>(from), to);
+                            return convert_from_arithmetic(from.get_int(), to);
 
                         case instance_value_type::double_:
-                            return convert_from_arithmetic(boost::get<double>(from), to);
+                            return convert_from_arithmetic(from.get_double(), to);
 
                         case instance_value_type::string:
-                            return convert_from_string(boost::get<std::string>(from), to);
+                            return convert_from_string(from.get_string_cref(), to);
 
                         case instance_value_type::generic:
-                            return convert_from_generic(boost::get<generic_instance_value>(from), to);
+                            return convert_from_generic(from.get_generic_cref(), to);
                     }
                 }
 
@@ -70,7 +70,7 @@ namespace cmsl
                         CMSL_UNREACHABLE("Applying not possible conversion");
                     }
 
-                    const auto& generic_to = boost::get<generic_instance_value>(to);
+                    const auto& generic_to = to.get_generic_cref();
 
                     generic_instance_value converted{ generic_to.get_type(), generic_to.get_value_type() };
 

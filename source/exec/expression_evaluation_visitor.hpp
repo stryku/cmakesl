@@ -7,10 +7,10 @@
 #include "exec/expression_evaluation_context.hpp"
 #include "exec/context_provider.hpp"
 #include "exec/execution_context.hpp"
-#include "exec/value_operations_factory.hpp"
 #include "sema/sema_context.hpp"
 #include "exec/function_caller.hpp"
 #include "exec/identifiers_context.hpp"
+#include "common/assert.hpp"
 
 namespace cmsl
 {
@@ -147,6 +147,9 @@ namespace cmsl
                     {
                         return op.str().to_string();
                     }
+
+                    default:
+                        break;
                 }
 
                 CMSL_UNREACHABLE("Unknown operator token");

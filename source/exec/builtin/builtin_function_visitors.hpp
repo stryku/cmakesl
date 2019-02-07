@@ -20,13 +20,12 @@ namespace cmsl
 
                     case inst::instance_value_type::string:
                     {
-                        const auto& val = boost::get<std::string>(inst_val);
-                        return static_cast<inst::int_t>(val.size());
+                        return static_cast<inst::int_t>(inst_val.get_string_cref().size());
                     }
 
                     case inst::instance_value_type::generic:
                     {
-                        auto& generic_val = boost::get<inst::generic_instance_value>(inst_val);
+                    const auto& generic_val = inst_val.get_generic_cref();
                         return generic_val.apply_const([](const auto& stored_value)
                                                  {
                                                      return stored_value.size();
@@ -54,13 +53,12 @@ namespace cmsl
                 {
                     case inst::instance_value_type::string:
                     {
-                        const auto& val = boost::get<std::string>(inst_val);
-                        return val.empty();
+                        return inst_val.get_string_cref().empty();
                     }
 
                     case inst::instance_value_type::generic:
                     {
-                        auto& generic_val = boost::get<inst::generic_instance_value>(inst_val);
+                        const auto& generic_val = inst_val.get_generic_cref();
                         return generic_val.apply_const([](const auto& stored_value)
                                                  {
                                                      return stored_value.empty();
@@ -92,7 +90,7 @@ namespace cmsl
                 {
                     case inst::instance_value_type::generic:
                     {
-                        auto& generic_val = boost::get<inst::generic_instance_value>(inst_val);
+                        auto& generic_val = inst_val.get_generic_ref();
                         generic_val.apply([this](auto& stored_value)
                                           {
                                               stored_value.push_back(m_parameter.copy());

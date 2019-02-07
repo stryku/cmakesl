@@ -40,7 +40,7 @@ namespace cmsl
                 inst::instance_converter converter{ instances };
                 const auto bool_type = e.get_ast_ctx().find_type("bool");
                 auto bool_instance = converter.convert_to_type(infix_result.get(), *bool_type);
-                return boost::get<bool>(bool_instance->get_value()) == true;
+                return bool_instance->get_value().get_bool();
             }
         }
     }
