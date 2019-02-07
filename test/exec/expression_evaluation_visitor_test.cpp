@@ -29,109 +29,83 @@ namespace cmsl
             const sema::sema_context valid_context;
             const sema::sema_type valid_type{ valid_context, token_identifier("foo"), {} };
 
-            TEST(ExpressionEvaluationVisitorTest, Visit_BoolValue_CreatesInstanceAndStoresAsResult)
+            class ExpressionEvaluationVisitorTest : public ::testing::Test
             {
-                StrictMock<inst::test::instance_mock> instance_mock;
-                StrictMock<identifiers_context_mock> ids_ctx;
-                StrictMock<function_caller2_mock> caller;
-                StrictMock<inst::test::instances_holder_mock> instances;
-                expression_evaluation_context ctx{
-                        caller,
-                        instances,
-                        ids_ctx
+            protected:
+                StrictMock<inst::test::instance_mock> m_instance_mock;
+                StrictMock<identifiers_context_mock> m_ids_ctx;
+                StrictMock<function_caller2_mock> m_caller;
+                StrictMock<inst::test::instances_holder_mock> m_instances;
+                expression_evaluation_context m_ctx{
+                        m_caller,
+                        m_instances,
+                        m_ids_ctx
                 };
+            };
 
-                expression_evaluation_visitor visitor{ ctx };
+            TEST_F(ExpressionEvaluationVisitorTest, Visit_BoolValue_CreatesInstanceAndStoresAsResult)
+            {
+                expression_evaluation_visitor visitor{ m_ctx };
 
                 // Todo: consider testing false too.
                 sema::bool_value_node true_node{valid_type, true};
                 inst::instance_value_t value{true};
 
-                EXPECT_CALL(instances, create2(_))
-                        .WillOnce(Return(&instance_mock));
+                EXPECT_CALL(m_instances, create2(_))
+                        .WillOnce(Return(&m_instance_mock));
 
                 visitor.visit(true_node);
 
-                EXPECT_THAT(visitor.result, Eq(&instance_mock));
+                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
             }
 
-            TEST(ExpressionEvaluationVisitorTest, Visit_IntValue_CreatesInstanceAndStoresAsResult)
+            TEST_F(ExpressionEvaluationVisitorTest, Visit_IntValue_CreatesInstanceAndStoresAsResult)
             {
-                StrictMock<inst::test::instance_mock> instance_mock;
-                StrictMock<identifiers_context_mock> ids_ctx;
-                StrictMock<function_caller2_mock> caller;
-                StrictMock<inst::test::instances_holder_mock> instances;
-                expression_evaluation_context ctx{
-                        caller,
-                        instances,
-                        ids_ctx
-                };
-
-                expression_evaluation_visitor visitor{ ctx };
+                expression_evaluation_visitor visitor{ m_ctx };
 
                 // Todo: use int alias instead of std::int64_t
                 const auto test_value = std::int64_t{42};
                 sema::int_value_node node{valid_type, test_value };
                 inst::instance_value_t value{test_value};
 
-                EXPECT_CALL(instances, create2(_))
-                        .WillOnce(Return(&instance_mock));
+                EXPECT_CALL(m_instances, create2(_))
+                        .WillOnce(Return(&m_instance_mock));
 
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(&instance_mock));
+                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
             }
 
-            TEST(ExpressionEvaluationVisitorTest, Visit_DoubleValue_CreatesInstanceAndStoresAsResult)
+            TEST_F(ExpressionEvaluationVisitorTest, Visit_DoubleValue_CreatesInstanceAndStoresAsResult)
             {
-                StrictMock<inst::test::instance_mock> instance_mock;
-                StrictMock<identifiers_context_mock> ids_ctx;
-                StrictMock<function_caller2_mock> caller;
-                StrictMock<inst::test::instances_holder_mock> instances;
-                expression_evaluation_context ctx{
-                        caller,
-                        instances,
-                        ids_ctx
-                };
-
-                expression_evaluation_visitor visitor{ ctx };
+                expression_evaluation_visitor visitor{ m_ctx };
 
                 const auto test_value = 42.42;
                 sema::double_value_node node{valid_type, test_value };
                 inst::instance_value_t value{test_value};
 
-                EXPECT_CALL(instances, create2(_))
-                        .WillOnce(Return(&instance_mock));
+                EXPECT_CALL(m_instances, create2(_))
+                        .WillOnce(Return(&m_instance_mock));
 
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(&instance_mock));
+                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
             }
 
-            TEST(ExpressionEvaluationVisitorTest, Visit_StringValue_CreatesInstanceAndStoresAsResult)
+            TEST_F(ExpressionEvaluationVisitorTest, Visit_StringValue_CreatesInstanceAndStoresAsResult)
             {
-                StrictMock<inst::test::instance_mock> instance_mock;
-                StrictMock<identifiers_context_mock> ids_ctx;
-                StrictMock<function_caller2_mock> caller;
-                StrictMock<inst::test::instances_holder_mock> instances;
-                expression_evaluation_context ctx{
-                        caller,
-                        instances,
-                        ids_ctx
-                };
-
-                expression_evaluation_visitor visitor{ ctx };
+                expression_evaluation_visitor visitor{ m_ctx };
 
                 const auto test_value = std::string{"42"};
                 sema::string_value_node node{valid_type, test_value };
                 inst::instance_value_t value{test_value};
 
-                EXPECT_CALL(instances, create2(_))
-                        .WillOnce(Return(&instance_mock));
+                EXPECT_CALL(m_instances, create2(_))
+                        .WillOnce(Return(&m_instance_mock));
 
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(&instance_mock));
+                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
             }
         }
     }
