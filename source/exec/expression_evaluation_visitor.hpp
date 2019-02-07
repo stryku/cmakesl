@@ -82,6 +82,11 @@ namespace cmsl
                 result = lhs->get_member(node.member_name().str());
             }
 
+            void visit(const sema::return_node& node) override
+            {
+                result = evaluate_child(node.expression());
+            }
+
         public:
             inst::instance* result;
 
