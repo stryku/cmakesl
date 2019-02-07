@@ -44,6 +44,7 @@ namespace cmsl
         {
             const auto& type = m_type_factory.create(m_ctx, m_name, std::move(m_members));
             m_ctx.add_type(type);
+            return type;
         }
 
         const sema_context_interface& type_builder::context()

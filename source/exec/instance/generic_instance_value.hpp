@@ -37,8 +37,10 @@ namespace cmsl
                 generic_instance_value(const generic_instance_value& other);
                 generic_instance_value& operator=(const generic_instance_value& other);
 
-                generic_instance_value(generic_instance_value&&) = default;
+                generic_instance_value(generic_instance_value&&);
                 generic_instance_value& operator=(generic_instance_value&&);
+
+                ~generic_instance_value();
 
                 bool operator==(const generic_instance_value& rhs) const;
 

@@ -96,7 +96,7 @@ namespace cmsl
 
                     default:
                         CMSL_UNREACHABLE("Applying unknown operator");
-                        return {};
+                        return inst::instance_value_t{};
                 }
             }
 

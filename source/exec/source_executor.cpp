@@ -53,7 +53,7 @@ namespace cmsl
 
 
 
-
+            return 0;
         }
 
         int source_executor::execute(cmsl::string_view source)
@@ -72,7 +72,7 @@ namespace cmsl
             execution e{ m_cmake_facade };
             e.function_call(*casted, {});
             const auto main_result = e.get_function_return_value();
-            const auto int_result = boost::get<inst::int_t>(main_result->get_value());
+            const auto int_result = main_result->get_value_cref().get_int();
             return int_result;
         }
     }

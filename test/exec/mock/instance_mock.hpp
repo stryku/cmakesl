@@ -1,5 +1,6 @@
 #include "exec/instance/instance.hpp"
 #include "sema/sema_type.hpp"
+#include "ast/type.hpp"
 
 #include <gmock/gmock.h>
 

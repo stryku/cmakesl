@@ -31,13 +31,13 @@ namespace cmsl
                 {
                     case inst::instance_value_type::string:
                     {
-                        const auto &string = boost::get<std::string>(value);
+                        const auto &string = value.get_string_cref();
                         return string.size();
                     }
 
                     case inst::instance_value_type::generic:
                     {
-                        auto &generic_val = boost::get<inst::generic_instance_value>(value);
+                        auto &generic_val = value.get_generic_cref();
                         return generic_val.apply_const([](const auto &stored_value)
                                                  {
                                                      return stored_value.size();
@@ -75,13 +75,13 @@ namespace cmsl
                 {
                     case inst::instance_value_type::string:
                     {
-                        const auto &val = boost::get<std::string>(value);
+                        const auto &val = value.get_string_cref();
                         return val.empty();
                     }
 
                     case inst::instance_value_type::generic:
                     {
-                        auto &generic_val = boost::get<inst::generic_instance_value>(value);
+                        auto &generic_val = value.get_generic_cref();
                         return generic_val.apply_const([](const auto &stored_value)
                                                  {
                                                      return stored_value.empty();
@@ -114,7 +114,7 @@ namespace cmsl
                 {
                     case inst::instance_value_type::generic: // todo handle generic types that doesn't support push_back, e.g. optional
                     {
-                        auto &generic_val = boost::get<inst::generic_instance_value>(value);
+                        auto &generic_val = value.get_generic_ref();
                         const auto& parameter = m_parameter;
                         generic_val.apply([&parameter](auto &stored_value)
                                           {
