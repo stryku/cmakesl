@@ -87,6 +87,23 @@ namespace cmsl
 
                 void set_generic(generic_instance_value value);
 
+                template <typename Visitor>
+                auto visit(Visitor&& visitor)
+                {
+                    switch(m_which)
+                    {
+                        case which_type::bool_: return visitor(get_bool());
+                        case which_type::int_: return visitor(get_int());
+                        case which_type::double_: return visitor(get_double());
+                        case which_type::string: return visitor(get_string_cref());
+                        case which_type::generic: return visitor(get_generic_cref());
+                    }
+                }
+
+                // Todo: move to tests. It's not needed in production code.
+                bool operator==(const instance_value_variant& rhs) const;
+                bool operator!=(const instance_value_variant& rhs) const;
+
             private:
                 template <typename T>
                 void reassign(T&& val, which_type w);

@@ -35,7 +35,7 @@ namespace cmsl
                     const auto bool_type = e.get_ast_ctx().find_type("bool");
                     auto bool_instance = converter.convert_to_type(result_instance, *bool_type);
 
-                    if(boost::get<bool>(bool_instance->get_value()) == true)
+                    if(bool_instance->get_value().get_bool())
                     {
                         e.block(cond_node->get_block());
                         return;

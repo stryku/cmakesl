@@ -31,7 +31,7 @@ namespace cmsl
                     TEST_F(BuiltinTypeDefaultValue, Bool_GetFalse)
                     {
                         const auto val = get_value_of_type("bool");
-                        const auto bool_value = boost::get<bool>(val);
+                        const auto bool_value = val.get_bool();
                         ASSERT_THAT(bool_value, Eq(false));
                     }
 
@@ -39,21 +39,21 @@ namespace cmsl
                     {
                         using int_t = cmsl::exec::inst::int_t;
                         const auto val = get_value_of_type("int");
-                        const auto int_value = boost::get<int_t>(val);
+                        const auto int_value = val.get_int();
                         ASSERT_THAT(int_value, Eq(int_t{0}));
                     }
 
                     TEST_F(BuiltinTypeDefaultValue, Double_GetZero)
                     {
                         const auto val = get_value_of_type("double");
-                        const auto double_value = boost::get<double>(val);
+                        const auto double_value = val.get_double();
                         ASSERT_THAT(double_value, Eq(0.0));
                     }
 
                     TEST_F(BuiltinTypeDefaultValue, String_GetEmpty)
                     {
                         const auto val = get_value_of_type("string");
-                        const auto string_value = boost::get<std::string>(val);
+                        const auto string_value = val.get_string_cref();
                         ASSERT_THAT(string_value, Eq(""));
                     }
                 }

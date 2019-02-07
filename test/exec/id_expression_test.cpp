@@ -40,7 +40,7 @@ namespace cmsl
                     auto expr = std::make_unique<id_expression>(token_identifier(name));
                     auto result = expr->evaluate(m_eval_ctx);
                     EXPECT_THAT(result, Eq(instance_ptr));
-                    EXPECT_THAT(result_val<double>(result), DoubleEq(value));
+                    EXPECT_THAT(result_double_val(result), DoubleEq(value));
                 }
             }
         }
