@@ -23,7 +23,7 @@ namespace cmsl
 
                 using ClassMemberAccess = ExpressionEvaluationTest<testing::Test>;
 
-                TEST_F(ClassMemberAccess, GetCorrectMember)
+                TEST_F(ClassMemberAccess, DISABLED_GetCorrectMember)
                 {
                     const auto &int_type = *m_ctx_provider.get_ast_ctx()
                                                           .find_type("int");

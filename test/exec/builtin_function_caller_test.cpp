@@ -26,7 +26,7 @@ namespace cmsl
                 using ::testing::Const;
 
                 // Todo: that's a functional test.
-                TEST(BuiltinFunctionCallerTest, VersionConstructor_StoresCorrectValuesInMembers)
+                TEST(BuiltinFunctionCallerTest, DISABLED_VersionConstructor_StoresCorrectValuesInMembers)
                 {
                     StrictMock<exec::test::cmake_facade_mock> facade;
                     StrictMock<exec::inst::test::instances_holder_mock> instances;
@@ -84,7 +84,7 @@ namespace cmsl
                     EXPECT_THAT(get_int_value("tweak"), Eq(expected_tweak));
                 }
 
-                TEST(BuiltinFunctionCallerTest, ProjectConstructor_RegistersProjectInCMakeFacade)
+                TEST(BuiltinFunctionCallerTest, DISABLED_ProjectConstructor_RegistersProjectInCMakeFacade)
                 {
                     StrictMock<exec::test::cmake_facade_mock> facade;
                     StrictMock<exec::inst::test::instances_holder_mock> instances;
@@ -111,7 +111,7 @@ namespace cmsl
                     EXPECT_THAT(result, Eq(project_instance.get()));
                 }
 
-                TEST(BuiltinFunctionCallerTest, ProjectConstructor_SetsNameMemberValue)
+                TEST(BuiltinFunctionCallerTest, DISABLED_ProjectConstructor_SetsNameMemberValue)
                 {
                     NiceMock<exec::test::cmake_facade_mock> facade;
                     StrictMock<exec::inst::test::instances_holder_mock> instances;

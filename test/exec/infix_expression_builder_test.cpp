@@ -237,38 +237,38 @@ namespace cmsl
                     }
                 };
 
-                TEST_F(InfixExpressionBuilder, TrueFalseKeyword_GetBoolFundamentalValue)
+                TEST_F(InfixExpressionBuilder, DISABLED_TrueFalseKeyword_GetBoolFundamentalValue)
                 {
                     using bool_expr_t = cmsl::exec::infix::bool_value_expression;
                     test_single_expression<bool_expr_t>(tokens_t{token_kw_true()});
                     test_single_expression<bool_expr_t>(tokens_t{token_kw_false()});
                 }
 
-                TEST_F(InfixExpressionBuilder, String_GetFundamentalStringValue)
+                TEST_F(InfixExpressionBuilder, DISABLED_String_GetFundamentalStringValue)
                 {
                     using string_expr_t = cmsl::exec::infix::string_value_expression;
                     test_single_expression<string_expr_t>(tokens_t{token_string("\"\"")});
                 }
 
-                TEST_F(InfixExpressionBuilder, Int_GetFundamentalIntValue)
+                TEST_F(InfixExpressionBuilder, DISABLED_Int_GetFundamentalIntValue)
                 {
                     using int_expr_t = cmsl::exec::infix::int_value_expression;
                     test_single_expression<int_expr_t>(tokens_t{token_integer("1")});
                 }
 
-                TEST_F(InfixExpressionBuilder, Duble_GetFundamentalIntValue)
+                TEST_F(InfixExpressionBuilder, DISABLED_Duble_GetFundamentalIntValue)
                 {
                     using double_expr_t = cmsl::exec::infix::double_value_expression;
                     test_single_expression<double_expr_t>(tokens_t{token_double("1.0")});
                 }
 
-                TEST_F(InfixExpressionBuilder, Identifer_GetId)
+                TEST_F(InfixExpressionBuilder, DISABLED_Identifer_GetId)
                 {
                     using id_expr_t = cmsl::exec::infix::id_expression;
                     test_single_expression<id_expr_t>(tokens_t{token_identifier("foo")});
                 }
 
-                TEST_F(InfixExpressionBuilder, IdentiferDotIdentifer_GetClassMemberAccess)
+                TEST_F(InfixExpressionBuilder, DISABLED_IdentiferDotIdentifer_GetClassMemberAccess)
                 {
                     using member_access_expr_t = cmsl::exec::infix::class_member_access_expression;
                     const auto tokens = tokens_t{token_identifier("foo"),
@@ -277,7 +277,7 @@ namespace cmsl
                     test_single_expression<member_access_expr_t>(tokens);
                 }
 
-                TEST_F(InfixExpressionBuilder, ComplexLhsDotIdentifer_GetClassMemberAccess)
+                TEST_F(InfixExpressionBuilder, DISABLED_ComplexLhsDotIdentifer_GetClassMemberAccess)
                 {
                     using member_access_expr_t = cmsl::exec::infix::class_member_access_expression;
                     const auto tokens = tokens_t{token_open_paren(),
@@ -288,7 +288,7 @@ namespace cmsl
                     test_single_expression<member_access_expr_t>(tokens);
                 }
 
-                TEST_F(InfixExpressionBuilder, IdentiferDotIdentiferParens_GetMemberFunctionCall)
+                TEST_F(InfixExpressionBuilder, DISABLED_IdentiferDotIdentiferParens_GetMemberFunctionCall)
                 {
                     using member_fun_call_expr_t = cmsl::exec::infix::member_function_call_expression;
                     const auto tokens = tokens_t{token_identifier("foo"),
@@ -299,7 +299,7 @@ namespace cmsl
                     test_single_expression<member_fun_call_expr_t>(tokens);
                 }
 
-                TEST_F(InfixExpressionBuilder, IdentiferDotIdentiferParensWithParam_GetMemberFunctionCall)
+                TEST_F(InfixExpressionBuilder, DISABLED_IdentiferDotIdentiferParensWithParam_GetMemberFunctionCall)
                 {
                     using member_fun_call_expr_t = cmsl::exec::infix::member_function_call_expression;
                     const auto tokens = tokens_t{token_identifier("foo"),
@@ -311,7 +311,7 @@ namespace cmsl
                     test_single_expression<member_fun_call_expr_t>(tokens);
                 }
 
-                TEST_F(InfixExpressionBuilder, IdentiferDotIdentiferParensWithParams_GetMemberFunctionCall)
+                TEST_F(InfixExpressionBuilder, DISABLED_IdentiferDotIdentiferParensWithParams_GetMemberFunctionCall)
                 {
                     using member_fun_call_expr_t = cmsl::exec::infix::member_function_call_expression;
                     const auto tokens = tokens_t{token_identifier("foo"),
@@ -325,7 +325,7 @@ namespace cmsl
                     test_single_expression<member_fun_call_expr_t>(tokens);
                 }
 
-                TEST_F(InfixExpressionBuilder, BinaryOperator)
+                TEST_F(InfixExpressionBuilder, DISABLED_BinaryOperator)
                 {
                     // tests: 1 + 2
 
@@ -342,7 +342,7 @@ namespace cmsl
                     EXPECT_THAT(representations.first, Eq(representations.second));
                 }
 
-                TEST_F(InfixExpressionBuilder, MultipleBinaryOperatorsWithSamePrecedence)
+                TEST_F(InfixExpressionBuilder, DISABLED_MultipleBinaryOperatorsWithSamePrecedence)
                 {
                     // test: 1 + 2 - 3
 
@@ -364,7 +364,7 @@ namespace cmsl
                     EXPECT_THAT(representations.first, Eq(representations.second));
                 }
 
-                TEST_F(InfixExpressionBuilder, MultipleBinaryOperatorsParens)
+                TEST_F(InfixExpressionBuilder, DISABLED_MultipleBinaryOperatorsParens)
                 {
                     // test: (1 + 2) * 3
 
@@ -391,7 +391,7 @@ namespace cmsl
                     EXPECT_THAT(representations.first, Eq(representations.second));
                 }
 
-                TEST_F(InfixExpressionBuilder, MultipleBinaryOperatorsWithDifferentPrecedences)
+                TEST_F(InfixExpressionBuilder, DISABLED_MultipleBinaryOperatorsWithDifferentPrecedences)
                 {
                     {
                         // test: 1 + 2 * 3
@@ -441,7 +441,7 @@ namespace cmsl
                     }
                 }
 
-                TEST_F(InfixExpressionBuilder, ClassMemberAccess)
+                TEST_F(InfixExpressionBuilder, DISABLED_ClassMemberAccess)
                 {
                     // tests: foo.bar
 
@@ -458,7 +458,7 @@ namespace cmsl
                     EXPECT_THAT(representations.first, Eq(representations.second));
                 }
 
-                TEST_F(InfixExpressionBuilder, ClassMemberAccessComplexLhs)
+                TEST_F(InfixExpressionBuilder, DISABLED_ClassMemberAccessComplexLhs)
                 {
                     // tests: (foo + bar).bar
 
@@ -483,7 +483,7 @@ namespace cmsl
                     EXPECT_THAT(representations.first, Eq(representations.second));
                 }
 
-                TEST_F(InfixExpressionBuilder, MemberFunctionCall)
+                TEST_F(InfixExpressionBuilder, DISABLED_MemberFunctionCall)
                 {
                     // tests: foo.bar()
 
@@ -503,7 +503,7 @@ namespace cmsl
                     EXPECT_THAT(representations.first, Eq(representations.second));
                 }
 
-                TEST_F(InfixExpressionBuilder, MemberFunctionCallCorrectPrecedence)
+                TEST_F(InfixExpressionBuilder, DISABLED_MemberFunctionCallCorrectPrecedence)
                 {
                     // tests: 1 + 2.to_string()
 
@@ -526,7 +526,7 @@ namespace cmsl
                     EXPECT_THAT(representations.first, Eq(representations.second));
                 }
 
-                TEST_F(InfixExpressionBuilder, MemberFunctionCallParams)
+                TEST_F(InfixExpressionBuilder, DISABLED_MemberFunctionCallParams)
                 {
                     // tests: foo.bar(1, 2 + 3, 4 * (5 - 6), baz())
                     auto caller = exec::test::fake_function_caller{};
@@ -543,7 +543,7 @@ namespace cmsl
                     EXPECT_THAT(representations.first, Eq(representations.second));
                 }
 
-                TEST_F(InfixExpressionBuilder, FunctionCall)
+                TEST_F(InfixExpressionBuilder, DISABLED_FunctionCall)
                 {
                     // tests: foo()
                     auto caller = exec::test::fake_function_caller{};
@@ -559,7 +559,7 @@ namespace cmsl
                     EXPECT_THAT(representations.first, Eq(representations.second));
                 }
 
-                TEST_F(InfixExpressionBuilder, FunctionCallParams)
+                TEST_F(InfixExpressionBuilder, DISABLED_FunctionCallParams)
                 {
                     // tests: bar(1, 2 + 3, 4 * (5 - 6), baz())
                     auto caller = exec::test::fake_function_caller{};
