@@ -53,7 +53,7 @@ namespace cmsl
 
 
 
-
+            return 0;
         }
 
         int source_executor::execute(cmsl::string_view source)
