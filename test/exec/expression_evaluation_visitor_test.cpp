@@ -107,6 +107,21 @@ namespace cmsl
 
                 EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
             }
+
+            TEST_F(ExpressionEvaluationVisitorTest, Visit_Identifier_CreatesInstanceAndStoresAsResult)
+            {
+                expression_evaluation_visitor visitor{ m_ctx };
+
+                const auto id_token = token_identifier("foo");
+                sema::id_node node{valid_type, id_token };
+
+                EXPECT_CALL(m_ids_ctx, lookup_identifier(id_token.str()))
+                        .WillOnce(Return(&m_instance_mock));
+
+                visitor.visit(node);
+
+                EXPECT_THAT(visitor.result, Eq(&m_instance_mock));
+            }
         }
     }
 }
