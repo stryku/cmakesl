@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sema/user_sema_function.hpp>
 #include "sema/sema_nodes.hpp"
 
 #include "exec/identifiers_context.hpp"
@@ -16,9 +17,28 @@ namespace cmsl
         class execution2 : public identifiers_context, public function_caller2
         {
         public:
-            void call(const sema::function_node& fun, std::vector<inst::instance*> params) override
+            inst::instance* call(const sema::sema_function& fun, const std::vector<inst::instance*>& params) override
             {
-                //auto &body = fun.body();
+                if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
+                {
+                    execute_block(user_function->body());
+                }
+                else
+                {
+                    // Todo: handle builtin functions
+                }
+            }
+
+            inst::instance* call_member(inst::instance& class_instance,
+                                                const sema::sema_function& fun,
+                                                const std::vector<inst::instance*>& params) override
+            {
+                return nullptr;
+            }
+
+            inst::instance* lookup_identifier(cmsl::string_view identifier) override
+            {
+                return m_callstack.top().exec_ctx.get_variable(identifier);
             }
 
         private:

@@ -8,6 +8,7 @@ namespace cmsl
     {
         class block_node;
         class sema_function_builder;
+        class sema_context_interface;
 
         class user_sema_function : public sema_function
         {
