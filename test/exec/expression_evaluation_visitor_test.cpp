@@ -272,7 +272,6 @@ namespace cmsl
                 sema::class_member_access_node node{ std::move(lhs_expression),
                                                      std::move(member)};
 
-                // Evaluation of lhs expression.
                 EXPECT_CALL(m_ids_ctx, lookup_identifier(lhs_expression_token.str()))
                         .WillOnce(Return(&lhs_instance));
 
@@ -283,6 +282,24 @@ namespace cmsl
                 visitor.visit(node);
 
                 EXPECT_THAT(visitor.result, Eq(&member_instance));
+            }
+
+            TEST_F(ExpressionEvaluationVisitorTest, Visit_Return_EvaluatesExpressionAndStoresResult)
+            {
+                StrictMock<inst::test::instance_mock> result_instance;
+
+                const auto expression_token = token_identifier("foo");
+                auto expression = std::make_unique<sema::id_node>(valid_type, expression_token);
+
+                sema::return_node node{ std::move(expression)};
+
+                EXPECT_CALL(m_ids_ctx, lookup_identifier(expression_token.str()))
+                        .WillOnce(Return(&result_instance));
+
+                expression_evaluation_visitor visitor{ m_ctx };
+                visitor.visit(node);
+
+                EXPECT_THAT(visitor.result, Eq(&result_instance));
             }
         }
     }
