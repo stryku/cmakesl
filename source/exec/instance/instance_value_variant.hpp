@@ -42,11 +42,10 @@ namespace cmsl
                 };
 
                 instance_value_variant(const instance_value_variant& other);
-
                 instance_value_variant& operator=(const instance_value_variant& other);
 
-                instance_value_variant(instance_value_variant&&) = default;
-                instance_value_variant& operator=(instance_value_variant&&)  = default;
+                instance_value_variant(instance_value_variant&&other);
+                instance_value_variant& operator=(instance_value_variant&&other);
 
                 explicit instance_value_variant();
 
@@ -130,6 +129,8 @@ namespace cmsl
 
                 template <typename T>
                 void call_dtor(T& val);
+
+                void move_from(instance_value_variant&& moved);
 
             private:
                 which_type m_which;
