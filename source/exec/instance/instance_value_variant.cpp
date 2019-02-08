@@ -10,6 +10,48 @@ namespace cmsl
     {
         namespace inst
         {
+            instance_value_variant::instance_value_variant(instance_value_variant && other)
+            {
+                move_from(std::move(other));
+            }
+
+            instance_value_variant &instance_value_variant::operator=(instance_value_variant && other)
+            {
+                if(this != &other)
+                {
+                    move_from(std::move(other));
+                }
+
+                return *this;
+            }
+
+            void instance_value_variant::move_from(instance_value_variant&& moved)
+            {
+                switch (moved.m_which)
+                {
+                    case which_type::bool_:
+                    {
+                        reassign(moved.m_value.m_bool, which_type::bool_);
+                    }break;
+                    case which_type::int_:
+                    {
+                        reassign(moved.m_value.m_int, which_type::int_);
+                    }break;
+                    case which_type::double_:
+                    {
+                        reassign(moved.m_value.m_double, which_type::double_);
+                    }break;
+                    case which_type::string:
+                    {
+                        reassign(std::move(moved.m_value.m_string), which_type::string);
+                    }break;
+                    case which_type::generic:
+                    {
+                        reassign(std::move(moved.m_value.m_generic), which_type::generic);
+                    }break;
+                }
+            }
+
             instance_value_variant::instance_value_variant(const instance_value_variant& other)
             {
                 reassign(other.m_value, other.m_which);
@@ -191,9 +233,9 @@ namespace cmsl
             }
 
             template <typename Value>
-            void instance_value_variant::construct(Value& destination_ptr, Value&& value)
+            void instance_value_variant::construct(Value& destination, Value&& value)
             {
-                new (&destination_ptr) Value{ std::move(value) };
+                new (&destination) Value{ std::move(value) };
             }
 
             void instance_value_variant::destruct()
@@ -243,6 +285,8 @@ namespace cmsl
             {
                 return !(*this == rhs);
             }
+
+
         }
     }
 }
