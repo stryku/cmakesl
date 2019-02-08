@@ -11,13 +11,14 @@ namespace cmsl
         type_builder::type_builder(sema_type_factory &type_factory,
                                    sema_function_factory &function_factory,
                                    sema_context_factory &context_factory,
-                                   sema_context_interface &parent_ctx,
+                                   sema_context_interface &current_ctx,
                                    lexer::token::token name)
-            : m_type_factory{ type_factory }
-            , m_function_factory{ function_factory }
-            , m_context_factory{ context_factory }
-            , m_ctx{ m_context_factory.create(&parent_ctx) }
-            , m_name{ name }
+                : m_type_factory{ type_factory }
+                , m_function_factory{ function_factory }
+                , m_context_factory{ context_factory }
+                , m_current_ctx{ current_ctx }
+                , m_type_ctx{ m_context_factory.create(&current_ctx) }
+                , m_name{ name }
         {}
 
         type_builder &type_builder::with_member(const member_info &member)
@@ -28,28 +29,28 @@ namespace cmsl
 
         type_builder &type_builder::with_user_function(const sema_type &return_type, function_signature s)
         {
-            const auto& function = m_function_factory.create_user(m_ctx, return_type, std::move(s));
-            m_ctx.add_function(function);
+            const auto& function = m_function_factory.create_user(m_type_ctx, return_type, std::move(s));
+            m_type_ctx.add_function(function);
             return *this;
         }
 
         type_builder &type_builder::with_builtin_function(const sema_type &return_type, function_signature s, builtin_function_kind kind)
         {
-            const auto& function = m_function_factory.create_builtin(m_ctx, return_type, std::move(s), kind);
-            m_ctx.add_function(function);
+            const auto& function = m_function_factory.create_builtin(m_type_ctx, return_type, std::move(s), kind);
+            m_type_ctx.add_function(function);
             return *this;
         }
 
         const sema_type& type_builder::build_and_register_in_context()
         {
-            const auto& type = m_type_factory.create(m_ctx, m_name, std::move(m_members));
-            m_ctx.add_type(type);
+            const auto& type = m_type_factory.create(m_type_ctx, m_name, std::move(m_members));
+            m_current_ctx.add_type(type);
             return type;
         }
 
         const sema_context_interface& type_builder::context()
         {
-            return m_ctx;
+            return m_type_ctx;
         }
     }
 }

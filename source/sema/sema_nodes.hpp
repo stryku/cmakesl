@@ -308,8 +308,9 @@ namespace cmsl
         class function_node : public sema_node
         {
         public:
-            explicit function_node(const sema_function& function)
+            explicit function_node(const sema_function& function, std::unique_ptr<block_node> body)
                 : m_function{ function }
+                , m_body{ std::move(body) }
             {}
 
             const function_signature& signature() const
@@ -331,6 +332,7 @@ namespace cmsl
 
         private:
             const sema_function& m_function;
+            std::unique_ptr<block_node> m_body;
         };
 
         class class_node : public sema_node

@@ -75,7 +75,7 @@ namespace cmsl
             inst::instance *instances_holder::create_void()
             {
                 // todo create one static instance of void type
-                const auto& int_type = m_ctx_provider.get_ast_ctx().find_type("int");
+                const auto& int_type = m_ctx_provider->get_ast_ctx().find_type("int");
                 return create(int_type);
             }
 

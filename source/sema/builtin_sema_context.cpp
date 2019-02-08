@@ -22,9 +22,10 @@ namespace cmsl
         template<unsigned N>
         lexer::token::token builtin_sema_context::make_token(lexer::token::token_type token_type, const char (&tok)[N])
         {
+            // N counts also '\0'
             const auto src_range = source_range{
                     source_location{ 1u, 1u, 0u },
-                    source_location{ 1u, 1u + N, N }
+                    source_location{ 1u, N, N - 1u }
             };
             return lexer::token::token{ token_type, src_range, tok };
         }
@@ -85,7 +86,7 @@ namespace cmsl
 
         type_builder builtin_sema_context::add_int_type()
         {
-            const auto token = make_token(token_type_t::kw_int, "bool");
+            const auto token = make_token(token_type_t::kw_int, "int");
             type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
             builder.build_and_register_in_context();
             return builder;

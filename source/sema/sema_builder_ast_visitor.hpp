@@ -117,7 +117,7 @@ namespace cmsl
                     }
 
                     function_declaration.fun->set_body(*body);
-                    functions.emplace_back(std::make_unique<function_node>(*function_declaration.fun));
+                    functions.emplace_back(std::make_unique<function_node>(*function_declaration.fun, std::move(body)));
                 }
 
                 m_result_node = std::make_unique<class_node>(name, std::move(members->declarations));
@@ -403,7 +403,7 @@ namespace cmsl
                 // And set the body.
                 function.set_body(*block);
 
-                m_result_node = std::make_unique<function_node>(function);
+                m_result_node = std::make_unique<function_node>(function, std::move(block));
             }
 
             void visit(const ast::variable_declaration_node& node) override

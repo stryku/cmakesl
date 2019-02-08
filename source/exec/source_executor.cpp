@@ -5,6 +5,7 @@
 #include "ast/ast_builder.hpp"
 #include "ast/builtin_ast_context.hpp"
 #include "exec/execution.hpp"
+#include "exec/execution2.hpp"
 #include "ast/parser2.hpp"
 #include "sema/sema_builder.hpp"
 #include "sema/identifiers_context.hpp"
@@ -12,6 +13,7 @@
 #include "sema/factories.hpp"
 #include "sema/builtin_sema_context.hpp"
 #include "sema/sema_function.hpp"
+#include "sema/user_sema_function.hpp"
 
 namespace cmsl
 {
@@ -47,12 +49,11 @@ namespace cmsl
 
 
             const auto main_function = ctx.find_function("main");
-            const auto casted = dynamic_cast<const sema::sema_function*>(main_function);
+            const auto casted = dynamic_cast<const sema::user_sema_function*>(main_function);
 
-            execution e{ m_cmake_facade };
+            execution2 e;
 
-
-
+            e.call(*casted, {});
             return 0;
         }
 
