@@ -34,6 +34,11 @@ namespace cmsl
                 return m_kind;
             }
 
+            const sema_context_interface& context() const override
+            {
+                return m_ctx;
+            }
+
         private:
             const sema_context_interface& m_ctx;
             const sema_type& m_return_type;

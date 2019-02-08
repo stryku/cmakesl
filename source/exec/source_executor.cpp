@@ -53,8 +53,8 @@ namespace cmsl
 
             execution2 e;
 
-            e.call(*casted, {});
-            return 0;
+            auto main_result = e.call(*casted, {});
+            return main_result->get_value_cref().get_int();
         }
 
         int source_executor::execute(cmsl::string_view source)

@@ -21,12 +21,17 @@ namespace cmsl
             {
                 if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
                 {
+                    enter_function_scope(fun);
                     execute_block(user_function->body());
+                    leave_function_scope();
                 }
                 else
                 {
                     // Todo: handle builtin functions
                 }
+
+                return m_function_return_value.get();
+
             }
 
             inst::instance* call_member(inst::instance& class_instance,
@@ -58,7 +63,7 @@ namespace cmsl
             {
                 if(auto ret_node = dynamic_cast<const sema::return_node*>(&node))
                 {
-                    inst::instances_holder instances;
+                    inst::instances_holder instances{ current_context() };
                     expression_evaluation_context ctx{ *this, instances, *this };
                     expression_evaluation_visitor visitor{ ctx };
                     ret_node->expression().visit(visitor);
@@ -71,15 +76,26 @@ namespace cmsl
                 return static_cast<bool>(m_function_return_value);
             }
 
-            expression_evaluation_context create_evaluation_context()
+            const sema::sema_context_interface& current_context() const
             {
+                const auto& current_function = m_callstack.top().fun;
+                return current_function.context();
+            }
 
+            void enter_function_scope(const sema::sema_function& fun)
+            {
+                m_callstack.push(callstack_frame{fun});
+            }
+
+            void leave_function_scope()
+            {
+                m_callstack.pop();
             }
 
         private:
             struct callstack_frame
             {
-                const sema::function_node& fun;
+                const sema::sema_function& fun;
                 execution_context exec_ctx;
             };
 
