@@ -163,12 +163,48 @@ namespace cmsl
                 EXPECT_CALL(m_ids_ctx, lookup_identifier(rhs_expression_token.str()))
                         .WillOnce(Return(&rhs_instance));
 
-                const std::vector<inst::instance*> expected_params = { &rhs_instance };
-                EXPECT_CALL(m_caller, call_member(MatchRef(&lhs_instance), MatchRef(&function), expected_params))
+                const std::vector<inst::instance*> expected_param_instances = { &rhs_instance };
+                EXPECT_CALL(m_caller, call_member(MatchRef(&lhs_instance), MatchRef(&function), expected_param_instances))
                         .WillOnce(Return(&result_instance));
 
                 expression_evaluation_visitor visitor{ m_ctx };
 
+                visitor.visit(node);
+
+                EXPECT_THAT(visitor.result, Eq(&result_instance));
+            }
+
+            TEST_F(ExpressionEvaluationVisitorTest, Visit_FunctionCall_EvaluatesParametersCallsFunctionAndStoresResult)
+            {
+                StrictMock<sema::test::sema_function_mock> function;
+                StrictMock<inst::test::instance_mock> param_instance_0;
+                StrictMock<inst::test::instance_mock> param_instance_1;
+                StrictMock<inst::test::instance_mock> result_instance;
+
+                const auto param_expression_0_token = token_identifier("foo");
+                auto param_expression_0 = std::make_unique<sema::id_node>(valid_type, param_expression_0_token);
+                const auto param_expression_1_token = token_identifier("bar");
+                auto param_expression_1 = std::make_unique<sema::id_node>(valid_type, param_expression_1_token);
+
+                sema::function_call_node::param_expressions_t param_expressions;
+                param_expressions.emplace_back(std::move(param_expression_0));
+                param_expressions.emplace_back(std::move(param_expression_1));
+                sema::function_call_node node{function, std::move(param_expressions)};
+
+                EXPECT_CALL(m_ids_ctx, lookup_identifier(param_expression_0_token.str()))
+                        .WillOnce(Return(&param_instance_0));
+
+                EXPECT_CALL(m_ids_ctx, lookup_identifier(param_expression_1_token.str()))
+                        .WillOnce(Return(&param_instance_1));
+
+                std::vector<inst::instance*> expected_param_instances{
+                    &param_instance_0,
+                    &param_instance_1
+                };
+                EXPECT_CALL(m_caller, call(MatchRef(&function), expected_param_instances))
+                        .WillOnce(Return(&result_instance));
+
+                expression_evaluation_visitor visitor{ m_ctx };
                 visitor.visit(node);
 
                 EXPECT_THAT(visitor.result, Eq(&result_instance));
