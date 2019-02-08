@@ -12,8 +12,11 @@ namespace cmsl
     {
         namespace inst
         {
+            instances_holder::instances_holder()
+            {}
+
             instances_holder::instances_holder(context_provider &e)
-                : m_ctx_provider{ e }
+                : m_ctx_provider{ &e }
             {}
 
             inst::instance *instances_holder::create(instance_value_t value)
@@ -34,8 +37,8 @@ namespace cmsl
 
             contexted_instance_factory instances_holder::get_factory()
             {
-                return contexted_instance_factory{ m_ctx_provider.get_ast_ctx(),
-                                                   m_ctx_provider.get_exec_ctx() };
+                return contexted_instance_factory{ m_ctx_provider->get_ast_ctx(),
+                                                   m_ctx_provider->get_exec_ctx() };
             }
 
             inst::instance *instances_holder::create(const ast::type& t)
