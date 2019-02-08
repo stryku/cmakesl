@@ -15,6 +15,11 @@ namespace cmsl
                 explicit simple_unnamed_instance(const ast::type &type);
                 explicit simple_unnamed_instance(kind k, const ast::type &type);
                 explicit simple_unnamed_instance(const ast::type &type, instance_value_t value);
+
+                explicit simple_unnamed_instance(const sema::sema_type &type);
+                explicit simple_unnamed_instance(const sema::sema_type &type, instance_value_t value);
+
+
                 virtual ~simple_unnamed_instance() = default;
 
                 instance_value_t get_value() const override;
@@ -29,6 +34,8 @@ namespace cmsl
                 bool is_fundamental() const;
                 const ast::function* get_function(cmsl::string_view name) const override;
                 const ast::type& get_type() const override;
+
+
                 const sema::sema_function* get_sema_function(cmsl::string_view name) const override;
                 const sema::sema_type& get_sema_type() const override;
 
@@ -39,8 +46,8 @@ namespace cmsl
 
             private:
                 kind m_kind;
-                const ast::type &m_type;
-                const sema::sema_type* m_sema_type;
+                const ast::type *m_type{nullptr};
+                const sema::sema_type* m_sema_type{nullptr}; // Todo: change to a reference
                 instance_value_t m_data;
             };
         }

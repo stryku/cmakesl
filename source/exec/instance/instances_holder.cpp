@@ -12,7 +12,8 @@ namespace cmsl
     {
         namespace inst
         {
-            instances_holder::instances_holder()
+            instances_holder::instances_holder(const sema::sema_context_interface& sema_ctx)
+                : m_sema_ctx{ &sema_ctx }
             {}
 
             instances_holder::instances_holder(context_provider &e)
@@ -81,9 +82,10 @@ namespace cmsl
 
             inst::instance *instances_holder::create2(instance_value_t value)
             {
-                // Todo: implement
-                CMSL_UNREACHABLE("Not implemented");
-                return nullptr;
+                auto instance = instance_factory2{}.create(std::move(value), *m_sema_ctx);
+                auto ptr = instance.get();
+                m_instances.emplace_back(std::move(instance));
+                return ptr;
             }
         }
     }

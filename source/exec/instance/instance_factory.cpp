@@ -4,6 +4,8 @@
 #include "exec/instance/complex_unnamed_instance.hpp"
 #include "exec/instance/simple_unnamed_instance.hpp"
 #include "exec/instance/named_instance.hpp"
+#include "common/assert.hpp"
+#include "sema/sema_context.hpp"
 
 namespace cmsl
 {
@@ -144,6 +146,27 @@ namespace cmsl
             contexted_instance_factory::create(const ast::type& type, instance_members_t members) const
             {
                 return instance_factory{}.create(type, std::move(members));
+            }
+
+            std::unique_ptr<instance> instance_factory2::create(instance_value_t value, const sema::sema_context_interface &ctx) const
+            {
+                const auto type_getter = [&value, &ctx]() -> const sema::sema_type&
+                {
+                    switch(value.which())
+                    {
+                        // Todo: cache types, don't find it over every time.
+                        case instance_value_variant::which_type::bool_: return *ctx.find_type("bool");
+                        case instance_value_variant::which_type::int_: return *ctx.find_type("bool");
+                        case instance_value_variant::which_type::double_: return *ctx.find_type("bool");
+                        case instance_value_variant::which_type::string: return *ctx.find_type("bool");
+                        default:
+                            CMSL_UNREACHABLE("Unknown type requested");
+                    }
+                };
+
+                const auto& type = type_getter();
+
+                return std::make_unique<simple_unnamed_instance>(type, value);
             }
         }
     }

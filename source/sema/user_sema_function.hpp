@@ -40,6 +40,11 @@ namespace cmsl
                 return m_return_type;
             }
 
+            const sema_context_interface& context() const override
+            {
+                return m_ctx;
+            }
+
         private:
             friend class sema_function_builder;
             // A context that this function is registered in. Can be a namespace or class context.
