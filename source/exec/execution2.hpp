@@ -4,17 +4,21 @@
 
 #include "exec/identifiers_context.hpp"
 #include "exec/instance/instance.hpp"
+#include "exec/expression_evaluation_context.hpp"
+#include "exec/function_caller.hpp"
+#include "exec/instance/instances_holder.hpp"
+#include "exec/expression_evaluation_visitor.hpp"
 
 namespace cmsl
 {
     namespace exec
     {
-        class execution2 : public identifiers_context
+        class execution2 : public identifiers_context, public function_caller2
         {
         public:
-            void function_call(const sema::function_node& fun, std::vector<inst::instance*> params)
+            void call(const sema::function_node& fun, std::vector<inst::instance*> params) override
             {
-                auto &body = fun.body();
+                //auto &body = fun.body();
             }
 
         private:
@@ -34,13 +38,22 @@ namespace cmsl
             {
                 if(auto ret_node = dynamic_cast<const sema::return_node*>(&node))
                 {
-
+                    inst::instances_holder instances;
+                    expression_evaluation_context ctx{ *this, instances, *this };
+                    expression_evaluation_visitor visitor{ ctx };
+                    ret_node->expression().visit(visitor);
+                    m_function_return_value = instances.gather_ownership(visitor.result);
                 }
             }
 
             bool returning_from_function() const
             {
                 return static_cast<bool>(m_function_return_value);
+            }
+
+            expression_evaluation_context create_evaluation_context()
+            {
+
             }
 
         private:

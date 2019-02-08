@@ -25,6 +25,7 @@ namespace cmsl
             class instances_holder : public instances_holder_interface
             {
             public:
+                explicit instances_holder();
                 explicit instances_holder(context_provider& e);
 
                 inst::instance* create(instance_value_t value) override;
@@ -42,7 +43,7 @@ namespace cmsl
                 contexted_instance_factory get_factory();
 
             private:
-                context_provider& m_ctx_provider;
+                context_provider* m_ctx_provider;
                 std::vector<std::unique_ptr<inst::instance>> m_instances;
             };
         }
