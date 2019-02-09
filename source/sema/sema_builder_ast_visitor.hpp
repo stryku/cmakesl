@@ -80,7 +80,7 @@ namespace cmsl
                 if(const auto found_type = m_ctx.find_type_in_this_scope(name.str()))
                 {
                     // Todo: type redefinition
-                    raise_error();
+                    raise_error(name, "Type redefinition");
                     return;
                 }
 
@@ -184,11 +184,12 @@ namespace cmsl
                 }
 
                 // Todo: handle operators like ++ and ++(int)
-                auto operator_function = lhs->type().find_member_function(node.get_operator().str());
+                const auto op = node.get_operator();
+                auto operator_function = lhs->type().find_member_function(op.str());
                 if(!operator_function)
                 {
                     // Todo: lhs's type doesn't support such operator
-                    raise_error();
+                    raise_error(op, lhs->type().name().str().to_string() + " doesn't support operator " + op.str().to_string());
                     return;
                 }
 
@@ -201,7 +202,7 @@ namespace cmsl
                 if(lhs->type() != rhs->type())
                 {
                     // Todo: can not apply operator to different types
-                    raise_error();
+                    raise_error(op, "Can not apply operator to with different operand types");
                     return;
                 }
 
@@ -221,11 +222,12 @@ namespace cmsl
                 }
 
                 const auto& lhs_type = lhs->type();
-                auto member_info = lhs_type.find_member(node.get_member_name().str());
+                const auto member_name = node.get_member_name();
+                auto member_info = lhs_type.find_member(member_name.str());
                 if(!member_info)
                 {
                     // Todo: type does not have such member.
-                    raise_error();
+                    raise_error(member_name, lhs_type.name().str().to_string() + " does not have member " + member_name.str().to_string());
                     return;
                 }
 
@@ -239,7 +241,7 @@ namespace cmsl
                 if(!found_fun)
                 {
                     // Todo: can't find function with such name.
-                    raise_error();
+                    raise_error(name, name.str().to_string() + " function not found");
                     return;
                 }
 
@@ -265,7 +267,7 @@ namespace cmsl
                 if(!function)
                 {
                     // Todo: type has no such function
-                    raise_error();
+                    raise_error(name, name.str().to_string() + " member function not found");
                     return;
                 }
 
@@ -317,7 +319,7 @@ namespace cmsl
                 if(!type)
                 {
                     // Todo: identifier not found
-                    raise_error();
+                    raise_error(id_token, id_token.str().to_string() + " identifier not found");
                     return;
                 }
 
@@ -357,11 +359,12 @@ namespace cmsl
 
             void visit(const ast::user_function_node2& node) override
             {
-                auto return_type = m_ctx.find_type(node.get_return_type_reference().to_string());
+                const auto return_type_reference = node.get_return_type_reference();
+                auto return_type = m_ctx.find_type(return_type_reference.to_string());
                 if(!return_type)
                 {
                     // Todo: unknown return type
-                    raise_error();
+                    raise_error(return_type_reference.begin, "Unknown return type");
                     return;
                 }
 
@@ -377,7 +380,7 @@ namespace cmsl
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
-                        raise_error();
+                        raise_error(param_decl.ty.begin, "Unknown parameter type");
                         return;
                     }
 
@@ -408,13 +411,14 @@ namespace cmsl
 
             void visit(const ast::variable_declaration_node& node) override
             {
-                const auto type = m_ctx.find_type(node.get_type_reference().to_string());
+                const auto type_reference = node.get_type_reference();
+                const auto type = m_ctx.find_type(type_reference.to_string());
 
                 // Todo: handle generic types
                 if(!type)
                 {
                     // Todo: type not found
-                    raise_error();
+                    raise_error(type_reference.begin, "Unknown variable type");
                     return;
                 }
 
@@ -431,7 +435,7 @@ namespace cmsl
                     {
                         // Todo: Init does not have same type as declared.
                         // Todo: introduce auto
-                        raise_error();
+                        raise_error(initialization->type().name(), "Initialization and declared variable type does not match");
                         return;
                     }
                 }
@@ -466,9 +470,9 @@ namespace cmsl
                 return std::unique_ptr<expression_node>(dynamic_cast<expression_node*>(node.release()));
             }
 
-            void raise_error()
+            void raise_error(const lexer::token::token token, const std::string& message)
             {
-                m_errors_observer.nofify_error({}); // todo: get error via parameter
+                m_errors_observer.nofify_error({token.src_range(), message}); // todo: get error via parameter
             }
 
             sema_builder_ast_visitor clone() const
@@ -501,7 +505,7 @@ namespace cmsl
                 if(param_declarations.size() != passed_params.size())
                 {
                     // Todo passed wrong number of parameters
-                    raise_error();
+                    raise_error(signature.name, "Expected " + std::to_string(param_declarations.size()) + " parameters, got " + std::to_string(passed_params.size()));
                     return {};
                 }
 
@@ -518,7 +522,9 @@ namespace cmsl
                     if(param_declarations[i].ty != param->type())
                     {
                         //Todo passed param type mismatch
-                        raise_error();
+                        // Todo: pass param tokens range instead of empty token
+                        raise_error(lexer::token::token{}, "Passed parameter does not match, expected " + param_declarations[i].ty.name().str().to_string()
+                        + " got " + param->type().name().str().to_string());
                         return {};
                     }
 
@@ -564,11 +570,12 @@ namespace cmsl
 
             boost::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node)
             {
-                auto return_type = m_ctx.find_type(node.get_return_type_reference().to_string());
+                const auto return_type_reference = node.get_return_type_reference();
+                auto return_type = m_ctx.find_type(return_type_reference.to_string());
                 if(!return_type)
                 {
                     // Todo: unknown return type
-                    raise_error();
+                    raise_error(return_type_reference.begin, return_type_reference.to_string().to_string() + " unknown return type");
                     return {};
                 }
 
@@ -583,7 +590,7 @@ namespace cmsl
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
-                        raise_error();
+                        raise_error(param_decl.ty.begin, param_decl.ty.to_string().to_string() + " unknown parameter type");
                         return {};
                     }
 
