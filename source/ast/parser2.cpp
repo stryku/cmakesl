@@ -220,7 +220,7 @@ namespace cmsl
 
         bool parser2::declaration_starts() const
         {
-            return current_is_type();
+            return current_is_type() && next_is(token_type_t::identifier);
         }
 
         std::unique_ptr<conditional_node> parser2::get_conditional_node()
