@@ -10,6 +10,7 @@ namespace cmsl
 
             int_to_string,
             int_operator_plus,
+            int_operator_minus,
 
             double_to_string
 
