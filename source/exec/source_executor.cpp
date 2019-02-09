@@ -46,7 +46,10 @@ namespace cmsl
                                              function_factory,
                                              context_factory };
             auto sema_tree = sema_builder.build(*ast_tree);
-
+            if(!sema_tree)
+            {
+                return -1;
+            }
 
             const auto main_function = ctx.find_function("main");
             const auto casted = dynamic_cast<const sema::user_sema_function*>(main_function);
