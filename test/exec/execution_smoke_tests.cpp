@@ -19,6 +19,25 @@ namespace cmsl
                 const auto result = executor.execute2(source);
                 EXPECT_THAT(result, Eq(42));
             }
+
+            TEST(SourceExecutorTest, UserFunction)
+            {
+                const auto source =
+                    "int foo()"
+                    "{"
+                    "    return 42;"
+                    "}"
+                    ""
+                    "int main()"
+                    "{"
+                    "    return foo();"
+                    "}";
+
+                cmake_facade_mock facade;
+                source_executor executor{ facade };
+                const auto result = executor.execute2(source);
+                EXPECT_THAT(result, Eq(42));
+            }
         }
     }
 }

@@ -58,14 +58,18 @@ namespace cmsl
                 // Todo: use small vector.
                 std::vector<inst::instance*> params;
                 params.emplace_back(rhs_result);
-                result = m_ctx.function_caller.call_member(*lhs_result, operator_function, std::move(params));
+                auto call_result = m_ctx.function_caller.call_member(*lhs_result, operator_function, std::move(params));
+                result = call_result.get();
+                m_ctx.instances.store(std::move(call_result));
             }
 
             void visit(const sema::function_call_node& node) override
             {
                 auto evaluated_params = evaluate_call_parameters(node.param_expressions());
                 const auto& function = node.function();
-                result = m_ctx.function_caller.call(function, evaluated_params);
+                auto call_result = m_ctx.function_caller.call(function, evaluated_params);
+                result = call_result.get();
+                m_ctx.instances.store(std::move(call_result));
             }
 
             void visit(const sema::member_function_call_node& node) override
@@ -73,7 +77,9 @@ namespace cmsl
                 auto lhs_result = evaluate_child(node.lhs());
                 auto evaluated_params = evaluate_call_parameters(node.param_expressions());
                 const auto& function = node.function();
-                result = m_ctx.function_caller.call_member(*lhs_result, function, evaluated_params);
+                auto call_result = m_ctx.function_caller.call_member(*lhs_result, function, evaluated_params);
+                result = call_result.get();
+                m_ctx.instances.store(std::move(call_result));
             }
 
             void visit(const sema::class_member_access_node& node) override

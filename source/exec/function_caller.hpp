@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 namespace cmsl
@@ -38,10 +39,10 @@ namespace cmsl
         public:
             virtual ~function_caller2() = default;
 
-            virtual inst::instance* call(const sema::sema_function& fun, const std::vector<inst::instance*>& params) = 0;
-            virtual inst::instance* call_member(inst::instance& class_instance,
-                                                const sema::sema_function& fun,
-                                                const std::vector<inst::instance*>& params) = 0;
+            virtual std::unique_ptr<inst::instance> call(const sema::sema_function& fun, const std::vector<inst::instance*>& params) = 0;
+            virtual std::unique_ptr<inst::instance> call_member(inst::instance& class_instance,
+                                                                const sema::sema_function& fun,
+                                                                const std::vector<inst::instance*>& params) = 0;
         };
     }
 }
