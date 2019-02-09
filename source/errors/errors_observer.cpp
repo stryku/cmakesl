@@ -9,7 +9,7 @@ namespace cmsl
     {
         void errors_observer::nofify_error(const error& error)
         {
-            std::cout << error.message << "\n";
+            std::cout << error.range.begin.line << ':' << error.range.begin.column << ": " << error.message << "\n";
         }
     }
 }
