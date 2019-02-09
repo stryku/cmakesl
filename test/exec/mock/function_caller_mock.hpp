@@ -29,8 +29,8 @@ namespace cmsl
                 using inst_t = inst::instance;
 
             public:
-                MOCK_METHOD2(call, inst_t*(const sema::sema_function&, const std::vector<inst_t*>&));
-                MOCK_METHOD3(call_member, inst_t *(inst_t&,const sema::sema_function&, const std::vector<inst_t*>&));
+                MOCK_METHOD2(call, std::unique_ptr<inst_t>(const sema::sema_function&, const std::vector<inst_t*>&));
+                MOCK_METHOD3(call_member, std::unique_ptr<inst_t>(inst_t&,const sema::sema_function&, const std::vector<inst_t*>&));
             };
         }
     }

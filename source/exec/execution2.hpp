@@ -17,7 +17,7 @@ namespace cmsl
         class execution2 : public identifiers_context, public function_caller2
         {
         public:
-            inst::instance* call(const sema::sema_function& fun, const std::vector<inst::instance*>& params) override
+            std::unique_ptr<inst::instance> call(const sema::sema_function& fun, const std::vector<inst::instance*>& params) override
             {
                 if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
                 {
@@ -30,11 +30,11 @@ namespace cmsl
                     // Todo: handle builtin functions
                 }
 
-                return m_function_return_value.get();
+                return std::move(m_function_return_value);
 
             }
 
-            inst::instance* call_member(inst::instance& class_instance,
+            std::unique_ptr<inst::instance> call_member(inst::instance& class_instance,
                                                 const sema::sema_function& fun,
                                                 const std::vector<inst::instance*>& params) override
             {
@@ -63,11 +63,12 @@ namespace cmsl
             {
                 if(auto ret_node = dynamic_cast<const sema::return_node*>(&node))
                 {
-                    inst::instances_holder instances{ current_context() };
-                    expression_evaluation_context ctx{ *this, instances, *this };
-                    expression_evaluation_visitor visitor{ ctx };
-                    ret_node->expression().visit(visitor);
-                    m_function_return_value = instances.gather_ownership(visitor.result);
+                    m_function_return_value = execute_infix_expression(node);
+                }
+                else
+                {
+                    // A stand alone infix expression.
+                    (void)execute_infix_expression(node);
                 }
             }
 
@@ -90,6 +91,15 @@ namespace cmsl
             void leave_function_scope()
             {
                 m_callstack.pop();
+            }
+
+            std::unique_ptr<inst::instance> execute_infix_expression(const sema::sema_node& node)
+            {
+                inst::instances_holder instances{ current_context() };
+                expression_evaluation_context ctx{ *this, instances, *this };
+                expression_evaluation_visitor visitor{ ctx };
+                node.visit(visitor);
+                return instances.gather_ownership(visitor.result);
             }
 
         private:
