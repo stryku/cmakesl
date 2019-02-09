@@ -107,6 +107,12 @@ namespace cmsl
                             function_signature{ make_token(token_type_t::plus, "+"),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_plus
+                    },
+                    builtin_function_info{
+                            int_type,
+                            function_signature{ make_token(token_type_t::minus, "-"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_minus
                     }
             };
 
