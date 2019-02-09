@@ -9,6 +9,9 @@
 #include "exec/function_caller.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/expression_evaluation_visitor.hpp"
+#include "exec/builtin_function_caller2.hpp"
+#include "sema/builtin_sema_function.hpp"
+#include "exec/instance/instance_factory.hpp"
 
 namespace cmsl
 {
@@ -38,7 +41,16 @@ namespace cmsl
                                                 const sema::sema_function& fun,
                                                 const std::vector<inst::instance*>& params) override
             {
-                return nullptr;
+                if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
+                {
+                    // Todo: handle user functions
+                }
+                else
+                {
+                    auto builtin_function = dynamic_cast<const sema::builtin_sema_function*>(&fun);
+                    auto result = builtin_function_caller2{}.call_member(class_instance, builtin_function->kind(), params);
+                    return inst::instance_factory2{}.create(std::move(result), fun.context());
+                }
             }
 
             inst::instance* lookup_identifier(cmsl::string_view identifier) override
