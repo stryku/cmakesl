@@ -27,9 +27,9 @@ namespace cmsl
                 , m_end{ tokens.cend() }
         {}
 
-        void parser2::raise_error()
+        void parser2::raise_error(lexer::token::token token, std::string message)
         {
-            m_err_observer.nofify_error(errors::error{});
+            m_err_observer.nofify_error(errors::error{token.src_range(), message});
         }
 
         std::unique_ptr<ast_node> parser2::translation_unit()
@@ -148,13 +148,14 @@ namespace cmsl
 
             if (!eat(token_type_t::close_brace))
             {
-                raise_error();
+                raise_error(*m_token, "Expected }");
                 return nullptr;
             }
 
             if (!eat(token_type_t::semicolon))
             {
                 // Todo: expected semicolon
+                raise_error(*m_token, "Expected ;");
                 return nullptr;
             }
 
@@ -255,7 +256,7 @@ namespace cmsl
             if(!current_is(token_type_t::kw_if))
             {
                 // Expected if
-                raise_error();
+                raise_error(*m_token, "Expected if");
                 return nullptr;
             }
 
@@ -421,7 +422,7 @@ namespace cmsl
             if (!is_at_end() && current_is(token_type_t::close_paren))
             {
                 // Missed last parameter declaration
-                raise_error();
+                raise_error(*m_token, "Expected parameter declaration");
                 return false;
             }
 
@@ -442,7 +443,8 @@ namespace cmsl
                 if (is_at_end())
                 {
                     // Unexpected end of tokens
-                    raise_error();
+                    // Todo: proper token
+                    raise_error(lexer::token::token{}, "Unexpected end of source");
                     return boost::none;
                 }
 
@@ -533,7 +535,8 @@ namespace cmsl
             }
             else
             {
-                raise_error();
+                // Todo: proper token
+                raise_error(lexer::token::token{}, "Expected type");
                 return {};
             }
         }
@@ -585,7 +588,7 @@ namespace cmsl
 
             if(is_at_end())
             {
-                raise_error();
+                raise_error(lexer::token::token{}, "Unexpected end of source");
                 return {};
             }
 
@@ -627,7 +630,8 @@ namespace cmsl
         {
             if(!current_is_generic_type())
             {
-                raise_error();
+                // Todo: proper token
+                raise_error(lexer::token::token{}, "Expected type");
                 return {};
             }
 
@@ -638,7 +642,8 @@ namespace cmsl
         {
             if (is_at_end())
             {
-                raise_error();
+                // Todo: proper token
+                raise_error(lexer::token::token{}, "Unexpected end of source");
                 return false;
             }
 
@@ -654,7 +659,8 @@ namespace cmsl
 
             if (type && !current_is(*type))
             {
-                raise_error();
+                // Todo: translate type to string
+                raise_error(*m_token, "Expected " + std::to_string(static_cast<int>(*type)));
                 return {};
             }
 
@@ -1180,7 +1186,7 @@ namespace cmsl
             }
 
             // Todo: Unexpected token
-            raise_error();
+            raise_error(*m_token, "Unexpected token");
             return nullptr;
         }
 
@@ -1263,8 +1269,8 @@ namespace cmsl
 
                     if(is_at_end() || current_is(token_type_t::close_paren))
                     {
-                        // Todo: expected parameter
-                        raise_error();
+                        // Todo: proper token
+                        raise_error(lexer::token::token{}, "Expected parameter");
                         return {};
                     }
                 }

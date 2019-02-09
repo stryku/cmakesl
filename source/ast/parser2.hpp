@@ -54,7 +54,7 @@ namespace cmsl
                 std::vector<std::unique_ptr<ast_node>> params;
             };
 
-            void raise_error();
+            void raise_error(lexer::token::token token, std::string message);
 
             bool expect_not_at_end();
             bool is_at_end() const;
