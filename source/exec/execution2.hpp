@@ -20,7 +20,10 @@ namespace cmsl
         class execution2 : public identifiers_context, public function_caller2
         {
         public:
-            std::unique_ptr<inst::instance> call(const sema::sema_function& fun, const std::vector<inst::instance*>& params) override
+            // Todo: consider returning a reference
+            inst::instance* call(const sema::sema_function& fun,
+                                 const std::vector<inst::instance*>& params,
+                                 inst::instances_holder_interface& instances) override
             {
                 if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
                 {
@@ -33,13 +36,15 @@ namespace cmsl
                     // Todo: handle builtin functions
                 }
 
-                return std::move(m_function_return_value);
+                return m_function_return_value.get();
 
             }
 
-            std::unique_ptr<inst::instance> call_member(inst::instance& class_instance,
-                                                const sema::sema_function& fun,
-                                                const std::vector<inst::instance*>& params) override
+            // Todo: consider returning a reference
+            inst::instance* call_member(inst::instance& class_instance,
+                                        const sema::sema_function& fun,
+                                        const std::vector<inst::instance*>& params,
+                                        inst::instances_holder_interface& instances) override
             {
                 if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
                 {
@@ -48,8 +53,7 @@ namespace cmsl
                 else
                 {
                     auto builtin_function = dynamic_cast<const sema::builtin_sema_function*>(&fun);
-                    auto result = builtin_function_caller2{}.call_member(class_instance, builtin_function->kind(), params);
-                    return inst::instance_factory2{}.create(std::move(result), fun.context());
+                    return builtin_function_caller2{instances}.call_member(class_instance, builtin_function->kind(), params);
                 }
             }
 

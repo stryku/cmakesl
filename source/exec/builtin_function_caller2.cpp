@@ -2,13 +2,19 @@
 #include "sema/builtin_function_kind.hpp"
 #include "exec/instance/instance.hpp"
 #include "common/assert.hpp"
-
+#include "builtin_function_caller2.hpp"
+#include "exec/instance/instances_holder.hpp"
 
 namespace cmsl
 {
     namespace exec
     {
-        inst::instance_value_t builtin_function_caller2::call_member(inst::instance& instance, sema::builtin_function_kind function_kind, const params_t& params)
+        builtin_function_caller2::builtin_function_caller2(inst::instances_holder_interface &instances)
+            : m_instances{ instances }
+        {}
+
+        inst::instance*
+        builtin_function_caller2::call_member(inst::instance &instance, sema::builtin_function_kind function_kind, const params_t &params)
         {
             switch (function_kind)
             {
@@ -23,18 +29,26 @@ namespace cmsl
             }
 
             CMSL_UNREACHABLE("Calling unknown member function");
-            return inst::instance_value_t{};
+            return nullptr;
         }
 
-        inst::instance_value_t
+        inst::instance*
         builtin_function_caller2::int_operator_minus(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref().get_int();
-            const auto rhs = params[0]->get_value_cref().get_int();
-            return lhs - rhs;
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            return m_instances.create2(lhs - rhs);
+        }
+
+        inst::instance*
+        builtin_function_caller2::int_operator_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            instance.get_value_ref() = rhs;
+            return &instance;
         }
     }
 }
-
-
-

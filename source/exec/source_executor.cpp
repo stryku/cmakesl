@@ -56,7 +56,8 @@ namespace cmsl
 
             execution2 e;
 
-            auto main_result = e.call(*casted, {});
+            inst::instances_holder instances{ ctx };
+            auto main_result = e.call(*casted, {}, instances);
             return main_result->get_value_cref().get_int();
         }
 

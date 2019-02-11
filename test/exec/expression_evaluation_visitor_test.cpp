@@ -141,8 +141,7 @@ namespace cmsl
                 StrictMock<inst::test::instance_mock> lhs_instance;
                 StrictMock<inst::test::instance_mock> rhs_instance;
                 StrictMock<sema::test::sema_function_mock> function;
-                auto result_instance = std::make_unique<StrictMock<inst::test::instance_mock>>();
-                const auto result_instance_ptr = result_instance.get();
+                StrictMock<inst::test::instance_mock> result_instance;
 
                 const auto operator_token = token_plus();
 
@@ -166,8 +165,9 @@ namespace cmsl
                         .WillOnce(Return(&rhs_instance));
 
                 const std::vector<inst::instance*> expected_param_instances = { &rhs_instance };
-                EXPECT_CALL(m_caller, call_member(MatchRef(&lhs_instance), MatchRef(&function), expected_param_instances))
-                        .WillOnce(Return(ByMove(std::move(result_instance))));
+                EXPECT_CALL(m_caller, call_member(MatchRef(&lhs_instance), MatchRef(&function), expected_param_instances, _))
+                        .WillOnce(Return(&result_instance));
+
 
                 // Function return value storing in our instances.
                 EXPECT_CALL(m_instances, store(_));
@@ -176,7 +176,7 @@ namespace cmsl
 
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(result_instance_ptr));
+                EXPECT_THAT(visitor.result, Eq(&result_instance));
             }
 
             TEST_F(ExpressionEvaluationVisitorTest, Visit_FunctionCall_EvaluatesParametersCallsFunctionAndStoresResult)
@@ -184,8 +184,7 @@ namespace cmsl
                 StrictMock<sema::test::sema_function_mock> function;
                 StrictMock<inst::test::instance_mock> param_instance_0;
                 StrictMock<inst::test::instance_mock> param_instance_1;
-                auto result_instance = std::make_unique<StrictMock<inst::test::instance_mock>>();
-                const auto result_instance_ptr = result_instance.get();
+                StrictMock<inst::test::instance_mock> result_instance;
 
                 const auto param_expression_0_token = token_identifier("foo");
                 auto param_expression_0 = std::make_unique<sema::id_node>(valid_type, param_expression_0_token);
@@ -207,8 +206,9 @@ namespace cmsl
                     &param_instance_0,
                     &param_instance_1
                 };
-                EXPECT_CALL(m_caller, call(MatchRef(&function), expected_param_instances))
-                        .WillOnce(Return(ByMove(std::move(result_instance))));
+                EXPECT_CALL(m_caller, call(MatchRef(&function), expected_param_instances, _))
+                        .WillOnce(Return(&result_instance));
+
 
                 // Function return value storing in our instances.
                 EXPECT_CALL(m_instances, store(_));
@@ -216,7 +216,7 @@ namespace cmsl
                 expression_evaluation_visitor visitor{ m_ctx };
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(result_instance_ptr));
+                EXPECT_THAT(visitor.result, Eq(&result_instance));
             }
 
             TEST_F(ExpressionEvaluationVisitorTest, Visit_MemberFunctionCall_EvaluatesLhsEvaluatesParametersCallsFunctionAndStoresResult)
@@ -225,8 +225,7 @@ namespace cmsl
                 StrictMock<inst::test::instance_mock> param_instance_0;
                 StrictMock<inst::test::instance_mock> param_instance_1;
                 StrictMock<sema::test::sema_function_mock> function;
-                auto result_instance = std::make_unique<StrictMock<inst::test::instance_mock>>();
-                const auto result_instance_ptr = result_instance.get();
+                StrictMock<inst::test::instance_mock> result_instance;
 
                 const auto lhs_expression_token = token_identifier("foo");
                 auto lhs_expression = std::make_unique<sema::id_node>(valid_type, lhs_expression_token);
@@ -259,8 +258,8 @@ namespace cmsl
                         &param_instance_0,
                         &param_instance_1
                 };
-                EXPECT_CALL(m_caller, call_member(MatchRef(&lhs_instance), MatchRef(&function), expected_param_instances))
-                        .WillOnce(Return(ByMove(std::move(result_instance))));
+                EXPECT_CALL(m_caller, call_member(MatchRef(&lhs_instance), MatchRef(&function), expected_param_instances, _))
+                        .WillOnce(Return(&result_instance));
 
                 // Function return value storing in our instances.
                 EXPECT_CALL(m_instances, store(_));
@@ -268,7 +267,7 @@ namespace cmsl
                 expression_evaluation_visitor visitor{ m_ctx };
                 visitor.visit(node);
 
-                EXPECT_THAT(visitor.result, Eq(result_instance_ptr));
+                EXPECT_THAT(visitor.result, Eq(&result_instance));
             }
 
             TEST_F(ExpressionEvaluationVisitorTest, Visit_ClassMemberAccess_EvaluatesLhsGetsMemberAndStoresResult)
