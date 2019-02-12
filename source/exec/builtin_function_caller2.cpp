@@ -13,27 +13,29 @@ namespace cmsl
             : m_instances{ instances }
         {}
 
-        inst::instance*
+        std::unique_ptr<inst::instance>
         builtin_function_caller2::call_member(inst::instance &instance, sema::builtin_function_kind function_kind, const params_t &params)
         {
+            inst::instance* result{ nullptr };
+
             switch (function_kind)
             {
                 case sema::builtin_function_kind::int_operator_minus:
                 {
-                    return int_operator_minus(instance, params);
-                }
+                    result = int_operator_minus(instance, params);
+                } break;
                 case sema::builtin_function_kind::int_operator_equal:
                 {
-                    return int_operator_equal(instance, params);
-                }
+                    result = int_operator_equal(instance, params);
+                } break;
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
+                    return nullptr;
 
             }
 
-            CMSL_UNREACHABLE("Calling unknown member function");
-            return nullptr;
+            return m_instances.gather_ownership(result);
         }
 
         inst::instance*
