@@ -49,8 +49,8 @@ set(EXEC_SOURCES
     instance/instance_factory.cpp
     instance/instance_factory.hpp
     instance/instance_value.hpp
-    instance/named_instance.cpp
-    instance/named_instance.hpp
+        instance/instance_reference.cpp
+        instance/instance_reference.hpp
     instance/generic_instance_value.cpp
     instance/generic_instance_value.hpp
     instance/instance_value.cpp

@@ -3,7 +3,7 @@
 #include "ast/ast_context.hpp"
 #include "exec/instance/complex_unnamed_instance.hpp"
 #include "exec/instance/simple_unnamed_instance.hpp"
-#include "exec/instance/named_instance.hpp"
+#include "exec/instance/instance_reference.hpp"
 #include "common/assert.hpp"
 #include "sema/sema_context.hpp"
 
@@ -78,7 +78,7 @@ namespace cmsl
 
             std::unique_ptr<instance> instance_factory::create(cmsl::string_view name, execution_context &exec_ctx) const
             {
-                return std::make_unique<named_instance>(name, exec_ctx);
+                return std::make_unique<instance_reference>(name, exec_ctx);
             }
 
             std::unique_ptr<instance> instance_factory::create(cmsl::string_view name, instance_value_t value, execution_context &exec_ctx) const
