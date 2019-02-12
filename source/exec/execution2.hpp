@@ -48,7 +48,9 @@ namespace cmsl
             {
                 if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
                 {
-                    // Todo: handle user functions
+                    enter_function_scope(fun);
+                    execute_block(user_function->body());
+                    leave_function_scope();
                 }
                 else
                 {
