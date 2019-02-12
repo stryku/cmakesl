@@ -9,6 +9,7 @@ namespace cmsl
     {
         namespace inst
         {
+            // Todo: consider rename to builtin_unnamed_instance
             class simple_unnamed_instance : public instance
             {
             public:

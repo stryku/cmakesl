@@ -26,6 +26,7 @@ namespace cmsl
             using ::testing::Return;
             using ::testing::Eq;
             using ::testing::StrictMock;
+            using ::testing::Matcher;
 
             using namespace cmsl::test::common;
 
@@ -60,7 +61,7 @@ namespace cmsl
                 sema::bool_value_node true_node{valid_type, true};
                 inst::instance_value_t value{true};
 
-                EXPECT_CALL(m_instances, create2(_))
+                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(true_node);
@@ -78,7 +79,7 @@ namespace cmsl
                 sema::int_value_node node{valid_type, test_value };
                 inst::instance_value_t value{test_value};
 
-                EXPECT_CALL(m_instances, create2(_))
+                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
@@ -95,7 +96,7 @@ namespace cmsl
                 sema::double_value_node node{valid_type, test_value };
                 inst::instance_value_t value{test_value};
 
-                EXPECT_CALL(m_instances, create2(_))
+                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
@@ -112,7 +113,7 @@ namespace cmsl
                 sema::string_value_node node{valid_type, test_value };
                 inst::instance_value_t value{test_value};
 
-                EXPECT_CALL(m_instances, create2(_))
+                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
