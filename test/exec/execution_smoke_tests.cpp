@@ -66,7 +66,7 @@ namespace cmsl
                         "{"
                         "    foo bar;"
                         "    bar.value = 42;"
-                        "    return foo.get_value();"
+                        "    return bar.get_value();"
                         "}";
 
                 cmake_facade_mock facade;

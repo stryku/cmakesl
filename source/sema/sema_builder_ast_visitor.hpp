@@ -90,7 +90,7 @@ namespace cmsl
 //                auto created_class_sema_ctx = std::make_unique<sema_context>(&m_ctx);
 //                auto class_sema_ctx = created_class_sema_ctx.get();
 
-                auto members = collect_class_members_and_add_functions_to_ctx(node);
+                auto members = collect_class_members_and_add_functions_to_ctx(node, class_context);
 
                 if(!members)
                 {
@@ -568,10 +568,11 @@ namespace cmsl
                 std::vector<function_declaration> functions;
             };
 
-            boost::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node)
+            boost::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node,
+                    sema_context& ctx)
             {
                 const auto return_type_reference = node.get_return_type_reference();
-                auto return_type = m_ctx.find_type(return_type_reference.to_string());
+                auto return_type = ctx.find_type(return_type_reference.to_string());
                 if(!return_type)
                 {
                     // Todo: unknown return type
@@ -586,7 +587,7 @@ namespace cmsl
 
                 for(const auto& param_decl : node.get_param_declarations())
                 {
-                    auto param_type = m_ctx.find_type(param_decl.ty.to_string());
+                    auto param_type = ctx.find_type(param_decl.ty.to_string());
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
@@ -602,8 +603,8 @@ namespace cmsl
                         node.get_name(),
                         std::move(params)
                 };
-                auto& function = m_function_factory.create_user( m_ctx, *return_type, std::move(signature) );
-                m_ctx.add_function(function);
+                auto& function = m_function_factory.create_user( ctx, *return_type, std::move(signature) );
+                ctx.add_function(function);
 
                 return function_declaration{
                         &function,
@@ -611,7 +612,8 @@ namespace cmsl
                 };
             }
 
-            boost::optional<class_members> collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node)
+            boost::optional<class_members> collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node,
+                    sema_context& class_context)
             {
                 class_members members;
 
@@ -630,7 +632,7 @@ namespace cmsl
                     }
                     else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))
                     {
-                        auto function_declaration = get_function_declaration_and_add_to_ctx(*fun_node);
+                        auto function_declaration = get_function_declaration_and_add_to_ctx(*fun_node, class_context);
                         if(!function_declaration)
                         {
                             return {};
