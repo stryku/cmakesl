@@ -21,7 +21,7 @@ namespace cmsl
         {
         public:
             // Todo: consider returning a reference
-            inst::instance* call(const sema::sema_function& fun,
+            std::unique_ptr<inst::instance> call(const sema::sema_function& fun,
                                  const std::vector<inst::instance*>& params,
                                  inst::instances_holder_interface& instances) override
             {
@@ -36,12 +36,12 @@ namespace cmsl
                     // Todo: handle builtin functions
                 }
 
-                return m_function_return_value.get();
+                return std::move(m_function_return_value);
 
             }
 
             // Todo: consider returning a reference
-            inst::instance* call_member(inst::instance& class_instance,
+            std::unique_ptr<inst::instance> call_member(inst::instance& class_instance,
                                         const sema::sema_function& fun,
                                         const std::vector<inst::instance*>& params,
                                         inst::instances_holder_interface& instances) override
