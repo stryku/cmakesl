@@ -22,6 +22,10 @@ namespace cmsl
                 {
                     return int_operator_minus(instance, params);
                 }
+                case sema::builtin_function_kind::int_operator_equal:
+                {
+                    return int_operator_equal(instance, params);
+                }
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
