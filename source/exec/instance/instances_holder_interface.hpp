@@ -30,6 +30,7 @@ namespace cmsl
                 virtual std::unique_ptr<instance> gather_ownership(inst::instance *instance_ptr) = 0;
 
                 virtual inst::instance *create2(instance_value_t value) = 0;
+                virtual inst::instance *create2_reference(inst::instance& referenced_instance) = 0;
             };
         }
     }

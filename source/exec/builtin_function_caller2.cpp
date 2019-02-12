@@ -52,7 +52,7 @@ namespace cmsl
             const auto rhs = params[0]->get_value_cref()
                                       .get_int();
             instance.get_value_ref() = rhs;
-            return &instance;
+            return m_instances.create2_reference(instance);
         }
     }
 }
