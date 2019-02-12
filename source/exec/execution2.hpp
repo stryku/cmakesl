@@ -115,7 +115,7 @@ namespace cmsl
                 expression_evaluation_context ctx{ *this, instances, *this };
                 expression_evaluation_visitor visitor{ ctx };
                 node.visit(visitor);
-                return instances.gather_ownership(visitor.result);
+                return visitor.result->copy(); // Todo: it'd be good to move instead of copy.
             }
 
         private:
