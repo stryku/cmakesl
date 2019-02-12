@@ -88,6 +88,14 @@ namespace cmsl
                 m_instances.emplace_back(std::move(instance));
                 return ptr;
             }
+
+            inst::instance *instances_holder::create2_reference(inst::instance &referenced_instance)
+            {
+                auto instance = instance_factory2{}.create_reference(referenced_instance);
+                auto ptr = instance.get();
+                m_instances.emplace_back(std::move(instance));
+                return ptr;
+            }
         }
     }
 }

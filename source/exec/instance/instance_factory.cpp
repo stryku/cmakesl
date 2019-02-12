@@ -168,6 +168,11 @@ namespace cmsl
 
                 return std::make_unique<simple_unnamed_instance>(type, value);
             }
+
+            std::unique_ptr<instance> instance_factory2::create_reference(instance &referenced_instance) const
+            {
+                return std::make_unique<instance_reference>(referenced_instance);
+            }
         }
     }
 }

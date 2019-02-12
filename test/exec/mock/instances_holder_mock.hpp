@@ -26,6 +26,7 @@ namespace cmsl
                     MOCK_METHOD1(gather_ownership, std::unique_ptr<instance>(inst::instance*));
 
                     MOCK_METHOD1(create2, instance*(instance_value_t));
+                    MOCK_METHOD1(create2_reference, instance*(instance&));
                 };
             }
         }

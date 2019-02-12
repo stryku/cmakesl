@@ -43,6 +43,7 @@ namespace cmsl
                 std::unique_ptr<instance> gather_ownership(inst::instance* instance_ptr) override;
 
                 inst::instance* create2(instance_value_t value) override;
+                inst::instance *create2_reference(inst::instance& referenced_instance) override;
 
             private:
                 contexted_instance_factory get_factory();
