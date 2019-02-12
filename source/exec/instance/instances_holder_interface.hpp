@@ -12,6 +12,11 @@ namespace cmsl
         class type;
     }
 
+    namespace sema
+    {
+        class sema_type;
+    }
+
     namespace exec
     {
         namespace inst
@@ -31,6 +36,8 @@ namespace cmsl
 
                 virtual inst::instance *create2(instance_value_t value) = 0;
                 virtual inst::instance *create2_reference(inst::instance& referenced_instance) = 0;
+                virtual inst::instance *create2(const sema::sema_type& type) = 0;
+
             };
         }
     }

@@ -96,6 +96,14 @@ namespace cmsl
                 m_instances.emplace_back(std::move(instance));
                 return ptr;
             }
+
+            inst::instance *instances_holder::create2(const sema::sema_type &type)
+            {
+                auto instance = instance_factory2{}.create(type);
+                auto ptr = instance.get();
+                m_instances.emplace_back(std::move(instance));
+                return ptr;
+            }
         }
     }
 }

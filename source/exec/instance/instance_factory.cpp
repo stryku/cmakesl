@@ -173,6 +173,11 @@ namespace cmsl
             {
                 return std::make_unique<instance_reference>(referenced_instance);
             }
+
+            std::unique_ptr<instance> instance_factory2::create(const sema::sema_type &type) const
+            {
+                return std::make_unique<simple_unnamed_instance>(type);
+            }
         }
     }
 }

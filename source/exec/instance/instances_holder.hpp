@@ -44,6 +44,7 @@ namespace cmsl
 
                 inst::instance* create2(instance_value_t value) override;
                 inst::instance *create2_reference(inst::instance& referenced_instance) override;
+                inst::instance *create2(const sema::sema_type& type) override;
 
             private:
                 contexted_instance_factory get_factory();
