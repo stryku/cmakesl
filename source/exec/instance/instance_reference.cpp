@@ -1,0 +1,85 @@
+#include "instance_reference.hpp"
+
+#include "exec/execution_context.hpp"
+
+namespace cmsl
+{
+    namespace exec
+    {
+        namespace inst
+        {
+            instance_reference::instance_reference(cmsl::string_view name, execution_context &ctx)
+                : instance_reference{ *ctx.get_variable(name) }
+            {}
+
+            instance_reference::instance_reference(instance &referenced_instance)
+                : m_instance{ referenced_instance }
+            {}
+
+            instance_value_t instance_reference::get_value() const
+            {
+                return m_instance.get_value();
+            }
+
+            instance_value_t& instance_reference::get_value_ref()
+            {
+                return m_instance.get_value_ref();
+            }
+
+            const instance_value_t& instance_reference::get_value_cref() const
+            {
+                return m_instance.get_value_cref();
+            }
+
+            void instance_reference::assign(instance_value_t val)
+            {
+                m_instance.assign(val);
+            }
+
+            std::unique_ptr<instance> instance_reference::copy() const
+            {
+                return m_instance.copy();
+            }
+
+            instance* instance_reference::get_member(cmsl::string_view name)
+            {
+                return m_instance.get_member(name);
+            }
+
+            const instance *instance_reference::get_cmember(cmsl::string_view name) const
+            {
+                return m_instance.get_cmember(name);
+            }
+
+            bool instance_reference::has_function(cmsl::string_view name) const
+            {
+                return m_instance.has_function(name);
+            }
+
+            const ast::function* instance_reference::get_function(cmsl::string_view name) const
+            {
+                return m_instance.get_function(name);
+            }
+
+            const ast::type &instance_reference::get_type() const
+            {
+                return m_instance.get_type();
+            }
+
+            bool instance_reference::is_ctor(cmsl::string_view name) const
+            {
+                return get_type().get_name() == name;
+            }
+
+            const sema::sema_function *instance_reference::get_sema_function(cmsl::string_view name) const
+            {
+                return m_instance.get_sema_function(name);
+            }
+
+            const sema::sema_type &instance_reference::get_sema_type() const
+            {
+                return m_instance.get_sema_type();
+            }
+        }
+    }
+}

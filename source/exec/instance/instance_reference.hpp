@@ -11,11 +11,11 @@ namespace cmsl
 
         namespace inst
         {
-            class named_instance : public instance
+            class instance_reference : public instance
             {
             public:
-                named_instance(cmsl::string_view name, execution_context &ctx);
-                named_instance(cmsl::string_view name, instance& referenced_instance);
+                instance_reference(cmsl::string_view name, execution_context &ctx);
+                instance_reference(instance& referenced_instance);
 
                 instance_value_t get_value() const override;
                 instance_value_t& get_value_ref() override;
@@ -32,7 +32,6 @@ namespace cmsl
                 const sema::sema_type& get_sema_type() const override;
 
             private:
-                cmsl::string_view m_name;
                 instance& m_instance;
             };
         }
