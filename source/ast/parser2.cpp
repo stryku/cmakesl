@@ -1168,7 +1168,11 @@ namespace cmsl
 
         std::unique_ptr<ast_node> parser2::factor()
         {
-            if(current_is_fundamental_value())
+            if (current_is_function_call())
+            {
+                return function_call();
+            }
+            else if(current_is_fundamental_value())
             {
                 return fundamental_value();
             }
@@ -1192,12 +1196,6 @@ namespace cmsl
 
         std::unique_ptr<ast_node> parser2::expr()
         {
-            if(current_is_function_call())
-            {
-                return function_call();
-            }
-            else
-            {
                 auto operator_expr = operator_16();
 
                 if(current_is(token_type_t::dot))
@@ -1225,8 +1223,8 @@ namespace cmsl
                 }
 
                 return std::move(operator_expr);
-            }
         }
+
         boost::optional<parser2::function_call_values> parser2::get_function_call_values()
         {
             function_call_values vals;
