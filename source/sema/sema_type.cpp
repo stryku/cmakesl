@@ -1,5 +1,7 @@
 #include "sema/sema_type.hpp"
 #include "sema/sema_context.hpp"
+#include "sema_type.hpp"
+
 
 namespace cmsl
 {
@@ -56,6 +58,16 @@ namespace cmsl
         {
             // Todo: handle user
             return true;
+        }
+
+        bool sema_type::is_complex() const
+        {
+            return m_members.size() > 0u;
+        }
+
+        const std::vector<member_info> &sema_type::members() const
+        {
+            return m_members;
         }
     }
 }

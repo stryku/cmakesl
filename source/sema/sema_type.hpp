@@ -29,12 +29,16 @@ namespace cmsl
 
             token_t name() const;
             const sema_context_interface& context() const;
+            const std::vector<member_info>& members() const;
+
             boost::optional<member_info> find_member(cmsl::string_view name) const;
             const sema_function* find_member_function(cmsl::string_view name) const;
 
+            bool is_complex() const;
             bool is_builtin() const;
             bool operator==(const sema_type& rhs) const;
             bool operator!=(const sema_type& rhs) const;
+
 
         private:
             friend class sema_type_builder;
