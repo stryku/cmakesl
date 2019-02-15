@@ -74,6 +74,36 @@ namespace cmsl
                 const auto result = executor.execute2(source);
                 EXPECT_THAT(result, Eq(42));
             }
+
+            TEST(SourceExecutorTest, SymbolsLookup)
+            {
+                const auto source =
+                        "int function()"
+                        "{"
+                        "    return 42;"
+                        "}"
+                        ""
+                        "class foo"
+                        "{"
+                        "    int value;"
+                        "    int function() { return value; }"
+                        "    int call_function() { return function(); }"
+                        "};"
+                        ""
+                        "foo bar;"
+                        ""
+                        "int main()"
+                        "{"
+                        "    foo bar;"
+                        "    bar.value = 84;"
+                        "    return function() - bar.call_function();"
+                        "}";
+
+                cmake_facade_mock facade;
+                source_executor executor{ facade };
+                const auto result = executor.execute2(source);
+                EXPECT_THAT(result, Eq(-42));
+            }
         }
     }
 }
