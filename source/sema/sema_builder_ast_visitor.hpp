@@ -342,6 +342,7 @@ namespace cmsl
 
             void visit(const ast::translation_unit_node& node) override
             {
+                auto ig = ids_guard();
                 std::vector<std::unique_ptr<sema_node>> nodes;
 
                 for(auto n : node.get_nodes())
