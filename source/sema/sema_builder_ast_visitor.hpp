@@ -120,7 +120,8 @@ namespace cmsl
                     functions.emplace_back(std::make_unique<function_node>(*function_declaration.fun, std::move(body)));
                 }
 
-                m_result_node = std::make_unique<class_node>(name, std::move(members->declarations));
+                m_result_node = std::make_unique<class_node>(name, std::move(members->declarations),
+                        std::move(functions));
             }
 
             void visit(const ast::conditional_node& node) override

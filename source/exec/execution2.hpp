@@ -48,9 +48,10 @@ namespace cmsl
             {
                 if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
                 {
-                    enter_function_scope(fun);
+                    enter_function_scope(fun, class_instance);
                     execute_block(user_function->body());
                     leave_function_scope();
+                    return std::move(m_function_return_value);
                 }
                 else
                 {
@@ -123,10 +124,18 @@ namespace cmsl
             void enter_function_scope(const sema::sema_function& fun)
             {
                 m_callstack.push(callstack_frame{fun});
+                m_callstack.top().exec_ctx.enter_scope();
+            }
+
+            void enter_function_scope(const sema::sema_function& fun, inst::instance& class_instance)
+            {
+                m_callstack.push(callstack_frame{fun});
+                m_callstack.top().exec_ctx.enter_member_function_scope(&class_instance);
             }
 
             void leave_function_scope()
             {
+                m_callstack.top().exec_ctx.leave_scope();
                 m_callstack.pop();
             }
 

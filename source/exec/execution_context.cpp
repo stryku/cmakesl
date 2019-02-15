@@ -24,7 +24,8 @@ namespace cmsl
 
         void execution_context::enter_scope()
         {
-            m_scopes.push(scope_context{ &current_scope() });
+            auto current = m_scopes.empty() ? nullptr : &current_scope();
+            m_scopes.push(scope_context{ current });
         }
 
         void execution_context::leave_scope()
