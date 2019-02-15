@@ -1,5 +1,6 @@
 #include "exec/execution_context.hpp"
 
+#include "common/assert.hpp"
 #include "exec/instance/instance_reference.hpp"
 
 namespace cmsl
@@ -8,22 +9,22 @@ namespace cmsl
     {
         void execution_context::add_variable(cmsl::string_view name, std::unique_ptr<instance_t> inst)
         {
-            current_scope()->add_variable(name, std::move(inst));
+            current_scope().add_variable(name, std::move(inst));
         }
 
         execution_context::instance_t* execution_context::get_variable(cmsl::string_view name)
         {
-            return current_scope()->get_variable(name);
+            return current_scope().get_variable(name);
         }
 
         bool execution_context::variable_exists(cmsl::string_view name) const
         {
-            return current_scope()->variable_exists(name);
+            return current_scope().variable_exists(name);
         }
 
         void execution_context::enter_scope()
         {
-            m_scopes.push(scope_context{ current_scope() });
+            m_scopes.push(scope_context{ &current_scope() });
         }
 
         void execution_context::leave_scope()
@@ -31,14 +32,24 @@ namespace cmsl
             m_scopes.pop();
         }
 
-        scope_context* execution_context::current_scope()
+        scope_context& execution_context::current_scope()
         {
-            return m_scopes.empty() ? nullptr : &m_scopes.top();
+            // Todo: introduce CMSL_UNREACHABLE_IF(condition, message)
+            if(m_scopes.empty())
+            {
+                CMSL_UNREACHABLE("No scope");
+            }
+            return m_scopes.top();
         }
 
-        const scope_context* execution_context::current_scope() const
+        const scope_context& execution_context::current_scope() const
         {
-            return m_scopes.empty() ? nullptr : &m_scopes.top();
+            if(m_scopes.empty())
+            {
+                // Todo: introduce CMSL_UNREACHABLE_IF(condition, message)
+                CMSL_UNREACHABLE("No scope");
+            }
+            return m_scopes.top();
         }
 
         void execution_context::enter_member_function_scope(instance_t* class_instance)
