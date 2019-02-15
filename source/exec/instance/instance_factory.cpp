@@ -176,7 +176,14 @@ namespace cmsl
 
             std::unique_ptr<instance> instance_factory2::create(const sema::sema_type &type) const
             {
-                return std::make_unique<simple_unnamed_instance>(type);
+                if(type.is_complex())
+                {
+                    return std::make_unique<complex_unnamed_instance>(type);
+                }
+                else
+                {
+                    return std::make_unique<simple_unnamed_instance>(type);
+                }
             }
         }
     }
