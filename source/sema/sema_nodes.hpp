@@ -342,10 +342,10 @@ namespace cmsl
             using functions_t = std::vector<std::unique_ptr<function_node>>;
 
         public:
-            explicit class_node(lexer::token::token name, members_t members/*, functions_t functions*/)
+            explicit class_node(lexer::token::token name, members_t members, functions_t functions)
                 : m_name{ name }
                 , m_members{ std::move(members) }
-                //, m_functions{ std::move(functions) }
+                , m_functions{ std::move(functions) }
             {}
 
             lexer::token::token name() const
@@ -363,7 +363,7 @@ namespace cmsl
         private:
             lexer::token::token m_name;
             members_t m_members;
-            //functions_t m_functions;
+            functions_t m_functions;
         };
 
         class conditional_node : public sema_node
