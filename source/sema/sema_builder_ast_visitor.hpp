@@ -110,7 +110,7 @@ namespace cmsl
 
                 for(auto function_declaration : members->functions)
                 {
-                    auto body = visit_child_node<block_node>(function_declaration.body_to_visit);
+                    auto body = visit_child_node<block_node>(function_declaration.body_to_visit, class_context);
                     if(!body)
                     {
                         return;
@@ -479,7 +479,12 @@ namespace cmsl
 
             sema_builder_ast_visitor clone() const
             {
-                return sema_builder_ast_visitor{ m_ctx, m_errors_observer, m_ids_context, m_type_factory, m_function_factory, m_context_factory };
+                return clone(m_ctx);
+            }
+
+            sema_builder_ast_visitor clone(sema_context_interface& ctx_to_visit) const
+            {
+                return sema_builder_ast_visitor{ ctx_to_visit, m_errors_observer, m_ids_context, m_type_factory, m_function_factory, m_context_factory };
             }
 
             std::unique_ptr<expression_node> visit_child_expr(const ast::ast_node& node)
@@ -493,9 +498,22 @@ namespace cmsl
                 return to_node<T>(visit_child(node));
             }
 
+            template <typename T>
+            std::unique_ptr<T> visit_child_node(const ast::ast_node& node, sema_context_interface& ctx_to_visit)
+            {
+                return to_node<T>(visit_child(node, ctx_to_visit));
+            }
+
             std::unique_ptr<sema_node> visit_child(const ast::ast_node& node)
             {
                 auto v = clone();
+                node.visit(v);
+                return std::move(v.m_result_node);
+            }
+
+            std::unique_ptr<sema_node> visit_child(const ast::ast_node& node, sema_context_interface& ctx_to_visit)
+            {
+                auto v = clone(ctx_to_visit);
                 node.visit(v);
                 return std::move(v.m_result_node);
             }
