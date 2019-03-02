@@ -302,6 +302,9 @@ namespace cmsl
                 EXPECT_CALL(ctx, find_function(fun_name_token.str()))
                         .WillOnce(Return(&function_mock));
 
+                EXPECT_CALL(ctx, type())
+                        .WillOnce(Return(sema_context_interface::context_type::namespace_));
+
                 EXPECT_CALL(function_mock, signature())
                         .WillOnce(ReturnRef(signature));
 
@@ -338,6 +341,9 @@ namespace cmsl
 
                 EXPECT_CALL(ctx, find_function(fun_name_token.str()))
                         .WillOnce(Return(&function_mock));
+
+                EXPECT_CALL(ctx, type())
+                        .WillOnce(Return(sema_context_interface::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, signature())
                         .WillOnce(ReturnRef(signature));
@@ -689,7 +695,6 @@ namespace cmsl
                 EXPECT_CALL(ctx, find_type(function_return_type_reference.to_string()))
                         .WillOnce(Return(&valid_type));
 
-                EXPECT_CALL(ctx, add_function(_));
                 EXPECT_CALL(ctx, add_type(_));
 
                 // There are three identifier contextes: class, function parameters and function body.
@@ -750,7 +755,6 @@ namespace cmsl
                         .WillOnce(Return(&valid_type))
                         .WillOnce(Return(&valid_type));
 
-                EXPECT_CALL(ctx, add_function(_));
                 EXPECT_CALL(ctx, add_type(_));
 
                 // There are three identifier contextes: class, function parameters and function body. Member is registered in class context.
@@ -1052,9 +1056,9 @@ namespace cmsl
                 EXPECT_CALL(ids_ctx, register_identifier(variable_name_token, &valid_type));
 
                 EXPECT_CALL(ids_ctx, enter_ctx())
-                        .Times(3);
+                        .Times(4);
                 EXPECT_CALL(ids_ctx, leave_ctx())
-                        .Times(3);
+                        .Times(4);
 
 
                 visitor.visit(node);
