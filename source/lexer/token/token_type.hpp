@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace cmsl
 {
     namespace lexer
@@ -72,4 +74,6 @@ namespace cmsl
             };
         }
     }
+
+    std::string to_string(lexer::token::token_type type);
 }
