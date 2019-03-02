@@ -13,7 +13,10 @@ namespace cmsl
             int_operator_minus,
             int_operator_equal,
 
-            double_to_string
+            double_to_string,
+
+            string_empty,
+            string_size
 
         };
     }

@@ -2,6 +2,8 @@
 #include "sema/factories.hpp"
 #include "sema/type_builder.hpp"
 #include "sema/builtin_function_kind.hpp"
+#include "builtin_sema_context.hpp"
+
 
 namespace cmsl
 {
@@ -41,10 +43,12 @@ namespace cmsl
             auto bool_manipulator = add_bool_type();
             auto int_manipulator = add_int_type();
             auto double_manipulator = add_double_type();
+            auto string_manipulator = add_string_type();
 
             add_bool_member_functions(bool_manipulator);
             add_int_member_functions(int_manipulator);
             add_double_member_functions(double_manipulator);
+            add_string_member_functions(string_manipulator);
         }
 
         void builtin_sema_context::add_functions()
@@ -144,6 +148,33 @@ namespace cmsl
             };
 
             add_type_member_functions(double_manipulator, functions);
+        }
+
+        type_builder builtin_sema_context::add_string_type()
+        {
+            const auto token = make_token(token_type_t::kw_string, "string");
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            builder.build_and_register_in_context();
+            return builder;
+        }
+
+        void builtin_sema_context::add_string_member_functions(type_builder &string_manipulator)
+        {
+            const auto functions = {
+                    builtin_function_info{
+                            *find_type("bool"),
+                            function_signature{ make_id_token("empty"), {} },
+                            builtin_function_kind::string_empty
+                    },
+                    builtin_function_info{
+                            *find_type("int"),
+                            function_signature{ make_id_token("size"), {} },
+                            builtin_function_kind::string_size
+                    }
+
+            };
+
+            add_type_member_functions(string_manipulator, functions);
         }
     }
 }

@@ -56,6 +56,8 @@ namespace cmsl
             void add_int_member_functions(type_builder& int_manipulator);
             type_builder add_double_type();
             void add_double_member_functions(type_builder& double_manipulator);
+            type_builder add_string_type();
+            void add_string_member_functions(type_builder& string_manipulator);
 
             template <unsigned N>
             lexer::token::token make_token(token_type_t token_type, const char(&tok)[N]);
