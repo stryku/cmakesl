@@ -53,6 +53,7 @@ namespace cmsl
         {
         public:
             sema_context& create(const sema_context_interface* parent);
+            sema_context& create_class(const sema_context_interface* parent);
         };
     }
 }
