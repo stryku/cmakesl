@@ -86,7 +86,7 @@ namespace cmsl
 
                 auto class_ids_guard = ids_guard();
 
-                auto& class_context = m_context_factory.create(&m_ctx);
+                auto& class_context = m_context_factory.create_class(&m_ctx);
 //                auto created_class_sema_ctx = std::make_unique<sema_context>(&m_ctx);
 //                auto class_sema_ctx = created_class_sema_ctx.get();
 
@@ -252,7 +252,14 @@ namespace cmsl
                     return;
                 }
 
-                m_result_node = std::make_unique<function_call_node>(*found_fun, std::move(*params));
+                if(m_ctx.type() == sema_context_interface::context_type::namespace_)
+                {
+                    m_result_node = std::make_unique<function_call_node>(*found_fun, std::move(*params));
+                }
+                else
+                {
+                    m_result_node = std::make_unique<implicit_member_function_call_node>(*found_fun, std::move(*params));
+                }
             }
 
             void visit(const ast::member_function_call_node& node) override

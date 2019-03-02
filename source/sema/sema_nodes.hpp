@@ -284,6 +284,16 @@ namespace cmsl
             std::unique_ptr<expression_node> m_lhs;
         };
 
+        class implicit_member_function_call_node : public call_node
+        {
+        public:
+            explicit implicit_member_function_call_node(const sema_function& function, param_expressions_t params)
+                    : call_node{ function, std::move(params) }
+            {}
+
+            VISIT_METHOD
+        };
+
         class block_node : public sema_node
         {
         private:

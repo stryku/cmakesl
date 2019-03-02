@@ -23,15 +23,15 @@ namespace cmsl
             TEST(SourceExecutorTest, UserFunction)
             {
                 const auto source =
-                    "int foo()"
-                    "{"
-                    "    return 42;"
-                    "}"
-                    ""
-                    "int main()"
-                    "{"
-                    "    return foo();"
-                    "}";
+                    "int foo()\n"
+                    "{\n"
+                    "    return 42;\n"
+                    "}\n"
+                    "\n"
+                    "int main()\n"
+                    "{\n"
+                    "    return foo();\n"
+                    "}\n";
 
                 cmake_facade_mock facade;
                 source_executor executor{ facade };
@@ -42,10 +42,10 @@ namespace cmsl
             TEST(SourceExecutorTest, BinaryOperator)
             {
                 const auto source =
-                        "int main()"
-                        "{"
-                        "    return 42 - 84;"
-                        "}";
+                        "int main()\n"
+                        "{\n"
+                        "    return 42 - 84;\n"
+                        "}\n";
 
                 cmake_facade_mock facade;
                 source_executor executor{ facade };
@@ -56,18 +56,18 @@ namespace cmsl
             TEST(SourceExecutorTest, Class)
             {
                 const auto source =
-                        "class foo"
-                        "{"
-                        "    int value;"
-                        "    int get_value() { return value; }"
-                        "};"
-                        ""
-                        "int main()"
-                        "{"
-                        "    foo bar;"
-                        "    bar.value = 42;"
-                        "    return bar.get_value();"
-                        "}";
+                        "class foo\n"
+                        "{\n"
+                        "    int value;\n"
+                        "    int get_value() { return value; }\n"
+                        "};\n"
+                        "\n"
+                        "int main()\n"
+                        "{\n"
+                        "    foo bar;\n"
+                        "    bar.value = 42;\n"
+                        "    return bar.get_value();\n"
+                        "}\n";
 
                 cmake_facade_mock facade;
                 source_executor executor{ facade };
@@ -78,26 +78,26 @@ namespace cmsl
             TEST(SourceExecutorTest, SymbolsLookup)
             {
                 const auto source =
-                        "int function()"
-                        "{"
-                        "    return 42;"
-                        "}"
-                        ""
-                        "class foo"
-                        "{"
-                        "    int value;"
-                        "    int function() { return value; }"
-                        "    int call_function() { return function(); }"
-                        "};"
-                        ""
-                        "foo bar;"
-                        ""
-                        "int main()"
-                        "{"
-                        "    foo bar;"
-                        "    bar.value = 84;"
-                        "    return function() - bar.call_function();"
-                        "}";
+                        "int function()\n"
+                        "{\n"
+                        "    return 42;\n"
+                        "}\n"
+                        "\n"
+                        "class foo\n"
+                        "{\n"
+                        "    int value;\n"
+                        "    int function() { return value; }\n"
+                        "    int call_function() { return function(); }\n"
+                        "};\n"
+                        "\n"
+                        "foo bar;\n"
+                        "\n"
+                        "int main()\n"
+                        "{\n"
+                        "    foo bar;\n"
+                        "    bar.value = 84;\n"
+                        "    return function() - bar.call_function();\n"
+                        "}\n";
 
                 cmake_facade_mock facade;
                 source_executor executor{ facade };

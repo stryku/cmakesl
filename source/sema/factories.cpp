@@ -3,6 +3,8 @@
 #include "sema/user_sema_function.hpp"
 #include "sema/sema_type.hpp"
 #include "sema/sema_context.hpp"
+#include "factories.hpp"
+
 
 namespace cmsl
 {
@@ -27,7 +29,12 @@ namespace cmsl
 
         sema_context& sema_context_factory::create(const sema_context_interface *parent)
         {
-            return create_impl<sema_context>(parent);
+            return create_impl<sema_context>(parent, sema_context_interface::context_type::namespace_);
+        }
+
+        sema_context &sema_context_factory::create_class(const sema_context_interface *parent)
+        {
+            return create_impl<sema_context>(parent, sema_context_interface::context_type::class_);
         }
     }
 }
