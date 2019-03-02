@@ -658,8 +658,7 @@ namespace cmsl
 
             if (type && !current_is(*type))
             {
-                // Todo: translate type to string
-                raise_error(*m_token, "Expected " + std::to_string(static_cast<int>(*type)));
+                raise_error(*m_token, "Expected " + to_string(*type));
                 return {};
             }
 
@@ -1116,7 +1115,7 @@ namespace cmsl
 
         bool parser2::current_is_function_call() const
         {
-            return curr_type() == token_type_t::identifier
+            return current_is_type()
                    && next_is(token_type_t::open_paren);
         }
 
