@@ -133,7 +133,7 @@ namespace cmsl
                 void move_from(instance_value_variant&& moved);
 
             private:
-                which_type m_which;
+                which_type m_which{ which_type::bool_ };
             };
         }
     }
