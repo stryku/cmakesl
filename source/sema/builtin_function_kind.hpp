@@ -6,6 +6,9 @@ namespace cmsl
     {
         enum class builtin_function_kind
         {
+            bool_ctor,
+            bool_ctor_bool,
+            bool_ctor_int,
             bool_to_string,
 
             int_ctor_bool,

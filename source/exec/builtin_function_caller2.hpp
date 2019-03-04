@@ -28,6 +28,10 @@ namespace cmsl
             std::unique_ptr<inst::instance> call_member(inst::instance& instance, sema::builtin_function_kind function_kind, const params_t& params);
 
         private:
+            inst::instance* bool_ctor(inst::instance& instance, const params_t& params);
+            inst::instance* bool_ctor_bool(inst::instance& instance, const params_t& params);
+            inst::instance* bool_ctor_int(inst::instance& instance, const params_t& params);
+
             inst::instance* int_ctor_bool(inst::instance& instance, const params_t& params);
             inst::instance* int_operator_minus(inst::instance& instance, const params_t& params);
             inst::instance* int_operator_equal(inst::instance& instance, const params_t& params);
