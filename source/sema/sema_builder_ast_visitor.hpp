@@ -262,7 +262,18 @@ namespace cmsl
                     } break;
                     case sema_context_interface::context_type::class_:
                     {
-                        m_result_node = std::make_unique<implicit_member_function_call_node>(*chosen_function, std::move(*params));
+                        const auto is_constructor = chosen_function->signature().name.str() == chosen_function->return_type().name().str();
+                        if(is_constructor)
+                        {
+                            m_result_node = std::make_unique<constructor_call_node>(chosen_function->return_type(),
+                                                                                    *chosen_function,
+                                                                                    std::move(*params));
+                        }
+                        else
+                        {
+                            m_result_node = std::make_unique<implicit_member_function_call_node>(*chosen_function,
+                                                                                                 std::move(*params));
+                        }
                     } break;
 
                     default:
