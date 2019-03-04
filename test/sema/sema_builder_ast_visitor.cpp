@@ -334,7 +334,9 @@ namespace cmsl
                 StrictMock<sema_function_mock> function_mock;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                const auto fun_name_token = token_identifier("foo");
+                // It's crucial that fun name token has different text than valid_type's name.
+                // Thanks to that we're not going to call a constructor.
+                const auto fun_name_token = token_identifier("not_a_constructor");
                 const auto param1_id_token = token_identifier("bar");
                 const auto param2_id_token = token_identifier("baz");
 
@@ -386,6 +388,50 @@ namespace cmsl
                 EXPECT_THAT(casted_node->param_expressions().size(), Eq(expected_number_of_params));
 
                 // Todo: consider checking params one by one
+            }
+
+            // Todo: Do we need this? Context tests should test whether context returns ctor's function.
+            TEST_F(SemaBuilderAstVisitorTest, Visit_ConstructorCallWithoutParameters_GetConstructorCallNodeWithoutParameters)
+            {
+                errs_t errs;
+                StrictMock<sema_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<sema_function_mock> function_mock;
+                const ast::function::params_declaration_t param_declarations;
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+                // It's crucial that fun name token has same text as valid_type's name.
+                // Thanks to that we're going to call a constructor.
+                const auto fun_name_token = token_identifier("foo");
+                function_signature signature;
+                signature.name = fun_name_token;
+                const ast::function_call_node node{fun_name_token, {}};
+
+                const auto lookup_result = function_lookup_result_t{ { &function_mock } };
+                EXPECT_CALL(ctx, find_function(fun_name_token.str()))
+                        .WillOnce(Return(lookup_result));
+
+                EXPECT_CALL(function_mock, context())
+                        .WillOnce(ReturnRef(ctx));
+
+                EXPECT_CALL(ctx, type())
+                        .WillOnce(Return(sema_context_interface::context_type::namespace_));
+
+                EXPECT_CALL(function_mock, return_type())
+                        .WillOnce(ReturnRef(valid_type));
+
+                EXPECT_CALL(function_mock, signature())
+                        .WillOnce(ReturnRef(signature));
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<function_call_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                EXPECT_THAT(casted_node->type(), IsValidType());
+                EXPECT_THAT(casted_node->param_expressions().size(), Eq(0u));
             }
 
             TEST_F(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithoutParameters_GetMemberFunctionCallNodeWithoutParameters)
