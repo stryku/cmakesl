@@ -80,6 +80,19 @@ namespace cmsl
                 const auto result = m_executor.execute2(source);
                 EXPECT_THAT(result, Eq(0));
             }
+
+            TEST_F(BoolTypeSmokeTest, OperatorEqual)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    bool b;\n"
+                        "    b = true;\n"
+                        "    return int(b);\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(1));
+            }
         }
     }
 }
