@@ -77,7 +77,27 @@ namespace cmsl
 
         void builtin_sema_context::add_bool_member_functions(type_builder &bool_manipulator)
         {
+            const auto& int_type = *find_type("int");
+            const auto& bool_type = *find_type("bool");
+
             const auto functions = {
+                builtin_function_info{ // bool()
+                        bool_type,
+                        function_signature{ make_id_token("bool"), {} },
+                        builtin_function_kind::bool_ctor
+                },
+                builtin_function_info{ // bool(bool)
+                        bool_type,
+                        function_signature{ make_id_token("bool"),
+                                            { parameter_declaration{bool_type, make_id_token("") } } },
+                        builtin_function_kind::bool_ctor_bool
+                },
+                builtin_function_info{ // bool(int)
+                        bool_type,
+                        function_signature{ make_id_token("bool"),
+                                            { parameter_declaration{int_type, make_id_token("") } } },
+                        builtin_function_kind::bool_ctor_int
+                },
                 builtin_function_info{
                         *find_type("string"),
                         function_signature{ make_id_token("to_string"), {} },

@@ -20,6 +20,18 @@ namespace cmsl
 
             switch (function_kind)
             {
+                case sema::builtin_function_kind::bool_ctor:
+                {
+                    result = bool_ctor(instance, params);
+                } break;
+                case sema::builtin_function_kind::bool_ctor_bool:
+                {
+                    result = bool_ctor_bool(instance, params);
+                } break;
+                case sema::builtin_function_kind::bool_ctor_int:
+                {
+                    result = bool_ctor_int(instance, params);
+                } break;
                 case sema::builtin_function_kind::int_ctor_bool:
                 {
                     result = int_ctor_bool(instance, params);
@@ -67,6 +79,31 @@ namespace cmsl
             const auto param = params[0]->get_value_cref()
                                         .get_bool();
             instance.get_value_ref().set_int(static_cast<inst::int_t>(param));
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::bool_ctor(inst::instance &instance, const builtin_function_caller2::params_t&)
+        {
+            instance.get_value_ref().set_bool(false);
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::bool_ctor_bool(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto param = params[0]->get_value_cref()
+                                        .get_bool();
+            instance.get_value_ref().set_bool(param);
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::bool_ctor_int(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto param = params[0]->get_value_cref()
+                                               .get_int();
+            instance.get_value_ref().set_bool(static_cast<bool>(param));
             return &instance;
         }
     }
