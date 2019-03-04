@@ -15,6 +15,7 @@ namespace cmsl
         class function_call_node;
         class member_function_call_node;
         class implicit_member_function_call_node;
+        class constructor_call_node;
         class block_node;
         class function_node;
         class class_node;
@@ -40,6 +41,7 @@ namespace cmsl
             virtual void visit(const function_call_node& node) = 0;
             virtual void visit(const member_function_call_node& node) = 0;
             virtual void visit(const implicit_member_function_call_node& node) = 0;
+            virtual void visit(const constructor_call_node& node) = 0;
             virtual void visit(const block_node& node) = 0;
             virtual void visit(const function_node& node) = 0;
             virtual void visit(const class_node& node) = 0;
@@ -66,6 +68,7 @@ namespace cmsl
             virtual void visit(const function_call_node& node) override {}
             virtual void visit(const member_function_call_node& node) override {}
             virtual void visit(const implicit_member_function_call_node& node) override {}
+            virtual void visit(const constructor_call_node& node) override {}
             virtual void visit(const block_node& node) override {}
             virtual void visit(const function_node& node) override {}
             virtual void visit(const class_node& node) override {}
