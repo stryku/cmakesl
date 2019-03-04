@@ -30,14 +30,38 @@ namespace cmsl
                 const auto chosen_function = choose_from_scope(scoped_functions, call_parameters);
                 if(chosen_function == nullptr)
                 {
-                    report_error(scoped_functions, call_parameters);
+                    raise_wrong_call_error(scoped_functions, call_parameters);
                 }
 
                 return chosen_function;
             }
 
+            m_errs.nofify_error({m_call_token.src_range(), '\'' + m_call_token.str().to_string() + "\' function not found"});
+
             return nullptr;
         }
+
+        const sema_function*
+        overload_resolution::choose(const single_scope_function_lookup_result_t &functions,
+                                    const std::vector<std::unique_ptr<expression_node>> &call_parameters) const
+        {
+            // Todo: is it even possible to have empty vector here?
+            if(functions.empty())
+            {
+                m_errs.nofify_error({m_call_token.src_range(), '\'' + m_call_token.str().to_string() + "\' function not found"});
+                return nullptr;
+            }
+
+            const auto chosen_function = choose_from_scope(functions, call_parameters);
+            if(chosen_function == nullptr)
+            {
+                raise_wrong_call_error(functions, call_parameters);
+            }
+
+            return chosen_function;
+        }
+
+
 
         const sema_function *
         overload_resolution::choose_from_scope(const single_scope_function_lookup_result_t &functions,
@@ -76,7 +100,7 @@ namespace cmsl
         }
 
         void
-        overload_resolution::report_error(const single_scope_function_lookup_result_t &functions, const std::vector<std::unique_ptr<expression_node>> &call_parameters) const
+        overload_resolution::raise_wrong_call_error(const single_scope_function_lookup_result_t &functions, const std::vector<std::unique_ptr<expression_node>> &call_parameters) const
         {
             // Todo: implement function::to_string to have a nicely printed error
             // Todo: improve error explanation

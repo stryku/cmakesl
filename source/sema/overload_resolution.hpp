@@ -22,8 +22,8 @@ namespace cmsl
             // Todo: consider accepting source range instead of token
             explicit overload_resolution(errors::errors_observer& errs, lexer::token::token call_token);
 
-            // Todo: consider accepting parameters in ctor.
             const sema_function* choose(const function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
+            const sema_function* choose(const single_scope_function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
 
         private:
             const sema_function* choose_from_scope(const single_scope_function_lookup_result_t& functions,
@@ -31,7 +31,7 @@ namespace cmsl
 
             bool params_match(const sema_function& function, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
 
-            void report_error(const single_scope_function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
+            void raise_wrong_call_error(const single_scope_function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
 
         private:
             errors::errors_observer& m_errs;
