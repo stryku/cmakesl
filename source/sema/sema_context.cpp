@@ -64,14 +64,23 @@ namespace cmsl
         {
             single_scope_function_lookup_result_t result;
 
+            // Collect functions.
             const auto pred = [name](const auto& function)
             {
                 return name == function->signature().name.str();
             };
-
             std::copy_if(std::cbegin(m_functions), std::cend(m_functions),
-                    std::back_inserter(result),
-                    pred);
+                         std::back_inserter(result),
+                         pred);
+
+            // Collect constructors.
+            // Todo: test ctors collecting.
+            if(auto ty = find_type_in_this_scope(name))
+            {
+                const auto& type_ctx = ty->context();
+                const auto constructors = type_ctx.find_function_in_this_scope(name);
+                result.insert(std::end(result), std::cbegin(constructors), std::cend(constructors));
+            }
 
             return result;
         }
