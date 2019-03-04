@@ -33,9 +33,13 @@ namespace cmsl
             inst::instance* bool_ctor_int(inst::instance& instance, const params_t& params);
             inst::instance* bool_operator_equal(inst::instance& instance, const params_t& params);
 
+            inst::instance* int_ctor(inst::instance& instance, const params_t& params);
             inst::instance* int_ctor_bool(inst::instance& instance, const params_t& params);
+            inst::instance* int_ctor_int(inst::instance& instance, const params_t& params);
+            inst::instance* int_operator_plus(inst::instance& instance, const params_t& params);
             inst::instance* int_operator_minus(inst::instance& instance, const params_t& params);
             inst::instance* int_operator_equal(inst::instance& instance, const params_t& params);
+            inst::instance* int_operator_plus_equal(inst::instance& instance, const params_t& params);
 
         private:
             inst::instances_holder_interface& m_instances;

@@ -12,11 +12,14 @@ namespace cmsl
             bool_operator_equal,
             bool_to_string,
 
+            int_ctor,
             int_ctor_bool,
+            int_ctor_int,
             int_to_string,
             int_operator_plus,
             int_operator_minus,
             int_operator_equal,
+            int_operator_plus_equal,
 
             double_to_string,
 
