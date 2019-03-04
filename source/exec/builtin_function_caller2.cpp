@@ -20,6 +20,10 @@ namespace cmsl
 
             switch (function_kind)
             {
+                case sema::builtin_function_kind::int_ctor_bool:
+                {
+                    result = int_ctor_bool(instance, params);
+                } break;
                 case sema::builtin_function_kind::int_operator_minus:
                 {
                     result = int_operator_minus(instance, params);
@@ -55,6 +59,15 @@ namespace cmsl
                                       .get_int();
             instance.get_value_ref() = rhs;
             return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_ctor_bool(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto param = params[0]->get_value_cref()
+                                        .get_bool();
+            instance.get_value_ref().set_int(static_cast<inst::int_t>(param));
+            return &instance;
         }
     }
 }

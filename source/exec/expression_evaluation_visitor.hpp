@@ -98,7 +98,8 @@ namespace cmsl
                                                                          function,
                                                                          evaluated_params,
                                                                          m_ctx.instances);
-                result = class_instance;
+                result = result_instance.get();
+                m_ctx.instances.store(std::move(result_instance));
             }
 
             void visit(const sema::member_function_call_node& node) override
