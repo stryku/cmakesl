@@ -32,6 +32,11 @@ namespace cmsl
                 {
                     result = bool_ctor_int(instance, params);
                 } break;
+                case sema::builtin_function_kind::bool_operator_equal:
+                {
+                    result = bool_operator_equal(instance, params);
+                } break;
+
                 case sema::builtin_function_kind::int_ctor_bool:
                 {
                     result = int_ctor_bool(instance, params);
@@ -105,6 +110,15 @@ namespace cmsl
                                                .get_int();
             instance.get_value_ref().set_bool(static_cast<bool>(param));
             return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::bool_operator_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_bool();
+            instance.get_value_ref() = rhs;
+            return m_instances.create2_reference(instance);
         }
     }
 }

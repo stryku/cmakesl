@@ -31,6 +31,7 @@ namespace cmsl
             inst::instance* bool_ctor(inst::instance& instance, const params_t& params);
             inst::instance* bool_ctor_bool(inst::instance& instance, const params_t& params);
             inst::instance* bool_ctor_int(inst::instance& instance, const params_t& params);
+            inst::instance* bool_operator_equal(inst::instance& instance, const params_t& params);
 
             inst::instance* int_ctor_bool(inst::instance& instance, const params_t& params);
             inst::instance* int_operator_minus(inst::instance& instance, const params_t& params);

@@ -9,6 +9,7 @@ namespace cmsl
             bool_ctor,
             bool_ctor_bool,
             bool_ctor_int,
+            bool_operator_equal,
             bool_to_string,
 
             int_ctor_bool,

@@ -98,7 +98,13 @@ namespace cmsl
                                             { parameter_declaration{int_type, make_id_token("") } } },
                         builtin_function_kind::bool_ctor_int
                 },
-                builtin_function_info{
+                builtin_function_info{ // operator=(bool)
+                        bool_type,
+                        function_signature{ make_token(token_type_t::equal, "="),
+                                            { parameter_declaration{bool_type, make_id_token("") } } },
+                        builtin_function_kind::bool_operator_equal
+                },
+                builtin_function_info{ // to_string()
                         *find_type("string"),
                         function_signature{ make_id_token("to_string"), {} },
                         builtin_function_kind::bool_to_string
