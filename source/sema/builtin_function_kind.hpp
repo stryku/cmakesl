@@ -8,6 +8,7 @@ namespace cmsl
         {
             bool_to_string,
 
+            int_ctor_bool,
             int_to_string,
             int_operator_plus,
             int_operator_minus,

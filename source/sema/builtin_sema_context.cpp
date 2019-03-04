@@ -99,26 +99,33 @@ namespace cmsl
         void builtin_sema_context::add_int_member_functions(type_builder &int_manipulator)
         {
             const auto& int_type = *find_type("int");
+            const auto& bool_type = *find_type("bool");
 
             const auto functions = {
-                    builtin_function_info{
+                    builtin_function_info{ // int(bool)
+                            int_type,
+                            function_signature{ make_id_token("int"),
+                                                { parameter_declaration{bool_type, make_id_token("") } } },
+                            builtin_function_kind::int_ctor_bool
+                    },
+                    builtin_function_info{ // to_string()
                             *find_type("string"),
                             function_signature{ make_id_token("to_string"), {} },
                             builtin_function_kind::int_to_string
                     },
-                    builtin_function_info{
+                    builtin_function_info{ // operator+(int)
                             int_type,
                             function_signature{ make_token(token_type_t::plus, "+"),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_plus
                     },
-                    builtin_function_info{
+                    builtin_function_info{ // operator-(int)
                             int_type,
                             function_signature{ make_token(token_type_t::minus, "-"),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_minus
                     },
-                    builtin_function_info{
+                    builtin_function_info{ // operator=(int)
                             int_type,
                             function_signature{ make_token(token_type_t::equal, "="),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
