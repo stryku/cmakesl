@@ -20,6 +20,7 @@ namespace cmsl
 
             switch (function_kind)
             {
+                // bool
                 case sema::builtin_function_kind::bool_ctor:
                 {
                     result = bool_ctor(instance, params);
@@ -37,9 +38,22 @@ namespace cmsl
                     result = bool_operator_equal(instance, params);
                 } break;
 
+                // int
+                case sema::builtin_function_kind::int_ctor:
+                {
+                    result = int_ctor(instance, params);
+                } break;
                 case sema::builtin_function_kind::int_ctor_bool:
                 {
                     result = int_ctor_bool(instance, params);
+                } break;
+                case sema::builtin_function_kind::int_ctor_int:
+                {
+                    result = int_ctor_int(instance, params);
+                } break;
+                case sema::builtin_function_kind::int_operator_plus:
+                {
+                    result = int_operator_plus(instance, params);
                 } break;
                 case sema::builtin_function_kind::int_operator_minus:
                 {
@@ -48,6 +62,10 @@ namespace cmsl
                 case sema::builtin_function_kind::int_operator_equal:
                 {
                     result = int_operator_equal(instance, params);
+                } break;
+                case sema::builtin_function_kind::int_operator_plus_equal:
+                {
+                    result = int_operator_plus_equal(instance, params);
                 } break;
 
                 default:
@@ -118,6 +136,44 @@ namespace cmsl
             const auto rhs = params[0]->get_value_cref()
                                       .get_bool();
             instance.get_value_ref() = rhs;
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_ctor(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            instance.get_value_ref().set_int(inst::int_t{ 0 });
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_ctor_int(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            instance.get_value_ref() = rhs;
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_plus(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            return m_instances.create2(lhs + rhs);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_plus_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+
+            instance.get_value_ref().set_int(lhs + rhs);
             return m_instances.create2_reference(instance);
         }
     }

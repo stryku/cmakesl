@@ -128,11 +128,22 @@ namespace cmsl
             const auto& bool_type = *find_type("bool");
 
             const auto functions = {
+                    builtin_function_info{ // int()
+                            int_type,
+                            function_signature{ make_id_token("int"), {} },
+                            builtin_function_kind::int_ctor
+                    },
                     builtin_function_info{ // int(bool)
                             int_type,
                             function_signature{ make_id_token("int"),
                                                 { parameter_declaration{bool_type, make_id_token("") } } },
                             builtin_function_kind::int_ctor_bool
+                    },
+                    builtin_function_info{ // int(int)
+                            int_type,
+                            function_signature{ make_id_token("int"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_ctor_int
                     },
                     builtin_function_info{ // to_string()
                             *find_type("string"),
@@ -156,6 +167,12 @@ namespace cmsl
                             function_signature{ make_token(token_type_t::equal, "="),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_equal
+                    },
+                    builtin_function_info{ // operator+=(int)
+                            int_type,
+                            function_signature{ make_token(token_type_t::equal, "+="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_plus_equal
                     }
             };
 
