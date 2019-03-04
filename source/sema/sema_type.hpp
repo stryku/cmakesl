@@ -2,6 +2,7 @@
 
 #include "lexer/token/token.hpp"
 #include "sema/type_member_info.hpp"
+#include "sema/function_lookup_result.hpp"
 
 #include <boost/optional.hpp>
 
@@ -32,7 +33,7 @@ namespace cmsl
             const std::vector<member_info>& members() const;
 
             boost::optional<member_info> find_member(cmsl::string_view name) const;
-            const sema_function* find_member_function(cmsl::string_view name) const;
+            single_scope_function_lookup_result_t find_member_function(cmsl::string_view name) const;
 
             bool is_complex() const;
             bool is_builtin() const;

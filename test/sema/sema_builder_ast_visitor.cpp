@@ -299,17 +299,21 @@ namespace cmsl
                 signature.name = fun_name_token;
                 const ast::function_call_node node{fun_name_token, {}};
 
+                const auto lookup_result = function_lookup_result_t{ { &function_mock } };
                 EXPECT_CALL(ctx, find_function(fun_name_token.str()))
-                        .WillOnce(Return(&function_mock));
+                        .WillOnce(Return(lookup_result));
+
+                EXPECT_CALL(function_mock, context())
+                        .WillOnce(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
                         .WillOnce(Return(sema_context_interface::context_type::namespace_));
 
-                EXPECT_CALL(function_mock, signature())
-                        .WillOnce(ReturnRef(signature));
-
                 EXPECT_CALL(function_mock, return_type())
                         .WillOnce(ReturnRef(valid_type));
+
+                EXPECT_CALL(function_mock, signature())
+                        .WillOnce(ReturnRef(signature));
 
                 visitor.visit(node);
 
@@ -339,8 +343,12 @@ namespace cmsl
                 signature.params .emplace_back(parameter_declaration{valid_type, param1_id_token});
                 signature.params .emplace_back(parameter_declaration{valid_type, param2_id_token});
 
+                const auto lookup_result = function_lookup_result_t{ { &function_mock } };
                 EXPECT_CALL(ctx, find_function(fun_name_token.str()))
-                        .WillOnce(Return(&function_mock));
+                        .WillOnce(Return(lookup_result));
+
+                EXPECT_CALL(function_mock, context())
+                        .WillOnce(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
                         .WillOnce(Return(sema_context_interface::context_type::namespace_));
@@ -401,8 +409,9 @@ namespace cmsl
                 EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
                         .WillOnce(Return(&lhs_type));
 
+                const auto lookup_result = single_scope_function_lookup_result_t{ &function_mock };
                 EXPECT_CALL(ctx, find_function_in_this_scope(fun_name_token.str()))
-                        .WillOnce(Return(&function_mock));
+                        .WillOnce(Return(lookup_result));
 
                 EXPECT_CALL(function_mock, signature())
                         .WillOnce(ReturnRef(signature));
@@ -454,8 +463,9 @@ namespace cmsl
                 EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
                         .WillOnce(Return(&lhs_type));
 
+                const auto lookup_result = single_scope_function_lookup_result_t{ &function_mock };
                 EXPECT_CALL(ctx, find_function_in_this_scope(fun_name_token.str()))
-                        .WillOnce(Return(&function_mock));
+                        .WillOnce(Return(lookup_result));
 
                 EXPECT_CALL(function_mock, signature())
                         .WillOnce(ReturnRef(signature));
@@ -1110,8 +1120,9 @@ namespace cmsl
                         .WillOnce(Return(&lhs_and_rhs_type));
 
                 // Find operator member function.
+                const auto lookup_result = single_scope_function_lookup_result_t{ &function_mock };
                 EXPECT_CALL(ctx, find_function_in_this_scope(operator_token.str()))
-                        .WillOnce(Return(&function_mock));
+                        .WillOnce(Return(lookup_result));
 
                 visitor.visit(node);
 

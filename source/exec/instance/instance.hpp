@@ -2,6 +2,7 @@
 
 #include "common/string.hpp"
 #include "exec/instance/instance_value.hpp"
+#include "sema/function_lookup_result.hpp"
 
 #include <boost/variant.hpp>
 
@@ -47,7 +48,7 @@ namespace cmsl
                 virtual bool is_ctor(cmsl::string_view name) const = 0;
                 virtual const ast::function* get_function(cmsl::string_view name) const = 0;
                 virtual const ast::type& get_type() const = 0;
-                virtual const sema::sema_function* get_sema_function(cmsl::string_view name) const = 0;
+                virtual sema::single_scope_function_lookup_result_t get_sema_function(cmsl::string_view name) const = 0;
                 virtual const sema::sema_type& get_sema_type() const = 0;
             };
         }

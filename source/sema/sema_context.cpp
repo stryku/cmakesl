@@ -45,25 +45,35 @@ namespace cmsl
             return found != std::cend(m_types) ? *found : nullptr;
         }
 
-        const sema_function* sema_context::find_function(cmsl::string_view name) const
+        function_lookup_result_t sema_context::find_function(cmsl::string_view name) const
         {
-            if(auto found = find_function_in_this_scope(name))
+            function_lookup_result_t result;
+
+            if(m_parent)
             {
-                return found;
+                result =  m_parent->find_function(name);
             }
 
-            return m_parent ? m_parent->find_function(name) : nullptr;
+            auto this_scope_lookup = find_function_in_this_scope(name);
+            result.insert(std::begin(result), std::move(this_scope_lookup));
+
+            return result;
         }
 
-        const sema_function* sema_context::find_function_in_this_scope(cmsl::string_view name) const
+        single_scope_function_lookup_result_t sema_context::find_function_in_this_scope(cmsl::string_view name) const
         {
+            single_scope_function_lookup_result_t result;
+
             const auto pred = [name](const auto& function)
             {
                 return name == function->signature().name.str();
             };
 
-            const auto found = std::find_if(std::cbegin(m_functions), std::cend(m_functions), pred);
-            return found != std::cend(m_functions) ? *found : nullptr;
+            std::copy_if(std::cbegin(m_functions), std::cend(m_functions),
+                    std::back_inserter(result),
+                    pred);
+
+            return result;
         }
 
         sema_context_interface::context_type sema_context::type() const

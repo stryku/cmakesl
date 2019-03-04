@@ -71,7 +71,7 @@ namespace cmsl
                 return get_type().get_name() == name;
             }
 
-            const sema::sema_function *instance_reference::get_sema_function(cmsl::string_view name) const
+            sema::single_scope_function_lookup_result_t instance_reference::get_sema_function(cmsl::string_view name) const
             {
                 return m_instance.get_sema_function(name);
             }

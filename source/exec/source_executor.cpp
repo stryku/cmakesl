@@ -51,7 +51,7 @@ namespace cmsl
                 return -1;
             }
 
-            const auto main_function = ctx.find_function("main");
+            const auto main_function = ctx.find_function("main").front().front(); // Todo: handle no main function
             const auto casted = dynamic_cast<const sema::user_sema_function*>(main_function);
 
             execution2 e;
