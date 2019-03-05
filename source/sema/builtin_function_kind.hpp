@@ -10,6 +10,8 @@ namespace cmsl
             bool_ctor_bool,
             bool_ctor_int,
             bool_operator_equal,
+            bool_operator_pipe_pipe,
+            bool_operator_amp_amp,
             bool_to_string,
 
             int_ctor,

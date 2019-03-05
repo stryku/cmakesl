@@ -104,6 +104,18 @@ namespace cmsl
                                             { parameter_declaration{bool_type, make_id_token("") } } },
                         builtin_function_kind::bool_operator_equal
                 },
+                builtin_function_info{ // operator||(bool)
+                        bool_type,
+                        function_signature{ make_token(token_type_t::pipepipe, "||"),
+                                            { parameter_declaration{bool_type, make_id_token("") } } },
+                        builtin_function_kind::bool_operator_pipe_pipe
+                },
+                builtin_function_info{ // operator&&(bool)
+                        bool_type,
+                        function_signature{ make_token(token_type_t::ampamp, "&&"),
+                                            { parameter_declaration{bool_type, make_id_token("") } } },
+                        builtin_function_kind::bool_operator_amp_amp
+                },
                 builtin_function_info{ // to_string()
                         *find_type("string"),
                         function_signature{ make_id_token("to_string"), {} },
