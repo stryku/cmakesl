@@ -1165,6 +1165,9 @@ namespace cmsl
                 EXPECT_CALL(ids_ctx, type_of(rhs_id_token.str()))
                         .WillOnce(Return(&lhs_and_rhs_type));
 
+                EXPECT_CALL(function_mock, return_type())
+                        .WillOnce(ReturnRef(lhs_and_rhs_type));
+
                 // Find operator member function.
                 const auto lookup_result = single_scope_function_lookup_result_t{ &function_mock };
                 EXPECT_CALL(ctx, find_function_in_this_scope(operator_token.str()))

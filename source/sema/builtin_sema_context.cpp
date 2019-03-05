@@ -157,6 +157,12 @@ namespace cmsl
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_ctor_int
                     },
+                    builtin_function_info{ // int(double)
+                            int_type,
+                            function_signature{ make_id_token("int"),
+                                                { parameter_declaration{*find_type("double"), make_id_token("") } } },
+                            builtin_function_kind::int_ctor_double
+                    },
                     builtin_function_info{ // to_string()
                             *find_type("string"),
                             function_signature{ make_id_token("to_string"), {} },
@@ -261,7 +267,105 @@ namespace cmsl
 
         void builtin_sema_context::add_double_member_functions(type_builder &double_manipulator)
         {
+            const auto& double_type = *find_type("double");
+            const auto& bool_type = *find_type("bool");
+
             const auto functions = {
+                    builtin_function_info{ // double()
+                            double_type,
+                            function_signature{ make_id_token("double"), {} },
+                            builtin_function_kind::double_ctor
+                    },
+                    builtin_function_info{ // double(double)
+                            double_type,
+                            function_signature{ make_id_token("double"),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_ctor_double
+                    },
+                    builtin_function_info{ // double(int)
+                            double_type,
+                            function_signature{ make_id_token("double"),
+                                                { parameter_declaration{*find_type("int"), make_id_token("") } } },
+                            builtin_function_kind::double_ctor_int
+                    },
+                    builtin_function_info{ // operator+(double)
+                            double_type,
+                            function_signature{ make_token(token_type_t::plus, "+"),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_plus
+                    },
+                    builtin_function_info{ // operator-(double)
+                            double_type,
+                            function_signature{ make_token(token_type_t::minus, "-"),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_minus
+                    },
+                    builtin_function_info{ // operator*(double)
+                            double_type,
+                            function_signature{ make_token(token_type_t::star, "*"),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_star
+                    },
+                    builtin_function_info{ // operator/(double)
+                            double_type,
+                            function_signature{ make_token(token_type_t::slash, "/"),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_slash
+                    },
+                    builtin_function_info{ // operator=(double)
+                            double_type,
+                            function_signature{ make_token(token_type_t::equal, "="),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_equal
+                    },
+                    builtin_function_info{ // operator+=(double)
+                            double_type,
+                            function_signature{ make_token(token_type_t::plusequal, "+="),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_plus_equal
+                    },
+                    builtin_function_info{ // operator-=(double)
+                            double_type,
+                            function_signature{ make_token(token_type_t::minusequal, "-="),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_minus_equal
+                    },
+                    builtin_function_info{ // operator*=(double)
+                            double_type,
+                            function_signature{ make_token(token_type_t::starequal, "*="),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_star_equal
+                    },
+                    builtin_function_info{ // operator/=(double)
+                            double_type,
+                            function_signature{ make_token(token_type_t::slashequal, "/="),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_slash_equal
+                    },
+                    builtin_function_info{ // operator<(double)
+                            bool_type,
+                            function_signature{ make_token(token_type_t::less, "<"),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_less
+                    },
+                    builtin_function_info{ // operator<=(double)
+                            bool_type,
+                            function_signature{ make_token(token_type_t::lessequal, "<="),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_less_equal
+                    },
+                    builtin_function_info{ // operator>(double)
+                            bool_type,
+                            function_signature{ make_token(token_type_t::greater, ">"),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_greater
+                    },
+                    builtin_function_info{ // operator>=(double)
+                            bool_type,
+                            function_signature{ make_token(token_type_t::greaterequal, ">="),
+                                                { parameter_declaration{double_type, make_id_token("") } } },
+                            builtin_function_kind::double_operator_greater_equal
+                    },
                     builtin_function_info{
                             *find_type("string"),
                             function_signature{ make_id_token("to_string"), {} },

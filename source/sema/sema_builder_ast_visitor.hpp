@@ -209,11 +209,12 @@ namespace cmsl
                     return;
                 }
 
+                const auto& fun = *operator_function.front(); // Todo: implement overload resolution to choose matching function
                 m_result_node = std::make_unique<binary_operator_node>(std::move(lhs),
                                                                        node.get_operator(),
-                                                                       *operator_function.front(), // Todo: implement overload resolution to choose matching function
+                                                                       fun,
                                                                        std::move(rhs),
-                                                                       lhs->type());
+                                                                       fun.return_type());
             }
 
             void visit(const ast::class_member_access_node& node) override
