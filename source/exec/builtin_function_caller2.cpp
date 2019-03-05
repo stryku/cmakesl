@@ -31,6 +31,8 @@ namespace cmsl
                 CASE_BUILTIN_FUNCTION_CALL(bool_ctor_bool);
                 CASE_BUILTIN_FUNCTION_CALL(bool_ctor_int);
                 CASE_BUILTIN_FUNCTION_CALL(bool_operator_equal);
+                CASE_BUILTIN_FUNCTION_CALL(bool_operator_pipe_pipe);
+                CASE_BUILTIN_FUNCTION_CALL(bool_operator_amp_amp);
 
                 // int
                 CASE_BUILTIN_FUNCTION_CALL(int_ctor);
@@ -273,6 +275,26 @@ namespace cmsl
             const auto lhs = instance.get_value_cref()
                                      .get_int();
             return m_instances.create2(std::to_string(lhs));
+        }
+
+        inst::instance *
+        builtin_function_caller2::bool_operator_pipe_pipe(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_bool();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_bool();
+            return m_instances.create2(lhs || rhs);
+        }
+
+        inst::instance *
+        builtin_function_caller2::bool_operator_amp_amp(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_bool();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_bool();
+            return m_instances.create2(lhs && rhs);
         }
     }
 }

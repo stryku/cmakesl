@@ -93,6 +93,28 @@ namespace cmsl
                 const auto result = m_executor.execute2(source);
                 EXPECT_THAT(result, Eq(1));
             }
+
+            TEST_F(BoolTypeSmokeTest, OperatorPipePipe)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    return int(false || true);\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(1));
+            }
+
+            TEST_F(BoolTypeSmokeTest, OperatorAmpAmp)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    return int(true && false);\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(0));
+            }
         }
     }
 }
