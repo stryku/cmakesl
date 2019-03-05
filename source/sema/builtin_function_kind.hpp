@@ -18,8 +18,18 @@ namespace cmsl
             int_to_string,
             int_operator_plus,
             int_operator_minus,
+            int_operator_star,
+            int_operator_slash,
             int_operator_equal,
             int_operator_plus_equal,
+            int_operator_minus_equal,
+            int_operator_star_equal,
+            int_operator_slash_equal,
+            int_operator_less,
+            int_operator_less_equal,
+            int_operator_greater,
+            int_operator_greater_equal,
+            int_operator_equal_equal,
 
             double_to_string,
 
