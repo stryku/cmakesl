@@ -5,6 +5,12 @@
 #include "builtin_function_caller2.hpp"
 #include "exec/instance/instances_holder.hpp"
 
+#define CASE_BUILTIN_FUNCTION_CALL(function) \
+case sema::builtin_function_kind::function: \
+{ \
+    result = function(instance, params); \
+} break
+
 namespace cmsl
 {
     namespace exec
@@ -21,52 +27,19 @@ namespace cmsl
             switch (function_kind)
             {
                 // bool
-                case sema::builtin_function_kind::bool_ctor:
-                {
-                    result = bool_ctor(instance, params);
-                } break;
-                case sema::builtin_function_kind::bool_ctor_bool:
-                {
-                    result = bool_ctor_bool(instance, params);
-                } break;
-                case sema::builtin_function_kind::bool_ctor_int:
-                {
-                    result = bool_ctor_int(instance, params);
-                } break;
-                case sema::builtin_function_kind::bool_operator_equal:
-                {
-                    result = bool_operator_equal(instance, params);
-                } break;
+                CASE_BUILTIN_FUNCTION_CALL(bool_ctor);
+                CASE_BUILTIN_FUNCTION_CALL(bool_ctor_bool);
+                CASE_BUILTIN_FUNCTION_CALL(bool_ctor_int);
+                CASE_BUILTIN_FUNCTION_CALL(bool_operator_equal);
 
                 // int
-                case sema::builtin_function_kind::int_ctor:
-                {
-                    result = int_ctor(instance, params);
-                } break;
-                case sema::builtin_function_kind::int_ctor_bool:
-                {
-                    result = int_ctor_bool(instance, params);
-                } break;
-                case sema::builtin_function_kind::int_ctor_int:
-                {
-                    result = int_ctor_int(instance, params);
-                } break;
-                case sema::builtin_function_kind::int_operator_plus:
-                {
-                    result = int_operator_plus(instance, params);
-                } break;
-                case sema::builtin_function_kind::int_operator_minus:
-                {
-                    result = int_operator_minus(instance, params);
-                } break;
-                case sema::builtin_function_kind::int_operator_equal:
-                {
-                    result = int_operator_equal(instance, params);
-                } break;
-                case sema::builtin_function_kind::int_operator_plus_equal:
-                {
-                    result = int_operator_plus_equal(instance, params);
-                } break;
+                CASE_BUILTIN_FUNCTION_CALL(int_ctor);
+                CASE_BUILTIN_FUNCTION_CALL(int_ctor_bool);
+                CASE_BUILTIN_FUNCTION_CALL(int_ctor_int);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_plus);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_minus);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_equal);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_plus_equal);
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
