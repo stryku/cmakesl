@@ -38,8 +38,18 @@ namespace cmsl
                 CASE_BUILTIN_FUNCTION_CALL(int_ctor_int);
                 CASE_BUILTIN_FUNCTION_CALL(int_operator_plus);
                 CASE_BUILTIN_FUNCTION_CALL(int_operator_minus);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_star);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_slash);
                 CASE_BUILTIN_FUNCTION_CALL(int_operator_equal);
                 CASE_BUILTIN_FUNCTION_CALL(int_operator_plus_equal);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_minus_equal);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_star_equal);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_slash_equal);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_less);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_less_equal);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_greater);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_greater_equal);
+                CASE_BUILTIN_FUNCTION_CALL(int_operator_equal_equal);
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
@@ -148,6 +158,112 @@ namespace cmsl
 
             instance.get_value_ref().set_int(lhs + rhs);
             return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_minus_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+
+            instance.get_value_ref().set_int(lhs - rhs);
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_star(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            return m_instances.create2(lhs * rhs);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_slash(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            return m_instances.create2(lhs / rhs);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_star_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+
+            instance.get_value_ref().set_int(lhs * rhs);
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_slash_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+
+            instance.get_value_ref().set_int(lhs / rhs);
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_less(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            return m_instances.create2(lhs < rhs);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_less_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            return m_instances.create2(lhs <= rhs);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_greater(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            return m_instances.create2(lhs > rhs);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_greater_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            return m_instances.create2(lhs >= rhs);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_operator_equal_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            const auto rhs = params[0]->get_value_cref()
+                                      .get_int();
+            return m_instances.create2(lhs == rhs);
         }
     }
 }

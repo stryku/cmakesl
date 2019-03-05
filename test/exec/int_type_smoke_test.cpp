@@ -101,6 +101,28 @@ namespace cmsl
                 EXPECT_THAT(result, Eq(42));
             }
 
+            TEST_F(IntTypeSmokeTest, OperatorStar)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    return 11 * 4;\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(44));
+            }
+
+            TEST_F(IntTypeSmokeTest, OperatorSlash)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    return 47 / 4;\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(11));
+            }
+
             TEST_F(IntTypeSmokeTest, OperatorPlusEqual)
             {
                 const auto source =
@@ -112,6 +134,100 @@ namespace cmsl
                         "}";
                 const auto result = m_executor.execute2(source);
                 EXPECT_THAT(result, Eq(42));
+            }
+
+            TEST_F(IntTypeSmokeTest, OperatorMinusEqual)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    int i = 44;\n"
+                        "    i -= 2;\n"
+                        "    return i;\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(42));
+            }
+
+            TEST_F(IntTypeSmokeTest, OperatorStarEqual)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    int i = 11;\n"
+                        "    i *= 4;\n"
+                        "    return i;\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(44));
+            }
+
+            TEST_F(IntTypeSmokeTest, OperatorSlashEqual)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    int i = 47;\n"
+                        "    i /= 4;\n"
+                        "    return i;\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(11));
+            }
+
+            TEST_F(IntTypeSmokeTest, OperatorLess)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    return int(44 < 55);\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(1));
+            }
+
+            TEST_F(IntTypeSmokeTest, OperatorLessEqual)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    return int(44 <= 44);\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(1));
+            }
+
+            TEST_F(IntTypeSmokeTest, OperatorGreater)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    return int(44 > 33);\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(1));
+            }
+
+            TEST_F(IntTypeSmokeTest, OperatorGreaterEqual)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    return int(44 >= 44);\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(1));
+            }
+
+            TEST_F(IntTypeSmokeTest, OperatorEqualEqual)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    return int(44 == 44);\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(1));
             }
         }
     }

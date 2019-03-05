@@ -162,6 +162,18 @@ namespace cmsl
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_minus
                     },
+                    builtin_function_info{ // operator*(int)
+                            int_type,
+                            function_signature{ make_token(token_type_t::star, "*"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_star
+                    },
+                    builtin_function_info{ // operator/(int)
+                            int_type,
+                            function_signature{ make_token(token_type_t::slash, "/"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_slash
+                    },
                     builtin_function_info{ // operator=(int)
                             int_type,
                             function_signature{ make_token(token_type_t::equal, "="),
@@ -170,9 +182,57 @@ namespace cmsl
                     },
                     builtin_function_info{ // operator+=(int)
                             int_type,
-                            function_signature{ make_token(token_type_t::equal, "+="),
+                            function_signature{ make_token(token_type_t::plusequal, "+="),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_plus_equal
+                    },
+                    builtin_function_info{ // operator-=(int)
+                            int_type,
+                            function_signature{ make_token(token_type_t::minusequal, "-="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_minus_equal
+                    },
+                    builtin_function_info{ // operator*=(int)
+                            int_type,
+                            function_signature{ make_token(token_type_t::starequal, "*="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_star_equal
+                    },
+                    builtin_function_info{ // operator/=(int)
+                            int_type,
+                            function_signature{ make_token(token_type_t::slashequal, "/="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_slash_equal
+                    },
+                    builtin_function_info{ // operator<(int)
+                            bool_type,
+                            function_signature{ make_token(token_type_t::less, "<"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_less
+                    },
+                    builtin_function_info{ // operator<=(int)
+                            bool_type,
+                            function_signature{ make_token(token_type_t::lessequal, "<="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_less_equal
+                    },
+                    builtin_function_info{ // operator>(int)
+                            bool_type,
+                            function_signature{ make_token(token_type_t::greater, ">"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_greater
+                    },
+                    builtin_function_info{ // operator>=(int)
+                            bool_type,
+                            function_signature{ make_token(token_type_t::greaterequal, ">="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_greater_equal
+                    },
+                    builtin_function_info{ // operator==(int)
+                            bool_type,
+                            function_signature{ make_token(token_type_t::equalequal, "=="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::int_operator_equal_equal
                     }
             };
 
