@@ -50,6 +50,7 @@ namespace cmsl
                 CASE_BUILTIN_FUNCTION_CALL(int_operator_greater);
                 CASE_BUILTIN_FUNCTION_CALL(int_operator_greater_equal);
                 CASE_BUILTIN_FUNCTION_CALL(int_operator_equal_equal);
+                CASE_BUILTIN_FUNCTION_CALL(int_to_string);
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
@@ -264,6 +265,14 @@ namespace cmsl
             const auto rhs = params[0]->get_value_cref()
                                       .get_int();
             return m_instances.create2(lhs == rhs);
+        }
+
+        inst::instance *
+        builtin_function_caller2::int_to_string(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto lhs = instance.get_value_cref()
+                                     .get_int();
+            return m_instances.create2(std::to_string(lhs));
         }
     }
 }

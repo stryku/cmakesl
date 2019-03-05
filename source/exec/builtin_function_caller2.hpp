@@ -50,6 +50,7 @@ namespace cmsl
             inst::instance* int_operator_greater(inst::instance& instance, const params_t& params);
             inst::instance* int_operator_greater_equal(inst::instance& instance, const params_t& params);
             inst::instance* int_operator_equal_equal(inst::instance& instance, const params_t& params);
+            inst::instance* int_to_string(inst::instance& instance, const params_t& params);
 
         private:
             inst::instances_holder_interface& m_instances;
