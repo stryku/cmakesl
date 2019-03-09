@@ -104,6 +104,12 @@ namespace cmsl
                                             { parameter_declaration{bool_type, make_id_token("") } } },
                         builtin_function_kind::bool_operator_equal
                 },
+                builtin_function_info{ // operator==(bool)
+                        bool_type,
+                        function_signature{ make_token(token_type_t::equalequal, "=="),
+                                            { parameter_declaration{bool_type, make_id_token("") } } },
+                        builtin_function_kind::bool_operator_equal_equal
+                },
                 builtin_function_info{ // operator||(bool)
                         bool_type,
                         function_signature{ make_token(token_type_t::pipepipe, "||"),
@@ -386,13 +392,26 @@ namespace cmsl
 
         void builtin_sema_context::add_string_member_functions(type_builder &string_manipulator)
         {
+            const auto& string_type = *find_type("string");
+
             const auto functions = {
-                    builtin_function_info{
+                    builtin_function_info{ // string()
+                            string_type,
+                            function_signature{ make_id_token("string"), {} },
+                            builtin_function_kind::string_ctor
+                    },
+                    builtin_function_info{ // string(string)
+                            string_type,
+                            function_signature{ make_id_token("string"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_ctor_string
+                    },
+                    builtin_function_info{ // bool empty()
                             *find_type("bool"),
                             function_signature{ make_id_token("empty"), {} },
                             builtin_function_kind::string_empty
                     },
-                    builtin_function_info{
+                    builtin_function_info{ // int size()
                             *find_type("int"),
                             function_signature{ make_id_token("size"), {} },
                             builtin_function_kind::string_size

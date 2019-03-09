@@ -10,6 +10,7 @@ namespace cmsl
             bool_ctor_bool,
             bool_ctor_int,
             bool_operator_equal,
+            bool_operator_equal_equal,
             bool_operator_pipe_pipe,
             bool_operator_amp_amp,
             bool_to_string,
@@ -52,6 +53,8 @@ namespace cmsl
             double_operator_greater_equal,
             double_to_string,
 
+            string_ctor,
+            string_ctor_string,
             string_empty,
             string_size
 
