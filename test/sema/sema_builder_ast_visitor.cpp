@@ -168,7 +168,7 @@ namespace cmsl
                 ASSERT_THAT(visitor.m_result_node, NotNull());
                 const auto casted_node = dynamic_cast<const string_value_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
-                EXPECT_THAT(casted_node->value(), Eq(value));
+                EXPECT_THAT(casted_node->value(), Eq("42"));
                 EXPECT_THAT(casted_node->type(), IsValidType());
             }
 

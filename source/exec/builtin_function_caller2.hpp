@@ -32,6 +32,7 @@ namespace cmsl
             inst::instance* bool_ctor_bool(inst::instance& instance, const params_t& params);
             inst::instance* bool_ctor_int(inst::instance& instance, const params_t& params);
             inst::instance* bool_operator_equal(inst::instance& instance, const params_t& params);
+            inst::instance* bool_operator_equal_equal(inst::instance& instance, const params_t& params);
             inst::instance* bool_operator_pipe_pipe(inst::instance& instance, const params_t& params);
             inst::instance* bool_operator_amp_amp(inst::instance& instance, const params_t& params);
             inst::instance* bool_to_string(inst::instance& instance, const params_t& params);
@@ -72,6 +73,11 @@ namespace cmsl
             inst::instance* double_operator_less_equal(inst::instance& instance, const params_t& params);
             inst::instance* double_operator_greater(inst::instance& instance, const params_t& params);
             inst::instance* double_operator_greater_equal(inst::instance& instance, const params_t& params);
+
+            inst::instance* string_ctor(inst::instance& instance, const params_t& params);
+            inst::instance* string_ctor_string(inst::instance& instance, const params_t& params);
+            inst::instance* string_empty(inst::instance& instance, const params_t& params);
+            inst::instance* string_size(inst::instance& instance, const params_t& params);
 
         private:
             inst::instances_holder_interface& m_instances;

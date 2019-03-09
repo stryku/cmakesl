@@ -336,7 +336,13 @@ namespace cmsl
             void visit(const ast::string_value_node& node) override
             {
                 const auto& type = *m_ctx.find_type("string");
-                m_result_node = std::make_unique<string_value_node>(type, node.get_token().str());
+                // At this point node contains string value including "". We need to get rid of them.
+
+                const auto node_string = node.get_token().str();
+                const auto string_without_quotation_marks = cmsl::string_view{ std::next(node_string.begin()),
+                                                                               node_string.size() - 2u };
+
+                m_result_node = std::make_unique<string_value_node>(type, string_without_quotation_marks);
             }
 
             void visit(const ast::id_node& node) override
