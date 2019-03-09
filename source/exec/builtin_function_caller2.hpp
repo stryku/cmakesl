@@ -78,6 +78,14 @@ namespace cmsl
             inst::instance* string_ctor_string(inst::instance& instance, const params_t& params);
             inst::instance* string_empty(inst::instance& instance, const params_t& params);
             inst::instance* string_size(inst::instance& instance, const params_t& params);
+            inst::instance* string_operator_equal_equal(inst::instance& instance, const params_t& params);
+            inst::instance* string_operator_not_equal(inst::instance& instance, const params_t& params);
+            inst::instance* string_operator_less(inst::instance& instance, const params_t& params);
+            inst::instance* string_operator_less_equal(inst::instance& instance, const params_t& params);
+            inst::instance* string_operator_greater(inst::instance& instance, const params_t& params);
+            inst::instance* string_operator_greater_equal(inst::instance& instance, const params_t& params);
+            inst::instance* string_operator_plus(inst::instance& instance, const params_t& params);
+            inst::instance* string_operator_plus_equal(inst::instance& instance, const params_t& params);
 
         private:
             inst::instances_holder_interface& m_instances;

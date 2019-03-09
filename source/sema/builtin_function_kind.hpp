@@ -56,7 +56,15 @@ namespace cmsl
             string_ctor,
             string_ctor_string,
             string_empty,
-            string_size
+            string_size,
+            string_operator_equal_equal,
+            string_operator_not_equal,
+            string_operator_less,
+            string_operator_less_equal,
+            string_operator_greater,
+            string_operator_greater_equal,
+            string_operator_plus,
+            string_operator_plus_equal
 
         };
     }

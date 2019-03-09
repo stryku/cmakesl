@@ -393,6 +393,8 @@ namespace cmsl
         void builtin_sema_context::add_string_member_functions(type_builder &string_manipulator)
         {
             const auto& string_type = *find_type("string");
+            const auto& bool_type = *find_type("bool");
+
 
             const auto functions = {
                     builtin_function_info{ // string()
@@ -400,14 +402,14 @@ namespace cmsl
                             function_signature{ make_id_token("string"), {} },
                             builtin_function_kind::string_ctor
                     },
-                    builtin_function_info{ // string(string)
+                    builtin_function_info{ // string(string)string_operator_equal_equal
                             string_type,
                             function_signature{ make_id_token("string"),
                                                 { parameter_declaration{string_type, make_id_token("") } } },
                             builtin_function_kind::string_ctor_string
                     },
                     builtin_function_info{ // bool empty()
-                            *find_type("bool"),
+                            bool_type,
                             function_signature{ make_id_token("empty"), {} },
                             builtin_function_kind::string_empty
                     },
@@ -415,6 +417,54 @@ namespace cmsl
                             *find_type("int"),
                             function_signature{ make_id_token("size"), {} },
                             builtin_function_kind::string_size
+                    },
+                    builtin_function_info{ // bool operator==(string)
+                            bool_type,
+                            function_signature{ make_id_token("=="),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_operator_equal_equal
+                    },
+                    builtin_function_info{ // bool operator!=(string)
+                            bool_type,
+                            function_signature{ make_id_token("!="),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_operator_not_equal
+                    },
+                    builtin_function_info{ // bool operator<(string)
+                            bool_type,
+                            function_signature{ make_id_token("<"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_operator_less
+                    },
+                    builtin_function_info{ // bool operator<=(string)
+                            bool_type,
+                            function_signature{ make_id_token("<="),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_operator_less_equal
+                    },
+                    builtin_function_info{ // bool operator>(string)
+                            bool_type,
+                            function_signature{ make_id_token(">"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_operator_greater
+                    },
+                    builtin_function_info{ // bool operator>=(string)
+                            bool_type,
+                            function_signature{ make_id_token(">="),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_operator_greater_equal
+                    },
+                    builtin_function_info{ // bool operator+(string)
+                            string_type,
+                            function_signature{ make_id_token("+"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_operator_plus
+                    },
+                    builtin_function_info{ // bool operator+=(string)
+                            string_type, // Todo: reference
+                            function_signature{ make_id_token("+="),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_operator_plus_equal
                     }
 
             };

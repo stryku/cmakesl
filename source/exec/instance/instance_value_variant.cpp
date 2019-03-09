@@ -146,6 +146,11 @@ namespace cmsl
                 return m_value.m_string;
             }
 
+            std::string &instance_value_variant::get_string_ref()
+            {
+                return m_value.m_string;
+            }
+
             void instance_value_variant::set_string(std::string value)
             {
                 reassign(std::move(value), which_type::string);
