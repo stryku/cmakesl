@@ -8,7 +8,7 @@ set(LEXER_SOURCES
     
     source_location_manipulator.hpp
     source_location_manipulator.cpp
-)
+        token/token_type.cpp)
 
 add_library(lexer ${LEXER_SOURCES})
 target_include_directories(lexer PRIVATE ${CMAKESL_SOURCES_DIR})

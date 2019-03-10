@@ -29,6 +29,8 @@
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
 #include "sema/type_builder.hpp"
+#include "sema/overload_resolution.hpp"
+#include "common/assert.hpp"
 
 namespace cmsl
 {
@@ -187,7 +189,7 @@ namespace cmsl
                 // Todo: handle operators like ++ and ++(int)
                 const auto op = node.get_operator();
                 auto operator_function = lhs->type().find_member_function(op.str());
-                if(!operator_function)
+                if(operator_function.empty())
                 {
                     // Todo: lhs's type doesn't support such operator
                     raise_error(op, lhs->type().name().str().to_string() + " doesn't support operator " + op.str().to_string());
@@ -207,11 +209,12 @@ namespace cmsl
                     return;
                 }
 
+                const auto& fun = *operator_function.front(); // Todo: implement overload resolution to choose matching function
                 m_result_node = std::make_unique<binary_operator_node>(std::move(lhs),
                                                                        node.get_operator(),
-                                                                       *operator_function,
+                                                                       fun,
                                                                        std::move(rhs),
-                                                                       lhs->type());
+                                                                       fun.return_type());
             }
 
             void visit(const ast::class_member_access_node& node) override
@@ -237,28 +240,45 @@ namespace cmsl
 
             void visit(const ast::function_call_node& node) override
             {
-                const auto name = node.get_name();
-                const auto found_fun = m_ctx.find_function(name.str());
-                if(!found_fun)
-                {
-                    // Todo: can't find function with such name.
-                    raise_error(name, name.str().to_string() + " function not found");
-                    return;
-                }
+                const auto function_lookup_result = m_ctx.find_function(node.get_name().str());
 
-                auto params = get_function_call_params(found_fun->signature(), node.get_param_nodes());
+                auto params = get_function_call_params(node.get_param_nodes());
                 if(!params)
                 {
                     return;
                 }
 
-                if(m_ctx.type() == sema_context_interface::context_type::namespace_)
+                overload_resolution over_resolution{ m_errors_observer, node.get_name() };
+                const auto chosen_function = over_resolution.choose(function_lookup_result, *params);
+                if(!chosen_function)
                 {
-                    m_result_node = std::make_unique<function_call_node>(*found_fun, std::move(*params));
+                    return;
                 }
-                else
+
+                switch (chosen_function->context().type())
                 {
-                    m_result_node = std::make_unique<implicit_member_function_call_node>(*found_fun, std::move(*params));
+                    case sema_context_interface::context_type::namespace_:
+                    {
+                        m_result_node = std::make_unique<function_call_node>(*chosen_function, std::move(*params));
+                    } break;
+                    case sema_context_interface::context_type::class_:
+                    {
+                        const auto is_constructor = chosen_function->signature().name.str() == chosen_function->return_type().name().str();
+                        if(is_constructor)
+                        {
+                            m_result_node = std::make_unique<constructor_call_node>(chosen_function->return_type(),
+                                                                                    *chosen_function,
+                                                                                    std::move(*params));
+                        }
+                        else
+                        {
+                            m_result_node = std::make_unique<implicit_member_function_call_node>(*chosen_function,
+                                                                                                 std::move(*params));
+                        }
+                    } break;
+
+                    default:
+                        CMSL_UNREACHABLE("Unknown context type");
                 }
             }
 
@@ -271,21 +291,21 @@ namespace cmsl
                     return;
                 }
 
-                auto function = lhs->type().find_member_function(name.str());
-                if(!function)
-                {
-                    // Todo: type has no such function
-                    raise_error(name, name.str().to_string() + " member function not found");
-                    return;
-                }
-
-                auto params = get_function_call_params(function->signature(), node.get_param_nodes());
+                auto params = get_function_call_params(node.get_param_nodes());
                 if(!params)
                 {
                     return;
                 }
 
-                m_result_node = std::make_unique<member_function_call_node>(std::move(lhs), *function, std::move(*params));
+                const auto member_functions = lhs->type().find_member_function(name.str());
+                overload_resolution over_resolution{ m_errors_observer, node.get_name() };
+                const auto chosen_function = over_resolution.choose(member_functions, *params);
+                if(!chosen_function)
+                {
+                    return;
+                }
+
+                m_result_node = std::make_unique<member_function_call_node>(std::move(lhs), *chosen_function, std::move(*params));
             }
 
             void visit(const ast::bool_value_node& node) override
@@ -316,7 +336,13 @@ namespace cmsl
             void visit(const ast::string_value_node& node) override
             {
                 const auto& type = *m_ctx.find_type("string");
-                m_result_node = std::make_unique<string_value_node>(type, node.get_token().str());
+                // At this point node contains string value including "". We need to get rid of them.
+
+                const auto node_string = node.get_token().str();
+                const auto string_without_quotation_marks = cmsl::string_view{ std::next(node_string.begin()),
+                                                                               node_string.size() - 2u };
+
+                m_result_node = std::make_unique<string_value_node>(type, string_without_quotation_marks);
             }
 
             void visit(const ast::id_node& node) override
@@ -525,20 +551,22 @@ namespace cmsl
                 return std::move(v.m_result_node);
             }
 
-            boost::optional<param_expressions_t> get_function_call_params(const function_signature& signature, const ast::call_node::params_t& passed_params)
+            boost::optional<param_expressions_t> get_function_call_params(const ast::call_node::params_t& passed_params)
             {
-                const auto& param_declarations = signature.params;
+//                const auto& param_declarations = signature.params;
 
+                /*
                 if(param_declarations.size() != passed_params.size())
                 {
                     // Todo passed wrong number of parameters
                     raise_error(signature.name, "Expected " + std::to_string(param_declarations.size()) + " parameters, got " + std::to_string(passed_params.size()));
                     return {};
                 }
+                 */
 
                 std::vector<std::unique_ptr<expression_node>> params;
 
-                for(auto i = 0u; i < param_declarations.size(); ++i)
+                for(auto i = 0u; i < passed_params.size(); ++i)
                 {
                     auto param = visit_child_expr(*passed_params[i]);
                     if(!param)
@@ -546,6 +574,7 @@ namespace cmsl
                         return {};
                     }
 
+                    /*
                     if(param_declarations[i].ty != param->type())
                     {
                         //Todo passed param type mismatch
@@ -554,6 +583,7 @@ namespace cmsl
                         + " got " + param->type().name().str().to_string());
                         return {};
                     }
+                     */
 
                     params.emplace_back(std::move(param));
                 }

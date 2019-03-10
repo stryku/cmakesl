@@ -17,8 +17,8 @@ namespace cmsl
                 MOCK_METHOD1(add_type, void(const sema_type&));
                 MOCK_CONST_METHOD1(find_type, const sema_type*(cmsl::string_view));
                 MOCK_CONST_METHOD1(find_type_in_this_scope, const sema_type*(cmsl::string_view));
-                MOCK_CONST_METHOD1(find_function, const sema_function*(cmsl::string_view));
-                MOCK_CONST_METHOD1(find_function_in_this_scope, const sema_function*(cmsl::string_view));
+                MOCK_CONST_METHOD1(find_function, function_lookup_result_t(cmsl::string_view));
+                MOCK_CONST_METHOD1(find_function_in_this_scope, single_scope_function_lookup_result_t(cmsl::string_view));
                 MOCK_CONST_METHOD0(type, context_type());
             };
         }

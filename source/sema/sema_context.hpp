@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sema/sema_type.hpp"
+#include "sema/function_lookup_result.hpp"
 
 #include <memory>
 #include <vector>
@@ -29,8 +30,8 @@ namespace cmsl
             virtual void add_type(const sema_type& type) = 0;
             virtual const sema_type* find_type(cmsl::string_view name) const = 0;
             virtual const sema_type* find_type_in_this_scope(cmsl::string_view name) const = 0;
-            virtual const sema_function* find_function(cmsl::string_view name) const = 0;
-            virtual const sema_function* find_function_in_this_scope(cmsl::string_view name) const = 0;
+            virtual function_lookup_result_t find_function(cmsl::string_view name) const = 0;
+            virtual single_scope_function_lookup_result_t find_function_in_this_scope(cmsl::string_view name) const = 0;
             virtual context_type type() const = 0;
         };
 
@@ -43,8 +44,8 @@ namespace cmsl
             void add_type(const sema_type& type) override;
             const sema_type* find_type(cmsl::string_view name) const override;
             const sema_type* find_type_in_this_scope(cmsl::string_view name) const override;
-            const sema_function* find_function(cmsl::string_view name) const override;
-            const sema_function* find_function_in_this_scope(cmsl::string_view name) const override;
+            function_lookup_result_t find_function(cmsl::string_view name) const override;
+            single_scope_function_lookup_result_t find_function_in_this_scope(cmsl::string_view name) const override;
             virtual context_type type() const override;
 
         private:
