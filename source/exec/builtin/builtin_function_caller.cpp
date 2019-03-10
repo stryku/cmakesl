@@ -121,7 +121,7 @@ namespace cmsl
             builtin_function_caller::call_project_ctor(inst::instance &instance, std::vector<inst::instance *> parameters)
             {
                 const auto name_param = parameters[0];
-                auto name = boost::get<std::string>(name_param->get_value());
+                auto name = name_param->get_value_cref().get_string_cref();
                 auto name_member = instance.get_member("name");
                 m_facade.register_project(name);
                 name_member->assign(std::move(name));
@@ -136,18 +136,18 @@ namespace cmsl
                     std::transform(list.begin(), list.end(), std::back_inserter(result),
                                   [](const auto& value_instance)
                                   {
-                                      return boost::get<std::string>(value_instance->get_value_cref());
+                                      return value_instance->get_value_cref().get_string_cref();
                                   });
 
                     return result;
                 };
 
                 const auto& executable_name_param = *parameters[0];
-                const auto executable_name = boost::get<std::string>(executable_name_param.get_value_cref());
+                const auto executable_name = executable_name_param.get_value_cref().get_string_cref();
 
                 const auto& sources_list_param = *parameters[1];
                 const auto& source_list_instance_value = sources_list_param.get_value_cref();
-                const auto& generic_val = boost::get<inst::generic_instance_value>(source_list_instance_value);
+                const auto& generic_val = source_list_instance_value.get_generic_cref();
                 const auto sources_list = generic_val.apply_const(to_vector);
 
                 m_facade.add_executable(executable_name,sources_list);

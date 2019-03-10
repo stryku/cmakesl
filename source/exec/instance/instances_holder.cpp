@@ -4,14 +4,20 @@
 #include "exec/context_provider.hpp"
 #include "ast/ast_context.hpp"
 
+#include "common/assert.hpp"
+
 namespace cmsl
 {
     namespace exec
     {
         namespace inst
         {
+            instances_holder::instances_holder(const sema::sema_context_interface& sema_ctx)
+                : m_sema_ctx{ &sema_ctx }
+            {}
+
             instances_holder::instances_holder(context_provider &e)
-                : m_ctx_provider{ e }
+                : m_ctx_provider{ &e }
             {}
 
             inst::instance *instances_holder::create(instance_value_t value)
@@ -32,8 +38,8 @@ namespace cmsl
 
             contexted_instance_factory instances_holder::get_factory()
             {
-                return contexted_instance_factory{ m_ctx_provider.get_ast_ctx(),
-                                                   m_ctx_provider.get_exec_ctx() };
+                return contexted_instance_factory{ m_ctx_provider->get_ast_ctx(),
+                                                   m_ctx_provider->get_exec_ctx() };
             }
 
             inst::instance *instances_holder::create(const ast::type& t)
@@ -54,6 +60,7 @@ namespace cmsl
 
                 if(found == std::end(m_instances))
                 {
+                    CMSL_UNREACHABLE("Gathering instance that doesn't belong to this instances holder instance");
                     return nullptr;
                 }
 
@@ -70,8 +77,32 @@ namespace cmsl
             inst::instance *instances_holder::create_void()
             {
                 // todo create one static instance of void type
-                const auto& int_type = m_ctx_provider.get_ast_ctx().find_type("int");
+                const auto& int_type = m_ctx_provider->get_ast_ctx().find_type("int");
                 return create(int_type);
+            }
+
+            inst::instance *instances_holder::create2(instance_value_t value)
+            {
+                auto instance = instance_factory2{}.create(std::move(value), *m_sema_ctx);
+                auto ptr = instance.get();
+                m_instances.emplace_back(std::move(instance));
+                return ptr;
+            }
+
+            inst::instance *instances_holder::create2_reference(inst::instance &referenced_instance)
+            {
+                auto instance = instance_factory2{}.create_reference(referenced_instance);
+                auto ptr = instance.get();
+                m_instances.emplace_back(std::move(instance));
+                return ptr;
+            }
+
+            inst::instance *instances_holder::create2(const sema::sema_type &type)
+            {
+                auto instance = instance_factory2{}.create(type);
+                auto ptr = instance.get();
+                m_instances.emplace_back(std::move(instance));
+                return ptr;
             }
         }
     }

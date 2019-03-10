@@ -3,7 +3,9 @@
 #include "ast/ast_context.hpp"
 #include "exec/instance/complex_unnamed_instance.hpp"
 #include "exec/instance/simple_unnamed_instance.hpp"
-#include "exec/instance/named_instance.hpp"
+#include "exec/instance/instance_reference.hpp"
+#include "common/assert.hpp"
+#include "sema/sema_context.hpp"
 
 namespace cmsl
 {
@@ -54,13 +56,29 @@ namespace cmsl
                     const ast::ast_context& m_ctx;
                 };
 
-                const auto& t = boost::apply_visitor(type_getter_visitor{ ast_ctx }, value);
+                const auto& t = [&value, &ast_ctx]() -> const ast::type&
+                {
+                    switch(value.which())
+                    {
+
+                        // Todo: store found types somewhere
+                        case instance_value_variant::which_type::bool_: return *ast_ctx.find_type("bool");
+                        case instance_value_variant::which_type::int_: return *ast_ctx.find_type("int");
+                        case instance_value_variant::which_type::double_: return *ast_ctx.find_type("int");
+                        case instance_value_variant::which_type::string: return *ast_ctx.find_type("int");
+                        case instance_value_variant::which_type::generic:
+                        {
+                            return value.get_generic_cref().get_type();
+                        }
+                    }
+                }();
+
                 return std::make_unique<simple_unnamed_instance>(t, value);
             }
 
             std::unique_ptr<instance> instance_factory::create(cmsl::string_view name, execution_context &exec_ctx) const
             {
-                return std::make_unique<named_instance>(name, exec_ctx);
+                return std::make_unique<instance_reference>(name, exec_ctx);
             }
 
             std::unique_ptr<instance> instance_factory::create(cmsl::string_view name, instance_value_t value, execution_context &exec_ctx) const
@@ -128,6 +146,44 @@ namespace cmsl
             contexted_instance_factory::create(const ast::type& type, instance_members_t members) const
             {
                 return instance_factory{}.create(type, std::move(members));
+            }
+
+            std::unique_ptr<instance> instance_factory2::create(instance_value_t value, const sema::sema_context_interface &ctx) const
+            {
+                const auto type_getter = [&value, &ctx]() -> const sema::sema_type&
+                {
+                    switch(value.which())
+                    {
+                        // Todo: cache types, don't find it over every time.
+                        case instance_value_variant::which_type::bool_: return *ctx.find_type("bool");
+                        case instance_value_variant::which_type::int_: return *ctx.find_type("bool");
+                        case instance_value_variant::which_type::double_: return *ctx.find_type("bool");
+                        case instance_value_variant::which_type::string: return *ctx.find_type("bool");
+                        default:
+                            CMSL_UNREACHABLE("Unknown type requested");
+                    }
+                };
+
+                const auto& type = type_getter();
+
+                return std::make_unique<simple_unnamed_instance>(type, value);
+            }
+
+            std::unique_ptr<instance> instance_factory2::create_reference(instance &referenced_instance) const
+            {
+                return std::make_unique<instance_reference>(referenced_instance);
+            }
+
+            std::unique_ptr<instance> instance_factory2::create(const sema::sema_type &type) const
+            {
+                if(type.is_complex())
+                {
+                    return std::make_unique<complex_unnamed_instance>(type);
+                }
+                else
+                {
+                    return std::make_unique<simple_unnamed_instance>(type);
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ namespace cmsl
         public:
             virtual ~sema_node() = default;
 
-            virtual void visit(sema_node_visitor& visitor) = 0;
+            virtual void visit(sema_node_visitor& visitor) const = 0;
         };
     }
 }

@@ -8,6 +8,8 @@ namespace cmsl
 {
     namespace sema
     {
+        class sema_type;
+
         // Todo: exists only for test purpose. Consider removing it and using shadow mocking.
         class identifiers_context
         {
@@ -19,8 +21,8 @@ namespace cmsl
             virtual ~identifiers_context() = default;
 
             // Todo: type, name
-            virtual void register_identifier(token_t name, const ast::type* ty) = 0;
-            virtual const ast::type* type_of(cmsl::string_view name) const = 0;
+            virtual void register_identifier(token_t name, const sema_type* ty) = 0;
+            virtual const sema_type* type_of(cmsl::string_view name) const = 0;
             virtual void enter_ctx() = 0;
             virtual void leave_ctx() = 0;
         };
@@ -30,17 +32,17 @@ namespace cmsl
         {
         private:
             using token_t = lexer::token::token;
-            using id_map_t = std::unordered_map<token_t, const ast::type*>;
+            using id_map_t = std::unordered_map<token_t, const sema_type*>;
 
         public:
-            void register_identifier(token_t name, const ast::type* ty) override
+            void register_identifier(token_t name, const sema_type* ty) override
             {
                 // Todo: handle empty
                 auto& ctx = m_contextes.back();
                 ctx[name] = ty;
             }
 
-            const ast::type* type_of(cmsl::string_view name) const override
+            const sema_type* type_of(cmsl::string_view name) const override
             {
                 const auto pred = [name](const auto& id_pair)
                 {

@@ -16,6 +16,8 @@
 
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
+#include "parser2.hpp"
+
 
 namespace cmsl
 {
@@ -27,9 +29,9 @@ namespace cmsl
                 , m_end{ tokens.cend() }
         {}
 
-        void parser2::raise_error()
+        void parser2::raise_error(lexer::token::token token, std::string message)
         {
-            m_err_observer.nofify_error(errors::error{});
+            m_err_observer.nofify_error(errors::error{token.src_range(), message});
         }
 
         std::unique_ptr<ast_node> parser2::translation_unit()
@@ -148,7 +150,7 @@ namespace cmsl
 
             if (!eat(token_type_t::close_brace))
             {
-                raise_error();
+                raise_error(*m_token, "Expected }");
                 return nullptr;
             }
 
@@ -219,7 +221,7 @@ namespace cmsl
 
         bool parser2::declaration_starts() const
         {
-            return current_is_type();
+            return current_is_type() && next_is(token_type_t::identifier);
         }
 
         std::unique_ptr<conditional_node> parser2::get_conditional_node()
@@ -255,7 +257,7 @@ namespace cmsl
             if(!current_is(token_type_t::kw_if))
             {
                 // Expected if
-                raise_error();
+                raise_error(*m_token, "Expected if");
                 return nullptr;
             }
 
@@ -421,7 +423,7 @@ namespace cmsl
             if (!is_at_end() && current_is(token_type_t::close_paren))
             {
                 // Missed last parameter declaration
-                raise_error();
+                raise_error(*m_token, "Expected parameter declaration");
                 return false;
             }
 
@@ -442,7 +444,8 @@ namespace cmsl
                 if (is_at_end())
                 {
                     // Unexpected end of tokens
-                    raise_error();
+                    // Todo: proper token
+                    raise_error(lexer::token::token{}, "Unexpected end of source");
                     return boost::none;
                 }
 
@@ -522,6 +525,18 @@ namespace cmsl
             }
         }
 
+        boost::optional<parser2::token_t> parser2::eat_function_call_name()
+        {
+            if(current_is_type())
+            {
+                // Constructor call.
+                // Todo: handle generic types
+                return eat_simple_type();
+            }
+
+            return eat(token_type_t::identifier);
+        }
+
         boost::optional<parser2::token_t> parser2::eat_simple_type()
         {
             const auto token_type = curr_type();
@@ -533,7 +548,8 @@ namespace cmsl
             }
             else
             {
-                raise_error();
+                // Todo: proper token
+                raise_error(lexer::token::token{}, "Expected type");
                 return {};
             }
         }
@@ -585,7 +601,7 @@ namespace cmsl
 
             if(is_at_end())
             {
-                raise_error();
+                raise_error(lexer::token::token{}, "Unexpected end of source");
                 return {};
             }
 
@@ -627,7 +643,8 @@ namespace cmsl
         {
             if(!current_is_generic_type())
             {
-                raise_error();
+                // Todo: proper token
+                raise_error(lexer::token::token{}, "Expected type");
                 return {};
             }
 
@@ -638,7 +655,8 @@ namespace cmsl
         {
             if (is_at_end())
             {
-                raise_error();
+                // Todo: proper token
+                raise_error(lexer::token::token{}, "Unexpected end of source");
                 return false;
             }
 
@@ -654,7 +672,7 @@ namespace cmsl
 
             if (type && !current_is(*type))
             {
-                raise_error();
+                raise_error(*m_token, "Expected " + to_string(*type));
                 return {};
             }
 
@@ -1111,7 +1129,7 @@ namespace cmsl
 
         bool parser2::current_is_function_call() const
         {
-            return curr_type() == token_type_t::identifier
+            return current_is_type()
                    && next_is(token_type_t::open_paren);
         }
 
@@ -1162,7 +1180,11 @@ namespace cmsl
 
         std::unique_ptr<ast_node> parser2::factor()
         {
-            if(current_is_fundamental_value())
+            if (current_is_function_call())
+            {
+                return function_call();
+            }
+            else if(current_is_fundamental_value())
             {
                 return fundamental_value();
             }
@@ -1180,18 +1202,12 @@ namespace cmsl
             }
 
             // Todo: Unexpected token
-            raise_error();
+            raise_error(*m_token, "Unexpected token");
             return nullptr;
         }
 
         std::unique_ptr<ast_node> parser2::expr()
         {
-            if(current_is_function_call())
-            {
-                return function_call();
-            }
-            else
-            {
                 auto operator_expr = operator_16();
 
                 if(current_is(token_type_t::dot))
@@ -1219,13 +1235,13 @@ namespace cmsl
                 }
 
                 return std::move(operator_expr);
-            }
         }
+
         boost::optional<parser2::function_call_values> parser2::get_function_call_values()
         {
             function_call_values vals;
 
-            vals.name = *eat(token_type_t::identifier);
+            vals.name = *eat_function_call_name();
             auto params = parameter_list();
             if(!params)
             {
@@ -1263,8 +1279,8 @@ namespace cmsl
 
                     if(is_at_end() || current_is(token_type_t::close_paren))
                     {
-                        // Todo: expected parameter
-                        raise_error();
+                        // Todo: proper token
+                        raise_error(lexer::token::token{}, "Expected parameter");
                         return {};
                     }
                 }

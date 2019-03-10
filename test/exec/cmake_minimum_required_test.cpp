@@ -20,7 +20,7 @@ namespace cmsl
                 using testing::Return;
                 using testing::_;
 
-                TEST(CmakeMinimumRequired, RunningHigherVersion_NoErrorReported)
+                TEST(CmakeMinimumRequired, DISABLED_RunningHigherVersion_NoErrorReported)
                 {
                     StrictMock<exec::test::cmake_facade_mock> facade;
                     StrictMock<exec::inst::test::instances_holder_mock> instances;
@@ -40,7 +40,7 @@ namespace cmsl
                     EXPECT_THAT(result, Eq(&return_instance));
                 }
 
-                TEST(CmakeMinimumRequired, RunningSameVersion_NoErrorReported)
+                TEST(CmakeMinimumRequired, DISABLED_RunningSameVersion_NoErrorReported)
                 {
                     StrictMock<exec::test::cmake_facade_mock> facade;
                     StrictMock<exec::inst::test::instances_holder_mock> instances;
@@ -59,7 +59,7 @@ namespace cmsl
                     EXPECT_THAT(result, Eq(&return_instance));
                 }
 
-                TEST(CmakeMinimumRequired, RunningLowerVersion_FatalErrorReported)
+                TEST(CmakeMinimumRequired, DISABLED_RunningLowerVersion_FatalErrorReported)
                 {
                     StrictMock<exec::test::cmake_facade_mock> facade;
                     StrictMock<exec::inst::test::instances_holder_mock> instances;

@@ -9,12 +9,18 @@ namespace cmsl
     {
         namespace inst
         {
+            // Todo: consider rename to builtin_unnamed_instance
             class simple_unnamed_instance : public instance
             {
             public:
                 explicit simple_unnamed_instance(const ast::type &type);
                 explicit simple_unnamed_instance(kind k, const ast::type &type);
                 explicit simple_unnamed_instance(const ast::type &type, instance_value_t value);
+
+                explicit simple_unnamed_instance(const sema::sema_type &type);
+                explicit simple_unnamed_instance(const sema::sema_type &type, instance_value_t value);
+
+
                 virtual ~simple_unnamed_instance() = default;
 
                 instance_value_t get_value() const override;
@@ -30,6 +36,10 @@ namespace cmsl
                 const ast::function* get_function(cmsl::string_view name) const override;
                 const ast::type& get_type() const override;
 
+
+                sema::single_scope_function_lookup_result_t get_sema_function(cmsl::string_view name) const override;
+                const sema::sema_type& get_sema_type() const override;
+
             private:
                 instance_value_t get_init_data() const;
                 instance_value_t get_init_data(instance_value_t val) const;
@@ -37,7 +47,8 @@ namespace cmsl
 
             private:
                 kind m_kind;
-                const ast::type &m_type;
+                const ast::type *m_type{nullptr};
+                const sema::sema_type* m_sema_type{nullptr}; // Todo: change to a reference
                 instance_value_t m_data;
             };
         }

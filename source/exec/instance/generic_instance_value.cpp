@@ -3,6 +3,7 @@
 #include "ast/type.hpp"
 #include "exec/instance/instance.hpp"
 
+#include "exec/instance/instance.hpp"
 
 namespace cmsl
 {
@@ -28,12 +29,22 @@ namespace cmsl
                 copy_value(other);
             }
 
+            generic_instance_value::~generic_instance_value()
+            {}
+
             generic_instance_value& generic_instance_value::operator=(const generic_instance_value& other)
             {
                 m_value_type = other.m_value_type;
                 copy_value(other);
                 return *this;
             }
+
+            generic_instance_value::generic_instance_value(generic_instance_value&& other)
+                : m_type{ other.m_type }
+                , m_value_type{ other.m_value_type }
+                , m_generic_value{ std::move(other.m_generic_value)}
+            {}
+
 
             generic_instance_value &generic_instance_value::operator=(generic_instance_value && other)
             {

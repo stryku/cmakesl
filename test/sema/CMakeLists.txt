@@ -2,7 +2,7 @@ set(CMAKESL_TEST_SOURCES
         mock/identifiers_context_mock.hpp
     main.cpp
     sema_builder_ast_visitor.cpp
-        mock/expression_node_mock.hpp)
+        mock/expression_node_mock.hpp mock/sema_context_mock.hpp mock/sema_function_mock.hpp)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
@@ -13,7 +13,7 @@ endif()
 set(TEST_NAME sema_test)
 
 add_executable(${TEST_NAME} ${CMAKESL_TEST_SOURCES})
-target_link_libraries(${TEST_NAME} gmock_main lexer ast errors_observer_mock tests_common)
+target_link_libraries(${TEST_NAME} gmock_main lexer ast sema errors_observer_mock tests_common)
 target_include_directories(${TEST_NAME} PRIVATE 
     ${CMAKESL_SOURCES_DIR}
     ${CMAKESL_TESTS_DIR}

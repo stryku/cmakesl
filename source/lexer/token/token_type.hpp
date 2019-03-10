@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace cmsl
 {
     namespace lexer
@@ -19,6 +21,7 @@ namespace cmsl
                 open_paren,
                 close_paren,
                 identifier,
+
                 equal,
                 equalequal,
                 minus,
@@ -29,6 +32,7 @@ namespace cmsl
                 plusequal,
                 amp,
                 ampamp,
+
                 ampequal,
                 pipe,
                 pipepipe,
@@ -39,6 +43,7 @@ namespace cmsl
                 starequal,
                 percent,
                 percentequal,
+
                 exclaim,
                 exclaimequal,
                 xor_,
@@ -49,6 +54,7 @@ namespace cmsl
                 greaterequal,
                 string,
                 semicolon,
+
                 comma,
 
                 kw_void,
@@ -68,4 +74,6 @@ namespace cmsl
             };
         }
     }
+
+    std::string to_string(lexer::token::token_type type);
 }
