@@ -2,6 +2,7 @@
 #include "version_value.hpp"
 
 #include <algorithm>
+#include <tuple>
 
 namespace cmsl
 {
@@ -32,6 +33,32 @@ namespace cmsl
 
                 return std::lexicographical_compare(std::cbegin(this_parts), std::cend(this_parts),
                                                     std::cbegin(rhs_parts), std::cend(rhs_parts));
+            }
+
+            bool version_value::operator==(const version_value &rhs) const
+            {
+                return std::tie(m_major, m_minor, m_patch, m_tweak) ==
+                std::tie(rhs.m_major, rhs.m_minor, rhs.m_patch, rhs.m_tweak);
+            }
+
+            bool version_value::operator!=(const version_value &rhs) const
+            {
+                return !(*this == rhs);
+            }
+
+            bool version_value::operator<=(const version_value &rhs) const
+            {
+                return *this == rhs || *this < rhs;
+            }
+
+            bool version_value::operator>(const version_value &rhs) const
+            {
+                return !(*this <= rhs);
+            }
+
+            bool version_value::operator>=(const version_value &rhs) const
+            {
+                return !(*this < rhs);
             }
         }
     }

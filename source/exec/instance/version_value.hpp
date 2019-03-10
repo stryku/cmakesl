@@ -15,7 +15,12 @@ namespace cmsl
 
                 std::string to_string() const;
 
+                bool operator==(const version_value& rhs) const;
+                bool operator!=(const version_value& rhs) const;
                 bool operator<(const version_value& rhs) const;
+                bool operator<=(const version_value& rhs) const;
+                bool operator>(const version_value& rhs) const;
+                bool operator>=(const version_value& rhs) const;
 
             private:
                 unsigned m_major{ 0u };
