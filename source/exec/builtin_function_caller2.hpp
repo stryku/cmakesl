@@ -112,6 +112,22 @@ namespace cmsl
             inst::instance* string_upper(inst::instance& instance, const params_t& params);
             inst::instance* string_make_upper(inst::instance& instance, const params_t& params);
 
+            inst::instance* version_ctor_major(inst::instance& instance, const params_t& params);
+            inst::instance* version_ctor_major_minor(inst::instance& instance, const params_t& params);
+            inst::instance* version_ctor_major_minor_patch(inst::instance& instance, const params_t& params);
+            inst::instance* version_ctor_major_minor_patch_tweak(inst::instance& instance, const params_t& params);
+            inst::instance* version_operator_equal_equal(inst::instance& instance, const params_t& params);
+            inst::instance* version_operator_not_equal(inst::instance& instance, const params_t& params);
+            inst::instance* version_operator_less(inst::instance& instance, const params_t& params);
+            inst::instance* version_operator_less_equal(inst::instance& instance, const params_t& params);
+            inst::instance* version_operator_greater(inst::instance& instance, const params_t& params);
+            inst::instance* version_operator_greater_equal(inst::instance& instance, const params_t& params);
+            inst::instance* version_major(inst::instance& instance, const params_t& params);
+            inst::instance* version_minor(inst::instance& instance, const params_t& params);
+            inst::instance* version_patch(inst::instance& instance, const params_t& params);
+            inst::instance* version_tweak(inst::instance& instance, const params_t& params);
+            inst::instance* version_to_string(inst::instance& instance, const params_t& params);
+
         private:
             inst::int_t string_pos_to_int(std::string::size_type pos) const;
 
