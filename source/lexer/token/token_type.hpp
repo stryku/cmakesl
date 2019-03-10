@@ -64,6 +64,7 @@ namespace cmsl
                 kw_true,
                 kw_false,
                 kw_string,
+                kw_version,
                 kw_list,
                 
                 kw_return,
