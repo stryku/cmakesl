@@ -17,7 +17,7 @@ namespace cmsl
                 , m_function_factory{ function_factory }
                 , m_context_factory{ context_factory }
                 , m_current_ctx{ current_ctx }
-                , m_type_ctx{ m_context_factory.create(&current_ctx) }
+                , m_type_ctx{ m_context_factory.create_class(&current_ctx) }
                 , m_name{ name }
         {}
 

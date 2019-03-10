@@ -66,18 +66,16 @@ namespace cmsl
                 which_type which() const;
 
                 bool get_bool() const;
-
                 void set_bool(bool value);
 
                 int_t get_int() const;
                 void set_int(int_t value);
 
                 double get_double() const;
-
                 void set_double(double value);
 
                 const std::string& get_string_cref() const;
-
+                std::string& get_string_ref();
                 void set_string(std::string value);
 
                 const generic_instance_value& get_generic_cref() const;
@@ -133,7 +131,7 @@ namespace cmsl
                 void move_from(instance_value_variant&& moved);
 
             private:
-                which_type m_which;
+                which_type m_which{ which_type::bool_ };
             };
         }
     }

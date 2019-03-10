@@ -63,6 +63,7 @@ namespace cmsl
             boost::optional<token_t> eat(boost::optional<token_type_t> type = {});
             boost::optional<token_t> eat_generic_type();
             boost::optional<token_t> eat_simple_type();
+            boost::optional<token_t> eat_function_call_name();
 
 
             boost::optional<type_reference> generic_type();

@@ -294,6 +294,25 @@ namespace cmsl
             VISIT_METHOD
         };
 
+        class constructor_call_node : public call_node
+        {
+        public:
+            explicit constructor_call_node(const sema_type& class_type, const sema_function& function, param_expressions_t params)
+                : call_node{ function, std::move(params) }
+                , m_class_type{ class_type }
+            {}
+
+            const sema_type& type() const override
+            {
+                return m_class_type;
+            }
+
+            VISIT_METHOD
+
+        private:
+            const sema_type& m_class_type;
+        };
+
         class block_node : public sema_node
         {
         private:

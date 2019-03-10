@@ -16,6 +16,8 @@
 
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
+#include "parser2.hpp"
+
 
 namespace cmsl
 {
@@ -523,6 +525,18 @@ namespace cmsl
             }
         }
 
+        boost::optional<parser2::token_t> parser2::eat_function_call_name()
+        {
+            if(current_is_type())
+            {
+                // Constructor call.
+                // Todo: handle generic types
+                return eat_simple_type();
+            }
+
+            return eat(token_type_t::identifier);
+        }
+
         boost::optional<parser2::token_t> parser2::eat_simple_type()
         {
             const auto token_type = curr_type();
@@ -658,8 +672,7 @@ namespace cmsl
 
             if (type && !current_is(*type))
             {
-                // Todo: translate type to string
-                raise_error(*m_token, "Expected " + std::to_string(static_cast<int>(*type)));
+                raise_error(*m_token, "Expected " + to_string(*type));
                 return {};
             }
 
@@ -1116,7 +1129,7 @@ namespace cmsl
 
         bool parser2::current_is_function_call() const
         {
-            return curr_type() == token_type_t::identifier
+            return current_is_type()
                    && next_is(token_type_t::open_paren);
         }
 
@@ -1228,7 +1241,7 @@ namespace cmsl
         {
             function_call_values vals;
 
-            vals.name = *eat(token_type_t::identifier);
+            vals.name = *eat_function_call_name();
             auto params = parameter_list();
             if(!params)
             {
