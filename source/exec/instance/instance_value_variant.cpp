@@ -96,6 +96,11 @@ namespace cmsl
                 assign(std::move(val), which_type::string);
             }
 
+            instance_value_variant::instance_value_variant(version_value val)
+            {
+                assign(std::move(val), which_type::version);
+            }
+
             instance_value_variant::instance_value_variant(generic_instance_value val)
             {
                 assign(std::move(val), which_type::generic);
@@ -232,6 +237,11 @@ namespace cmsl
                 construct(m_value.m_string, std::move(value));
             }
 
+            void instance_value_variant::construct(version_value value)
+            {
+                construct(m_value.m_version, std::move(value));
+            }
+
             void instance_value_variant::construct(generic_instance_value value)
             {
                 construct(m_value.m_generic, std::move(value));
@@ -250,7 +260,8 @@ namespace cmsl
                     case which_type::bool_:
                     case which_type::int_:
                     case which_type::double_:
-                        // Primitives, do nothing.
+                    case which_type::version:
+                        // Trivially destructible. Do nothing.
                         break;
                     case which_type::string:
                     {
@@ -291,7 +302,20 @@ namespace cmsl
                 return !(*this == rhs);
             }
 
+            const version_value &instance_value_variant::get_version_cref() const
+            {
+                return m_value.m_version;
+            }
 
+            version_value &instance_value_variant::get_version_ref()
+            {
+                return m_value.m_version;
+            }
+
+            void instance_value_variant::set_version(version_value value)
+            {
+                reassign(std::move(value), which_type::version);
+            }
         }
     }
 }
