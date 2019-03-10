@@ -106,11 +106,11 @@ namespace cmsl
             // Todo: improve error explanation
             if(functions.size() == 1u)
             {
-                m_errs.nofify_error({m_call_token.src_range(), "Function call parameters does not match"});
+                m_errs.nofify_error({m_call_token.src_range(), "Function call parameters does not match"}); // Todo: more meaningful error
             }
             else
             {
-                m_errs.nofify_error({m_call_token.src_range(), "No matching function fot call"});
+                m_errs.nofify_error({m_call_token.src_range(), "No matching function for call"});
             }
         }
     }
