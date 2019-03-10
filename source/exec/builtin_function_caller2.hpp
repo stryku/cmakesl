@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <vector>
+#include <locale>
+#include "exec/instance/int_alias.hpp"
 
 namespace cmsl
 {
@@ -86,8 +88,36 @@ namespace cmsl
             inst::instance* string_operator_greater_equal(inst::instance& instance, const params_t& params);
             inst::instance* string_operator_plus(inst::instance& instance, const params_t& params);
             inst::instance* string_operator_plus_equal(inst::instance& instance, const params_t& params);
+            inst::instance* string_ctor_string_count(inst::instance& instance, const params_t& params);
+            inst::instance* string_clear(inst::instance& instance, const params_t& params);
+            inst::instance* string_insert_pos_str(inst::instance& instance, const params_t& params);
+            inst::instance* string_erase_pos(inst::instance& instance, const params_t& params);
+            inst::instance* string_erase_pos_count(inst::instance& instance, const params_t& params);
+            inst::instance* string_starts_with(inst::instance& instance, const params_t& params);
+            inst::instance* string_ends_with(inst::instance& instance, const params_t& params);
+            inst::instance* string_replace_pos_count_str(inst::instance& instance, const params_t& params);
+            inst::instance* string_substr_pos(inst::instance& instance, const params_t& params);
+            inst::instance* string_substr_pos_count(inst::instance& instance, const params_t& params);
+            inst::instance* string_resize_newsize(inst::instance& instance, const params_t& params);
+            inst::instance* string_resize_newsize_fill(inst::instance& instance, const params_t& params);
+            inst::instance* string_find_str(inst::instance& instance, const params_t& params);
+            inst::instance* string_find_str_pos(inst::instance& instance, const params_t& params);
+            inst::instance* string_find_not_of_str(inst::instance& instance, const params_t& params);
+            inst::instance* string_find_not_of_str_pos(inst::instance& instance, const params_t& params);
+            inst::instance* string_find_last_str(inst::instance& instance, const params_t& params);
+            inst::instance* string_find_last_not_of_str(inst::instance& instance, const params_t& params);
+            inst::instance* string_contains(inst::instance& instance, const params_t& params);
+            inst::instance* string_lower(inst::instance& instance, const params_t& params);
+            inst::instance* string_make_lower(inst::instance& instance, const params_t& params);
+            inst::instance* string_upper(inst::instance& instance, const params_t& params);
+            inst::instance* string_make_upper(inst::instance& instance, const params_t& params);
 
         private:
+            inst::int_t string_pos_to_int(std::string::size_type pos) const;
+
+        private:
+            static const std::locale m_utf8_locale;
+
             inst::instances_holder_interface& m_instances;
         };
     }

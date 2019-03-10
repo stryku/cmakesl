@@ -55,6 +55,7 @@ namespace cmsl
 
             string_ctor,
             string_ctor_string,
+            string_ctor_string_count,
             string_empty,
             string_size,
             string_operator_equal_equal,
@@ -64,7 +65,29 @@ namespace cmsl
             string_operator_greater,
             string_operator_greater_equal,
             string_operator_plus,
-            string_operator_plus_equal
+            string_operator_plus_equal,
+            string_clear,
+            string_insert_pos_str,
+            string_erase_pos,
+            string_erase_pos_count,
+            string_starts_with,
+            string_ends_with,
+            string_replace_pos_count_str,
+            string_substr_pos,
+            string_substr_pos_count,
+            string_resize_newsize,
+            string_resize_newsize_fill,
+            string_find_str,
+            string_find_str_pos,
+            string_find_not_of_str,
+            string_find_not_of_str_pos,
+            string_find_last_str,
+            string_find_last_not_of_str,
+            string_contains,
+            string_lower,
+            string_make_lower,
+            string_upper,
+            string_make_upper
 
         };
     }

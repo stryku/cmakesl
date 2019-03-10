@@ -394,6 +394,8 @@ namespace cmsl
         {
             const auto& string_type = *find_type("string");
             const auto& bool_type = *find_type("bool");
+            const auto& int_type = *find_type("int");
+            const auto& void_type = *find_type("void");
 
 
             const auto functions = {
@@ -402,11 +404,18 @@ namespace cmsl
                             function_signature{ make_id_token("string"), {} },
                             builtin_function_kind::string_ctor
                     },
-                    builtin_function_info{ // string(string)string_operator_equal_equal
+                    builtin_function_info{ // string(string)
                             string_type,
                             function_signature{ make_id_token("string"),
                                                 { parameter_declaration{string_type, make_id_token("") } } },
                             builtin_function_kind::string_ctor_string
+                    },
+                    builtin_function_info{ // string(string str, int count)
+                            string_type,
+                            function_signature{ make_id_token("string"),
+                                                { parameter_declaration{string_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") }} },
+                            builtin_function_kind::string_ctor_string_count
                     },
                     builtin_function_info{ // bool empty()
                             bool_type,
@@ -454,17 +463,152 @@ namespace cmsl
                                                 { parameter_declaration{string_type, make_id_token("") } } },
                             builtin_function_kind::string_operator_greater_equal
                     },
-                    builtin_function_info{ // bool operator+(string)
+                    builtin_function_info{ // string operator+(string)
                             string_type,
                             function_signature{ make_id_token("+"),
                                                 { parameter_declaration{string_type, make_id_token("") } } },
                             builtin_function_kind::string_operator_plus
                     },
-                    builtin_function_info{ // bool operator+=(string)
+                    builtin_function_info{ // string& operator+=(string)
                             string_type, // Todo: reference
                             function_signature{ make_id_token("+="),
                                                 { parameter_declaration{string_type, make_id_token("") } } },
                             builtin_function_kind::string_operator_plus_equal
+                    },
+                    builtin_function_info{ // void clear()
+                            void_type,
+                            function_signature{ make_id_token("clear"), {} },
+                            builtin_function_kind::string_clear
+                    },
+                    builtin_function_info{ // string& insert(int position, string str)
+                            string_type, // Todo: reference
+                            function_signature{ make_id_token("insert"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{string_type, make_id_token("") }} },
+                            builtin_function_kind::string_insert_pos_str
+                    },
+                    builtin_function_info{ // string& erase(int position)
+                            string_type, // Todo: reference
+                            function_signature{ make_id_token("erase"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::string_erase_pos
+                    },
+                    builtin_function_info{ // string& erase(int position, int count)
+                            string_type, // Todo: reference
+                            function_signature{ make_id_token("erase"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::string_erase_pos_count
+                    },
+                    builtin_function_info{ // bool starts_with(string str)
+                            bool_type,
+                            function_signature{ make_id_token("starts_with"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_starts_with
+                    },
+                    builtin_function_info{ // bool ends_with(string str)
+                            bool_type,
+                            function_signature{ make_id_token("ends_with"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_ends_with
+                    },
+                    builtin_function_info{ // string& replace(int pos, int count, string str)
+                            string_type, // Todo: reference
+                            function_signature{ make_id_token("replace"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_replace_pos_count_str
+                    },
+                    builtin_function_info{ // string substr(int pos)
+                            string_type,
+                            function_signature{ make_id_token("substr"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::string_substr_pos
+                    },
+                    builtin_function_info{ // string substr(int pos, int count)
+                            string_type,
+                            function_signature{ make_id_token("substr"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::string_substr_pos_count
+                    },
+                    builtin_function_info{ // void resize(int new_size)
+                            void_type,
+                            function_signature{ make_id_token("resize"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::string_resize_newsize
+                    },
+                    builtin_function_info{ // void resize(int new_size, string fill)
+                            void_type,
+                            function_signature{ make_id_token("resize"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_resize_newsize_fill
+                    },
+                    builtin_function_info{ // int find(string str)
+                            int_type,
+                            function_signature{ make_id_token("find"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_find_str
+                    },
+                    builtin_function_info{ // int find(string str, int pos)
+                            int_type,
+                            function_signature{ make_id_token("find"),
+                                                { parameter_declaration{string_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::string_find_str_pos
+                    },
+                    builtin_function_info{ // int find_not_of(string str)
+                            int_type,
+                            function_signature{ make_id_token("find_not_of"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_find_not_of_str
+                    },
+                    builtin_function_info{ // int find_not_of(string str, int pos)
+                            int_type,
+                            function_signature{ make_id_token("find_not_of"),
+                                                { parameter_declaration{string_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::string_find_not_of_str_pos
+                    },
+                    builtin_function_info{ // int find_last(string str)
+                            int_type,
+                            function_signature{ make_id_token("find_last"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_find_last_str
+                    },
+                    builtin_function_info{ // int find_last_not_of(string str)
+                            int_type,
+                            function_signature{ make_id_token("find_last_not_of"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_find_last_not_of_str
+                    },
+                    builtin_function_info{ // bool contains(string str)
+                            bool_type,
+                            function_signature{ make_id_token("contains"),
+                                                { parameter_declaration{string_type, make_id_token("") } } },
+                            builtin_function_kind::string_contains
+                    },
+                    builtin_function_info{ // void lower()
+                            void_type,
+                            function_signature{ make_id_token("lower"), {} },
+                            builtin_function_kind::string_lower
+                    },
+                    builtin_function_info{ // string make_lower()
+                            string_type,
+                            function_signature{ make_id_token("make_lower"), {} },
+                            builtin_function_kind::string_make_lower
+                    },
+                    builtin_function_info{ // void upper()
+                            void_type,
+                            function_signature{ make_id_token("upper"), {} },
+                            builtin_function_kind::string_upper
+                    },
+                    builtin_function_info{ // string make_upper()
+                            string_type,
+                            function_signature{ make_id_token("make_upper"), {} },
+                            builtin_function_kind::string_make_upper
                     }
 
             };

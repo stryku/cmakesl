@@ -5,6 +5,8 @@
 #include "builtin_function_caller2.hpp"
 #include "exec/instance/instances_holder.hpp"
 
+#include <algorithm>
+
 #define CASE_BUILTIN_FUNCTION_CALL(function) \
 case sema::builtin_function_kind::function: \
 { \
@@ -15,6 +17,8 @@ namespace cmsl
 {
     namespace exec
     {
+        const std::locale builtin_function_caller2::m_utf8_locale("en_US.utf8");
+
         builtin_function_caller2::builtin_function_caller2(inst::instances_holder_interface &instances)
             : m_instances{ instances }
         {}
@@ -78,6 +82,7 @@ namespace cmsl
                 // string
                 CASE_BUILTIN_FUNCTION_CALL(string_ctor);
                 CASE_BUILTIN_FUNCTION_CALL(string_ctor_string);
+                CASE_BUILTIN_FUNCTION_CALL(string_ctor_string_count);
                 CASE_BUILTIN_FUNCTION_CALL(string_empty);
                 CASE_BUILTIN_FUNCTION_CALL(string_size);
                 CASE_BUILTIN_FUNCTION_CALL(string_operator_equal_equal);
@@ -88,6 +93,28 @@ namespace cmsl
                 CASE_BUILTIN_FUNCTION_CALL(string_operator_greater_equal);
                 CASE_BUILTIN_FUNCTION_CALL(string_operator_plus);
                 CASE_BUILTIN_FUNCTION_CALL(string_operator_plus_equal);
+                CASE_BUILTIN_FUNCTION_CALL(string_clear);
+                CASE_BUILTIN_FUNCTION_CALL(string_insert_pos_str);
+                CASE_BUILTIN_FUNCTION_CALL(string_erase_pos);
+                CASE_BUILTIN_FUNCTION_CALL(string_erase_pos_count);
+                CASE_BUILTIN_FUNCTION_CALL(string_starts_with);
+                CASE_BUILTIN_FUNCTION_CALL(string_ends_with);
+                CASE_BUILTIN_FUNCTION_CALL(string_replace_pos_count_str);
+                CASE_BUILTIN_FUNCTION_CALL(string_substr_pos);
+                CASE_BUILTIN_FUNCTION_CALL(string_substr_pos_count);
+                CASE_BUILTIN_FUNCTION_CALL(string_resize_newsize);
+                CASE_BUILTIN_FUNCTION_CALL(string_resize_newsize_fill);
+                CASE_BUILTIN_FUNCTION_CALL(string_find_str);
+                CASE_BUILTIN_FUNCTION_CALL(string_find_str_pos);
+                CASE_BUILTIN_FUNCTION_CALL(string_find_not_of_str);
+                CASE_BUILTIN_FUNCTION_CALL(string_find_not_of_str_pos);
+                CASE_BUILTIN_FUNCTION_CALL(string_find_last_str);
+                CASE_BUILTIN_FUNCTION_CALL(string_find_last_not_of_str);
+                CASE_BUILTIN_FUNCTION_CALL(string_contains);
+                CASE_BUILTIN_FUNCTION_CALL(string_lower);
+                CASE_BUILTIN_FUNCTION_CALL(string_make_lower);
+                CASE_BUILTIN_FUNCTION_CALL(string_upper);
+                CASE_BUILTIN_FUNCTION_CALL(string_make_upper);
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
@@ -632,6 +659,332 @@ namespace cmsl
 
             lhs += rhs;
             return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_ctor_string_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref().get_string_ref();
+            const auto& param = params[0]->get_value_cref()
+                                  .get_string_cref();
+            const auto count = params[1]->get_value_cref()
+                                        .get_int();
+
+            str.clear();
+            str.reserve(param.size() * count);
+
+            for(auto i = 0u; i < count; ++i)
+            {
+                str += param;
+            }
+
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_clear(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref()
+                                      .get_string_ref();
+            str.clear();
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_insert_pos_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref().get_string_ref();
+            const auto position = params[0]->get_value_cref()
+                                           .get_int();
+            const auto& param = params[1]->get_value_cref()
+                                         .get_string_cref();
+
+            str.insert(position, param);
+
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_erase_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref().get_string_ref();
+            const auto position = params[0]->get_value_cref()
+                                           .get_int();
+            str.erase(position);
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_erase_pos_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref().get_string_ref();
+            const auto position = params[0]->get_value_cref()
+                                           .get_int();
+            const auto count = params[1]->get_value_cref()
+                                         .get_int();
+            str.erase(position, count);
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_starts_with(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& param = params[0]->get_value_cref()
+                                           .get_string_cref();
+
+            // Todo: extract to common function with ends_with
+            const auto starts_with = [&str, &param]
+            {
+                if (&param == &str)
+                {
+                    return true; // Very same string.
+                }
+                if (param.length() > str.length())
+                {
+                    return false;
+                }
+
+                return std::equal(std::cbegin(param), std::cend(param),
+                                  std::cbegin(str), std::next(std::cbegin(str), param.size()));
+            }();
+
+            return m_instances.create2(starts_with);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_ends_with(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& param = params[0]->get_value_cref()
+                                         .get_string_cref();
+
+            const auto ends_with = [&str, &param]
+            {
+                if (&param == &str)
+                {
+                    return true; // Very same string.
+                }
+                if (param.length() > str.length())
+                {
+                    return false;
+                }
+
+                return std::equal(std::crbegin(param), std::crend(param),
+                                  std::crbegin(str), std::next(std::crbegin(str), param.size()));
+            }();
+
+            return m_instances.create2(ends_with);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_replace_pos_count_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref().get_string_ref();
+            const auto position = params[0]->get_value_cref()
+                                           .get_int();
+            const auto count = params[1]->get_value_cref()
+                                           .get_int();
+            const auto& param = params[2]->get_value_cref()
+                                        .get_string_cref();
+            str.replace(position, count, param);
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_substr_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto position = params[0]->get_value_cref()
+                                           .get_int();
+            return m_instances.create2(str.substr(position));
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_substr_pos_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto position = params[0]->get_value_cref()
+                                           .get_int();
+            const auto count = params[1]->get_value_cref()
+                                        .get_int();
+            return m_instances.create2(str.substr(position, count));
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_resize_newsize(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref().get_string_ref();
+            const auto new_size = params[0]->get_value_cref()
+                                           .get_int();
+            str.resize(new_size);
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_resize_newsize_fill(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref().get_string_ref();
+            const auto new_size = params[0]->get_value_cref()
+                                           .get_int();
+            const auto fill = params[1]->get_value_cref()
+                                        .get_string_cref();
+            const auto previous_size = str.length();
+            str.resize(new_size);
+
+            if(new_size > previous_size)
+            {
+                const auto difference = new_size - previous_size;
+                const auto fill_length = fill.length();
+                for(auto i = 0u; i < difference; ++i)
+                {
+                    str[previous_size + i] = fill[i % fill_length];
+                }
+            }
+
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_find_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& param = params[0]->get_value_cref()
+                                           .get_string_cref();
+            const auto found_pos = str.find(param);
+            const auto pos = string_pos_to_int(found_pos);
+            return m_instances.create2(pos);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_find_str_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& param = params[0]->get_value_cref()
+                                         .get_string_cref();
+            const auto start_pos = params[1]->get_value_cref()
+                                           .get_int();
+            const auto found_pos = str.find(param, start_pos);
+            const auto pos = string_pos_to_int(found_pos);
+            return m_instances.create2(pos);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_find_not_of_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& param = params[0]->get_value_cref()
+                                         .get_string_cref();
+            const auto found_pos = str.find_first_not_of(param);
+            const auto pos = string_pos_to_int(found_pos);
+            return m_instances.create2(pos);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_find_not_of_str_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& param = params[0]->get_value_cref()
+                                         .get_string_cref();
+            const auto start_pos = params[1]->get_value_cref()
+                                            .get_int();
+            const auto found_pos = str.find_first_not_of(param, start_pos);
+            const auto pos = string_pos_to_int(found_pos);
+            return m_instances.create2(pos);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_find_last_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& param = params[0]->get_value_cref()
+                                         .get_string_cref();
+            const auto found_pos = str.rfind(param);
+            const auto pos = string_pos_to_int(found_pos);
+            return m_instances.create2(pos);
+        }
+
+        inst::int_t builtin_function_caller2::string_pos_to_int(std::string::size_type pos) const
+        {
+            return pos != std::string::npos
+                   ? static_cast<inst::int_t>( pos )
+                   : inst::int_t{ -1 };
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_find_last_not_of_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& param = params[0]->get_value_cref()
+                                         .get_string_cref();
+            const auto found_pos = str.find_last_not_of(param);
+            const auto pos = string_pos_to_int(found_pos);
+            return m_instances.create2(pos);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_contains(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& param = params[0]->get_value_cref()
+                                         .get_string_cref();
+            const auto found_pos = str.find(param);
+            const auto contains = found_pos != std::string::npos;
+            return m_instances.create2(contains);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_lower(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref().get_string_ref();
+
+            for(auto& c : str)
+            {
+                c = std::tolower(c);
+            }
+
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_make_lower(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            std::string result;
+            result.reserve(str.length());
+
+            std::transform(std::cbegin(str), std::cend(str),
+                           std::back_inserter(result),
+                           [](const auto c) { return std::tolower(c, m_utf8_locale); });
+
+            return m_instances.create2(std::move(result));
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_upper(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& str = instance.get_value_ref().get_string_ref();
+
+            for(auto& c : str)
+            {
+                c = std::toupper(c);
+            }
+
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::string_make_upper(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& str = instance.get_value_cref().get_string_cref();
+            std::string result;
+            result.reserve(str.length());
+
+            std::transform(std::cbegin(str), std::cend(str),
+                           std::back_inserter(result),
+                           [](const auto c) { return std::toupper(c, m_utf8_locale); });
+
+            return m_instances.create2(std::move(result));
         }
     }
 }
