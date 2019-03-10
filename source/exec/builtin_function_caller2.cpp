@@ -116,6 +116,23 @@ namespace cmsl
                 CASE_BUILTIN_FUNCTION_CALL(string_upper);
                 CASE_BUILTIN_FUNCTION_CALL(string_make_upper);
 
+                // version
+                CASE_BUILTIN_FUNCTION_CALL(version_ctor_major);
+                CASE_BUILTIN_FUNCTION_CALL(version_ctor_major_minor);
+                CASE_BUILTIN_FUNCTION_CALL(version_ctor_major_minor_patch);
+                CASE_BUILTIN_FUNCTION_CALL(version_ctor_major_minor_patch_tweak);
+                CASE_BUILTIN_FUNCTION_CALL(version_operator_equal_equal);
+                CASE_BUILTIN_FUNCTION_CALL(version_operator_not_equal);
+                CASE_BUILTIN_FUNCTION_CALL(version_operator_less);
+                CASE_BUILTIN_FUNCTION_CALL(version_operator_less_equal);
+                CASE_BUILTIN_FUNCTION_CALL(version_operator_greater);
+                CASE_BUILTIN_FUNCTION_CALL(version_operator_greater_equal);
+                CASE_BUILTIN_FUNCTION_CALL(version_major);
+                CASE_BUILTIN_FUNCTION_CALL(version_minor);
+                CASE_BUILTIN_FUNCTION_CALL(version_patch);
+                CASE_BUILTIN_FUNCTION_CALL(version_tweak);
+                CASE_BUILTIN_FUNCTION_CALL(version_to_string);
+
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
                     return nullptr;
@@ -985,6 +1002,127 @@ namespace cmsl
                            [](const auto c) { return std::toupper(c, m_utf8_locale); });
 
             return m_instances.create2(std::move(result));
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_ctor_major(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto major = params[0]->get_value_cref().get_int();
+            instance.get_value_ref().set_version(inst::version_value{ major });
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_ctor_major_minor(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto major = params[0]->get_value_cref().get_int();
+            const auto minor = params[1]->get_value_cref().get_int();
+            instance.get_value_ref().set_version(inst::version_value{ major, minor });
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_ctor_major_minor_patch(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto major = params[0]->get_value_cref().get_int();
+            const auto minor = params[1]->get_value_cref().get_int();
+            const auto patch = params[2]->get_value_cref().get_int();
+            instance.get_value_ref().set_version(inst::version_value{ major, minor, patch });
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_ctor_major_minor_patch_tweak(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto major = params[0]->get_value_cref().get_int();
+            const auto minor = params[1]->get_value_cref().get_int();
+            const auto patch = params[2]->get_value_cref().get_int();
+            const auto tweak = params[2]->get_value_cref().get_int();
+            instance.get_value_ref().set_version(inst::version_value{ major, minor, patch, tweak });
+            return &instance;
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_operator_equal_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& param = params[0]->get_value_cref().get_version_cref();
+            return m_instances.create2(ver == param);
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_operator_not_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& param = params[0]->get_value_cref().get_version_cref();
+            return m_instances.create2(ver != param);
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_operator_less(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& param = params[0]->get_value_cref().get_version_cref();
+            return m_instances.create2(ver < param);
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_operator_less_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& param = params[0]->get_value_cref().get_version_cref();
+            return m_instances.create2(ver <= param);
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_operator_greater(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& param = params[0]->get_value_cref().get_version_cref();
+            return m_instances.create2(ver > param);
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_operator_greater_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& param = params[0]->get_value_cref().get_version_cref();
+            return m_instances.create2(ver >= param);
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_major(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            return m_instances.create2(ver.major_());
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_minor(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            return m_instances.create2(ver.minor_());
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_patch(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            return m_instances.create2(ver.patch());
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_tweak(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            return m_instances.create2(ver.tweak());
+        }
+
+        inst::instance *
+        builtin_function_caller2::version_to_string(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& ver = instance.get_value_cref().get_version_cref();
+            return m_instances.create2(ver.to_string());
         }
     }
 }

@@ -1,6 +1,7 @@
 #include "exec/instance/version_value.hpp"
 #include "version_value.hpp"
 
+
 #include <algorithm>
 #include <tuple>
 
@@ -10,7 +11,7 @@ namespace cmsl
     {
         namespace inst
         {
-            version_value::version_value(unsigned major, unsigned minor, unsigned patch, unsigned tweak)
+            version_value::version_value(int_t major, int_t minor, int_t patch, int_t tweak)
                 : m_major{ major }
                 , m_minor{ minor }
                 , m_patch{ patch }
@@ -59,6 +60,26 @@ namespace cmsl
             bool version_value::operator>=(const version_value &rhs) const
             {
                 return !(*this < rhs);
+            }
+
+            int_t version_value::major_() const
+            {
+                return m_major;
+            }
+
+            int_t version_value::minor_() const
+            {
+                return m_minor;
+            }
+
+            int_t version_value::patch() const
+            {
+                return m_patch;
+            }
+
+            int_t version_value::tweak() const
+            {
+                return m_tweak;
             }
         }
     }
