@@ -5,12 +5,15 @@
 
 #include "errors/errors_observer.hpp"
 
+#include "sema/factories.hpp"
+
 #include "test/ast/mock/ast_context_mock.hpp"
-#include "test/ast/mock/function_mock.hpp"
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"
 #include "test/sema/mock/identifiers_context_mock.hpp"
+#include "test/sema/mock/sema_context_mock.hpp"
+#include "test/sema/mock/sema_function_mock.hpp"
 
 #include <gmock/gmock.h>
 
@@ -38,7 +41,30 @@ namespace cmsl
             };
             using errs_t = errors_observer_and_mock;
 
-            const ast::type valid_type{ token_kw_int() };
+            const sema_context valid_context;
+            const sema_type valid_type{ valid_context, token_identifier("foo"), {} };
+
+            class SemaBuilderAstVisitorTest : public ::testing::Test
+            {
+            protected:
+                sema_type_factory m_type_factory;
+                sema_function_factory m_function_factory;
+                sema_context_factory m_context_factory;
+
+                sema_builder_ast_visitor create_visitor(errs_t& errs,
+                                                        sema_context_interface& ctx,
+                                                        identifiers_context& ids_ctx)
+                {
+                    return sema_builder_ast_visitor{
+                            ctx,
+                            errs.observer,
+                            ids_ctx,
+                            m_type_factory,
+                            m_function_factory,
+                            m_context_factory
+                    };
+                }
+            };
 
             MATCHER(IsValidType, "")
             {
@@ -50,12 +76,12 @@ namespace cmsl
                 return arg == valid_type;
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_BoolValue_GetCorrectBoolValue)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_BoolValue_GetCorrectBoolValue)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 identifiers_context_mock ids_ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 // Todo: use int alias
                 const auto value = true;
@@ -74,12 +100,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->type(), IsValidType());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_IntValue_GetCorrectIntValue)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_IntValue_GetCorrectIntValue)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 identifiers_context_mock ids_ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 // Todo: use int alias
                 const auto value = std::int64_t{ 42 };
@@ -98,12 +124,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->type(), IsValidType());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_DoubleValue_GetCorrectDoubleValue)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_DoubleValue_GetCorrectDoubleValue)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 identifiers_context_mock ids_ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 // Todo: use int alias
                 const auto value = double{ 4.2 };
@@ -122,12 +148,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->type(), IsValidType());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_StringValue_GetCorrectStringValue)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_StringValue_GetCorrectStringValue)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 identifiers_context_mock ids_ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 // Todo: use int alias
                 const auto value = cmsl::string_view{ "\"42\"" };
@@ -142,16 +168,16 @@ namespace cmsl
                 ASSERT_THAT(visitor.m_result_node, NotNull());
                 const auto casted_node = dynamic_cast<const string_value_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
-                EXPECT_THAT(casted_node->value(), Eq(value));
+                EXPECT_THAT(casted_node->value(), Eq("42"));
                 EXPECT_THAT(casted_node->type(), IsValidType());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_Identifier_GetCorrectIdentifierNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_Identifier_GetCorrectIdentifierNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto id_token = token_identifier("foo");
                 const ast::id_node node{ id_token };
@@ -169,12 +195,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->type(), IsValidType()); // Todo: compare by reference
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithoutInitialization_GetVariableDeclarationNodeWithoutInitialization)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithoutInitialization_GetVariableDeclarationNodeWithoutInitialization)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
                 const auto type_ref = ast::type_reference{ token_identifier(), token_identifier() };
                 const auto name_token = token_identifier("foo");
 
@@ -197,12 +223,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->initialization(), IsNull());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithInitialization_GetVariableDeclarationNodeWithInitialization)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_VariableDeclarationWithInitialization_GetVariableDeclarationNodeWithInitialization)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
                 const auto type_ref = ast::type_reference{ token_identifier(), token_identifier() };
                 const auto name_token = token_identifier("foo");
 
@@ -235,12 +261,12 @@ namespace cmsl
                 EXPECT_THAT(casted_initialization_node->value(), Eq(initialization_value));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_Return)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_Return)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto expr_node = std::make_unique<ast::int_value_node>( token_integer("42") );
                 ast::return_node ret_node(std::move(expr_node));
@@ -259,26 +285,35 @@ namespace cmsl
                 EXPECT_THAT(casted_node->type(), IsValidType());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_FunctionCallWithoutParameters_GetFunctionCallNodeWithoutParameters)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_FunctionCallWithoutParameters_GetFunctionCallNodeWithoutParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                StrictMock<ast::test::function_mock> function_mock;
+                StrictMock<sema_function_mock> function_mock;
                 const ast::function::params_declaration_t param_declarations;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto fun_name_token = token_identifier("foo");
+                function_signature signature;
+                signature.name = fun_name_token;
                 const ast::function_call_node node{fun_name_token, {}};
 
+                const auto lookup_result = function_lookup_result_t{ { &function_mock } };
                 EXPECT_CALL(ctx, find_function(fun_name_token.str()))
-                        .WillOnce(Return(&function_mock));
+                        .WillOnce(Return(lookup_result));
 
-                EXPECT_CALL(function_mock, get_params_declarations())
-                        .WillOnce(ReturnRef(param_declarations));
+                EXPECT_CALL(function_mock, context())
+                        .WillOnce(ReturnRef(ctx));
 
-                EXPECT_CALL(function_mock, get_type())
+                EXPECT_CALL(ctx, type())
+                        .WillOnce(Return(sema_context_interface::context_type::namespace_));
+
+                EXPECT_CALL(function_mock, return_type())
                         .WillOnce(ReturnRef(valid_type));
+
+                EXPECT_CALL(function_mock, signature())
+                        .WillOnce(ReturnRef(signature));
 
                 visitor.visit(node);
 
@@ -291,29 +326,39 @@ namespace cmsl
                 EXPECT_THAT(casted_node->param_expressions().size(), Eq(0u));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_FunctionCallWithParameters_GetFunctionCallNodeWithParameters)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_FunctionCallWithParameters_GetFunctionCallNodeWithParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                StrictMock<ast::test::function_mock> function_mock;
-                sema_builder_ast_visitor visitor{ ctx, errs.observer, ids_ctx };
+                StrictMock<sema_function_mock> function_mock;
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                const auto fun_name_token = token_identifier("foo");
+                // It's crucial that fun name token has different text than valid_type's name.
+                // Thanks to that we're not going to call a constructor.
+                const auto fun_name_token = token_identifier("not_a_constructor");
                 const auto param1_id_token = token_identifier("bar");
                 const auto param2_id_token = token_identifier("baz");
 
-                ast::function::params_declaration_t param_declarations;
-                param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param1_id_token});
-                param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param2_id_token});
+                function_signature signature;
+                signature.name = fun_name_token;
+                signature.params .emplace_back(parameter_declaration{valid_type, param1_id_token});
+                signature.params .emplace_back(parameter_declaration{valid_type, param2_id_token});
 
+                const auto lookup_result = function_lookup_result_t{ { &function_mock } };
                 EXPECT_CALL(ctx, find_function(fun_name_token.str()))
-                        .WillOnce(Return(&function_mock));
+                        .WillOnce(Return(lookup_result));
 
-                EXPECT_CALL(function_mock, get_params_declarations())
-                        .WillOnce(ReturnRef(param_declarations));
+                EXPECT_CALL(function_mock, context())
+                        .WillOnce(ReturnRef(ctx));
 
-                EXPECT_CALL(function_mock, get_type())
+                EXPECT_CALL(ctx, type())
+                        .WillOnce(Return(sema_context_interface::context_type::namespace_));
+
+                EXPECT_CALL(function_mock, signature())
+                        .WillOnce(ReturnRef(signature));
+
+                EXPECT_CALL(function_mock, return_type())
                         .WillOnce(ReturnRef(valid_type));
 
                 EXPECT_CALL(ids_ctx, type_of(param1_id_token.str()))
@@ -345,32 +390,79 @@ namespace cmsl
                 // Todo: consider checking params one by one
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithoutParameters_GetMemberFunctionCallNodeWithoutParameters)
+            // Todo: Do we need this? Context tests should test whether context returns ctor's function.
+            TEST_F(SemaBuilderAstVisitorTest, Visit_ConstructorCallWithoutParameters_GetConstructorCallNodeWithoutParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                StrictMock<ast::test::function_mock> function_mock;
+                StrictMock<sema_function_mock> function_mock;
                 const ast::function::params_declaration_t param_declarations;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+                // It's crucial that fun name token has same text as valid_type's name.
+                // Thanks to that we're going to call a constructor.
+                const auto fun_name_token = token_identifier("foo");
+                function_signature signature;
+                signature.name = fun_name_token;
+                const ast::function_call_node node{fun_name_token, {}};
+
+                const auto lookup_result = function_lookup_result_t{ { &function_mock } };
+                EXPECT_CALL(ctx, find_function(fun_name_token.str()))
+                        .WillOnce(Return(lookup_result));
+
+                EXPECT_CALL(function_mock, context())
+                        .WillOnce(ReturnRef(ctx));
+
+                EXPECT_CALL(ctx, type())
+                        .WillOnce(Return(sema_context_interface::context_type::namespace_));
+
+                EXPECT_CALL(function_mock, return_type())
+                        .WillOnce(ReturnRef(valid_type));
+
+                EXPECT_CALL(function_mock, signature())
+                        .WillOnce(ReturnRef(signature));
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<function_call_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                EXPECT_THAT(casted_node->type(), IsValidType());
+                EXPECT_THAT(casted_node->param_expressions().size(), Eq(0u));
+            }
+
+            TEST_F(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithoutParameters_GetMemberFunctionCallNodeWithoutParameters)
+            {
+                errs_t errs;
+                StrictMock<sema_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<sema_function_mock> function_mock;
+                const ast::function::params_declaration_t param_declarations;
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto lhs_id_token = token_identifier("foo");
-                const ast::type lhs_type{ lhs_id_token.str(), ast::type_kind::k_user, &ctx };
+                const sema_type lhs_type{ ctx,  lhs_id_token, {} };
                 auto lhs_ast_node = std::make_unique<ast::id_node>(lhs_id_token);
 
                 const auto fun_name_token = token_identifier("bar");
+                function_signature signature;
+                signature.name = fun_name_token;
                 const ast::member_function_call_node node{ std::move(lhs_ast_node), fun_name_token, {} };
 
                 EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
                         .WillOnce(Return(&lhs_type));
 
-                EXPECT_CALL(ctx, find_function(fun_name_token.str()))
-                        .WillOnce(Return(&function_mock));
+                const auto lookup_result = single_scope_function_lookup_result_t{ &function_mock };
+                EXPECT_CALL(ctx, find_function_in_this_scope(fun_name_token.str()))
+                        .WillOnce(Return(lookup_result));
 
-                EXPECT_CALL(function_mock, get_params_declarations())
-                        .WillOnce(ReturnRef(param_declarations));
+                EXPECT_CALL(function_mock, signature())
+                        .WillOnce(ReturnRef(signature));
 
-                EXPECT_CALL(function_mock, get_type())
+                EXPECT_CALL(function_mock, return_type())
                         .WillOnce(ReturnRef(valid_type));
 
                 visitor.visit(node);
@@ -385,24 +477,21 @@ namespace cmsl
                 EXPECT_THAT(casted_node->param_expressions().size(), Eq(expected_number_of_params));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithParameters_GetMemberFunctionCallNodeWithParameters)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_MemberFunctionCallWithParameters_GetMemberFunctionCallNodeWithParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                StrictMock<ast::test::function_mock> function_mock;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                StrictMock<sema_function_mock> function_mock;
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto lhs_id_token = token_identifier("foo");
-                const ast::type lhs_type{ lhs_id_token.str(), ast::type_kind::k_user, &ctx };
+                const sema_type lhs_type{ ctx, lhs_id_token, {} };
                 auto lhs_ast_node = std::make_unique<ast::id_node>(lhs_id_token);
 
                 const auto param1_id_token = token_identifier("baz");
                 const auto param2_id_token = token_identifier("qux");
 
-                ast::function::params_declaration_t param_declarations;
-                param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param1_id_token});
-                param_declarations.emplace_back(ast::parameter_declaration{&valid_type, param2_id_token});
                 // Todo: use mocks
                 auto param1_ast_node = std::make_unique<ast::id_node>(param1_id_token);
                 auto param2_ast_node = std::make_unique<ast::id_node>(param2_id_token);
@@ -411,16 +500,21 @@ namespace cmsl
                 ast_params.emplace_back(std::move(param2_ast_node));
 
                 const auto fun_name_token = token_identifier("bar");
+                function_signature signature;
+                signature.name = fun_name_token;
+                signature.params .emplace_back(parameter_declaration{valid_type, param1_id_token});
+                signature.params .emplace_back(parameter_declaration{valid_type, param2_id_token});
                 const ast::member_function_call_node node{ std::move(lhs_ast_node), fun_name_token, std::move(ast_params) };
 
                 EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
                         .WillOnce(Return(&lhs_type));
 
-                EXPECT_CALL(ctx, find_function(fun_name_token.str()))
-                        .WillOnce(Return(&function_mock));
+                const auto lookup_result = single_scope_function_lookup_result_t{ &function_mock };
+                EXPECT_CALL(ctx, find_function_in_this_scope(fun_name_token.str()))
+                        .WillOnce(Return(lookup_result));
 
-                EXPECT_CALL(function_mock, get_params_declarations())
-                        .WillOnce(ReturnRef(param_declarations));
+                EXPECT_CALL(function_mock, signature())
+                        .WillOnce(ReturnRef(signature));
 
                 EXPECT_CALL(ids_ctx, type_of(param1_id_token.str()))
                         .WillOnce(Return(&valid_type));
@@ -428,7 +522,7 @@ namespace cmsl
                 EXPECT_CALL(ids_ctx, type_of(param2_id_token.str()))
                         .WillOnce(Return(&valid_type));
 
-                EXPECT_CALL(function_mock, get_type())
+                EXPECT_CALL(function_mock, return_type())
                         .WillOnce(ReturnRef(valid_type));
 
                 visitor.visit(node);
@@ -446,12 +540,12 @@ namespace cmsl
             }
 
             // Todo: consider test with nodes inside block
-            TEST(SemaBuilderAstVisitorTest, Visit_Block_GetBlockNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_Block_GetBlockNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 ast::block_node block{ {} };
 
@@ -469,12 +563,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->nodes().size(), Eq(expected_number_of_nodes));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_FunctionWithoutParameters_GetFunctionNodeWithoutParameters)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_FunctionWithoutParameters_GetFunctionNodeWithoutParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto return_type_token = token_identifier("foo");
                 auto return_type_reference = ast::type_reference{ return_type_token, return_type_token};
@@ -484,6 +578,8 @@ namespace cmsl
 
                 EXPECT_CALL(ctx, find_type(return_type_reference.to_string()))
                         .WillOnce(Return(&valid_type));
+
+                EXPECT_CALL(ctx, add_function(_));
 
                 // Two scopes: parameters and block
                 EXPECT_CALL(ids_ctx, enter_ctx())
@@ -499,15 +595,15 @@ namespace cmsl
                 ASSERT_THAT(casted_node, NotNull());
 
                 const auto expected_number_of_params{ 0u };
-                EXPECT_THAT(casted_node->params().size(), Eq(expected_number_of_params));
+                EXPECT_THAT(casted_node->signature().params.size(), Eq(expected_number_of_params));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_FunctionWithParameters_GetFunctionNodeWithParameters)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_FunctionWithParameters_GetFunctionNodeWithParameters)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto return_type_token = token_identifier("foo");
                 auto return_type_reference = ast::type_reference{ return_type_token, return_type_token};
@@ -529,6 +625,8 @@ namespace cmsl
                 EXPECT_CALL(ctx, find_type(param_type_reference.to_string()))
                         .WillOnce(Return(&valid_type));
 
+                EXPECT_CALL(ctx, add_function(_));
+
                 // Two scopes: parameters and block
                 EXPECT_CALL(ids_ctx, enter_ctx())
                         .Times(2);
@@ -544,15 +642,15 @@ namespace cmsl
                 ASSERT_THAT(casted_node, NotNull());
 
                 const auto expected_number_of_params{ 1u };
-                EXPECT_THAT(casted_node->params().size(), Eq(expected_number_of_params));
+                EXPECT_THAT(casted_node->signature().params.size(), Eq(expected_number_of_params));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_ClassEmpty_GetEmptyClassNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_ClassEmpty_GetEmptyClassNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto class_name_token = token_identifier("foo");
 
@@ -580,12 +678,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->members().size(), Eq(expected_number_of_members));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_ClassWithMembers_GetClassNodeWithMembers)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_ClassWithMembers_GetClassNodeWithMembers)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto class_name_token = token_identifier("foo");
                 const auto member_name_token = token_identifier("bar");
@@ -624,12 +722,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->members().size(), Eq(expected_number_of_members));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_ClassWithFunctions_GetClassNodeWithFunctions)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_ClassWithFunctions_GetClassNodeWithFunctions)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto class_name_token = token_identifier("foo");
 
@@ -675,12 +773,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->members().size(), Eq(expected_number_of_members));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_ClassWithFunctionsAndMembers_GetClassNodeWithFunctionsAndMembers)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_ClassWithFunctionsAndMembers_GetClassNodeWithFunctionsAndMembers)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto class_name_token = token_identifier("foo");
 
@@ -736,12 +834,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->members().size(), Eq(expected_number_of_members));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_WhileNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_WhileNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
@@ -766,12 +864,12 @@ namespace cmsl
                 ASSERT_THAT(casted_node, NotNull());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_IfNode_GetIfNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_IfNode_GetIfNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
@@ -804,12 +902,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->else_body(), IsNull());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_IfElseNode_GetIfElseNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseNode_GetIfElseNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
@@ -844,12 +942,12 @@ namespace cmsl
                 ASSERT_THAT(casted_node->else_body(), NotNull());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_IfElseIfNode_GetIfElseIfNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfNode_GetIfElseIfNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
@@ -891,12 +989,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->else_body(), IsNull());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_IfElseIfElseNode_GetIfElseIfElseNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfElseNode_GetIfElseIfElseNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
@@ -940,21 +1038,22 @@ namespace cmsl
                 EXPECT_THAT(casted_node->else_body(), NotNull());
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_ClassMemberAccess_GetClassMemberAccessNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_ClassMemberAccess_GetClassMemberAccessNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto lhs_id_token = token_identifier("foo");
                 auto lhs_node = std::make_unique<ast::id_node>(lhs_id_token);
 
                 const auto member_name_token = token_identifier("bar");
                 // Todo: use initializer list
-                std::vector<ast::type::member_info> members;
-                members.emplace_back(ast::type::member_info{member_name_token, valid_type});
-                ast::type lhs_type{ "baz", ast::type_kind::k_user, &ctx, std::move(members)};
+                std::vector<member_info> members;
+                members.emplace_back(member_info{member_name_token, valid_type});
+                const auto lhs_type_name_token = token_identifier("baz");
+                sema_type lhs_type{ ctx, lhs_type_name_token, std::move(members)};
 
                 ast::class_member_access_node node{ std::move(lhs_node), member_name_token };
 
@@ -972,12 +1071,12 @@ namespace cmsl
                 EXPECT_THAT(casted_node->member_name(), Eq(member_name_token));
             }
 
-            TEST(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
+            TEST_F(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
             {
                 errs_t errs;
-                StrictMock<ast::test::ast_context_mock> ctx;
+                StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                sema_builder_ast_visitor visitor{ctx, errs.observer, ids_ctx};
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto variable_name_token = token_identifier("foo");
                 const auto variable_type_token = token_kw_int();
@@ -1007,14 +1106,15 @@ namespace cmsl
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_name_token.str()))
                         .WillOnce(Return(nullptr));
 
+                EXPECT_CALL(ctx, add_function(_));
                 EXPECT_CALL(ctx, add_type(_));
 
                 EXPECT_CALL(ids_ctx, register_identifier(variable_name_token, &valid_type));
 
                 EXPECT_CALL(ids_ctx, enter_ctx())
-                        .Times(3);
+                        .Times(4);
                 EXPECT_CALL(ids_ctx, leave_ctx())
-                        .Times(3);
+                        .Times(4);
 
 
                 visitor.visit(node);
@@ -1036,7 +1136,51 @@ namespace cmsl
 
                 const auto casted_class_node = dynamic_cast<class_node*>(translation_unit_nodes[2].get());
                 EXPECT_THAT(casted_class_node, NotNull());
+            }
 
+            TEST_F(SemaBuilderAstVisitorTest, Visit_BinaryOperatorNode)
+            {
+                errs_t errs;
+                StrictMock<sema_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<sema_function_mock> function_mock;
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+                const sema_type lhs_and_rhs_type{ ctx, token_kw_int(), {} };
+                const auto lhs_id_token = token_identifier("foo");
+                auto lhs_node = std::make_unique<ast::id_node>(lhs_id_token);
+                const auto rhs_id_token = token_identifier("bar");
+                auto rhs_node = std::make_unique<ast::id_node>(rhs_id_token);
+
+                const auto operator_token = token_plus();
+                StrictMock<sema_function_mock> operator_function;
+
+                ast::binary_operator_node node{ std::move(lhs_node),
+                                                operator_token,
+                                                std::move(rhs_node)};
+
+                EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
+                        .WillOnce(Return(&lhs_and_rhs_type));
+
+                EXPECT_CALL(ids_ctx, type_of(rhs_id_token.str()))
+                        .WillOnce(Return(&lhs_and_rhs_type));
+
+                EXPECT_CALL(function_mock, return_type())
+                        .WillOnce(ReturnRef(lhs_and_rhs_type));
+
+                // Find operator member function.
+                const auto lookup_result = single_scope_function_lookup_result_t{ &function_mock };
+                EXPECT_CALL(ctx, find_function_in_this_scope(operator_token.str()))
+                        .WillOnce(Return(lookup_result));
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<binary_operator_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+                EXPECT_THAT(&casted_node->lhs().type(), Eq(&lhs_and_rhs_type));
+                EXPECT_THAT(&casted_node->rhs().type(), Eq(&lhs_and_rhs_type));
             }
         }
     }

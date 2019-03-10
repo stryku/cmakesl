@@ -14,8 +14,7 @@ namespace cmsl
             public:
                 int_t int_(const instance& i) const
                 {
-                    const auto& val = i.get_value_cref();
-                    return boost::get<int_t>(val);
+                    return i.get_value_cref().get_int();
                 }
             };
         }

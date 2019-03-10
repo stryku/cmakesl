@@ -3,7 +3,7 @@
 #include "ast/class_type.hpp"
 #include "common/assert.hpp"
 #include "exec/instance/instance_value.hpp"
-
+#include "sema/sema_type.hpp"
 
 namespace cmsl
 {
@@ -13,34 +13,73 @@ namespace cmsl
         {
             simple_unnamed_instance::simple_unnamed_instance(const ast::type &type)
                     : m_kind{ type.is_builtin() ? kind::builtin : kind::user }
-                    , m_type{ type }
+                    , m_type{ &type }
                     , m_data{ get_init_data() }
             {}
 
             simple_unnamed_instance::simple_unnamed_instance(kind k, const ast::type &type)
                     : m_kind{ k }
-                    , m_type{ type }
+                    , m_type{ &type }
                     , m_data{ get_init_data() }
             {}
 
             simple_unnamed_instance::simple_unnamed_instance(const ast::type &type, instance_value_t value)
                     : m_kind{ kind::builtin }
-                    , m_type{ type }
+                    , m_type{ &type }
                     , m_data{ get_init_data(value) }
+            {}
+
+            simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type)
+                    : m_sema_type{ &type }
+                    , m_data{ get_init_data() }
+            {}
+
+            simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type, instance_value_t value)
+                    : m_sema_type{ &type }
+                    , m_data{ std::move(value) }
             {}
 
             instance_value_t simple_unnamed_instance::get_init_data() const
             {
-                switch(m_type.get_kind())
+                if(m_type)
                 {
-                    case ast::type_kind::k_bool: return bool{};
-                    case ast::type_kind::k_int: return int_t{};
-                    case ast::type_kind::k_double: return double{};
-                    case ast::type_kind::k_string: return std::string{};
-                    case ast::type_kind::k_list: return get_init_list_data();
+                    switch (m_type->get_kind())
+                    {
+                        case ast::type_kind::k_bool:
+                            return bool{};
+                        case ast::type_kind::k_int:
+                            return int_t{};
+                        case ast::type_kind::k_double:
+                            return double{};
+                        case ast::type_kind::k_string:
+                            return std::string{};
+                        case ast::type_kind::k_list:
+                            return get_init_list_data();
 
-                    default:
-                        CMSL_UNREACHABLE("Unknown simple builtin type kind");
+                        default:
+                            CMSL_UNREACHABLE("Unknown simple builtin type kind");
+                    }
+                }
+                else
+                {
+                    const auto name = m_sema_type->name().str();
+                    // Todo: find better way than comparing strings.
+                    if(name == "bool")
+                    {
+                        return false;
+                    }
+                    else if(name == "int")
+                    {
+                        return int_t{ 0 };
+                    }
+                    else if(name == "double")
+                    {
+                        return 0.0;
+                    }
+                    else if(name == "string")
+                    {
+                        return std::string{};
+                    }
                 }
             }
 
@@ -81,22 +120,22 @@ namespace cmsl
 
             std::unique_ptr<instance> simple_unnamed_instance::copy() const
             {
-                return std::make_unique<simple_unnamed_instance>(m_type, get_value());
+                return std::make_unique<simple_unnamed_instance>(*m_type, get_value());
             }
 
             bool simple_unnamed_instance::has_function(cmsl::string_view name) const
             {
-                return m_type.has_function(name);
+                return m_type->has_function(name);
             }
 
             const ast::function* simple_unnamed_instance::get_function(cmsl::string_view name) const
             {
-                return m_type.get_function(name);
+                return m_type->get_function(name);
             }
 
             const ast::type& simple_unnamed_instance::get_type() const
             {
-                return m_type;
+                return *m_type;
             }
 
             instance_value_t simple_unnamed_instance::get_init_list_data() const
@@ -108,6 +147,16 @@ namespace cmsl
             bool simple_unnamed_instance::is_ctor(cmsl::string_view name) const
             {
                 return get_type().get_name() == name;
+            }
+
+            sema::single_scope_function_lookup_result_t simple_unnamed_instance::get_sema_function(cmsl::string_view name) const
+            {
+                return m_sema_type->find_member_function(name);
+            }
+
+            const sema::sema_type &simple_unnamed_instance::get_sema_type() const
+            {
+                return *m_sema_type;
             }
         }
     }

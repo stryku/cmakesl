@@ -24,6 +24,10 @@ namespace cmsl
                     MOCK_METHOD0(create_void, instance*());
                     MOCK_METHOD1(store, void(std::unique_ptr<instance>));
                     MOCK_METHOD1(gather_ownership, std::unique_ptr<instance>(inst::instance*));
+
+                    MOCK_METHOD1(create2, instance*(instance_value_t));
+                    MOCK_METHOD1(create2_reference, instance*(instance&));
+                    MOCK_METHOD1(create2, instance*(const sema::sema_type&));
                 };
             }
         }

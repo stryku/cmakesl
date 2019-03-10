@@ -49,8 +49,8 @@ set(EXEC_SOURCES
     instance/instance_factory.cpp
     instance/instance_factory.hpp
     instance/instance_value.hpp
-    instance/named_instance.cpp
-    instance/named_instance.hpp
+        instance/instance_reference.cpp
+        instance/instance_reference.hpp
     instance/generic_instance_value.cpp
     instance/generic_instance_value.hpp
     instance/instance_value.cpp
@@ -72,10 +72,13 @@ set(EXEC_SOURCES
     stmt/statement.hpp
     stmt/while_statement.cpp
     stmt/while_statement.hpp
-        builtin/container.cpp builtin/container.hpp builtin/cmake_minimum_required.cpp builtin/cmake_minimum_required.hpp instance/instance_value_getter.hpp builtin/evaluatable_function.hpp builtin/builtin_function_factory.cpp builtin/builtin_function_factory.hpp builtin/evaluatable_member_function.hpp builtin/builtin_member_functions.cpp builtin/builtin_member_functions.hpp builtin/version.cpp builtin/version.hpp)
+        builtin/container.cpp builtin/container.hpp builtin/cmake_minimum_required.cpp builtin/cmake_minimum_required.hpp instance/instance_value_getter.hpp builtin/evaluatable_function.hpp builtin/builtin_function_factory.cpp builtin/builtin_function_factory.hpp builtin/evaluatable_member_function.hpp builtin/builtin_member_functions.cpp builtin/builtin_member_functions.hpp builtin/version.cpp builtin/version.hpp execution2.hpp expression_evaluation_visitor.hpp
+        expression_evaluation_context.hpp
+        identifiers_context.hpp instance/instance_value_variant.cpp instance/instance_value_variant.hpp builtin_function_caller2.cpp builtin_function_caller2.hpp)
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_FACADE_DIR})
+target_link_libraries(exec PRIVATE sema)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 

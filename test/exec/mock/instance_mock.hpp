@@ -1,4 +1,6 @@
 #include "exec/instance/instance.hpp"
+#include "sema/sema_type.hpp"
+#include "ast/type.hpp"
 
 #include <gmock/gmock.h>
 
@@ -26,6 +28,8 @@ namespace cmsl
                     MOCK_CONST_METHOD1(is_ctor, bool(cmsl::string_view));
                     MOCK_CONST_METHOD1(get_function, const cmsl::ast::function *(cmsl::string_view));
                     MOCK_CONST_METHOD0(get_type, const cmsl::ast::type&());
+                    MOCK_CONST_METHOD1(get_sema_function, sema::single_scope_function_lookup_result_t(cmsl::string_view));
+                    MOCK_CONST_METHOD0(get_sema_type, const sema::sema_type&());
                 };
             }
         }

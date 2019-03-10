@@ -25,8 +25,8 @@ namespace cmsl
             void leave_scope();
 
         private:
-            scope_context* current_scope();
-            const scope_context* current_scope() const;
+            scope_context& current_scope();
+            const scope_context& current_scope() const;
 
         private:
             std::stack<scope_context> m_scopes;

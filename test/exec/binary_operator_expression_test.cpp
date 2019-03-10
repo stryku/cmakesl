@@ -81,7 +81,7 @@ namespace cmsl
                                   3}
                                                        );
 
-                    TEST_P(IntegerBasedBinaryOperatorExpression, GetCorrectValue)
+                    TEST_P(IntegerBasedBinaryOperatorExpression, DISABLED_GetCorrectValue)
                     {
                         const auto &state = GetParam();
                         auto bin_op = make_bin_op_expr(state.lhs, state.op, state.rhs);
@@ -147,7 +147,7 @@ namespace cmsl
                                   }}
                                                        );
 
-                    TEST_P(RelationBinaryOperatorExpression, GetCorrectRelationResult)
+                    TEST_P(RelationBinaryOperatorExpression, DISABLED_GetCorrectRelationResult)
                     {
                         const auto &state = GetParam();
 
@@ -209,7 +209,7 @@ namespace cmsl
                                   false}
                                                        );
 
-                    TEST_P(ComparisonBinaryOperatorExpression, GetCorrectComparisonResult)
+                    TEST_P(ComparisonBinaryOperatorExpression, DISABLED_GetCorrectComparisonResult)
                     {
                         const auto &state = GetParam();
                         auto bin_op = make_bin_op_expr(state.val1, state.op, state.val2);
