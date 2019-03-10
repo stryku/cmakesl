@@ -45,6 +45,10 @@ namespace cmsl
                     {
                         reassign(std::move(moved.m_value.m_string), which_type::string);
                     }break;
+                    case which_type::version:
+                    {
+                        reassign(std::move(moved.m_value.m_version), which_type::version);
+                    }break;
                     case which_type::generic:
                     {
                         reassign(std::move(moved.m_value.m_generic), which_type::generic);
@@ -203,6 +207,10 @@ namespace cmsl
                     {
                         assign(other.m_string, w);
                     }break;
+                    case which_type::version:
+                    {
+                        assign(other.m_version, w);
+                    }break;
                     case which_type::generic:
                     {
                         assign(other.m_generic, w);
@@ -293,6 +301,7 @@ namespace cmsl
                     case which_type::int_: return get_int() == rhs.get_int();
                     case which_type::double_:  return get_double() == rhs.get_double();
                     case which_type::string: return get_string_cref() == rhs.get_string_cref();
+                    case which_type::version: return get_version_cref() == rhs.get_version_cref();
                     case which_type::generic: return get_generic_cref() == rhs.get_generic_cref();
                 }
             }
