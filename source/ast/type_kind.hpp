@@ -6,6 +6,7 @@ namespace cmsl
 {
     namespace ast
     {
+        // Todo: Move to sema namespace
         enum class type_kind
         {
             k_void,

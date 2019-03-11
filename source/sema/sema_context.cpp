@@ -1,5 +1,7 @@
 #include "sema/sema_context.hpp"
 #include "sema/sema_function.hpp"
+
+#include "ast/type_name_reference.hpp"
 #include "sema_context.hpp"
 
 
@@ -7,7 +9,6 @@ namespace cmsl
 {
     namespace sema
     {
-
         sema_context::sema_context(const sema_context_interface* parent, context_type context_type)
             : m_parent{ parent }
             , m_context_type{ context_type }
@@ -23,7 +24,7 @@ namespace cmsl
             m_types.emplace_back(&type);
         }
 
-        const sema_type* sema_context::find_type(cmsl::string_view name) const
+        const sema_type* sema_context::find_type(const ast::type_name_reference& name) const
         {
             if(auto found = find_type_in_this_scope(name))
             {
@@ -33,11 +34,11 @@ namespace cmsl
             return m_parent ? m_parent->find_type(name) : nullptr;
         }
 
-        const sema_type* sema_context::find_type_in_this_scope(cmsl::string_view name) const
+        const sema_type* sema_context::find_type_in_this_scope(const ast::type_name_reference& name) const
         {
-            const auto pred = [name](const auto& type)
+            const auto pred = [&name](const auto& type)
             {
-                return name == type->name().to_string();
+                return name == type->name();
             };
 
             const auto found = std::find_if(std::cbegin(m_types), std::cend(m_types), pred);
@@ -45,7 +46,7 @@ namespace cmsl
             return found != std::cend(m_types) ? *found : nullptr;
         }
 
-        function_lookup_result_t sema_context::find_function(cmsl::string_view name) const
+        function_lookup_result_t sema_context::find_function(const lexer::token::token& name) const
         {
             function_lookup_result_t result;
 
@@ -60,14 +61,14 @@ namespace cmsl
             return result;
         }
 
-        single_scope_function_lookup_result_t sema_context::find_function_in_this_scope(cmsl::string_view name) const
+        single_scope_function_lookup_result_t sema_context::find_function_in_this_scope(const lexer::token::token& name) const
         {
             single_scope_function_lookup_result_t result;
 
             // Collect functions.
             const auto pred = [name](const auto& function)
             {
-                return name == function->signature().name.str();
+                return name.str() == function->signature().name.str();
             };
             std::copy_if(std::cbegin(m_functions), std::cend(m_functions),
                          std::back_inserter(result),
@@ -75,7 +76,7 @@ namespace cmsl
 
             // Collect constructors.
             // Todo: test ctors collecting.
-            if(auto ty = find_type_in_this_scope(name))
+            if(auto ty = find_type_in_this_scope(ast::type_name_reference{ name }))
             {
                 const auto& type_ctx = ty->context();
                 const auto constructors = type_ctx.find_function_in_this_scope(name);

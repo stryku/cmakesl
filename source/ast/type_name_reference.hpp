@@ -33,6 +33,16 @@ namespace cmsl
                 const auto b = tokens.front().str().data();
                 return cmsl::string_view{ b, static_cast<size_t>(end_token.str().cend() - b)};
             }
+
+            bool operator==(const type_name_reference& rhs) const
+            {
+                return tokens == rhs.tokens;
+            }
+
+            bool operator!=(const type_name_reference& rhs) const
+            {
+                return !(*this == rhs);
+            }
         };
     }
 }
