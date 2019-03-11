@@ -44,6 +44,12 @@ namespace cmsl
                         ASSERT_THAT(variant.which(), Eq(which_t::string));
                         EXPECT_THAT(variant.get_string_cref(), Eq("42"));
                     }
+                    {
+                        const auto test_version = version_value{ 1u, 2u, 3u, 4u };
+                        instance_value_variant variant{ test_version };
+                        ASSERT_THAT(variant.which(), Eq(which_t::version));
+                        EXPECT_THAT(variant.get_version_cref(), Eq(test_version));
+                    }
                 }
 
                 TEST(InstanceValueVariantTest, Copyable)
@@ -69,6 +75,11 @@ namespace cmsl
                     v3 = std::move(v2);
                     ASSERT_THAT(v3.which(), Eq(which_t::string));
                     EXPECT_THAT(v3.get_string_cref(), Eq("42"));
+
+                    instance_value_variant v4{ version_value{ 1u } };
+                    v4 = std::move(v2);
+                    ASSERT_THAT(v3.which(), Eq(which_t::string));
+                    EXPECT_THAT(v3.get_string_cref(), Eq("42"));
                 }
 
                 TEST(InstanceValueVariantTest, SetValue)
@@ -90,6 +101,11 @@ namespace cmsl
                     variant.set_string("42");
                     ASSERT_THAT(variant.which(), Eq(which_t::string));
                     EXPECT_THAT(variant.get_string_cref(), Eq("42"));
+
+                    const auto test_version = version_value{ 1u, 2u, 3u, 4u };
+                    variant.set_version(test_version);
+                    ASSERT_THAT(variant.which(), Eq(which_t::version));
+                    EXPECT_THAT(variant.get_version_cref(), Eq(test_version));
                 }
             }
         }

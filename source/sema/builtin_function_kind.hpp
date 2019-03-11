@@ -87,7 +87,23 @@ namespace cmsl
             string_lower,
             string_make_lower,
             string_upper,
-            string_make_upper
+            string_make_upper,
+
+            version_ctor_major,
+            version_ctor_major_minor,
+            version_ctor_major_minor_patch,
+            version_ctor_major_minor_patch_tweak,
+            version_operator_equal_equal,
+            version_operator_not_equal,
+            version_operator_less,
+            version_operator_less_equal,
+            version_operator_greater,
+            version_operator_greater_equal,
+            version_major,
+            version_minor,
+            version_patch,
+            version_tweak,
+            version_to_string
 
         };
     }

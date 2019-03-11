@@ -44,11 +44,13 @@ namespace cmsl
             auto int_manipulator = add_int_type();
             auto double_manipulator = add_double_type();
             auto string_manipulator = add_string_type();
+            auto version_manipulator = add_version_type();
 
             add_bool_member_functions(bool_manipulator);
             add_int_member_functions(int_manipulator);
             add_double_member_functions(double_manipulator);
             add_string_member_functions(string_manipulator);
+            add_version_member_functions(version_manipulator);
         }
 
         void builtin_sema_context::add_functions()
@@ -611,6 +613,118 @@ namespace cmsl
                             builtin_function_kind::string_make_upper
                     }
 
+            };
+
+            add_type_member_functions(string_manipulator, functions);
+        }
+
+        type_builder builtin_sema_context::add_version_type()
+        {
+            const auto token = make_token(token_type_t::kw_version, "version");
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            builder.build_and_register_in_context();
+            return builder;
+        }
+
+        void builtin_sema_context::add_version_member_functions(type_builder &string_manipulator)
+        {
+            const auto& version_type = *find_type("version");
+            const auto& int_type = *find_type("int");
+            const auto& bool_type = *find_type("bool");
+            const auto& string_type = *find_type("string");
+
+            const auto functions = {
+                    builtin_function_info{ // version(int major)
+                            version_type,
+                            function_signature{ make_id_token("version"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::version_ctor_major
+                    },
+                    builtin_function_info{ // version(int major, int minor)
+                            version_type,
+                            function_signature{ make_id_token("version"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") }} },
+                            builtin_function_kind::version_ctor_major_minor
+                    },
+                    builtin_function_info{ // version(int major, int minor, int patch)
+                            version_type,
+                            function_signature{ make_id_token("version"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::version_ctor_major_minor_patch
+                    },
+                    builtin_function_info{ // version(int major, int minor, int patch, int tweak)
+                            version_type,
+                            function_signature{ make_id_token("version"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") }} },
+                            builtin_function_kind::version_ctor_major_minor_patch_tweak
+                    },
+                    builtin_function_info{ // bool operator==(version)
+                            bool_type,
+                            function_signature{ make_id_token("=="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::version_operator_equal_equal
+                    },
+                    builtin_function_info{ // bool operator!=(version)
+                            bool_type,
+                            function_signature{ make_id_token("!="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::version_operator_not_equal
+                    },
+                    builtin_function_info{ // bool operator<(version)
+                            bool_type,
+                            function_signature{ make_id_token("<"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::version_operator_less
+                    },
+                    builtin_function_info{ // bool operator<=(version)
+                            bool_type,
+                            function_signature{ make_id_token("<="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::version_operator_less_equal
+                    },
+                    builtin_function_info{ // bool operator>(version)
+                            bool_type,
+                            function_signature{ make_id_token(">"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::version_operator_greater
+                    },
+                    builtin_function_info{ // bool operator>=(version)
+                            bool_type,
+                            function_signature{ make_id_token(">="),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::version_operator_greater_equal
+                    },
+                    builtin_function_info{ // int major()
+                            int_type,
+                            function_signature{ make_id_token("major"), {} },
+                            builtin_function_kind::version_major
+                    },
+                    builtin_function_info{ // int minor()
+                            int_type,
+                            function_signature{ make_id_token("minor"), {} },
+                            builtin_function_kind::version_minor
+                    },
+                    builtin_function_info{ // int patch()
+                            int_type,
+                            function_signature{ make_id_token("patch"), {} },
+                            builtin_function_kind::version_patch
+                    },
+                    builtin_function_info{ // int tweak()
+                            int_type,
+                            function_signature{ make_id_token("tweak"), {} },
+                            builtin_function_kind::version_tweak
+                    },
+                    builtin_function_info{ // string to_string()
+                            string_type,
+                            function_signature{ make_id_token("to_string"), {} },
+                            builtin_function_kind::version_to_string
+                    }
             };
 
             add_type_member_functions(string_manipulator, functions);

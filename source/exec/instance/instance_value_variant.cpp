@@ -45,6 +45,10 @@ namespace cmsl
                     {
                         reassign(std::move(moved.m_value.m_string), which_type::string);
                     }break;
+                    case which_type::version:
+                    {
+                        reassign(std::move(moved.m_value.m_version), which_type::version);
+                    }break;
                     case which_type::generic:
                     {
                         reassign(std::move(moved.m_value.m_generic), which_type::generic);
@@ -94,6 +98,11 @@ namespace cmsl
             instance_value_variant::instance_value_variant(std::string val)
             {
                 assign(std::move(val), which_type::string);
+            }
+
+            instance_value_variant::instance_value_variant(version_value val)
+            {
+                assign(std::move(val), which_type::version);
             }
 
             instance_value_variant::instance_value_variant(generic_instance_value val)
@@ -198,6 +207,10 @@ namespace cmsl
                     {
                         assign(other.m_string, w);
                     }break;
+                    case which_type::version:
+                    {
+                        assign(other.m_version, w);
+                    }break;
                     case which_type::generic:
                     {
                         assign(other.m_generic, w);
@@ -232,6 +245,11 @@ namespace cmsl
                 construct(m_value.m_string, std::move(value));
             }
 
+            void instance_value_variant::construct(version_value value)
+            {
+                construct(m_value.m_version, std::move(value));
+            }
+
             void instance_value_variant::construct(generic_instance_value value)
             {
                 construct(m_value.m_generic, std::move(value));
@@ -250,7 +268,8 @@ namespace cmsl
                     case which_type::bool_:
                     case which_type::int_:
                     case which_type::double_:
-                        // Primitives, do nothing.
+                    case which_type::version:
+                        // Trivially destructible. Do nothing.
                         break;
                     case which_type::string:
                     {
@@ -282,6 +301,7 @@ namespace cmsl
                     case which_type::int_: return get_int() == rhs.get_int();
                     case which_type::double_:  return get_double() == rhs.get_double();
                     case which_type::string: return get_string_cref() == rhs.get_string_cref();
+                    case which_type::version: return get_version_cref() == rhs.get_version_cref();
                     case which_type::generic: return get_generic_cref() == rhs.get_generic_cref();
                 }
             }
@@ -291,7 +311,20 @@ namespace cmsl
                 return !(*this == rhs);
             }
 
+            const version_value &instance_value_variant::get_version_cref() const
+            {
+                return m_value.m_version;
+            }
 
+            version_value &instance_value_variant::get_version_ref()
+            {
+                return m_value.m_version;
+            }
+
+            void instance_value_variant::set_version(version_value value)
+            {
+                reassign(std::move(value), which_type::version);
+            }
         }
     }
 }
