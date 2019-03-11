@@ -12,13 +12,13 @@ namespace cmsl
                                    sema_function_factory &function_factory,
                                    sema_context_factory &context_factory,
                                    sema_context_interface &current_ctx,
-                                   lexer::token::token name)
+                                   ast::type_name_reference name)
                 : m_type_factory{ type_factory }
                 , m_function_factory{ function_factory }
                 , m_context_factory{ context_factory }
                 , m_current_ctx{ current_ctx }
                 , m_type_ctx{ m_context_factory.create_class(&current_ctx) }
-                , m_name{ name }
+                , m_name{ std::move(name) }
         {}
 
         type_builder &type_builder::with_member(const member_info &member)

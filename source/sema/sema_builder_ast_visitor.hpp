@@ -101,7 +101,7 @@ namespace cmsl
 
                 // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
                 // Todo: ast shouldn't store ast ctx somewhere else?
-                auto& class_type = m_type_factory.create(class_context, name, std::move(members->info));
+                auto& class_type = m_type_factory.create(class_context, { { name }, name }, std::move(members->info));
 //                auto created_class_type = std::make_unique<sema_type>(class_context, name, std::move(members->info));
 //                auto class_type = created_class_type.get();
 
@@ -192,7 +192,7 @@ namespace cmsl
                 if(operator_function.empty())
                 {
                     // Todo: lhs's type doesn't support such operator
-                    raise_error(op, lhs->type().name().str().to_string() + " doesn't support operator " + op.str().to_string());
+                    raise_error(op, lhs->type().name().to_string().to_string() + " doesn't support operator " + op.str().to_string());
                     return;
                 }
 
@@ -231,7 +231,7 @@ namespace cmsl
                 if(!member_info)
                 {
                     // Todo: type does not have such member.
-                    raise_error(member_name, lhs_type.name().str().to_string() + " does not have member " + member_name.str().to_string());
+                    raise_error(member_name, lhs_type.name().to_string().to_string() + " does not have member " + member_name.str().to_string());
                     return;
                 }
 
@@ -263,7 +263,7 @@ namespace cmsl
                     } break;
                     case sema_context_interface::context_type::class_:
                     {
-                        const auto is_constructor = chosen_function->signature().name.str() == chosen_function->return_type().name().str();
+                        const auto is_constructor = chosen_function->signature().name.str() == chosen_function->return_type().name().to_string();
                         if(is_constructor)
                         {
                             m_result_node = std::make_unique<constructor_call_node>(chosen_function->return_type(),
@@ -470,7 +470,7 @@ namespace cmsl
                     {
                         // Todo: Init does not have same type as declared.
                         // Todo: introduce auto
-                        raise_error(initialization->type().name(), "Initialization and declared variable type does not match");
+                        raise_error(initialization->type().name().tokens.front(), "Initialization and declared variable type does not match");
                         return;
                     }
                 }

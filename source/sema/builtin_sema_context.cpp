@@ -72,7 +72,7 @@ namespace cmsl
         type_builder builtin_sema_context::add_bool_type()
         {
             const auto token = make_token(token_type_t::kw_bool, "bool");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, { { token }, token } };
             builder.build_and_register_in_context();
             return builder;
         }
@@ -137,7 +137,7 @@ namespace cmsl
         type_builder builtin_sema_context::add_int_type()
         {
             const auto token = make_token(token_type_t::kw_int, "int");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, { { token }, token } };
             builder.build_and_register_in_context();
             return builder;
         }
@@ -268,7 +268,7 @@ namespace cmsl
         type_builder builtin_sema_context::add_double_type()
         {
             const auto token = make_token(token_type_t::kw_double, "double");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, { { token }, token } };
             builder.build_and_register_in_context();
             return builder;
         }
@@ -387,7 +387,7 @@ namespace cmsl
         type_builder builtin_sema_context::add_string_type()
         {
             const auto token = make_token(token_type_t::kw_string, "string");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, { { token }, token } };
             builder.build_and_register_in_context();
             return builder;
         }
@@ -621,7 +621,7 @@ namespace cmsl
         type_builder builtin_sema_context::add_version_type()
         {
             const auto token = make_token(token_type_t::kw_version, "version");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, { { token }, token } };
             builder.build_and_register_in_context();
             return builder;
         }

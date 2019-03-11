@@ -64,7 +64,7 @@ namespace cmsl
                 }
                 else
                 {
-                    const auto name = m_sema_type->name().str();
+                    const auto name = m_sema_type->name().to_string();
                     // Todo: find better way than comparing strings.
                     if(name == "bool")
                     {

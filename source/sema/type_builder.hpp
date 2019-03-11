@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ast/type_name_reference.hpp"
+
 #include "sema/function_signature.hpp"
 
 namespace cmsl
@@ -22,13 +24,7 @@ namespace cmsl
                                   sema_function_factory& function_factory,
                                   sema_context_factory& context_factory,
                                   sema_context_interface& parent_ctx,
-                                  lexer::token::token name);
-            explicit type_builder(sema_type_factory& type_factory,
-                                  sema_function_factory& function_factory,
-                                  sema_context_factory& context_factory,
-                                  sema_context_interface &current_context,
-                                  sema_context_interface& parent_ctx,
-                                  lexer::token::token name);
+                                  ast::type_name_reference name);
 
             type_builder& with_member(const member_info& member);
             type_builder& with_user_function(const sema_type& return_type, function_signature s);
@@ -44,7 +40,7 @@ namespace cmsl
             sema_context_factory& m_context_factory;
             sema_context_interface& m_current_ctx;
             sema_context_interface& m_type_ctx;
-            lexer::token::token m_name;
+            ast::type_name_reference m_name;
             std::vector<member_info> m_members;
         };
     }
