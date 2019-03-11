@@ -9,7 +9,7 @@ namespace cmsl
         // A structure that holds tokens that represent given type. E.g.:
         // double => tokens vector is: {double}
         // map<int, list<string>> => tokens vector is: {map, int, list, string}
-        struct type_reference
+        struct type_name_reference
         {
             //lexer::token::token begin;
             //lexer::token::token end;
