@@ -28,7 +28,7 @@ namespace cmsl
                 bool is_ctor(cmsl::string_view name) const override;
                 const ast::function* get_function(cmsl::string_view name) const override;
                 const ast::type& get_type() const override;
-                sema::single_scope_function_lookup_result_t get_sema_function(cmsl::string_view name) const override;
+                sema::single_scope_function_lookup_result_t get_sema_function(lexer::token::token name) const override;
                 const sema::sema_type& get_sema_type() const override;
 
             private:

@@ -79,7 +79,7 @@ namespace cmsl
             void visit(const ast::class_node2& node) override
             {
                 const auto name = node.get_name();
-                if(const auto found_type = m_ctx.find_type_in_this_scope(name.str()))
+                if(const auto found_type = m_ctx.find_type_in_this_scope(name))
                 {
                     // Todo: type redefinition
                     raise_error(name, "Type redefinition");
@@ -188,7 +188,7 @@ namespace cmsl
 
                 // Todo: handle operators like ++ and ++(int)
                 const auto op = node.get_operator();
-                auto operator_function = lhs->type().find_member_function(op.str());
+                auto operator_function = lhs->type().find_member_function(op);
                 if(operator_function.empty())
                 {
                     // Todo: lhs's type doesn't support such operator
@@ -240,7 +240,7 @@ namespace cmsl
 
             void visit(const ast::function_call_node& node) override
             {
-                const auto function_lookup_result = m_ctx.find_function(node.get_name().str());
+                const auto function_lookup_result = m_ctx.find_function(node.get_name());
 
                 auto params = get_function_call_params(node.get_param_nodes());
                 if(!params)
@@ -297,7 +297,7 @@ namespace cmsl
                     return;
                 }
 
-                const auto member_functions = lhs->type().find_member_function(name.str());
+                const auto member_functions = lhs->type().find_member_function(name);
                 overload_resolution over_resolution{ m_errors_observer, node.get_name() };
                 const auto chosen_function = over_resolution.choose(member_functions, *params);
                 if(!chosen_function)
@@ -310,14 +310,18 @@ namespace cmsl
 
             void visit(const ast::bool_value_node& node) override
             {
-                const auto& type = *m_ctx.find_type("bool");
+                // Todo: figure out better way to find builtin types
+                static const auto name_token = make_token(lexer::token::token_type::kw_bool, "bool");
+                const auto& type = *m_ctx.find_type(name_token);
                 const auto value = node.get_token().str() == "true";
                 m_result_node = std::make_unique<bool_value_node>(type, value);
             }
 
             void visit(const ast::int_value_node& node) override
             {
-                const auto& type = *m_ctx.find_type("int");
+                // Todo: figure out better way to find builtin types
+                static const auto name_token = make_token(lexer::token::token_type::kw_int, "int");
+                const auto& type = *m_ctx.find_type(name_token);
                 const auto token = node.get_token();
                 char* end;
                 const auto value = std::strtol(token.str().data(), &end, 10); // todo: handle hex etc
@@ -326,7 +330,9 @@ namespace cmsl
 
             void visit(const ast::double_value_node& node) override
             {
-                const auto& type = *m_ctx.find_type("double");
+                // Todo: figure out better way to find builtin types
+                static const auto name_token = make_token(lexer::token::token_type::kw_double, "double");
+                const auto& type = *m_ctx.find_type(name_token);
                 const auto token = node.get_token();
                 char* end;
                 const auto value = std::strtod(token.str().data(), &end); // todo: handle hex etc
@@ -335,7 +341,9 @@ namespace cmsl
 
             void visit(const ast::string_value_node& node) override
             {
-                const auto& type = *m_ctx.find_type("string");
+                // Todo: figure out better way to find builtin types
+                static const auto name_token = make_token(lexer::token::token_type::kw_string, "string");
+                const auto& type = *m_ctx.find_type(name_token);
                 // At this point node contains string value including "". We need to get rid of them.
 
                 const auto node_string = node.get_token().str();
@@ -395,7 +403,7 @@ namespace cmsl
             void visit(const ast::user_function_node2& node) override
             {
                 const auto return_type_reference = node.get_return_type_reference();
-                auto return_type = m_ctx.find_type(return_type_reference.to_string());
+                auto return_type = m_ctx.find_type(return_type_reference);
                 if(!return_type)
                 {
                     // Todo: unknown return type
@@ -411,7 +419,7 @@ namespace cmsl
 
                 for(const auto& param_decl : node.get_param_declarations())
                 {
-                    auto param_type = m_ctx.find_type(param_decl.ty.to_string());
+                    auto param_type = m_ctx.find_type(param_decl.ty);
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
@@ -447,7 +455,7 @@ namespace cmsl
             void visit(const ast::variable_declaration_node& node) override
             {
                 const auto type_reference = node.get_type_reference();
-                const auto type = m_ctx.find_type(type_reference.to_string());
+                const auto type = m_ctx.find_type(type_reference);
 
                 // Todo: handle generic types
                 if(!type)
@@ -629,7 +637,7 @@ namespace cmsl
                     sema_context& ctx)
             {
                 const auto return_type_reference = node.get_return_type_reference();
-                auto return_type = ctx.find_type(return_type_reference.to_string());
+                auto return_type = ctx.find_type(return_type_reference);
                 if(!return_type)
                 {
                     // Todo: unknown return type
@@ -644,7 +652,7 @@ namespace cmsl
 
                 for(const auto& param_decl : node.get_param_declarations())
                 {
-                    auto param_type = ctx.find_type(param_decl.ty.to_string());
+                    auto param_type = ctx.find_type(param_decl.ty);
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
@@ -700,6 +708,17 @@ namespace cmsl
                 }
 
                 return members;
+            }
+
+            template<unsigned N>
+            lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N])
+            {
+                // N counts also '\0'
+                const auto src_range = source_range{
+                        source_location{ 1u, 1u, 0u },
+                        source_location{ 1u, N, N - 1u }
+                };
+                return lexer::token::token{ token_type, src_range, tok };
             }
 
         private:

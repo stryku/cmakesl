@@ -39,7 +39,7 @@ namespace cmsl
             return *found;
         }
 
-        single_scope_function_lookup_result_t sema_type::find_member_function(cmsl::string_view name) const
+        single_scope_function_lookup_result_t sema_type::find_member_function(token_t name) const
         {
             return m_ctx.find_function_in_this_scope(name);
         }

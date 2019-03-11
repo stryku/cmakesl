@@ -158,7 +158,7 @@ namespace cmsl
                 return get_type().get_name() == name;
             }
 
-            sema::single_scope_function_lookup_result_t complex_unnamed_instance::get_sema_function(cmsl::string_view name) const
+            sema::single_scope_function_lookup_result_t complex_unnamed_instance::get_sema_function(lexer::token::token name) const
             {
                 return m_sema_type->find_member_function(name);
             }

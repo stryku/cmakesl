@@ -9,6 +9,18 @@
 
 namespace cmsl
 {
+    // Todo: remove
+    template<unsigned N>
+    lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N])
+    {
+        // N counts also '\0'
+        const auto src_range = source_range{
+                source_location{ 1u, 1u, 0u },
+                source_location{ 1u, N, N - 1u }
+        };
+        return lexer::token::token{ token_type, src_range, tok };
+    }
+
     namespace exec
     {
         namespace inst
@@ -155,10 +167,26 @@ namespace cmsl
                     switch(value.which())
                     {
                         // Todo: cache types, don't find it over every time.
-                        case instance_value_variant::which_type::bool_: return *ctx.find_type("bool");
-                        case instance_value_variant::which_type::int_: return *ctx.find_type("bool");
-                        case instance_value_variant::which_type::double_: return *ctx.find_type("bool");
-                        case instance_value_variant::which_type::string: return *ctx.find_type("bool");
+                        case instance_value_variant::which_type::bool_:
+                        {
+                            static const auto token = make_token(lexer::token::token_type::kw_bool, "bool");
+                            return *ctx.find_type(token);
+                        }
+                        case instance_value_variant::which_type::int_:
+                        {
+                            static const auto token = make_token(lexer::token::token_type::kw_int, "int");
+                            return *ctx.find_type(token);
+                        }
+                        case instance_value_variant::which_type::double_:
+                        {
+                            static const auto token = make_token(lexer::token::token_type::kw_double, "double");
+                            return *ctx.find_type(token);
+                        }
+                        case instance_value_variant::which_type::string:
+                        {
+                            static const auto token = make_token(lexer::token::token_type::kw_string, "string");
+                            return *ctx.find_type(token);
+                        }
                         default:
                             CMSL_UNREACHABLE("Unknown type requested");
                     }
