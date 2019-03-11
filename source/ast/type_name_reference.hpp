@@ -9,8 +9,18 @@ namespace cmsl
         // A structure that holds tokens that represent given type. E.g.:
         // double => tokens vector is: {double}
         // map<int, list<string>> => tokens vector is: {map, int, list, string}
+        // Todo: move to sema namespace
         struct type_name_reference
         {
+            type_name_reference() = default;
+            type_name_reference(lexer::token::token token)
+                : tokens{ 1, token }
+                , end_token{ token }
+            {}
+            type_name_reference(std::vector<lexer::token::token> tokens, lexer::token::token end_token)
+                : tokens{ std::move(tokens) }
+                , end_token{ end_token }
+            {}
             //lexer::token::token begin;
             //lexer::token::token end;
             std::vector<lexer::token::token> tokens;

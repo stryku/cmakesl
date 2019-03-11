@@ -37,7 +37,7 @@ namespace cmsl
         {
             const auto pred = [name](const auto& type)
             {
-                return name == type->name().str();
+                return name == type->name().to_string();
             };
 
             const auto found = std::find_if(std::cbegin(m_types), std::cend(m_types), pred);
