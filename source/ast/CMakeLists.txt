@@ -57,7 +57,7 @@ set(AST_SOURCES
     generic_type_factory.cpp
     builtin_function_kind.hpp
     variable_declaration_node.hpp
-    type_reference.hpp
+        type_name_reference.hpp
         infix_nodes.hpp translation_unit_node.hpp ast_node_visitor.hpp)
 
 add_library(ast ${AST_SOURCES})
