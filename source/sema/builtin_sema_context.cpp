@@ -620,7 +620,7 @@ namespace cmsl
 
         type_builder builtin_sema_context::add_version_type()
         {
-            const auto token = make_token(token_type_t::kw_string, "version");
+            const auto token = make_token(token_type_t::kw_version, "version");
             type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
             builder.build_and_register_in_context();
             return builder;

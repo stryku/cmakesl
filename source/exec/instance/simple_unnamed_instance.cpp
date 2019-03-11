@@ -53,6 +53,8 @@ namespace cmsl
                             return double{};
                         case ast::type_kind::k_string:
                             return std::string{};
+                        case ast::type_kind::k_version:
+                            return version_value{ 0u };
                         case ast::type_kind::k_list:
                             return get_init_list_data();
 
@@ -80,6 +82,12 @@ namespace cmsl
                     {
                         return std::string{};
                     }
+                    else if(name == "version")
+                    {
+                        return version_value{ 0u };
+                    }
+
+                    CMSL_UNREACHABLE("Unknown type");
                 }
             }
 
