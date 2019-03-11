@@ -1037,7 +1037,7 @@ namespace cmsl
             const auto major = params[0]->get_value_cref().get_int();
             const auto minor = params[1]->get_value_cref().get_int();
             const auto patch = params[2]->get_value_cref().get_int();
-            const auto tweak = params[2]->get_value_cref().get_int();
+            const auto tweak = params[3]->get_value_cref().get_int();
             instance.get_value_ref().set_version(inst::version_value{ major, minor, patch, tweak });
             return &instance;
         }
