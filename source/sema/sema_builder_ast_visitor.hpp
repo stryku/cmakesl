@@ -399,7 +399,7 @@ namespace cmsl
                 if(!return_type)
                 {
                     // Todo: unknown return type
-                    raise_error(return_type_reference.begin, "Unknown return type");
+                    raise_error(return_type_reference.tokens.front(), "Unknown return type");
                     return;
                 }
 
@@ -415,7 +415,7 @@ namespace cmsl
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
-                        raise_error(param_decl.ty.begin, "Unknown parameter type");
+                        raise_error(param_decl.ty.tokens.front(), "Unknown parameter type");
                         return;
                     }
 
@@ -453,7 +453,7 @@ namespace cmsl
                 if(!type)
                 {
                     // Todo: type not found
-                    raise_error(type_reference.begin, "Unknown variable type");
+                    raise_error(type_reference.tokens.front(), "Unknown variable type");
                     return;
                 }
 
@@ -633,7 +633,7 @@ namespace cmsl
                 if(!return_type)
                 {
                     // Todo: unknown return type
-                    raise_error(return_type_reference.begin, return_type_reference.to_string().to_string() + " unknown return type");
+                    raise_error(return_type_reference.tokens.front(), return_type_reference.to_string().to_string() + " unknown return type");
                     return {};
                 }
 
@@ -648,7 +648,7 @@ namespace cmsl
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
-                        raise_error(param_decl.ty.begin, param_decl.ty.to_string().to_string() + " unknown parameter type");
+                        raise_error(param_decl.ty.tokens.front(), param_decl.ty.to_string().to_string() + " unknown parameter type");
                         return {};
                     }
 

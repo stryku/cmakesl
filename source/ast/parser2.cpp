@@ -87,7 +87,7 @@ namespace cmsl
             }
 
             // Let's pretend that ctors return something.
-            const auto return_type_reference = type_reference{class_name, class_name};
+            const auto return_type_reference = type_reference{ {class_name}, class_name };
             return std::make_unique<user_function_node2>(return_type_reference,
                                                         *type_name,
                                                         std::move(*parameters),
@@ -575,7 +575,7 @@ namespace cmsl
                 return {};
             }
 
-            return type_reference{type_token, type_token};
+            return type_reference{ { type_token }, type_token };
         }
 
         boost::optional<type_reference> parser2::generic_type()
@@ -612,7 +612,13 @@ namespace cmsl
                 return {};
             }
 
-            return type_reference{name_token, closing_greater_token};
+            type_reference reference;
+            reference.tokens.emplace_back(name_token);
+            reference.tokens.insert(std::end(reference.tokens),
+                                    std::cbegin(value_type->tokens), std::cend(value_type->tokens));
+            reference.end_token = closing_greater_token;
+
+            return reference;
         }
 
         bool parser2::generic_type_starts() const
