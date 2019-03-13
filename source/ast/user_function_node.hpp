@@ -48,17 +48,17 @@ namespace cmsl
         public:
             using params_t = std::vector<param_declaration>;
 
-            user_function_node2(type_name_reference return_type,
+            user_function_node2(lexer::token::token_container_t return_type,
                                 lexer::token::token name,
                                 params_t params,
                                 std::unique_ptr<block_node> body)
-                    : m_return_type{ return_type }
+                    : m_return_type{ std::move(return_type) }
                     , m_name{ name }
                     , m_params{ std::move(params) }
                     , m_body{ std::move(body) }
             {}
 
-            type_name_reference get_return_type_reference() const
+            lexer::token::token_container_t get_return_type_reference() const
             {
                 return m_return_type;
             }
@@ -84,7 +84,7 @@ namespace cmsl
             }
 
         private:
-            type_name_reference m_return_type;
+            lexer::token::token_container_t m_return_type;
             lexer::token::token m_name;
             params_t m_params;
             std::unique_ptr<block_node> m_body;
