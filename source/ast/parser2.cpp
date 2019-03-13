@@ -530,7 +530,7 @@ namespace cmsl
             {
                 // Constructor call.
                 // Todo: handle generic types
-                const auto simple_type_token = eat_simple_type();
+                const auto simple_type_token = eat_simple_type_token();
                 if(!simple_type_token)
                 {
                     return {};
@@ -548,7 +548,7 @@ namespace cmsl
             return token_container_t{ *fun_name_token };
         }
 
-        boost::optional<parser2::token_t> parser2::eat_simple_type()
+        boost::optional<parser2::token_t> parser2::eat_simple_type_token()
         {
             const auto token_type = curr_type();
 
@@ -580,7 +580,7 @@ namespace cmsl
 
         boost::optional<parser2::token_container_t> parser2::simple_type()
         {
-            const auto type_token = eat_simple_type();
+            const auto type_token = eat_simple_type_token();
 
             if (!type_token)
             {
@@ -592,7 +592,7 @@ namespace cmsl
 
         boost::optional<parser2::token_container_t> parser2::generic_type()
         {
-            const auto name_token = eat_generic_type();
+            const auto name_token = eat_generic_type_token();
             if(!name_token)
             {
                 return {};
@@ -655,7 +655,7 @@ namespace cmsl
             return cmsl::contains(generic_types, curr_type());
         }
 
-        boost::optional<parser2::token_t> parser2::eat_generic_type()
+        boost::optional<parser2::token_t> parser2::eat_generic_type_token()
         {
             if(!current_is_generic_type())
             {

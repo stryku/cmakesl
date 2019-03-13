@@ -101,7 +101,7 @@ namespace cmsl
 
                 // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
                 // Todo: ast shouldn't store ast ctx somewhere else?
-                auto& class_type = m_type_factory.create(class_context, { { name }, name }, std::move(members->info));
+                auto& class_type = m_type_factory.create(class_context, name, std::move(members->info));
 //                auto created_class_type = std::make_unique<sema_type>(class_context, name, std::move(members->info));
 //                auto class_type = created_class_type.get();
 
