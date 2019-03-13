@@ -44,13 +44,14 @@ namespace cmsl
             std::unique_ptr<ast_node> get_if_else_node();
             std::unique_ptr<ast_node> get_while_node();
             std::unique_ptr<ast_node> get_return_node();
-            boost::optional<type_name_reference> type();
+            boost::optional<token_container_t> type();
             std::unique_ptr<block_node> block();
 
         private:
             struct function_call_values
             {
-                token_t name;
+                // Name can possibly be multiple tokens when it's a generic type constructor call.
+                token_container_t name;
                 std::vector<std::unique_ptr<ast_node>> params;
             };
 
@@ -63,11 +64,12 @@ namespace cmsl
             boost::optional<token_t> eat(boost::optional<token_type_t> type = {});
             boost::optional<token_t> eat_generic_type();
             boost::optional<token_t> eat_simple_type();
-            boost::optional<token_t> eat_function_call_name();
+            // Can possibly return multiple tokens when it's a generic type constructor call.
+            boost::optional<token_container_t> eat_function_call_name();
 
 
-            boost::optional<type_name_reference> generic_type();
-            boost::optional<type_name_reference> simple_type();
+            boost::optional<token_container_t> generic_type();
+            boost::optional<token_container_t> simple_type();
             bool generic_type_starts() const;
 
             token_type_t curr_type() const;

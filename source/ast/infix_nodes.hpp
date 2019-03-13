@@ -77,12 +77,12 @@ namespace cmsl
         public:
             using params_t = std::vector<std::unique_ptr<ast_node>>;
 
-            explicit call_node(lexer::token::token name, params_t parameter_nodes)
-                : m_name{ name }
+            explicit call_node(lexer::token::token_container_t name, params_t parameter_nodes)
+                : m_name{ std::move(name) }
                 , m_parameter_nodes{ std::move(parameter_nodes) }
             {}
 
-            lexer::token::token get_name() const
+            lexer::token::token_container_t get_name() const
             {
                 return m_name;
             }
@@ -93,14 +93,14 @@ namespace cmsl
             }
 
         private:
-            lexer::token::token m_name;
+            lexer::token::token_container_t m_name;
             params_t m_parameter_nodes;
         };
 
         class function_call_node : public call_node
         {
         public:
-            explicit function_call_node(lexer::token::token name, params_t params)
+            explicit function_call_node(lexer::token::token_container_t name, params_t params)
                 : call_node{ name, std::move(params) }
             {}
 
@@ -113,7 +113,7 @@ namespace cmsl
         class member_function_call_node : public call_node
         {
         public:
-            explicit member_function_call_node(std::unique_ptr<ast_node> lhs, lexer::token::token name, params_t params)
+            explicit member_function_call_node(std::unique_ptr<ast_node> lhs, lexer::token::token_container_t name, params_t params)
                 : call_node{ name, std::move(params) }
                 , m_lhs{ std::move(lhs) }
             {}
