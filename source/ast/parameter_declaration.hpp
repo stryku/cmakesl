@@ -17,7 +17,7 @@ namespace cmsl
 
         struct param_declaration
         {
-            lexer::token::token_container_t ty;
+            type_name_reference ty;
             lexer::token::token name;
         };
     }

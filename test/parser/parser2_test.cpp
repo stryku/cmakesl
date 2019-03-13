@@ -842,7 +842,7 @@ namespace cmsl
                 {
                     const auto token = token_kw_int();
 
-                    const auto expected_reference = type_name_reference{ { token }, token };
+                    const auto expected_reference = type_name_reference{ token };
 
                     const auto tokens = tokens_container_t{ token };
                     auto parser = parser_t{ dummy_err_observer, tokens };
@@ -850,7 +850,6 @@ namespace cmsl
 
                     ASSERT_TRUE(result_type_reference);
                     EXPECT_THAT(result_type_reference->tokens, Eq(expected_reference.tokens));
-                    EXPECT_THAT(result_type_reference->end_token, Eq(expected_reference.end_token));
                 }
 
                 const auto values = ::testing::Values(token_kw_bool(), token_kw_int(), token_kw_double(), token_kw_string(),
@@ -866,7 +865,10 @@ namespace cmsl
                 const auto int_token = token_from_larger_source(source, token_type_t::kw_int, 5u, 8u);
                 const auto greater_token = token_from_larger_source(source, token_type_t::greater, 8u, 9u);
 
-                const auto expected_reference = type_name_reference{ { list_token, int_token }, greater_token };
+                const auto expected_reference = type_name_reference{ { list_token,
+                                                                       less_token,
+                                                                       int_token,
+                                                                       greater_token } };
 
                 const auto tokens = tokens_container_t{ list_token,
                                                         less_token,
@@ -877,7 +879,6 @@ namespace cmsl
 
                 ASSERT_TRUE(result_type_reference);
                 EXPECT_THAT(result_type_reference->tokens, Eq(expected_reference.tokens));
-                EXPECT_THAT(result_type_reference->end_token, Eq(expected_reference.end_token));
             }
 
             TEST(Parser2Test, Type_NestedGenericType_GetTypeReference)
@@ -891,7 +892,13 @@ namespace cmsl
                 const auto nested_greater_token = token_from_larger_source(source, token_type_t::greater, 13u, 14u);
                 const auto greater_token = token_from_larger_source(source, token_type_t::greater, 14u, 15u);
 
-                const auto expected_reference = type_name_reference{ { list_token, nested_list_token, foo_token }, greater_token };
+                const auto expected_reference = type_name_reference{ { list_token,
+                                                                       less_token,
+                                                                       nested_list_token,
+                                                                       nested_less_token,
+                                                                       foo_token,
+                                                                       nested_greater_token,
+                                                                       greater_token } };
 
                 const auto tokens = tokens_container_t{ list_token,
                                                         less_token,
@@ -905,7 +912,6 @@ namespace cmsl
 
                 ASSERT_TRUE(result_type_reference);
                 EXPECT_THAT(result_type_reference->tokens, Eq(expected_reference.tokens));
-                EXPECT_THAT(result_type_reference->end_token, Eq(expected_reference.end_token));
             }
 
             TEST(Parser2Test, VariableDeclaration_TypeId_GetVariableDeclaration)
@@ -914,7 +920,7 @@ namespace cmsl
                 const auto type_token = token_kw_int();
                 const auto name_token = token_identifier("foo");
 
-                const auto type_ref = type_name_reference{ { type_token }, type_token };
+                const auto type_ref = type_name_reference{ type_token };
 
                 auto expected_ast = std::make_unique<variable_declaration_node>(type_ref, name_token, nullptr);
 
@@ -938,7 +944,10 @@ namespace cmsl
                 const auto greater_token = token_from_larger_source(source, token_type_t::greater, 8u, 9u);
                 const auto name_token = token_identifier("foo");
 
-                const auto type_ref = type_name_reference{ { list_token, int_token }, greater_token };
+                const auto type_ref = type_name_reference{ { list_token,
+                                                             less_token,
+                                                             int_token,
+                                                             greater_token } };
 
                 auto expected_ast = std::make_unique<variable_declaration_node>(type_ref, name_token, nullptr);
 
@@ -962,7 +971,7 @@ namespace cmsl
                 const auto name_token = token_identifier("foo");
                 const auto int_expr_token = token_integer("42");
 
-                const auto type_ref = type_name_reference{ { type_token }, type_token };
+                const auto type_ref = type_name_reference{ type_token };
 
                 auto expr = std::make_unique<int_value_node>(int_expr_token);
                 auto expected_ast = std::make_unique<variable_declaration_node>(type_ref, name_token, std::move(expr));
@@ -990,7 +999,10 @@ namespace cmsl
                 const auto name_token = token_identifier("foo");
                 const auto int_expr_token = token_integer("42");
 
-                const auto type_ref = type_name_reference{ { list_token, int_token }, greater_token };
+                const auto type_ref = type_name_reference{ { list_token,
+                                                             less_token,
+                                                             int_token,
+                                                             greater_token } };
 
                 auto expr = std::make_unique<int_value_node>(int_expr_token);
                 auto expected_ast = std::make_unique<variable_declaration_node>(type_ref, name_token, std::move(expr));
@@ -1029,7 +1041,7 @@ namespace cmsl
                 // { foo bar; }
                 const auto variable_type_token = token_identifier("foo");
                 const auto variable_name_token = token_identifier("bar");
-                const auto variable_type_ref = type_name_reference{ { variable_type_token }, variable_type_token };
+                const auto variable_type_ref = type_name_reference{ variable_type_token };
                 auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, nullptr);
 
                 block_node::expressions_t exprs;
@@ -1218,7 +1230,7 @@ namespace cmsl
                 // double foo() {}
                 const auto function_type_token = token_kw_double();
                 const auto function_name_token = token_identifier("foo");
-                const auto function_type_ref = type_name_reference{ { function_type_token }, function_type_token };
+                const auto function_type_ref = type_name_reference{ function_type_token };
                 auto function_block_node = std::make_unique<block_node>(block_node::expressions_t{});
                 auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
                                                                           function_name_token,
@@ -1243,11 +1255,11 @@ namespace cmsl
                 // double foo(bar baz) {}
                 const auto function_type_token = token_kw_double();
                 const auto function_name_token = token_identifier("foo");
-                const auto function_type_ref = type_name_reference{ { function_type_token }, function_type_token };
+                const auto function_type_ref = type_name_reference{ function_type_token };
 
                 const auto param_type_token = token_identifier("bar");
                 const auto param_name_token = token_identifier("baz");
-                const auto param_type_ref = type_name_reference{ { param_type_token }, param_type_token };
+                const auto param_type_ref = type_name_reference{ param_type_token };
 
                 user_function_node2::params_t params{
                         param_declaration{param_type_ref, param_name_token }
@@ -1281,15 +1293,15 @@ namespace cmsl
                 // double foo(bar baz, qux out_of_fancy_identifiers) {}
                 const auto function_type_token = token_kw_double();
                 const auto function_name_token = token_identifier("foo");
-                const auto function_type_ref = type_name_reference{ { function_type_token }, function_type_token };
+                const auto function_type_ref = type_name_reference{ function_type_token };
 
                 const auto param_type_token = token_identifier("bar");
                 const auto param_name_token = token_identifier("baz");
-                const auto param_type_ref = type_name_reference{ { param_type_token }, param_type_token };
+                const auto param_type_ref = type_name_reference{ param_type_token };
 
                 const auto param2_type_token = token_identifier("qux");
                 const auto param2_name_token = token_identifier("out_of_fancy_identifiers");
-                const auto param2_type_ref = type_name_reference{ { param2_type_token }, param2_type_token };
+                const auto param2_type_ref = type_name_reference{ param2_type_token };
 
                 user_function_node2::params_t params{
                         param_declaration{param_type_ref, param_name_token },
@@ -1349,7 +1361,7 @@ namespace cmsl
                 const auto name_token = token_identifier("foo");
                 const auto variable_type_token = token_kw_int();
                 const auto variable_name_token = token_identifier("bar");
-                const auto variable_type_ref = type_name_reference{ { variable_type_token }, variable_type_token };
+                const auto variable_type_ref = type_name_reference{ variable_type_token };
                 auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, nullptr);
 
                 class_node2::nodes_t nodes;
@@ -1379,7 +1391,7 @@ namespace cmsl
 
                 const auto function_type_token = token_kw_double();
                 const auto function_name_token = token_identifier("bar");
-                const auto function_type_ref = type_name_reference{ { function_type_token }, function_type_token };
+                const auto function_type_ref = type_name_reference{ function_type_token };
                 auto function_block_node = std::make_unique<block_node>(block_node::expressions_t{});
                 auto fun_node = std::make_unique<user_function_node2>(function_type_ref,
                                                                       function_name_token,
@@ -1388,7 +1400,7 @@ namespace cmsl
 
                 const auto variable_type_token = token_identifier("baz");
                 const auto variable_name_token = token_identifier("qux");
-                const auto variable_type_ref = type_name_reference{ { variable_type_token }, variable_type_token };
+                const auto variable_type_ref = type_name_reference{ variable_type_token };
                 auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, nullptr);
 
                 class_node2::nodes_t nodes;

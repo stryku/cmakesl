@@ -512,7 +512,7 @@ namespace cmsl
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization));
         }
 
-        boost::optional<parser2::token_container_t> parser2::type()
+        boost::optional<type_name_reference> parser2::type()
         {
             if(generic_type_starts())
             {
@@ -524,7 +524,7 @@ namespace cmsl
             }
         }
 
-        boost::optional<parser2::token_container_t> parser2::eat_function_call_name()
+        boost::optional<parser2::token_t> parser2::eat_function_call_name()
         {
             if(current_is_type())
             {
@@ -536,7 +536,8 @@ namespace cmsl
                     return {};
                 }
 
-                return token_container_t{ *simple_type_token };
+                // Constructor call always has one token, even for generic type constructor call.
+                return *simple_type_token;
             }
 
             const auto fun_name_token = eat(token_type_t::identifier);
@@ -545,7 +546,7 @@ namespace cmsl
                 return {};
             }
 
-            return token_container_t{ *fun_name_token };
+            return *fun_name_token;
         }
 
         boost::optional<parser2::token_t> parser2::eat_simple_type_token()
@@ -578,7 +579,7 @@ namespace cmsl
             return cmsl::contains(simple_types, token_type);
         }
 
-        boost::optional<parser2::token_container_t> parser2::simple_type()
+        boost::optional<type_name_reference> parser2::simple_type()
         {
             const auto type_token = eat_simple_type_token();
 
@@ -587,10 +588,10 @@ namespace cmsl
                 return {};
             }
 
-            return token_container_t{ *type_token };
+            return type_name_reference{ *type_token };
         }
 
-        boost::optional<parser2::token_container_t> parser2::generic_type()
+        boost::optional<type_name_reference> parser2::generic_type()
         {
             const auto name_token = eat_generic_type_token();
             if(!name_token)
@@ -622,13 +623,14 @@ namespace cmsl
                 return {};
             }
 
-            token_container_t tokens;
-            tokens.emplace_back(*name_token);
-            tokens.emplace_back(*less_token);
-            tokens.insert(std::end(tokens), std::cbegin(*value_type), std::cend(*value_type));
-            tokens.emplace_back(*greater_token);
+            type_name_reference name_reference;
+            name_reference.tokens.emplace_back(*name_token);
+            name_reference.tokens.emplace_back(*less_token);
+            name_reference.tokens.insert(std::end(name_reference.tokens),
+                                         std::cbegin(value_type->tokens), std::cend(value_type->tokens));
+            name_reference.tokens.emplace_back(*greater_token);
 
-            return std::move(tokens);
+            return std::move(name_reference);
         }
 
         bool parser2::generic_type_starts() const

@@ -201,7 +201,7 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
-                const auto type_ref = ast::type_name_reference{ { token_identifier() }, token_identifier() };
+                const auto type_ref = ast::type_name_reference{ token_identifier() };
                 const auto name_token = token_identifier("foo");
 
                 ast::variable_declaration_node variable_node(type_ref, name_token, nullptr);
@@ -229,7 +229,7 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
-                const auto type_ref = ast::type_name_reference{ { token_identifier() }, token_identifier() };
+                const auto type_ref = ast::type_name_reference{ token_identifier() };
                 const auto name_token = token_identifier("foo");
 
                 // Todo: use int alias
@@ -571,7 +571,7 @@ namespace cmsl
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto return_type_token = token_identifier("foo");
-                auto return_type_reference = ast::type_name_reference{ { return_type_token }, return_type_token};
+                auto return_type_reference = ast::type_name_reference{ return_type_token };
                 auto name_token = token_identifier("bar");
                 auto block = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
                 ast::user_function_node2 node{ return_type_reference, name_token, {}, std::move(block) };
@@ -606,10 +606,10 @@ namespace cmsl
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto return_type_token = token_identifier("foo");
-                auto return_type_reference = ast::type_name_reference{ { return_type_token }, return_type_token};
+                auto return_type_reference = ast::type_name_reference{ return_type_token };
                 auto name_token = token_identifier("bar");
                 auto param_type_token = token_identifier("baz");
-                auto param_type_reference = ast::type_name_reference{ { param_type_token }, param_type_token};
+                auto param_type_reference = ast::type_name_reference{ param_type_token };
                 auto param_name_token = token_identifier("baz");
 
                 ast::user_function_node2::params_t params;
@@ -689,7 +689,7 @@ namespace cmsl
                 auto class_name_token = token_identifier("foo");
                 const auto member_name_token = token_identifier("bar");
                 const auto member_type_token = token_kw_int();
-                const auto member_type_reference = ast::type_name_reference{ { member_type_token }, member_type_token };
+                const auto member_type_reference = ast::type_name_reference{ member_type_token };
 
                 auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, nullptr);
                 ast::class_node2::nodes_t nodes;
@@ -735,7 +735,7 @@ namespace cmsl
                 const auto class_name_token = token_identifier("foo");
 
                 const auto function_return_type_token = token_kw_int();
-                const auto function_return_type_reference = ast::type_name_reference{ { function_return_type_token }, function_return_type_token};
+                const auto function_return_type_reference = ast::type_name_reference{ function_return_type_token };
                 const auto function_name_token = token_identifier("bar");
                 auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
                 auto function = std::make_unique<ast::user_function_node2>(function_return_type_reference,
@@ -788,11 +788,11 @@ namespace cmsl
 
                 const auto member_name_token = token_identifier("baz");
                 const auto member_type_token = token_kw_int();
-                const auto member_type_reference = ast::type_name_reference{ { member_type_token }, member_type_token };
+                const auto member_type_reference = ast::type_name_reference{ member_type_token };
                 auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, nullptr);
 
                 const auto function_return_type_token = token_kw_int();
-                const auto function_return_type_reference = ast::type_name_reference{ { function_return_type_token }, function_return_type_token};
+                const auto function_return_type_reference = ast::type_name_reference{ function_return_type_token };
                 const auto function_name_token = token_identifier("bar");
                 auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
                 auto function = std::make_unique<ast::user_function_node2>(function_return_type_reference,
@@ -1085,11 +1085,11 @@ namespace cmsl
 
                 const auto variable_name_token = token_identifier("foo");
                 const auto variable_type_token = token_kw_int();
-                const auto variable_type_reference = ast::type_name_reference{ { variable_type_token }, variable_type_token};
+                const auto variable_type_reference = ast::type_name_reference{ variable_type_token };
                 auto variable_declaration_ast_node = std::make_unique<ast::variable_declaration_node>(variable_type_reference, variable_name_token, nullptr);
 
                 const auto function_return_type_token = token_kw_double();
-                const auto function_return_type_reference = ast::type_name_reference{ { function_return_type_token }, function_return_type_token };
+                const auto function_return_type_reference = ast::type_name_reference{ function_return_type_token };
                 const auto function_name_token = token_identifier("bar");
                 auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
                 auto function_ast_node = std::make_unique<ast::user_function_node2>(function_return_type_reference, function_name_token, ast::user_function_node2::params_t{}, std::move(function_body));
