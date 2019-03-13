@@ -11,13 +11,13 @@ namespace cmsl
         class variable_declaration_node : public ast_node
         {
         public:
-            explicit variable_declaration_node(lexer::token::token_container_t ty, lexer::token::token name, std::unique_ptr<ast_node> initialization)
-                : m_ty{ ty }
+            explicit variable_declaration_node(type_name_reference ty, lexer::token::token name, std::unique_ptr<ast_node> initialization)
+                : m_ty{ std::move(ty) }
                 , m_name{ name }
                 , m_initialization{ std::move(initialization) }
             {}
 
-            lexer::token::token_container_t get_type_reference() const
+            type_name_reference get_type_reference() const
             {
                 return m_ty;
             }
@@ -38,7 +38,7 @@ namespace cmsl
             }
 
         private:
-            lexer::token::token_container_t m_ty;
+            type_name_reference m_ty;
             lexer::token::token m_name;
             std::unique_ptr<ast_node> m_initialization;
         };
