@@ -62,8 +62,8 @@ namespace cmsl
 
             token_type_t peek(size_t n = 1u) const;
             boost::optional<token_t> eat(boost::optional<token_type_t> type = {});
-            boost::optional<token_t> eat_generic_type();
-            boost::optional<token_t> eat_simple_type();
+            boost::optional<token_t> eat_generic_type_token();
+            boost::optional<token_t> eat_simple_type_token();
             // Can possibly return multiple tokens when it's a generic type constructor call.
             boost::optional<token_container_t> eat_function_call_name();
 
