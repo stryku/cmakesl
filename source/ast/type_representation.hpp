@@ -60,6 +60,11 @@ namespace cmsl
                 return !(*this == rhs);
             }
 
+            bool is_generic() const
+            {
+                return !m_nested_types.empty();
+            }
+
         private:
             lexer::token::token_container_t m_tokens;
 
