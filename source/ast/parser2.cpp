@@ -220,7 +220,7 @@ namespace cmsl
 
         bool parser2::declaration_starts() const
         {
-            return current_is_type() && next_is(token_type_t::identifier);
+            return current_is_type() && (next_is(token_type_t::identifier) || current_is_generic_type());
         }
 
         std::unique_ptr<conditional_node> parser2::get_conditional_node()
@@ -573,7 +573,8 @@ namespace cmsl
                     token_type_t::kw_double,
                     token_type_t::kw_bool,
                     token_type_t::kw_string,
-                    token_type_t::kw_version
+                    token_type_t::kw_version,
+                    token_type_t::kw_list
             };
 
             return cmsl::contains(simple_types, token_type);

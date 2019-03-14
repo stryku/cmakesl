@@ -103,7 +103,9 @@ namespace cmsl
             version_minor,
             version_patch,
             version_tweak,
-            version_to_string
+            version_to_string,
+
+            list_ctor
 
         };
     }
