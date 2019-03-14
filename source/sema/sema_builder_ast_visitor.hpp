@@ -31,6 +31,7 @@
 #include "sema/type_builder.hpp"
 #include "sema/overload_resolution.hpp"
 #include "common/assert.hpp"
+#include "sema/builtin_types_finder.hpp"
 
 namespace cmsl
 {
@@ -79,7 +80,8 @@ namespace cmsl
             void visit(const ast::class_node2& node) override
             {
                 const auto name = node.get_name();
-                if(const auto found_type = m_ctx.find_type_in_this_scope(name))
+                const auto class_name_representation = ast::type_representation{ name };
+                if(const auto found_type = m_ctx.find_type_in_this_scope(class_name_representation))
                 {
                     // Todo: type redefinition
                     raise_error(name, "Type redefinition");
@@ -101,7 +103,7 @@ namespace cmsl
 
                 // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
                 // Todo: ast shouldn't store ast ctx somewhere else?
-                auto& class_type = m_type_factory.create(class_context, name, std::move(members->info));
+                auto& class_type = m_type_factory.create(class_context, class_name_representation, std::move(members->info));
 //                auto created_class_type = std::make_unique<sema_type>(class_context, name, std::move(members->info));
 //                auto class_type = created_class_type.get();
 
@@ -192,7 +194,7 @@ namespace cmsl
                 if(operator_function.empty())
                 {
                     // Todo: lhs's type doesn't support such operator
-                    raise_error(op, lhs->type().name().to_string().to_string() + " doesn't support operator " + op.str().to_string());
+                    raise_error(op, lhs->type().name().to_string() + " doesn't support operator " + op.str().to_string());
                     return;
                 }
 
@@ -231,7 +233,7 @@ namespace cmsl
                 if(!member_info)
                 {
                     // Todo: type does not have such member.
-                    raise_error(member_name, lhs_type.name().to_string().to_string() + " does not have member " + member_name.str().to_string());
+                    raise_error(member_name, lhs_type.name().to_string() + " does not have member " + member_name.str().to_string());
                     return;
                 }
 
@@ -310,18 +312,14 @@ namespace cmsl
 
             void visit(const ast::bool_value_node& node) override
             {
-                // Todo: figure out better way to find builtin types
-                static const auto name_token = make_token(lexer::token::token_type::kw_bool, "bool");
-                const auto& type = *m_ctx.find_type(name_token);
+                const auto& type = builtin_types_finder{ m_ctx }.find_bool();
                 const auto value = node.get_token().str() == "true";
                 m_result_node = std::make_unique<bool_value_node>(type, value);
             }
 
             void visit(const ast::int_value_node& node) override
             {
-                // Todo: figure out better way to find builtin types
-                static const auto name_token = make_token(lexer::token::token_type::kw_int, "int");
-                const auto& type = *m_ctx.find_type(name_token);
+                const auto& type = builtin_types_finder{ m_ctx }.find_int();
                 const auto token = node.get_token();
                 char* end;
                 const auto value = std::strtol(token.str().data(), &end, 10); // todo: handle hex etc
@@ -331,8 +329,7 @@ namespace cmsl
             void visit(const ast::double_value_node& node) override
             {
                 // Todo: figure out better way to find builtin types
-                static const auto name_token = make_token(lexer::token::token_type::kw_double, "double");
-                const auto& type = *m_ctx.find_type(name_token);
+                const auto& type = builtin_types_finder{ m_ctx }.find_double();
                 const auto token = node.get_token();
                 char* end;
                 const auto value = std::strtod(token.str().data(), &end); // todo: handle hex etc
@@ -342,8 +339,7 @@ namespace cmsl
             void visit(const ast::string_value_node& node) override
             {
                 // Todo: figure out better way to find builtin types
-                static const auto name_token = make_token(lexer::token::token_type::kw_string, "string");
-                const auto& type = *m_ctx.find_type(name_token);
+                const auto& type = builtin_types_finder{ m_ctx }.find_string();
                 // At this point node contains string value including "". We need to get rid of them.
 
                 const auto node_string = node.get_token().str();
@@ -407,7 +403,7 @@ namespace cmsl
                 if(!return_type)
                 {
                     // Todo: unknown return type
-                    raise_error(return_type_reference.tokens.front(), "Unknown return type");
+                    raise_error(return_type_reference.primary_name(), "Unknown return type");
                     return;
                 }
 
@@ -423,7 +419,7 @@ namespace cmsl
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
-                        raise_error(param_decl.ty.tokens.front(), "Unknown parameter type");
+                        raise_error(param_decl.ty.primary_name(), "Unknown parameter type");
                         return;
                     }
 
@@ -461,7 +457,7 @@ namespace cmsl
                 if(!type)
                 {
                     // Todo: type not found
-                    raise_error(type_reference.tokens.front(), "Unknown variable type");
+                    raise_error(type_reference.primary_name(), "Unknown variable type");
                     return;
                 }
 
@@ -478,7 +474,7 @@ namespace cmsl
                     {
                         // Todo: Init does not have same type as declared.
                         // Todo: introduce auto
-                        raise_error(initialization->type().name().tokens.front(), "Initialization and declared variable type does not match");
+                        raise_error(initialization->type().name().primary_name(), "Initialization and declared variable type does not match");
                         return;
                     }
                 }
@@ -641,7 +637,7 @@ namespace cmsl
                 if(!return_type)
                 {
                     // Todo: unknown return type
-                    raise_error(return_type_reference.tokens.front(), return_type_reference.to_string().to_string() + " unknown return type");
+                    raise_error(return_type_reference.primary_name(), return_type_reference.to_string() + " unknown return type");
                     return {};
                 }
 
@@ -656,7 +652,7 @@ namespace cmsl
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
-                        raise_error(param_decl.ty.tokens.front(), param_decl.ty.to_string().to_string() + " unknown parameter type");
+                        raise_error(param_decl.ty.primary_name(), param_decl.ty.to_string() + " unknown parameter type");
                         return {};
                     }
 

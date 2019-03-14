@@ -5,7 +5,7 @@
 
 #include <memory>
 #include <vector>
-#include <ast/type_name_reference.hpp>
+#include <ast/type_representation.hpp>
 
 namespace cmsl
 {
@@ -47,7 +47,7 @@ namespace cmsl
         class sema_type_factory : public factory<sema_type>
         {
         public:
-            const sema_type& create(const sema_context_interface& ctx, ast::type_name_reference name, std::vector<member_info> members);
+            const sema_type& create(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members);
         };
 
         class sema_context_factory : public factory<sema_context_interface>

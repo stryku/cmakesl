@@ -12,7 +12,7 @@ namespace cmsl
                                    sema_function_factory &function_factory,
                                    sema_context_factory &context_factory,
                                    sema_context_interface &current_ctx,
-                                   ast::type_name_reference name)
+                                   ast::type_representation name)
                 : m_type_factory{ type_factory }
                 , m_function_factory{ function_factory }
                 , m_context_factory{ context_factory }

@@ -42,7 +42,7 @@ namespace cmsl
             using errs_t = errors_observer_and_mock;
 
             const sema_context valid_context;
-            const sema_type valid_type{ valid_context, token_identifier("foo"), {} };
+            const sema_type valid_type{ valid_context, ast::type_representation{ token_identifier("foo") }, {} };
 
             class SemaBuilderAstVisitorTest : public ::testing::Test
             {
@@ -201,7 +201,7 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
-                const auto type_ref = ast::type_name_reference{ token_identifier() };
+                const auto type_ref = ast::type_representation{ token_identifier() };
                 const auto name_token = token_identifier("foo");
 
                 ast::variable_declaration_node variable_node(type_ref, name_token, nullptr);
@@ -229,7 +229,7 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
-                const auto type_ref = ast::type_name_reference{ token_identifier() };
+                const auto type_ref = ast::type_representation{ token_identifier() };
                 const auto name_token = token_identifier("foo");
 
                 // Todo: use int alias
@@ -444,7 +444,7 @@ namespace cmsl
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto lhs_id_token = token_identifier("foo");
-                const sema_type lhs_type{ ctx,  lhs_id_token, {} };
+                const sema_type lhs_type{ ctx,  ast::type_representation{ lhs_id_token }, {} };
                 auto lhs_ast_node = std::make_unique<ast::id_node>(lhs_id_token);
 
                 const auto fun_name_token = token_identifier("bar");
@@ -486,7 +486,7 @@ namespace cmsl
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto lhs_id_token = token_identifier("foo");
-                const sema_type lhs_type{ ctx, lhs_id_token, {} };
+                const sema_type lhs_type{ ctx, ast::type_representation{ lhs_id_token }, {} };
                 auto lhs_ast_node = std::make_unique<ast::id_node>(lhs_id_token);
 
                 const auto param1_id_token = token_identifier("baz");
@@ -571,7 +571,7 @@ namespace cmsl
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto return_type_token = token_identifier("foo");
-                auto return_type_reference = ast::type_name_reference{ return_type_token };
+                auto return_type_reference = ast::type_representation{ return_type_token };
                 auto name_token = token_identifier("bar");
                 auto block = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
                 ast::user_function_node2 node{ return_type_reference, name_token, {}, std::move(block) };
@@ -606,10 +606,10 @@ namespace cmsl
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto return_type_token = token_identifier("foo");
-                auto return_type_reference = ast::type_name_reference{ return_type_token };
+                auto return_type_reference = ast::type_representation{ return_type_token };
                 auto name_token = token_identifier("bar");
                 auto param_type_token = token_identifier("baz");
-                auto param_type_reference = ast::type_name_reference{ param_type_token };
+                auto param_type_reference = ast::type_representation{ param_type_token };
                 auto param_name_token = token_identifier("baz");
 
                 ast::user_function_node2::params_t params;
@@ -656,7 +656,7 @@ namespace cmsl
 
                 ast::class_node2 node{class_name_token, {}};
 
-                const auto class_type_name_ref = ast::type_name_reference{ class_name_token };
+                const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
                         .WillOnce(Return(nullptr));
 
@@ -689,7 +689,7 @@ namespace cmsl
                 auto class_name_token = token_identifier("foo");
                 const auto member_name_token = token_identifier("bar");
                 const auto member_type_token = token_kw_int();
-                const auto member_type_reference = ast::type_name_reference{ member_type_token };
+                const auto member_type_reference = ast::type_representation{ member_type_token };
 
                 auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, nullptr);
                 ast::class_node2::nodes_t nodes;
@@ -697,11 +697,11 @@ namespace cmsl
 
                 ast::class_node2 node{class_name_token, std::move(nodes)};
 
-                const auto class_type_name_ref = ast::type_name_reference{ class_name_token };
+                const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
                         .WillOnce(Return(nullptr));
 
-                const auto member_type_name_ref = ast::type_name_reference{ member_type_token };
+                const auto member_type_name_ref = ast::type_representation{ member_type_token };
                 EXPECT_CALL(ctx, find_type(member_type_name_ref))
                         .WillOnce(Return(&valid_type));
 
@@ -735,7 +735,7 @@ namespace cmsl
                 const auto class_name_token = token_identifier("foo");
 
                 const auto function_return_type_token = token_kw_int();
-                const auto function_return_type_reference = ast::type_name_reference{ function_return_type_token };
+                const auto function_return_type_reference = ast::type_representation{ function_return_type_token };
                 const auto function_name_token = token_identifier("bar");
                 auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
                 auto function = std::make_unique<ast::user_function_node2>(function_return_type_reference,
@@ -747,7 +747,7 @@ namespace cmsl
                 ast::class_node2 node{ class_name_token, std::move(nodes)};
 
                 // Class type lookup
-                const auto class_type_name_ref = ast::type_name_reference{ class_name_token };
+                const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
                         .WillOnce(Return(nullptr));
 
@@ -788,11 +788,11 @@ namespace cmsl
 
                 const auto member_name_token = token_identifier("baz");
                 const auto member_type_token = token_kw_int();
-                const auto member_type_reference = ast::type_name_reference{ member_type_token };
+                const auto member_type_reference = ast::type_representation{ member_type_token };
                 auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, nullptr);
 
                 const auto function_return_type_token = token_kw_int();
-                const auto function_return_type_reference = ast::type_name_reference{ function_return_type_token };
+                const auto function_return_type_reference = ast::type_representation{ function_return_type_token };
                 const auto function_name_token = token_identifier("bar");
                 auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
                 auto function = std::make_unique<ast::user_function_node2>(function_return_type_reference,
@@ -806,7 +806,7 @@ namespace cmsl
                 ast::class_node2 node{ class_name_token, std::move(nodes)};
 
                 // Class type lookup.
-                const auto class_type_name_ref = ast::type_name_reference{ class_name_token };
+                const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
                         .WillOnce(Return(nullptr));
 
@@ -1058,7 +1058,7 @@ namespace cmsl
                 std::vector<member_info> members;
                 members.emplace_back(member_info{member_name_token, valid_type});
                 const auto lhs_type_name_token = token_identifier("baz");
-                sema_type lhs_type{ ctx, lhs_type_name_token, std::move(members)};
+                sema_type lhs_type{ ctx, ast::type_representation{ lhs_type_name_token }, std::move(members)};
 
                 ast::class_member_access_node node{ std::move(lhs_node), member_name_token };
 
@@ -1085,11 +1085,11 @@ namespace cmsl
 
                 const auto variable_name_token = token_identifier("foo");
                 const auto variable_type_token = token_kw_int();
-                const auto variable_type_reference = ast::type_name_reference{ variable_type_token };
+                const auto variable_type_reference = ast::type_representation{ variable_type_token };
                 auto variable_declaration_ast_node = std::make_unique<ast::variable_declaration_node>(variable_type_reference, variable_name_token, nullptr);
 
                 const auto function_return_type_token = token_kw_double();
-                const auto function_return_type_reference = ast::type_name_reference{ function_return_type_token };
+                const auto function_return_type_reference = ast::type_representation{ function_return_type_token };
                 const auto function_name_token = token_identifier("bar");
                 auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
                 auto function_ast_node = std::make_unique<ast::user_function_node2>(function_return_type_reference, function_name_token, ast::user_function_node2::params_t{}, std::move(function_body));
@@ -1108,7 +1108,7 @@ namespace cmsl
                         .WillOnce(Return(&valid_type));
                 EXPECT_CALL(ctx, find_type(function_return_type_reference))
                         .WillOnce(Return(&valid_type));
-                const auto class_type_name_ref = ast::type_name_reference{ class_name_token };
+                const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
                         .WillOnce(Return(nullptr));
 
@@ -1152,7 +1152,7 @@ namespace cmsl
                 StrictMock<sema_function_mock> function_mock;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                const sema_type lhs_and_rhs_type{ ctx, token_kw_int(), {} };
+                const sema_type lhs_and_rhs_type{ ctx, ast::type_representation{ token_kw_int() }, {} };
                 const auto lhs_id_token = token_identifier("foo");
                 auto lhs_node = std::make_unique<ast::id_node>(lhs_id_token);
                 const auto rhs_id_token = token_identifier("bar");

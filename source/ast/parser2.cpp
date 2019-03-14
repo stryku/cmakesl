@@ -87,7 +87,7 @@ namespace cmsl
             }
 
             // Let's pretend that ctors return something.
-            return std::make_unique<user_function_node2>(lexer::token::token_container_t{ class_name },
+            return std::make_unique<user_function_node2>(type_representation{ class_name },
                                                         *type_name,
                                                         std::move(*parameters),
                                                         std::move(block_expr));
@@ -512,7 +512,7 @@ namespace cmsl
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization));
         }
 
-        boost::optional<type_name_reference> parser2::type()
+        boost::optional<type_representation> parser2::type()
         {
             if(generic_type_starts())
             {
@@ -579,7 +579,7 @@ namespace cmsl
             return cmsl::contains(simple_types, token_type);
         }
 
-        boost::optional<type_name_reference> parser2::simple_type()
+        boost::optional<type_representation> parser2::simple_type()
         {
             const auto type_token = eat_simple_type_token();
 
@@ -588,10 +588,10 @@ namespace cmsl
                 return {};
             }
 
-            return type_name_reference{ *type_token };
+            return type_representation{ *type_token };
         }
 
-        boost::optional<type_name_reference> parser2::generic_type()
+        boost::optional<type_representation> parser2::generic_type()
         {
             const auto name_token = eat_generic_type_token();
             if(!name_token)
@@ -605,7 +605,7 @@ namespace cmsl
                 return {};
             }
 
-            const auto value_type = type();
+            auto value_type = type();
             if(!value_type)
             {
                 return {};
@@ -623,14 +623,14 @@ namespace cmsl
                 return {};
             }
 
-            type_name_reference name_reference;
-            name_reference.tokens.emplace_back(*name_token);
-            name_reference.tokens.emplace_back(*less_token);
-            name_reference.tokens.insert(std::end(name_reference.tokens),
-                                         std::cbegin(value_type->tokens), std::cend(value_type->tokens));
-            name_reference.tokens.emplace_back(*greater_token);
+            token_container_t tokens;
+            tokens.emplace_back(*name_token);
+            tokens.emplace_back(*less_token);
+            tokens.insert(std::end(tokens),
+                                         std::cbegin(value_type->tokens()), std::cend(value_type->tokens()));
+            tokens.emplace_back(*greater_token);
 
-            return std::move(name_reference);
+            return type_representation{ tokens, { std::move(*value_type) } };
         }
 
         bool parser2::generic_type_starts() const
