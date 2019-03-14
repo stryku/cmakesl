@@ -57,6 +57,7 @@ namespace cmsl
                 {
                     return sema_builder_ast_visitor{
                             ctx,
+                            ctx,
                             errs.observer,
                             ids_ctx,
                             m_type_factory,
