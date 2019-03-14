@@ -43,13 +43,15 @@ namespace cmsl
             using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
         public:
-            explicit sema_builder_ast_visitor(sema_context_interface& ctx,
+            explicit sema_builder_ast_visitor(sema_context_interface& generic_types_context,
+                                              sema_context_interface& ctx,
                                               errors::errors_observer& errs,
                                               identifiers_context& ids_context,
                                               sema_type_factory& type_factory,
                                               sema_function_factory& function_factory,
                                               sema_context_factory& context_factory)
-                : m_ctx{ ctx }
+                : m_generic_types_context{ generic_types_context }
+                , m_ctx{ ctx }
                 , m_errors_observer{ errs }
                 , m_ids_context{ ids_context }
                 , m_function_factory{ function_factory }
@@ -399,11 +401,9 @@ namespace cmsl
             void visit(const ast::user_function_node2& node) override
             {
                 const auto return_type_reference = node.get_return_type_reference();
-                auto return_type = m_ctx.find_type(return_type_reference);
+                auto return_type = try_get_or_create_generic_type(m_ctx, return_type_reference);
                 if(!return_type)
                 {
-                    // Todo: unknown return type
-                    raise_error(return_type_reference.primary_name(), "Unknown return type");
                     return;
                 }
 
@@ -415,11 +415,9 @@ namespace cmsl
 
                 for(const auto& param_decl : node.get_param_declarations())
                 {
-                    auto param_type = m_ctx.find_type(param_decl.ty);
+                    auto param_type = try_get_or_create_generic_type(m_ctx, param_decl.ty);
                     if(!param_type)
                     {
-                        //Todo: unknown parameter type
-                        raise_error(param_decl.ty.primary_name(), "Unknown parameter type");
                         return;
                     }
 
@@ -450,14 +448,12 @@ namespace cmsl
 
             void visit(const ast::variable_declaration_node& node) override
             {
-                const auto type_reference = node.get_type_reference();
-                const auto type = m_ctx.find_type(type_reference);
+                const auto& type_reference = node.get_type_reference();
+                const auto type = try_get_or_create_generic_type(m_ctx, type_reference);
 
                 // Todo: handle generic types
                 if(!type)
                 {
-                    // Todo: type not found
-                    raise_error(type_reference.primary_name(), "Unknown variable type");
                     return;
                 }
 
@@ -498,6 +494,28 @@ namespace cmsl
             std::unique_ptr<sema_node> m_result_node;
 
         private:
+            const sema_type* try_get_or_create_generic_type(const sema_context_interface& search_context, const ast::type_representation& name)
+            {
+                const auto found = search_context.find_type(name);
+                if(found)
+                {
+                    return found;
+                }
+
+                if(!name.is_generic())
+                {
+                    raise_error(name.primary_name(), name.to_string() + " type not found.");
+                    return nullptr;
+                }
+
+                auto factory = sema_generic_type_factory{ m_generic_types_context,
+                                                          search_context,
+                                                          m_type_factory,
+                                                          m_function_factory,
+                                                          m_context_factory };
+                return factory.create_generic(name);
+            }
+
             template <typename T>
             std::unique_ptr<T> to_node(std::unique_ptr<sema_node> node) const
             {
@@ -521,7 +539,7 @@ namespace cmsl
 
             sema_builder_ast_visitor clone(sema_context_interface& ctx_to_visit) const
             {
-                return sema_builder_ast_visitor{ ctx_to_visit, m_errors_observer, m_ids_context, m_type_factory, m_function_factory, m_context_factory };
+                return sema_builder_ast_visitor{ m_generic_types_context, ctx_to_visit, m_errors_observer, m_ids_context, m_type_factory, m_function_factory, m_context_factory };
             }
 
             std::unique_ptr<expression_node> visit_child_expr(const ast::ast_node& node)
@@ -633,11 +651,9 @@ namespace cmsl
                     sema_context& ctx)
             {
                 const auto return_type_reference = node.get_return_type_reference();
-                auto return_type = ctx.find_type(return_type_reference);
+                auto return_type = try_get_or_create_generic_type(ctx, return_type_reference);
                 if(!return_type)
                 {
-                    // Todo: unknown return type
-                    raise_error(return_type_reference.primary_name(), return_type_reference.to_string() + " unknown return type");
                     return {};
                 }
 
@@ -648,7 +664,7 @@ namespace cmsl
 
                 for(const auto& param_decl : node.get_param_declarations())
                 {
-                    auto param_type = ctx.find_type(param_decl.ty);
+                    auto param_type = try_get_or_create_generic_type(ctx, param_decl.ty);
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
@@ -718,6 +734,7 @@ namespace cmsl
             }
 
         private:
+            sema_context_interface& m_generic_types_context;
             sema_context_interface& m_ctx;
             errors::errors_observer& m_errors_observer;
             identifiers_context& m_ids_context;
