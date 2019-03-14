@@ -37,5 +37,32 @@ namespace cmsl
                 return !(*this == rhs);
             }
         };
+
+        class type_representation
+        {
+        private:
+            using token_t = lexer::token::token;
+
+        public:
+            explicit type_representation(token_t primary_name, std::vector<type_representation> nested_types)
+                : m_primary_name{ primary_name }
+                , m_nested_types{ std::move(nested_types) }
+            {}
+
+            token_t primary_name() const
+            {
+                return m_primary_name;
+            }
+
+            const std::vector<type_representation>& nested_types() const
+            {
+                return m_nested_types;
+            }
+
+        private:
+            token_t m_primary_name;
+            std::vector<type_representation> m_nested_types; // 'template parameters' of generic types.
+
+        };
     }
 }
