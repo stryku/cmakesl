@@ -64,7 +64,7 @@ namespace cmsl
                 }
                 else
                 {
-                    const auto name = m_sema_type->name().to_string();
+                    const auto name = m_sema_type->name().primary_name().str();
                     // Todo: find better way than comparing strings.
                     if(name == "bool")
                     {
@@ -85,6 +85,10 @@ namespace cmsl
                     else if(name == "version")
                     {
                         return version_value{ 0u };
+                    }
+                    else if(name == "list")
+                    {
+                        return get_init_list_data();
                     }
 
                     CMSL_UNREACHABLE("Unknown type");
