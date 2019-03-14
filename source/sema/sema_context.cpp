@@ -1,7 +1,7 @@
 #include "sema/sema_context.hpp"
 #include "sema/sema_function.hpp"
 
-#include "ast/type_name_reference.hpp"
+#include "ast/type_representation.hpp"
 #include "sema_context.hpp"
 
 
@@ -24,7 +24,7 @@ namespace cmsl
             m_types.emplace_back(&type);
         }
 
-        const sema_type* sema_context::find_type(const ast::type_name_reference& name) const
+        const sema_type* sema_context::find_type(const ast::type_representation& name) const
         {
             if(auto found = find_type_in_this_scope(name))
             {
@@ -34,7 +34,7 @@ namespace cmsl
             return m_parent ? m_parent->find_type(name) : nullptr;
         }
 
-        const sema_type* sema_context::find_type_in_this_scope(const ast::type_name_reference& name) const
+        const sema_type* sema_context::find_type_in_this_scope(const ast::type_representation& name) const
         {
             const auto pred = [&name](const auto& type)
             {
@@ -76,7 +76,7 @@ namespace cmsl
 
             // Collect constructors.
             // Todo: test ctors collecting.
-            if(auto ty = find_type_in_this_scope(ast::type_name_reference{ name }))
+            if(auto ty = find_type_in_this_scope(ast::type_representation{ name }))
             {
                 const auto& type_ctx = ty->context();
                 const auto constructors = type_ctx.find_function_in_this_scope(name);

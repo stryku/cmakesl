@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ast/type_name_reference.hpp"
+#include "ast/type_representation.hpp"
 
 #include <boost/optional.hpp>
 
@@ -17,7 +17,7 @@ namespace cmsl
 
         struct param_declaration
         {
-            type_name_reference ty;
+            type_representation ty;
             lexer::token::token name;
         };
     }

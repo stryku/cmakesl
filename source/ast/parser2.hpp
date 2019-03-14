@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ast/type_name_reference.hpp"
+#include "ast/type_representation.hpp"
 #include "ast/parameter_declaration.hpp"
 #include "lexer/token/token.hpp"
 
@@ -44,7 +44,7 @@ namespace cmsl
             std::unique_ptr<ast_node> get_if_else_node();
             std::unique_ptr<ast_node> get_while_node();
             std::unique_ptr<ast_node> get_return_node();
-            boost::optional<type_name_reference> type();
+            boost::optional<type_representation> type();
             std::unique_ptr<block_node> block();
 
         private:
@@ -68,8 +68,8 @@ namespace cmsl
             boost::optional<token_t> eat_function_call_name();
 
 
-            boost::optional<type_name_reference> generic_type();
-            boost::optional<type_name_reference> simple_type();
+            boost::optional<type_representation> generic_type();
+            boost::optional<type_representation> simple_type();
             bool generic_type_starts() const;
 
             token_type_t curr_type() const;

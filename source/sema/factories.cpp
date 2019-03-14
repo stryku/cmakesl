@@ -22,7 +22,7 @@ namespace cmsl
         }
 
         const sema_type&
-        sema_type_factory::create(const sema_context_interface &ctx, ast::type_name_reference name, std::vector<member_info> members)
+        sema_type_factory::create(const sema_context_interface &ctx, ast::type_representation name, std::vector<member_info> members)
         {
             return create_impl<sema_type>(ctx, name, std::move(members));
         }

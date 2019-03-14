@@ -2,7 +2,7 @@
 
 #include "ast/function.hpp"
 #include "ast/block_node.hpp"
-#include "ast/type_name_reference.hpp"
+#include "ast/type_representation.hpp"
 #include "ast/ast_node_visitor.hpp" // todo: to cpp
 
 #include "lexer/token/token.hpp"
@@ -48,7 +48,7 @@ namespace cmsl
         public:
             using params_t = std::vector<param_declaration>;
 
-            user_function_node2(type_name_reference return_type,
+            user_function_node2(type_representation return_type,
                                 lexer::token::token name,
                                 params_t params,
                                 std::unique_ptr<block_node> body)
@@ -58,7 +58,7 @@ namespace cmsl
                     , m_body{ std::move(body) }
             {}
 
-            type_name_reference get_return_type_reference() const
+            type_representation get_return_type_reference() const
             {
                 return m_return_type;
             }
@@ -84,7 +84,7 @@ namespace cmsl
             }
 
         private:
-            type_name_reference m_return_type;
+            type_representation m_return_type;
             lexer::token::token m_name;
             params_t m_params;
             std::unique_ptr<block_node> m_body;

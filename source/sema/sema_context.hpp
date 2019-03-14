@@ -42,8 +42,8 @@ namespace cmsl
             // Todo: add_* probably should be moved to a builder or so.
             virtual void add_function(const sema_function& function) = 0;
             virtual void add_type(const sema_type& type) = 0;
-            virtual const sema_type* find_type(const ast::type_name_reference& name) const = 0;
-            virtual const sema_type* find_type_in_this_scope(const ast::type_name_reference& name) const = 0;
+            virtual const sema_type* find_type(const ast::type_representation& name) const = 0;
+            virtual const sema_type* find_type_in_this_scope(const ast::type_representation& name) const = 0;
             virtual function_lookup_result_t find_function(const lexer::token::token& name) const = 0;
             virtual single_scope_function_lookup_result_t find_function_in_this_scope(const lexer::token::token& name) const = 0;
             virtual context_type type() const = 0;
@@ -56,8 +56,8 @@ namespace cmsl
 
             void add_function(const sema_function& function) override;
             void add_type(const sema_type& type) override;
-            const sema_type* find_type(const ast::type_name_reference& name) const override;
-            const sema_type* find_type_in_this_scope(const ast::type_name_reference& name) const override;
+            const sema_type* find_type(const ast::type_representation& name) const override;
+            const sema_type* find_type_in_this_scope(const ast::type_representation& name) const override;
             function_lookup_result_t find_function(const lexer::token::token& name) const override;
             single_scope_function_lookup_result_t find_function_in_this_scope(const lexer::token::token& name) const override;
             virtual context_type type() const override;

@@ -7,13 +7,13 @@ namespace cmsl
 {
     namespace sema
     {
-        sema_type::sema_type(const sema_context_interface& ctx, ast::type_name_reference name, std::vector<member_info> members)
+        sema_type::sema_type(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members)
             : m_ctx{ ctx }
             , m_name{ std::move(name) }
             , m_members{ std::move(members) }
         {}
 
-        const ast::type_name_reference& sema_type::name() const
+        const ast::type_representation& sema_type::name() const
         {
             return m_name;
         }

@@ -62,7 +62,7 @@ namespace cmsl
             const sema_type& find(const char (&tok)[N]) const
             {
                 static const auto token = make_token(token_type, tok);
-                static const auto name_reference = ast::type_name_reference{ token };
+                static const auto name_reference = ast::type_representation{ token };
                 return *m_ctx.find_type(name_reference);
             }
 
