@@ -20,6 +20,13 @@ namespace cmsl
         class type_builder
         {
         public:
+            struct builtin_function_info
+            {
+                const sema_type& return_type;
+                function_signature signature;
+                builtin_function_kind kind;
+            };
+
             explicit type_builder(sema_type_factory& type_factory,
                                   sema_function_factory& function_factory,
                                   sema_context_factory& context_factory,
@@ -29,6 +36,19 @@ namespace cmsl
             type_builder& with_member(const member_info& member);
             type_builder& with_user_function(const sema_type& return_type, function_signature s);
             type_builder& with_builtin_function(const sema_type& return_type, function_signature s, builtin_function_kind kind);
+
+            template <typename Functions>
+            type_builder& with_builtin_functions(Functions&& functions)
+            {
+                for(const auto& fun : functions)
+                {
+                    with_builtin_function(fun.return_type,
+                                          fun.signature,
+                                          fun.kind);
+                }
+
+                return *this;
+            }
 
             const sema_type& build_and_register_in_context();
 
