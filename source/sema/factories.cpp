@@ -131,11 +131,23 @@ namespace cmsl
                             function_signature{ make_id_token("size"), {} },
                             builtin_function_kind::list_size
                     },
-                    type_builder::builtin_function_info{ // void operator+=(value_type)
-                            void_type,
+                    type_builder::builtin_function_info{ // list& operator+=(value_type)
+                            list_type,
                             function_signature{ make_id_token("+="),
                                                 { parameter_declaration{*value_type, make_id_token("") } } },
-                            builtin_function_kind::list_operator_plus_equal
+                            builtin_function_kind::list_operator_plus_equal_value
+                    },
+                    type_builder::builtin_function_info{ // list& operator+=(list)
+                            list_type,
+                            function_signature{ make_id_token("+="),
+                                                { parameter_declaration{list_type, make_id_token("") } } },
+                            builtin_function_kind::list_operator_plus_equal_list
+                    },
+                    type_builder::builtin_function_info{ // value_type& at(int)
+                            *value_type,
+                            function_signature{ make_id_token("at"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::list_at
                     }
             };
 

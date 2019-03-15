@@ -129,7 +129,19 @@ namespace cmsl
             inst::instance* version_to_string(inst::instance& instance, const params_t& params);
 
             inst::instance* list_size(inst::instance& instance, const params_t& params);
-            inst::instance* list_operator_plus_equal(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_plus_equal_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_plus_equal_list(inst::instance& instance, const params_t& params);
+            inst::instance* list_at(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_equal_equal(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_not_equal(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_plus_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_plus_list(inst::instance& instance, const params_t& params);
+            inst::instance* list_insert_pos_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_insert_pos_list(inst::instance& instance, const params_t& params);
+            inst::instance* list_erase_pos(inst::instance& instance, const params_t& params);
+            inst::instance* list_erase_pos_count(inst::instance& instance, const params_t& params);
+            inst::instance* list_sublist_pos(inst::instance& instance, const params_t& params);
+            inst::instance* list_sublist_pos_count(inst::instance& instance, const params_t& params);
 
         private:
             inst::int_t string_pos_to_int(std::string::size_type pos) const;
