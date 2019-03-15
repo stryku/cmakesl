@@ -106,7 +106,8 @@ namespace cmsl
             version_to_string,
 
             list_ctor,
-            list_size
+            list_size,
+            list_operator_plus_equal,
 
 
         };

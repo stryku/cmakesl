@@ -192,8 +192,8 @@ namespace cmsl
 
                 // Todo: handle operators like ++ and ++(int)
                 const auto op = node.get_operator();
-                auto operator_function = lhs->type().find_member_function(op);
-                if(operator_function.empty())
+                auto lookup_result = lhs->type().find_member_function(op);
+                if(lookup_result.empty())
                 {
                     // Todo: lhs's type doesn't support such operator
                     raise_error(op, lhs->type().name().to_string() + " doesn't support operator " + op.str().to_string());
@@ -206,19 +206,18 @@ namespace cmsl
                     return;
                 }
 
-                if(lhs->type() != rhs->type())
+                overload_resolution over_resolution{ m_errors_observer, op };
+                const auto chosen_function = over_resolution.choose(lookup_result, *rhs);
+                if(!chosen_function)
                 {
-                    // Todo: can not apply operator to different types
-                    raise_error(op, "Can not apply operator to with different operand types");
                     return;
                 }
 
-                const auto& fun = *operator_function.front(); // Todo: implement overload resolution to choose matching function
                 m_result_node = std::make_unique<binary_operator_node>(std::move(lhs),
                                                                        node.get_operator(),
-                                                                       fun,
+                                                                       *chosen_function,
                                                                        std::move(rhs),
-                                                                       fun.return_type());
+                                                                       chosen_function->return_type());
             }
 
             void visit(const ast::class_member_access_node& node) override

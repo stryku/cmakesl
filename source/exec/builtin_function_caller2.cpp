@@ -135,6 +135,7 @@ namespace cmsl
 
                 // list
                 CASE_BUILTIN_FUNCTION_CALL(list_size);
+                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_equal);
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
@@ -1133,6 +1134,15 @@ namespace cmsl
         {
             const auto& list = instance.get_value_cref().get_list_cref();
             return m_instances.create2(static_cast<inst::int_t>(list.size()));
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_operator_plus_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            auto param_copy = params[0]->copy();
+            list.emplace_back(std::move(param_copy));
+            return m_instances.create2_reference(instance);
         }
     }
 }

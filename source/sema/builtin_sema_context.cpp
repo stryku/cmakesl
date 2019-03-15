@@ -686,37 +686,37 @@ namespace cmsl
                     builtin_function_info{ // bool operator==(version)
                             bool_type,
                             function_signature{ make_id_token("=="),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_equal_equal
                     },
                     builtin_function_info{ // bool operator!=(version)
                             bool_type,
                             function_signature{ make_id_token("!="),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_not_equal
                     },
                     builtin_function_info{ // bool operator<(version)
                             bool_type,
                             function_signature{ make_id_token("<"),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_less
                     },
                     builtin_function_info{ // bool operator<=(version)
                             bool_type,
                             function_signature{ make_id_token("<="),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_less_equal
                     },
                     builtin_function_info{ // bool operator>(version)
                             bool_type,
                             function_signature{ make_id_token(">"),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_greater
                     },
                     builtin_function_info{ // bool operator>=(version)
                             bool_type,
                             function_signature{ make_id_token(">="),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_greater_equal
                     },
                     builtin_function_info{ // int major()
