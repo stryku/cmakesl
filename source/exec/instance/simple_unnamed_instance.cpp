@@ -132,7 +132,15 @@ namespace cmsl
 
             std::unique_ptr<instance> simple_unnamed_instance::copy() const
             {
-                return std::make_unique<simple_unnamed_instance>(*m_type, get_value());
+                if(m_type)
+                {
+                    return std::make_unique<simple_unnamed_instance>(*m_type, get_value());
+                }
+                else
+                {
+                    return std::make_unique<simple_unnamed_instance>(*m_sema_type, get_value());
+                }
+
             }
 
             bool simple_unnamed_instance::has_function(cmsl::string_view name) const
