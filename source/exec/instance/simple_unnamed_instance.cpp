@@ -88,7 +88,7 @@ namespace cmsl
                     }
                     else if(name == "list")
                     {
-                        return get_init_list_data();
+                        return instance_value_t::list_t{};
                     }
 
                     CMSL_UNREACHABLE("Unknown type");

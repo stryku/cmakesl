@@ -133,6 +133,9 @@ namespace cmsl
                 CASE_BUILTIN_FUNCTION_CALL(version_tweak);
                 CASE_BUILTIN_FUNCTION_CALL(version_to_string);
 
+                // list
+                CASE_BUILTIN_FUNCTION_CALL(list_size);
+
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
                     return nullptr;
@@ -1123,6 +1126,13 @@ namespace cmsl
         {
             const auto& ver = instance.get_value_cref().get_version_cref();
             return m_instances.create2(ver.to_string());
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_size(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& list = instance.get_value_cref().get_list_cref();
+            return m_instances.create2(static_cast<inst::int_t>(list.size()));
         }
     }
 }
