@@ -41,6 +41,19 @@ namespace cmsl
                 const auto result = m_executor.execute2(source);
                 EXPECT_THAT(result, Eq(0));
             }
+
+            TEST_F(ListTypeSmokeTest, OperatorPlusEqual)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    list<int> l;\n"
+                        "    l += 42;\n"
+                        "    return l.size();\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(1));
+            }
         }
     }
 }

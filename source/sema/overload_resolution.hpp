@@ -24,6 +24,7 @@ namespace cmsl
 
             const sema_function* choose(const function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
             const sema_function* choose(const single_scope_function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
+            const sema_function* choose(const single_scope_function_lookup_result_t& functions, const expression_node& call_parameter) const;
 
         private:
             const sema_function* choose_from_scope(const single_scope_function_lookup_result_t& functions,
@@ -32,6 +33,7 @@ namespace cmsl
             bool params_match(const sema_function& function, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
 
             void raise_wrong_call_error(const single_scope_function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
+            void raise_wrong_call_error(const single_scope_function_lookup_result_t& functions, const expression_node& call_parameter) const;
 
         private:
             errors::errors_observer& m_errs;

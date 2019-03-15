@@ -118,6 +118,7 @@ namespace cmsl
             const auto& list_type = *m_generic_types_context.find_type(name);
             builtin_types_finder finder{ m_creation_context };
             const auto& int_type = finder.find_int();
+            const auto& void_type = finder.find_void();
 
             auto functions = {
                     type_builder::builtin_function_info{ // list()
@@ -129,6 +130,12 @@ namespace cmsl
                             int_type,
                             function_signature{ make_id_token("size"), {} },
                             builtin_function_kind::list_size
+                    },
+                    type_builder::builtin_function_info{ // void operator+=(value_type)
+                            void_type,
+                            function_signature{ make_id_token("+="),
+                                                { parameter_declaration{*value_type, make_id_token("") } } },
+                            builtin_function_kind::list_operator_plus_equal
                     }
             };
 
