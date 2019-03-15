@@ -49,6 +49,10 @@ namespace cmsl
                     {
                         reassign(std::move(moved.m_value.m_version), which_type::version);
                     }break;
+                    case which_type::list:
+                    {
+                        reassign(std::move(moved.m_value.m_list), which_type::version);
+                    }break;
                     case which_type::generic:
                     {
                         reassign(std::move(moved.m_value.m_generic), which_type::generic);
@@ -103,6 +107,11 @@ namespace cmsl
             instance_value_variant::instance_value_variant(version_value val)
             {
                 assign(std::move(val), which_type::version);
+            }
+
+            instance_value_variant::instance_value_variant(list_t val)
+            {
+                assign(std::move(val), which_type::list);
             }
 
             instance_value_variant::instance_value_variant(generic_instance_value val)
@@ -211,6 +220,19 @@ namespace cmsl
                     {
                         assign(other.m_version, w);
                     }break;
+                    case which_type::list:
+                    {
+                        list_t list_copy;
+
+                        std::transform(std::cbegin(other.m_list), std::cend(other.m_list),
+                                std::back_inserter(list_copy),
+                                [](const auto& list_element)
+                                       {
+                                           return list_element->copy();
+                                       });
+
+                        assign(std::move(list_copy), w);
+                    }break;
                     case which_type::generic:
                     {
                         assign(other.m_generic, w);
@@ -250,6 +272,11 @@ namespace cmsl
                 construct(m_value.m_version, std::move(value));
             }
 
+            void instance_value_variant::construct(list_t value)
+            {
+                construct(m_value.m_list, std::move(value));
+            }
+
             void instance_value_variant::construct(generic_instance_value value)
             {
                 construct(m_value.m_generic, std::move(value));
@@ -274,6 +301,10 @@ namespace cmsl
                     case which_type::string:
                     {
                         call_dtor(m_value.m_string);
+                    } break;
+                    case which_type::list:
+                    {
+                        call_dtor(m_value.m_list);
                     } break;
                     case which_type::generic:
                     {
@@ -302,6 +333,7 @@ namespace cmsl
                     case which_type::double_:  return get_double() == rhs.get_double();
                     case which_type::string: return get_string_cref() == rhs.get_string_cref();
                     case which_type::version: return get_version_cref() == rhs.get_version_cref();
+                    case which_type::list: return get_list_cref() == rhs.get_list_cref();
                     case which_type::generic: return get_generic_cref() == rhs.get_generic_cref();
                 }
             }
@@ -324,6 +356,21 @@ namespace cmsl
             void instance_value_variant::set_version(version_value value)
             {
                 reassign(std::move(value), which_type::version);
+            }
+
+            const instance_value_variant::list_t &instance_value_variant::get_list_cref() const
+            {
+                return m_value.m_list;
+            }
+
+            instance_value_variant::list_t &instance_value_variant::get_list_ref()
+            {
+                return m_value.m_list;
+            }
+
+            void instance_value_variant::set_list(list_t value)
+            {
+                reassign(std::move(value), which_type::list);
             }
         }
     }

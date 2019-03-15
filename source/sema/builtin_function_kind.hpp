@@ -105,7 +105,9 @@ namespace cmsl
             version_tweak,
             version_to_string,
 
-            list_ctor
+            list_ctor,
+            list_size
+
 
         };
     }

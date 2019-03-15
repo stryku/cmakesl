@@ -128,6 +128,8 @@ namespace cmsl
             inst::instance* version_tweak(inst::instance& instance, const params_t& params);
             inst::instance* version_to_string(inst::instance& instance, const params_t& params);
 
+            inst::instance* list_size(inst::instance& instance, const params_t& params);
+
         private:
             inst::int_t string_pos_to_int(std::string::size_type pos) const;
 

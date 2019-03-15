@@ -5,6 +5,7 @@
 #include "sema/sema_context.hpp"
 #include "sema/type_builder.hpp"
 #include "sema/builtin_function_kind.hpp"
+#include "sema/builtin_types_finder.hpp"
 
 // Todo: Move to common place.
 namespace
@@ -115,13 +116,20 @@ namespace cmsl
 
             // At this point we know that list type is created and registered in context. We can safely dereference it.
             const auto& list_type = *m_generic_types_context.find_type(name);
+            builtin_types_finder finder{ m_creation_context };
+            const auto& int_type = finder.find_int();
 
             auto functions = {
-                type_builder::builtin_function_info{ // list()
-                    list_type,
-                    function_signature{ make_id_token("list"), {} },
-                    builtin_function_kind::list_ctor
-                }
+                    type_builder::builtin_function_info{ // list()
+                            list_type,
+                            function_signature{ make_id_token("list"), {} },
+                            builtin_function_kind::list_ctor
+                    },
+                    type_builder::builtin_function_info{ // int size()
+                            int_type,
+                            function_signature{ make_id_token("size"), {} },
+                            builtin_function_kind::list_size
+                    }
             };
 
             builder.with_builtin_functions(functions);
