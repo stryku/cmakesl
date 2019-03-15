@@ -107,7 +107,9 @@ namespace cmsl
 
             list_ctor,
             list_size,
-            list_operator_plus_equal,
+            list_operator_plus_equal_value,
+            list_operator_plus_equal_list,
+            list_at
 
 
         };
