@@ -134,20 +134,43 @@ namespace cmsl
                 CASE_BUILTIN_FUNCTION_CALL(version_to_string);
 
                 // list
-                CASE_BUILTIN_FUNCTION_CALL(list_size);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_equal_equal);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_not_equal);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_equal_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_list);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_equal_list);
+                CASE_BUILTIN_FUNCTION_CALL(list_ctor);
+                CASE_BUILTIN_FUNCTION_CALL(list_ctor_list);
+                CASE_BUILTIN_FUNCTION_CALL(list_ctor_value);
+                CASE_BUILTIN_FUNCTION_CALL(list_ctor_value_count);
+                CASE_BUILTIN_FUNCTION_CALL(list_push_back_value);
+                CASE_BUILTIN_FUNCTION_CALL(list_push_back_list);
+                CASE_BUILTIN_FUNCTION_CALL(list_push_front_value);
+                CASE_BUILTIN_FUNCTION_CALL(list_push_front_list);
+                CASE_BUILTIN_FUNCTION_CALL(list_pop_back);
+                CASE_BUILTIN_FUNCTION_CALL(list_pop_front);
                 CASE_BUILTIN_FUNCTION_CALL(list_at);
+                CASE_BUILTIN_FUNCTION_CALL(list_front);
+                CASE_BUILTIN_FUNCTION_CALL(list_back);
                 CASE_BUILTIN_FUNCTION_CALL(list_insert_pos_value);
                 CASE_BUILTIN_FUNCTION_CALL(list_insert_pos_list);
                 CASE_BUILTIN_FUNCTION_CALL(list_erase_pos);
                 CASE_BUILTIN_FUNCTION_CALL(list_erase_pos_count);
+                CASE_BUILTIN_FUNCTION_CALL(list_remove_value);
+                CASE_BUILTIN_FUNCTION_CALL(list_remove_value_count);
+                CASE_BUILTIN_FUNCTION_CALL(list_remove_last_value);
+                CASE_BUILTIN_FUNCTION_CALL(list_remove_last_value_count);
+                CASE_BUILTIN_FUNCTION_CALL(list_clear);
+                CASE_BUILTIN_FUNCTION_CALL(list_resize);
+                CASE_BUILTIN_FUNCTION_CALL(list_sort);
+                CASE_BUILTIN_FUNCTION_CALL(list_reverse);
+                CASE_BUILTIN_FUNCTION_CALL(list_min);
+                CASE_BUILTIN_FUNCTION_CALL(list_max);
                 CASE_BUILTIN_FUNCTION_CALL(list_sublist_pos);
                 CASE_BUILTIN_FUNCTION_CALL(list_sublist_pos_count);
+                CASE_BUILTIN_FUNCTION_CALL(list_size);
+                CASE_BUILTIN_FUNCTION_CALL(list_empty);
+                CASE_BUILTIN_FUNCTION_CALL(list_find_value);
+                CASE_BUILTIN_FUNCTION_CALL(list_find_value_pos);
+                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_value);
+                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_list);
+                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_equal_value);
+                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_equal_list);
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
@@ -1142,101 +1165,18 @@ namespace cmsl
         }
 
         inst::instance *
+        builtin_function_caller2::list_ctor(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            list = inst::list_value{};
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
         builtin_function_caller2::list_size(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& list = instance.get_value_cref().get_list_cref();
             return m_instances.create2(static_cast<inst::int_t>(list.size()));
-        }
-
-        inst::instance *
-        builtin_function_caller2::list_operator_plus_equal_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
-        {
-            auto& list = instance.get_value_ref().get_list_ref();
-            auto param_copy = params[0]->copy();
-            list.emplace_back(std::move(param_copy));
-            return m_instances.create2_reference(instance);
-        }
-
-        inst::instance *
-        builtin_function_caller2::list_operator_plus_equal_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
-        {
-            auto& list = instance.get_value_ref().get_list_ref();
-            const auto& list_param = params[0]->get_value_cref().get_list_cref();
-            for(const auto& value : list_param)
-            {
-                list.emplace_back(value->copy());
-            }
-            return m_instances.create2_reference(instance);
-        }
-
-        inst::instance *
-        builtin_function_caller2::list_at(inst::instance &instance, const builtin_function_caller2::params_t &params)
-        {
-            auto& list = instance.get_value_ref().get_list_ref();
-            const auto index = params[0]->get_value_cref().get_int();
-            auto& instance_at = *list[index];
-            return m_instances.create2_reference(instance_at);
-        }
-
-        inst::instance *
-        builtin_function_caller2::list_operator_equal_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
-        {
-            const auto& list = instance.get_value_cref().get_list_cref();
-            const auto& list_param = params[0]->get_value_cref().get_list_cref();
-
-            // Todo: Extract to function.
-            const auto pred = [](const auto& lhs_instance,
-                                 const auto& rhs_instance)
-            {
-                return *lhs_instance == *rhs_instance;
-            };
-
-            const auto are_equal = std::equal(std::cbegin(list), std::cend(list),
-                                              std::cbegin(list_param), std::cend(list_param),
-                                              pred);
-
-            return m_instances.create2(are_equal);
-        }
-
-        inst::instance *
-        builtin_function_caller2::list_operator_not_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
-        {
-            const auto& list = instance.get_value_cref().get_list_cref();
-            const auto& list_param = params[0]->get_value_cref().get_list_cref();
-
-            // Todo: Extract to function.
-            const auto pred = [](const auto& lhs_instance,
-                                 const auto& rhs_instance)
-            {
-                return *lhs_instance == *rhs_instance;
-            };
-
-            const auto are_equal = std::equal(std::cbegin(list), std::cend(list),
-                                              std::cbegin(list_param), std::cend(list_param),
-                                              pred);
-
-            return m_instances.create2(!are_equal);
-        }
-
-        inst::instance *
-        builtin_function_caller2::list_operator_plus_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
-        {
-            const auto& list = instance.get_value_cref().get_list_cref();
-            auto param_copy = params[0]->copy();
-
-            inst::instance_value_t::list_t new_list;
-            new_list.reserve(list.size() + 1);
-
-            std::transform(std::cbegin(list), std::cend(list),
-                    std::back_inserter(new_list),
-                    [](const auto& list_element)
-                           {
-                                return list_element->copy();
-                           });
-
-            new_list.emplace_back(std::move(param_copy));
-
-            return m_instances.create2(std::move(new_list));
         }
     }
 }
