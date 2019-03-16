@@ -4,6 +4,7 @@
 #include "exec/instance/generic_instance_value.hpp"
 #include "exec/instance/version_value.hpp"
 #include "exec/instance/list_value.hpp"
+#include "exec/instance/instance_value_alternative.hpp"
 
 #include <string>
 #include <vector>
@@ -41,16 +42,7 @@ namespace cmsl
                 } m_value;
 
             public:
-                enum class which_type
-                {
-                    bool_,
-                    int_,
-                    double_,
-                    string,
-                    version,
-                    list,
-                    generic
-                };
+                using which_t = instance_value_alternative;
 
                 instance_value_variant(const instance_value_variant& other);
                 instance_value_variant& operator=(const instance_value_variant& other);
@@ -77,7 +69,7 @@ namespace cmsl
                 instance_value_variant(generic_instance_value val);
                 ~instance_value_variant();
 
-                which_type which() const;
+                which_t which() const;
 
                 bool get_bool() const;
                 void set_bool(bool value);
@@ -109,13 +101,13 @@ namespace cmsl
                 {
                     switch(m_which)
                     {
-                        case which_type::bool_: return visitor(get_bool());
-                        case which_type::int_: return visitor(get_int());
-                        case which_type::double_: return visitor(get_double());
-                        case which_type::string: return visitor(get_string_cref());
-                        case which_type::version: return visitor(get_version_cref());
-                        case which_type::list: return visitor(get_list_cref());
-                        case which_type::generic: return visitor(get_generic_cref());
+                        case which_t::bool_: return visitor(get_bool());
+                        case which_t::int_: return visitor(get_int());
+                        case which_t::double_: return visitor(get_double());
+                        case which_t::string: return visitor(get_string_cref());
+                        case which_t::version: return visitor(get_version_cref());
+                        case which_t::list: return visitor(get_list_cref());
+                        case which_t::generic: return visitor(get_generic_cref());
                     }
                 }
 
@@ -125,12 +117,12 @@ namespace cmsl
 
             private:
                 template <typename T>
-                void reassign(T&& val, which_type w);
+                void reassign(T&& val, which_t w);
 
                 template <typename T>
-                void assign(T&& val, which_type w);
-                void assign(const value& other, which_type w);
-                void assign(value&& other, which_type w);
+                void assign(T&& val, which_t w);
+                void assign(const value& other, which_t w);
+                void assign(value&& other, which_t w);
 
                 template <typename Value>
                 void construct(Value& destination_ptr, Value&& value);
@@ -149,7 +141,7 @@ namespace cmsl
                 void move_from(instance_value_variant&& moved);
 
             private:
-                which_type m_which{ which_type::bool_ };
+                which_t m_which{ which_t::bool_ };
             };
         }
     }
