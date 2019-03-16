@@ -3,7 +3,7 @@
 #include "exec/instance/int_alias.hpp"
 
 #include <memory>
-#include <vector>
+#include <deque>
 
 namespace cmsl
 {
@@ -17,9 +17,14 @@ namespace cmsl
             {
             private:
                 using element_t = std::unique_ptr<instance>;
+                using container_t = std::deque<element_t>;
                 static constexpr int_t k_special_value{ -1 };
 
             public:
+
+                list_value() = default;
+                explicit list_value(container_t values);
+
                 list_value(list_value&&) = default;
                 list_value& operator=(list_value&&) = default;
 
@@ -41,14 +46,14 @@ namespace cmsl
                 instance& back();
 
                 void insert(int_t pos, element_t element);
-                void insert(int_t pos, list_value other);
+                void insert(int_t pos, const list_value& other);
 
                 void erase(int_t pos, int_t count = k_special_value);
                 int_t remove(const instance& value, int_t count = k_special_value);
                 int_t remove_last(const instance& value, int_t count = k_special_value);
                 void clear();
 
-                void resize();
+                void resize(int_t new_size);
 
                 void sort();
                 void reverse();
@@ -62,10 +67,27 @@ namespace cmsl
                 bool empty() const;
 
                 int_t find(const instance& value, int_t pos = k_special_value);
-                list_value find_all(const instance& value, int_t pos = k_special_value);
+                // Todo: implement when instance factory is available here
+                //list_value find_all(const instance& value, int_t pos = k_special_value);
 
             private:
-                std::vector<element_t> m_list;
+                void append_with_copy(const list_value& other);
+                void append_with_copy_to(const list_value& other, container_t& container) const;
+
+                container_t copy(const list_value& other) const;
+                int_t interpret_count(int_t value, int_t special_value) const; // Todo: rename to more generic way (it's used by count and pos)
+                container_t::const_iterator place(int_t pos) const;
+
+                template <typename IndexCalculator>
+                int_t remove_impl(const instance& value, int_t count, IndexCalculator&& indexCalculator);
+
+                container_t::iterator begin();
+                container_t::iterator end();
+                container_t::const_iterator cbegin() const;
+                container_t::const_iterator cend() const;
+
+            private:
+                container_t m_list;
             };
         }
     }
