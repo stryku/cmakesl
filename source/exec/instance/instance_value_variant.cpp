@@ -109,7 +109,7 @@ namespace cmsl
                 assign(std::move(val), which_type::version);
             }
 
-            instance_value_variant::instance_value_variant(list_t val)
+            instance_value_variant::instance_value_variant(list_value val)
             {
                 assign(std::move(val), which_type::list);
             }
@@ -222,15 +222,7 @@ namespace cmsl
                     }break;
                     case which_type::list:
                     {
-                        list_t list_copy;
-
-                        std::transform(std::cbegin(other.m_list), std::cend(other.m_list),
-                                std::back_inserter(list_copy),
-                                [](const auto& list_element)
-                                       {
-                                           return list_element->copy();
-                                       });
-
+                        list_value list_copy = other.m_list;
                         assign(std::move(list_copy), w);
                     }break;
                     case which_type::generic:
@@ -272,7 +264,7 @@ namespace cmsl
                 construct(m_value.m_version, std::move(value));
             }
 
-            void instance_value_variant::construct(list_t value)
+            void instance_value_variant::construct(list_value value)
             {
                 construct(m_value.m_list, std::move(value));
             }
@@ -358,17 +350,17 @@ namespace cmsl
                 reassign(std::move(value), which_type::version);
             }
 
-            const instance_value_variant::list_t &instance_value_variant::get_list_cref() const
+            const list_value &instance_value_variant::get_list_cref() const
             {
                 return m_value.m_list;
             }
 
-            instance_value_variant::list_t &instance_value_variant::get_list_ref()
+            list_value &instance_value_variant::get_list_ref()
             {
                 return m_value.m_list;
             }
 
-            void instance_value_variant::set_list(list_t value)
+            void instance_value_variant::set_list(list_value value)
             {
                 reassign(std::move(value), which_type::list);
             }

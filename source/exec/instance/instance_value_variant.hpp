@@ -3,6 +3,7 @@
 #include "exec/instance/int_alias.hpp"
 #include "exec/instance/generic_instance_value.hpp"
 #include "exec/instance/version_value.hpp"
+#include "exec/instance/list_value.hpp"
 
 #include <string>
 #include <vector>
@@ -17,11 +18,7 @@ namespace cmsl
 
             class instance_value_variant
             {
-            public:
-                using list_t = std::vector<std::unique_ptr<instance>>;
-
             private:
-
                 union value
                 {
                     value() : m_bool{ false } {}
@@ -31,7 +28,7 @@ namespace cmsl
                     value(std::string val) : m_string{ std::move(val) } {}
                     value(generic_instance_value val) : m_generic{ std::move(val) } {}
                     value(version_value val) : m_version{ std::move(val) } {}
-                    value(list_t val) : m_list{ std::move(val) } {}
+                    value(list_value val) : m_list{ std::move(val) } {}
                     ~value() {}
 
                     bool m_bool;
@@ -40,7 +37,7 @@ namespace cmsl
                     std::string m_string;
                     version_value m_version;
                     generic_instance_value m_generic;
-                    list_t m_list;
+                    list_value m_list;
                 } m_value;
 
             public:
@@ -75,7 +72,7 @@ namespace cmsl
 
                 instance_value_variant(version_value val);
 
-                instance_value_variant(list_t val);
+                instance_value_variant(list_value val);
 
                 instance_value_variant(generic_instance_value val);
                 ~instance_value_variant();
@@ -99,9 +96,9 @@ namespace cmsl
                 version_value& get_version_ref();
                 void set_version(version_value value);
 
-                const list_t& get_list_cref() const;
-                list_t& get_list_ref();
-                void set_list(list_t value);
+                const list_value& get_list_cref() const;
+                list_value& get_list_ref();
+                void set_list(list_value value);
 
                 const generic_instance_value& get_generic_cref() const;
                 generic_instance_value& get_generic_ref();
@@ -142,7 +139,7 @@ namespace cmsl
                 void construct(double value);
                 void construct(std::string value);
                 void construct(version_value value);
-                void construct(list_t value);
+                void construct(list_value value);
                 void construct(generic_instance_value value);
 
                 template <typename T>

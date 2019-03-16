@@ -25,11 +25,13 @@ namespace cmsl
                 list_value() = default;
                 explicit list_value(container_t values);
 
-                list_value(list_value&&) = default;
-                list_value& operator=(list_value&&) = default;
+                list_value(list_value&&);
+                list_value& operator=(list_value&&);
 
                 list_value(const list_value& other);
                 list_value& operator=(const list_value& other);
+
+                ~list_value();
 
                 bool operator==(const list_value& other) const;
                 bool operator!=(const list_value& other) const;

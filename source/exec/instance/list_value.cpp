@@ -12,6 +12,12 @@ namespace cmsl
     {
         namespace inst
         {
+            list_value &list_value::operator=(list_value &&) = default;
+            list_value::list_value(list_value &&) = default;
+
+            list_value::~list_value()
+            {}
+
             list_value::list_value(container_t values)
                 : m_list{ std::move(values) }
             {}
