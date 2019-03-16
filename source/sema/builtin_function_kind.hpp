@@ -106,12 +106,41 @@ namespace cmsl
             version_to_string,
 
             list_ctor,
+            list_ctor_list,
+            list_ctor_value,
+            list_ctor_value_count,
+            list_push_back_value,
+            list_push_back_list,
+            list_push_front_value,
+            list_push_front_list,
+            list_pop_back,
+            list_pop_front,
+            list_at,
+            list_front,
+            list_back,
+            list_insert_pos_value,
+            list_insert_pos_list,
+            list_erase_pos,
+            list_erase_pos_count,
+            list_remove_value,
+            list_remove_value_count,
+            list_remove_last_value,
+            list_remove_last_value_count,
+            list_clear,
+            list_resize,
+            list_sort,
+            list_reverse,
+            list_min,
+            list_max,
+            list_sublist,
             list_size,
+            list_empty,
+            list_find_value,
+            list_find_value_pos,
+            list_operator_plus_value,
+            list_operator_plus_list,
             list_operator_plus_equal_value,
-            list_operator_plus_equal_list,
-            list_at
-
-
+            list_operator_plus_equal_list
         };
     }
 }
