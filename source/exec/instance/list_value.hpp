@@ -18,10 +18,10 @@ namespace cmsl
             private:
                 using element_t = std::unique_ptr<instance>;
                 using container_t = std::deque<element_t>;
+
                 static constexpr int_t k_special_value{ -1 };
 
             public:
-
                 list_value() = default;
                 explicit list_value(container_t values);
 
