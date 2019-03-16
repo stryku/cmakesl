@@ -45,7 +45,7 @@ namespace cmsl
                 const auto pred = [](const auto& lhs_instance,
                                      const auto& rhs_instance)
                 {
-                    return *lhs_instance == *rhs_instance;
+                    return lhs_instance->get_value_cref() == rhs_instance->get_value_cref();
                 };
 
                 return std::equal(std::cbegin(m_list), std::cend(m_list),

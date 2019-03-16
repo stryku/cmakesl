@@ -63,11 +63,11 @@ namespace cmsl
                     {
 
                         // Todo: store found types somewhere
-                        case instance_value_variant::which_type::bool_: return *ast_ctx.find_type("bool");
-                        case instance_value_variant::which_type::int_: return *ast_ctx.find_type("int");
-                        case instance_value_variant::which_type::double_: return *ast_ctx.find_type("int");
-                        case instance_value_variant::which_type::string: return *ast_ctx.find_type("int");
-                        case instance_value_variant::which_type::generic:
+                        case instance_value_variant::which_t::bool_: return *ast_ctx.find_type("bool");
+                        case instance_value_variant::which_t::int_: return *ast_ctx.find_type("int");
+                        case instance_value_variant::which_t::double_: return *ast_ctx.find_type("int");
+                        case instance_value_variant::which_t::string: return *ast_ctx.find_type("int");
+                        case instance_value_variant::which_t::generic:
                         {
                             return value.get_generic_cref().get_type();
                         }
@@ -157,19 +157,19 @@ namespace cmsl
                     switch(value.which())
                     {
                         // Todo: cache types, don't find it over every time.
-                        case instance_value_variant::which_type::bool_:
+                        case instance_value_variant::which_t::bool_:
                         {
                             return finder.find_bool();
                         }
-                        case instance_value_variant::which_type::int_:
+                        case instance_value_variant::which_t::int_:
                         {
                             return finder.find_int();
                         }
-                        case instance_value_variant::which_type::double_:
+                        case instance_value_variant::which_t::double_:
                         {
                             return finder.find_double();
                         }
-                        case instance_value_variant::which_type::string:
+                        case instance_value_variant::which_t::string:
                         {
                             return finder.find_string();
                         }

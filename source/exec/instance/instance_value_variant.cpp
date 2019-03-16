@@ -29,33 +29,33 @@ namespace cmsl
             {
                 switch (moved.m_which)
                 {
-                    case which_type::bool_:
+                    case which_t::bool_:
                     {
-                        reassign(moved.m_value.m_bool, which_type::bool_);
+                        reassign(moved.m_value.m_bool, which_t::bool_);
                     }break;
-                    case which_type::int_:
+                    case which_t::int_:
                     {
-                        reassign(moved.m_value.m_int, which_type::int_);
+                        reassign(moved.m_value.m_int, which_t::int_);
                     }break;
-                    case which_type::double_:
+                    case which_t::double_:
                     {
-                        reassign(moved.m_value.m_double, which_type::double_);
+                        reassign(moved.m_value.m_double, which_t::double_);
                     }break;
-                    case which_type::string:
+                    case which_t::string:
                     {
-                        reassign(std::move(moved.m_value.m_string), which_type::string);
+                        reassign(std::move(moved.m_value.m_string), which_t::string);
                     }break;
-                    case which_type::version:
+                    case which_t::version:
                     {
-                        reassign(std::move(moved.m_value.m_version), which_type::version);
+                        reassign(std::move(moved.m_value.m_version), which_t::version);
                     }break;
-                    case which_type::list:
+                    case which_t::list:
                     {
-                        reassign(std::move(moved.m_value.m_list), which_type::version);
+                        reassign(std::move(moved.m_value.m_list), which_t::version);
                     }break;
-                    case which_type::generic:
+                    case which_t::generic:
                     {
-                        reassign(std::move(moved.m_value.m_generic), which_type::generic);
+                        reassign(std::move(moved.m_value.m_generic), which_t::generic);
                     }break;
                 }
             }
@@ -81,17 +81,17 @@ namespace cmsl
 
             instance_value_variant::instance_value_variant(bool val)
             {
-                assign(val, which_type::bool_);
+                assign(val, which_t::bool_);
             }
 
             instance_value_variant::instance_value_variant(int_t val)
             {
-                assign(val, which_type::int_);
+                assign(val, which_t::int_);
             }
 
             instance_value_variant::instance_value_variant(double val)
             {
-                assign(val, which_type::double_);
+                assign(val, which_t::double_);
             }
 
             // Prevent conversion from const char* to bool.
@@ -101,22 +101,22 @@ namespace cmsl
 
             instance_value_variant::instance_value_variant(std::string val)
             {
-                assign(std::move(val), which_type::string);
+                assign(std::move(val), which_t::string);
             }
 
             instance_value_variant::instance_value_variant(version_value val)
             {
-                assign(std::move(val), which_type::version);
+                assign(std::move(val), which_t::version);
             }
 
             instance_value_variant::instance_value_variant(list_value val)
             {
-                assign(std::move(val), which_type::list);
+                assign(std::move(val), which_t::list);
             }
 
             instance_value_variant::instance_value_variant(generic_instance_value val)
             {
-                assign(std::move(val), which_type::generic);
+                assign(std::move(val), which_t::generic);
             }
 
             instance_value_variant::~instance_value_variant()
@@ -124,7 +124,7 @@ namespace cmsl
                 destruct();
             }
 
-            instance_value_variant::which_type instance_value_variant::which() const
+            instance_value_variant::which_t instance_value_variant::which() const
             {
                 return m_which;
             }
@@ -136,7 +136,7 @@ namespace cmsl
 
             void instance_value_variant::set_bool(bool value)
             {
-                reassign(value, which_type::bool_);
+                reassign(value, which_t::bool_);
             }
 
             int_t instance_value_variant::get_int() const
@@ -146,7 +146,7 @@ namespace cmsl
 
             void instance_value_variant::set_int(int_t value)
             {
-                reassign(value, which_type::int_);
+                reassign(value, which_t::int_);
             }
 
             double instance_value_variant::get_double() const
@@ -156,7 +156,7 @@ namespace cmsl
 
             void instance_value_variant::set_double(double value)
             {
-                reassign(value, which_type::double_);
+                reassign(value, which_t::double_);
             }
 
             const std::string& instance_value_variant::get_string_cref() const
@@ -171,7 +171,7 @@ namespace cmsl
 
             void instance_value_variant::set_string(std::string value)
             {
-                reassign(std::move(value), which_type::string);
+                reassign(std::move(value), which_t::string);
             }
 
             const generic_instance_value& instance_value_variant::get_generic_cref() const
@@ -186,46 +186,46 @@ namespace cmsl
 
             void instance_value_variant::set_generic(generic_instance_value value)
             {
-                reassign(std::move(value), which_type::generic);
+                reassign(std::move(value), which_t::generic);
             }
 
             template <typename T>
-            void instance_value_variant::reassign(T&& val, which_type w)
+            void instance_value_variant::reassign(T&& val, which_t w)
             {
                 destruct();
                 assign(std::forward<T>(val), w);
             }
 
-            void instance_value_variant::assign(const value& other, which_type w)
+            void instance_value_variant::assign(const value& other, which_t w)
             {
                 switch (w)
                 {
-                    case which_type::bool_:
+                    case which_t::bool_:
                     {
                         assign(other.m_bool, w);
                     }break;
-                    case which_type::int_:
+                    case which_t::int_:
                     {
                         assign(other.m_int, w);
                     }break;
-                    case which_type::double_:
+                    case which_t::double_:
                     {
                         assign(other.m_double, w);
                     }break;
-                    case which_type::string:
+                    case which_t::string:
                     {
                         assign(other.m_string, w);
                     }break;
-                    case which_type::version:
+                    case which_t::version:
                     {
                         assign(other.m_version, w);
                     }break;
-                    case which_type::list:
+                    case which_t::list:
                     {
                         list_value list_copy = other.m_list;
                         assign(std::move(list_copy), w);
                     }break;
-                    case which_type::generic:
+                    case which_t::generic:
                     {
                         assign(other.m_generic, w);
                     }break;
@@ -233,7 +233,7 @@ namespace cmsl
             }
 
             template <typename T>
-            void instance_value_variant::assign(T&& val, which_type w)
+            void instance_value_variant::assign(T&& val, which_t w)
             {
                 m_which  = w;
                 construct(std::forward<T>(val));
@@ -284,21 +284,21 @@ namespace cmsl
             {
                 switch (m_which)
                 {
-                    case which_type::bool_:
-                    case which_type::int_:
-                    case which_type::double_:
-                    case which_type::version:
+                    case which_t::bool_:
+                    case which_t::int_:
+                    case which_t::double_:
+                    case which_t::version:
                         // Trivially destructible. Do nothing.
                         break;
-                    case which_type::string:
+                    case which_t::string:
                     {
                         call_dtor(m_value.m_string);
                     } break;
-                    case which_type::list:
+                    case which_t::list:
                     {
                         call_dtor(m_value.m_list);
                     } break;
-                    case which_type::generic:
+                    case which_t::generic:
                     {
                         call_dtor(m_value.m_generic);
                     } break;
@@ -320,13 +320,13 @@ namespace cmsl
 
                 switch (m_which)
                 {
-                    case which_type::bool_: return get_bool() == rhs.get_bool();
-                    case which_type::int_: return get_int() == rhs.get_int();
-                    case which_type::double_:  return get_double() == rhs.get_double();
-                    case which_type::string: return get_string_cref() == rhs.get_string_cref();
-                    case which_type::version: return get_version_cref() == rhs.get_version_cref();
-                    case which_type::list: return get_list_cref() == rhs.get_list_cref();
-                    case which_type::generic: return get_generic_cref() == rhs.get_generic_cref();
+                    case which_t::bool_: return get_bool() == rhs.get_bool();
+                    case which_t::int_: return get_int() == rhs.get_int();
+                    case which_t::double_:  return get_double() == rhs.get_double();
+                    case which_t::string: return get_string_cref() == rhs.get_string_cref();
+                    case which_t::version: return get_version_cref() == rhs.get_version_cref();
+                    case which_t::list: return get_list_cref() == rhs.get_list_cref();
+                    case which_t::generic: return get_generic_cref() == rhs.get_generic_cref();
                 }
             }
 
@@ -347,7 +347,7 @@ namespace cmsl
 
             void instance_value_variant::set_version(version_value value)
             {
-                reassign(std::move(value), which_type::version);
+                reassign(std::move(value), which_t::version);
             }
 
             const list_value &instance_value_variant::get_list_cref() const
@@ -362,7 +362,7 @@ namespace cmsl
 
             void instance_value_variant::set_list(list_value value)
             {
-                reassign(std::move(value), which_type::list);
+                reassign(std::move(value), which_t::list);
             }
         }
     }
