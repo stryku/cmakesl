@@ -43,6 +43,10 @@ namespace cmsl
                 ~generic_instance_value();
 
                 bool operator==(const generic_instance_value& rhs) const;
+                bool operator<(const generic_instance_value&) const { return false; }
+                bool operator<=(const generic_instance_value&) const { return false; }
+                bool operator>(const generic_instance_value&) const { return false; }
+                bool operator>=(const generic_instance_value&) const { return false; }
 
                 const ast::type& get_type() const;
                 const generic_instance_value_type get_value_type() const;

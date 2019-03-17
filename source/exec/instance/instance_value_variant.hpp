@@ -114,6 +114,10 @@ namespace cmsl
                 // Todo: move to tests. It's not needed in production code.
                 bool operator==(const instance_value_variant& rhs) const;
                 bool operator!=(const instance_value_variant& rhs) const;
+                bool operator<(const instance_value_variant& rhs) const;
+                bool operator<=(const instance_value_variant& rhs) const;
+                bool operator>(const instance_value_variant& rhs) const;
+                bool operator>=(const instance_value_variant& rhs) const;
 
             private:
                 template <typename T>

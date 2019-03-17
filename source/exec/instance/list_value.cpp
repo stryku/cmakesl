@@ -58,6 +58,34 @@ namespace cmsl
                 return !(*this == other);
             }
 
+            bool list_value::operator<(const list_value &other) const
+            {
+                const auto pred = [](const auto& lhs_instance,
+                                     const auto& rhs_instance)
+                {
+                    return lhs_instance->get_value_cref() < rhs_instance->get_value_cref();
+                };
+
+                return std::lexicographical_compare(cbegin(), cend(),
+                                                    other.cbegin(), other.cend(),
+                                                    pred);
+            }
+
+            bool list_value::operator<=(const list_value &other) const
+            {
+                return *this == other || *this < other;
+            }
+
+            bool list_value::operator>(const list_value &other) const
+            {
+                return !(*this <= other);
+            }
+
+            bool list_value::operator>=(const list_value &other) const
+            {
+                return *this == other || *this > other;
+            }
+
             void list_value::append_with_copy(const list_value& other)
             {
                 append_with_copy_to(other, m_list);
@@ -91,7 +119,7 @@ namespace cmsl
             void list_value::push_front(const list_value &other)
             {
                 auto copied = copy(other);
-                m_list.emplace(std::begin(m_list),
+                m_list.insert(std::begin(m_list),
                                std::make_move_iterator(std::begin(copied)), std::make_move_iterator(std::end(copied)));
             }
 
@@ -133,7 +161,7 @@ namespace cmsl
             {
                 auto copied = copy(other);
                 const auto where = place(pos);
-                m_list.emplace(where,
+                m_list.insert(where,
                                std::make_move_iterator(std::begin(copied)), std::make_move_iterator(std::end(copied)));
             }
 

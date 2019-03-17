@@ -2,6 +2,7 @@
 #include "exec/instance/generic_instance_value.hpp"
 #include "exec/instance/instance.hpp"
 #include "instance_value_variant.hpp"
+#include "common/assert.hpp"
 
 
 namespace cmsl
@@ -311,28 +312,52 @@ namespace cmsl
                 val.~T();
             }
 
+#define BINARY_OPERATOR(op) \
+if(m_which != rhs.which()) \
+{ \
+    return false; \
+} \
+ \
+switch (m_which) \
+{ \
+    case which_t::bool_: return get_bool() op rhs.get_bool(); \
+    case which_t::int_: return get_int() op rhs.get_int(); \
+    case which_t::double_:  return get_double() op rhs.get_double(); \
+    case which_t::string: return get_string_cref() op rhs.get_string_cref(); \
+    case which_t::version: return get_version_cref() op rhs.get_version_cref(); \
+    case which_t::list: return get_list_cref() op rhs.get_list_cref(); \
+    case which_t::generic: return get_generic_cref() op rhs.get_generic_cref(); \
+} \
+CMSL_UNREACHABLE("Unknown alternative")
+
             bool instance_value_variant::operator==(const instance_value_variant &rhs) const
             {
-                if(m_which != rhs.which())
-                {
-                    return false;
-                }
-
-                switch (m_which)
-                {
-                    case which_t::bool_: return get_bool() == rhs.get_bool();
-                    case which_t::int_: return get_int() == rhs.get_int();
-                    case which_t::double_:  return get_double() == rhs.get_double();
-                    case which_t::string: return get_string_cref() == rhs.get_string_cref();
-                    case which_t::version: return get_version_cref() == rhs.get_version_cref();
-                    case which_t::list: return get_list_cref() == rhs.get_list_cref();
-                    case which_t::generic: return get_generic_cref() == rhs.get_generic_cref();
-                }
+                BINARY_OPERATOR(==);
             }
 
             bool instance_value_variant::operator!=(const instance_value_variant &rhs) const
             {
                 return !(*this == rhs);
+            }
+
+            bool instance_value_variant::operator<(const instance_value_variant &rhs) const
+            {
+                BINARY_OPERATOR(<);
+            }
+
+            bool instance_value_variant::operator<=(const instance_value_variant &rhs) const
+            {
+                return *this == rhs || *this < rhs;
+            }
+
+            bool instance_value_variant::operator>(const instance_value_variant &rhs) const
+            {
+                return !(*this <= rhs);
+            }
+
+            bool instance_value_variant::operator>=(const instance_value_variant &rhs) const
+            {
+                return *this == rhs || *this > rhs;
             }
 
             const version_value &instance_value_variant::get_version_cref() const

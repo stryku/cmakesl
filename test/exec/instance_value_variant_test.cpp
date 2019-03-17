@@ -13,7 +13,7 @@ namespace cmsl
                 using ::testing::Eq;
                 using ::testing::DoubleNear;
 
-                using which_t = instance_value_variant::which_type;
+                using which_t = instance_value_variant::which_t;
 
                 TEST(InstanceValueVariantTest, DefaultConstructor_StoresBoolFalse)
                 {
