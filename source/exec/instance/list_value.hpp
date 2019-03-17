@@ -35,6 +35,10 @@ namespace cmsl
 
                 bool operator==(const list_value& other) const;
                 bool operator!=(const list_value& other) const;
+                bool operator<(const list_value& other) const;
+                bool operator<=(const list_value& other) const;
+                bool operator>(const list_value& other) const;
+                bool operator>=(const list_value& other) const;
 
                 void push_back(element_t element);
                 void push_back(const list_value& other);
