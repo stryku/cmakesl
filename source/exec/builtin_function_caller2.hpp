@@ -1,9 +1,10 @@
 #pragma once
 
+#include "exec/instance/int_alias.hpp"
+
 #include <memory>
 #include <vector>
 #include <locale>
-#include "exec/instance/int_alias.hpp"
 
 namespace cmsl
 {

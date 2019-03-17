@@ -37,8 +37,8 @@ namespace cmsl
                     double m_double;
                     std::string m_string;
                     version_value m_version;
-                    generic_instance_value m_generic;
                     list_value m_list;
+                    generic_instance_value m_generic;
                 } m_value;
 
             public:
