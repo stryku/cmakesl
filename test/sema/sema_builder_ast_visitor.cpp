@@ -1150,7 +1150,7 @@ namespace cmsl
                 errs_t errs;
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
-                StrictMock<sema_function_mock> function_mock;
+                StrictMock<sema_function_mock> operator_function;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const sema_type lhs_and_rhs_type{ ctx, ast::type_representation{ token_kw_int() }, {} };
@@ -1160,7 +1160,6 @@ namespace cmsl
                 auto rhs_node = std::make_unique<ast::id_node>(rhs_id_token);
 
                 const auto operator_token = token_plus();
-                StrictMock<sema_function_mock> operator_function;
 
                 ast::binary_operator_node node{ std::move(lhs_node),
                                                 operator_token,
@@ -1172,11 +1171,18 @@ namespace cmsl
                 EXPECT_CALL(ids_ctx, type_of(rhs_id_token.str()))
                         .WillOnce(Return(&lhs_and_rhs_type));
 
-                EXPECT_CALL(function_mock, return_type())
+                const auto expected_signature = function_signature{
+                        operator_token,
+                        { parameter_declaration{ lhs_and_rhs_type, lhs_id_token } }
+                };
+                EXPECT_CALL(operator_function, signature())
+                        .WillOnce(ReturnRef(expected_signature));
+
+                EXPECT_CALL(operator_function, return_type())
                         .WillOnce(ReturnRef(lhs_and_rhs_type));
 
                 // Find operator member function.
-                const auto lookup_result = single_scope_function_lookup_result_t{ &function_mock };
+                const auto lookup_result = single_scope_function_lookup_result_t{ &operator_function };
                 EXPECT_CALL(ctx, find_function_in_this_scope(operator_token))
                         .WillOnce(Return(lookup_result));
 
