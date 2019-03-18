@@ -56,7 +56,7 @@ namespace cmsl
 
                 void erase(int_t pos, int_t count = k_special_value);
                 int_t remove(const instance& value, int_t count = k_special_value);
-                int_t remove_last(const instance& value, int_t count = k_special_value);
+                int_t remove_last(const instance& value, int_t count);
                 void clear();
 
                 void resize(int_t new_size);
@@ -64,15 +64,15 @@ namespace cmsl
                 void sort();
                 void reverse();
 
-                int_t min();
-                int_t max();
+                int_t min() const;
+                int_t max() const;
 
-                list_value sublist(int_t pos, int_t count = k_special_value);
+                list_value sublist(int_t pos, int_t count = k_special_value) const;
 
                 int_t size() const;
                 bool empty() const;
 
-                int_t find(const instance& value, int_t pos = k_special_value);
+                int_t find(const instance& value, int_t pos = k_special_value) const;
                 // Todo: implement when instance factory is available here
                 //list_value find_all(const instance& value, int_t pos = k_special_value);
 

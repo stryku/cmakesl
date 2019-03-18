@@ -124,7 +124,6 @@ namespace cmsl
             list_erase_pos_count,
             list_remove_value,
             list_remove_value_count,
-            list_remove_last_value,
             list_remove_last_value_count,
             list_clear,
             list_resize,

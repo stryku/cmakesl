@@ -163,7 +163,6 @@ namespace cmsl
                 CASE_BUILTIN_FUNCTION_CALL(list_erase_pos_count);
                 CASE_BUILTIN_FUNCTION_CALL(list_remove_value);
                 CASE_BUILTIN_FUNCTION_CALL(list_remove_value_count);
-                CASE_BUILTIN_FUNCTION_CALL(list_remove_last_value);
                 CASE_BUILTIN_FUNCTION_CALL(list_remove_last_value_count);
                 CASE_BUILTIN_FUNCTION_CALL(list_clear);
                 CASE_BUILTIN_FUNCTION_CALL(list_resize);
@@ -1110,6 +1109,307 @@ namespace cmsl
         {
             const auto& list = instance.get_value_cref().get_list_cref();
             return m_instances.create2(static_cast<inst::int_t>(list.size()));
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_ctor_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& [value] = get_params<alternative_t::list>(params);
+            list = inst::list_value{ value };
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_ctor_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            list.push_back(params[0]->copy());
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_ctor_value_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto count = params[1]->get_value_cref().get_int();
+
+            for(auto i = 0u; i < count; ++i)
+            {
+                list.push_back(params[0]->copy());
+            }
+
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_push_back_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            list.push_back(params[0]->copy());
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_push_back_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& [list2] = get_params<alternative_t::list>(params);
+            list.push_back(list2);
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_push_front_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            list.push_front(params[0]->copy());
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_push_front_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& [list2] = get_params<alternative_t::list>(params);
+            list.push_front(list2);
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_pop_back(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            list.pop_back();
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_pop_front(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            list.pop_front();
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_at(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& [position] = get_params<alternative_t::int_>(params);
+            auto& instance_at = list.at(position);
+            return m_instances.create2_reference(instance_at);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_front(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            auto& instance_at_front = list.front();
+            return m_instances.create2_reference(instance_at_front);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_back(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            auto& instance_at_back = list.back();
+            return m_instances.create2_reference(instance_at_back);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_insert_pos_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& [position] = get_params<alternative_t::int_>(params);
+            list.insert(position, params[1]->copy());
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_insert_pos_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& [position, list2] = get_params<alternative_t::int_, alternative_t::list>(params);
+            list.insert(position, list2);
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_erase_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& [position] = get_params<alternative_t::int_>(params);
+            list.erase(position);
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_erase_pos_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& [position, count] = get_params<alternative_t::int_, alternative_t::int_>(params);
+            list.erase(position, count);
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_remove_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& value = *params[0];
+            const auto removed_count = list.remove(value);
+            return m_instances.create2(removed_count);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_remove_value_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& value = *params[0];
+            const auto& count = params[1]->get_value_cref().get_int();
+            const auto removed_count = list.remove(value, count);
+            return m_instances.create2(removed_count);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_remove_last_value_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& value = *params[0];
+            const auto& count = params[1]->get_value_cref().get_int();
+            const auto removed_count = list.remove(value, count);
+            return m_instances.create2(removed_count);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_clear(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            list.clear();
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_resize(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            const auto& [new_size] = get_params<alternative_t::int_>(params);
+            list.resize(new_size);
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_sort(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            list.sort();
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_reverse(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            list.reverse();
+            return m_instances.create_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_min(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto min_element_index = list.min();
+            return m_instances.create2(min_element_index);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_max(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto max_element_index = list.max();
+            return m_instances.create2(max_element_index);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_sublist_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& [position] = get_params<alternative_t::int_>(params);
+            auto sublist = list.sublist(position);
+            return m_instances.create2(std::move(sublist));
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_sublist_pos_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& [position, count] = get_params<alternative_t::int_, alternative_t::int_>(params);
+            auto sublist = list.sublist(position, count);
+            return m_instances.create2(std::move(sublist));
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_empty(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto is_empty = list.empty();
+            return m_instances.create2(is_empty);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_find_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& value = *params[0];
+            const auto found_index = list.find(value);
+            return m_instances.create2(found_index);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_find_value_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& value = *params[0];
+            const auto position = params[1]->get_value_cref().get_int();
+            const auto found_index = list.find(value, position);
+            return m_instances.create2(found_index);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_operator_plus_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto list_copy = instance.get_value_cref().get_list_cref();
+            auto value = params[0]->copy();
+            list_copy.push_back(std::move(value));
+            return m_instances.create2(std::move(list_copy));
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_operator_plus_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto list_copy = instance.get_value_cref().get_list_cref();
+            auto [list_to_append] = get_params<alternative_t::list>(params);
+            list_copy.push_back(std::move(list_to_append));
+            return m_instances.create2(std::move(list_copy));
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_operator_plus_equal_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            auto value = params[0]->copy();
+            list.push_back(std::move(value));
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::list_operator_plus_equal_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& list = instance.get_value_ref().get_list_ref();
+            auto [list_to_append] = get_params<alternative_t::list>(params);
+            list.push_back(std::move(list_to_append));
+            return m_instances.create2_reference(instance);
         }
     }
 }
