@@ -83,7 +83,7 @@ namespace cmsl
                         "    list<int> l2;\n"
                         "    l2.push_back(24);\n"
                         "    l2.push_front(l);\n"
-                        "    return int(l2.size() == 2 && l2.at(0) == 24 && l2.at(1) == 42);\n"
+                        "    return int(l2.size() == 2 && l2.at(0) == 42 && l2.at(1) == 24);\n"
                         "}";
                 const auto result = m_executor.execute2(source);
                 EXPECT_THAT(result, Eq(1));
@@ -315,8 +315,8 @@ namespace cmsl
                         "               && l.at(1) == 42\n"
                         "               && l.at(2) == 0\n"
                         "               && l.at(3) == 0\n"
-                        "               && l.size() == 1\n"
-                        "               && l2.at(1) == 24);\n"
+                        "               && l2.size() == 1\n"
+                        "               && l2.at(0) == 24);\n"
                         "}";
                 const auto result = m_executor.execute2(source);
                 EXPECT_THAT(result, Eq(1));
@@ -376,8 +376,8 @@ namespace cmsl
                         "    list<int> l;\n"
                         "    l.push_back(24);\n"
                         "    l.push_back(24);\n"
+                        "    l.push_back(55);\n"
                         "    l.push_back(42);\n"
-                        "    l.push_back(33);\n"
                         "    l.push_back(11);\n"
                         "    int min_index = l.min();\n"
                         "    return int(min_index == 4);\n"
@@ -417,10 +417,10 @@ namespace cmsl
                         "    l.push_back(11);\n"
                         "    list<int> l2 = l.sublist(1);\n"
                         "    return int(l2.size() == 4"
-                        "               && l.at(0) == 24\n"
-                        "               && l.at(1) == 42\n"
-                        "               && l.at(2) == 33\n"
-                        "               && l.at(3) == 11);\n"
+                        "               && l2.at(0) == 24\n"
+                        "               && l2.at(1) == 42\n"
+                        "               && l2.at(2) == 33\n"
+                        "               && l2.at(3) == 11);\n"
                         "}";
                 const auto result = m_executor.execute2(source);
                 EXPECT_THAT(result, Eq(1));
@@ -439,8 +439,8 @@ namespace cmsl
                         "    l.push_back(11);\n"
                         "    list<int> l2 = l.sublist(1, 2);\n"
                         "    return int(l2.size() == 2"
-                        "               && l.at(0) == 24\n"
-                        "               && l.at(1) == 42);\n"
+                        "               && l2.at(0) == 24\n"
+                        "               && l2.at(1) == 42);\n"
                         "}";
                 const auto result = m_executor.execute2(source);
                 EXPECT_THAT(result, Eq(1));

@@ -6,6 +6,8 @@
 #include "sema/type_builder.hpp"
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_finder.hpp"
+#include "sema/homogeneous_generic_type.hpp"
+
 
 // Todo: Move to common place.
 namespace
@@ -57,6 +59,14 @@ namespace cmsl
         sema_type_factory::create(const sema_context_interface &ctx, ast::type_representation name, std::vector<member_info> members)
         {
             return create_impl<sema_type>(ctx, name, std::move(members));
+        }
+
+        const sema_type &
+        sema_type_factory::create_homogeneous_generic(const sema_context_interface &ctx,
+                                                      ast::type_representation name,
+                                                      const sema_type &value_type)
+        {
+            return create_impl<homogeneous_generic_type>(ctx, std::move(name), value_type);
         }
 
         sema_generic_type_factory::sema_generic_type_factory(sema_context_interface& generic_types_context,
@@ -112,13 +122,14 @@ namespace cmsl
                                   m_context_factory,
                                   m_generic_types_context,
                                   name };
-            builder.build_and_register_in_context();
+            builder.build_homogeneous_generic_and_register_in_context(*value_type);
 
             // At this point we know that list type is created and registered in context. We can safely dereference it.
             const auto& list_type = *m_generic_types_context.find_type(name);
             builtin_types_finder finder{ m_creation_context };
             const auto& int_type = finder.find_int();
             const auto& void_type = finder.find_void();
+            const auto& bool_type = finder.find_bool();
 
             auto functions = {
                     type_builder::builtin_function_info{ // list()
@@ -126,10 +137,181 @@ namespace cmsl
                             function_signature{ make_id_token("list"), {} },
                             builtin_function_kind::list_ctor
                     },
+                    type_builder::builtin_function_info{ // void push_back(value_type)
+                            void_type,
+                            function_signature{ make_id_token("push_back"),
+                                                { parameter_declaration{*value_type, make_id_token("") } } },
+                            builtin_function_kind::list_push_back_value
+                    },
+                    type_builder::builtin_function_info{ // void push_back(list)
+                            void_type,
+                            function_signature{ make_id_token("push_back"),
+                                                { parameter_declaration{list_type, make_id_token("") } } },
+                            builtin_function_kind::list_push_back_list
+                    },
+                    type_builder::builtin_function_info{ // void push_front(value_type)
+                            void_type,
+                            function_signature{ make_id_token("push_front"),
+                                                { parameter_declaration{*value_type, make_id_token("") } } },
+                            builtin_function_kind::list_push_front_value
+                    },
+                    type_builder::builtin_function_info{ // void push_front(list)
+                            void_type,
+                            function_signature{ make_id_token("push_front"),
+                                                { parameter_declaration{list_type, make_id_token("") } } },
+                            builtin_function_kind::list_push_front_list
+                    },
+                    type_builder::builtin_function_info{ // void pop_back()
+                            void_type,
+                            function_signature{ make_id_token("pop_back"), {} },
+                            builtin_function_kind::list_pop_back
+                    },
+                    type_builder::builtin_function_info{ // void pop_front()
+                            void_type,
+                            function_signature{ make_id_token("pop_front"), {} },
+                            builtin_function_kind::list_pop_front
+                    },
+                    type_builder::builtin_function_info{ // value_type& at(int)
+                            *value_type,
+                            function_signature{ make_id_token("at"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::list_at
+                    },
+                    type_builder::builtin_function_info{ // void front()
+                            *value_type,
+                            function_signature{ make_id_token("front"), {} },
+                            builtin_function_kind::list_front
+                    },
+                    type_builder::builtin_function_info{ // void back()
+                            *value_type,
+                            function_signature{ make_id_token("back"), {} },
+                            builtin_function_kind::list_back
+                    },
+                    type_builder::builtin_function_info{ // void insert(int pos, value_type)
+                            void_type,
+                            function_signature{ make_id_token("insert"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{*value_type, make_id_token("") }} },
+                            builtin_function_kind::list_insert_pos_value
+                    },
+                    type_builder::builtin_function_info{ // void insert(int pos, list)
+                            void_type,
+                            function_signature{ make_id_token("insert"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{list_type, make_id_token("") }} },
+                            builtin_function_kind::list_insert_pos_list
+                    },
+                    type_builder::builtin_function_info{ // void erase(int pos)
+                            void_type,
+                            function_signature{ make_id_token("erase"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::list_erase_pos
+                    },
+                    type_builder::builtin_function_info{ // void erase(int pos, int count)
+                            void_type,
+                            function_signature{ make_id_token("erase"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::list_erase_pos_count
+                    },
+                    type_builder::builtin_function_info{ // int remove(value_type)
+                            int_type,
+                            function_signature{ make_id_token("remove"),
+                                                { parameter_declaration{*value_type, make_id_token("") } } },
+                            builtin_function_kind::list_remove_value
+                    },
+                    type_builder::builtin_function_info{ // int remove(value_type, int count)
+                            int_type,
+                            function_signature{ make_id_token("remove"),
+                                                { parameter_declaration{*value_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::list_remove_value_count
+                    },
+                    type_builder::builtin_function_info{ // int remove(value_type, int count)
+                            int_type,
+                            function_signature{ make_id_token("remove_last"),
+                                                { parameter_declaration{*value_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::list_remove_last_value_count
+                    },
+                    type_builder::builtin_function_info{ // void clear()
+                            void_type,
+                            function_signature{ make_id_token("clear"), {} },
+                            builtin_function_kind::list_clear
+                    },
+                    type_builder::builtin_function_info{ // void resize(int new_size)
+                            void_type,
+                            function_signature{ make_id_token("resize"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::list_resize
+                    },
+                    type_builder::builtin_function_info{ // void sort()
+                            void_type,
+                            function_signature{ make_id_token("sort"), {} },
+                            builtin_function_kind::list_sort
+                    },
+                    type_builder::builtin_function_info{ // void reverse()
+                            void_type,
+                            function_signature{ make_id_token("reverse"), {} },
+                            builtin_function_kind::list_reverse
+                    },
+                    type_builder::builtin_function_info{ // void min()
+                            int_type,
+                            function_signature{ make_id_token("min"), {} },
+                            builtin_function_kind::list_min
+                    },
+                    type_builder::builtin_function_info{ // void max()
+                            int_type,
+                            function_signature{ make_id_token("max"), {} },
+                            builtin_function_kind::list_max
+                    },
+                    type_builder::builtin_function_info{ // list sublist(int pos)
+                            list_type,
+                            function_signature{ make_id_token("sublist"),
+                                                { parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::list_sublist_pos
+                    },
+                    type_builder::builtin_function_info{ // list sublist(int pos, int count)
+                            list_type,
+                            function_signature{ make_id_token("sublist"),
+                                                { parameter_declaration{int_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") } } },
+                            builtin_function_kind::list_sublist_pos_count
+                    },
                     type_builder::builtin_function_info{ // int size()
                             int_type,
                             function_signature{ make_id_token("size"), {} },
                             builtin_function_kind::list_size
+                    },
+                    type_builder::builtin_function_info{ // bool empty()
+                            bool_type,
+                            function_signature{ make_id_token("empty"), {} },
+                            builtin_function_kind::list_empty
+                    },
+                    type_builder::builtin_function_info{ // int find(value_type)
+                            int_type,
+                            function_signature{ make_id_token("find"),
+                                                { parameter_declaration{*value_type, make_id_token("") } } },
+                            builtin_function_kind::list_find_value
+                    },
+                    type_builder::builtin_function_info{ // int find(value_type, int pos)
+                            int_type,
+                            function_signature{ make_id_token("find"),
+                                                { parameter_declaration{*value_type, make_id_token("") },
+                                                  parameter_declaration{int_type, make_id_token("") }} },
+                            builtin_function_kind::list_find_value_pos
+                    },
+                    type_builder::builtin_function_info{ // list operator+(value_type)
+                            list_type,
+                            function_signature{ make_id_token("+"),
+                                                { parameter_declaration{*value_type, make_id_token("") } } },
+                            builtin_function_kind::list_operator_plus_value
+                    },
+                    type_builder::builtin_function_info{ // list operator+(list)
+                            list_type,
+                            function_signature{ make_id_token("+"),
+                                                { parameter_declaration{list_type, make_id_token("") } } },
+                            builtin_function_kind::list_operator_plus_list
                     },
                     type_builder::builtin_function_info{ // list& operator+=(value_type)
                             list_type,
@@ -142,12 +324,6 @@ namespace cmsl
                             function_signature{ make_id_token("+="),
                                                 { parameter_declaration{list_type, make_id_token("") } } },
                             builtin_function_kind::list_operator_plus_equal_list
-                    },
-                    type_builder::builtin_function_info{ // value_type& at(int)
-                            *value_type,
-                            function_signature{ make_id_token("at"),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
-                            builtin_function_kind::list_at
                     }
             };
 

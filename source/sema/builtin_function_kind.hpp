@@ -128,6 +128,7 @@ namespace cmsl
             list_remove_last_value_count,
             list_clear,
             list_resize,
+            // Todo: Add resize_fill?
             list_sort,
             list_reverse,
             list_min,

@@ -59,7 +59,7 @@ namespace cmsl
                 int_t remove_last(const instance& value, int_t count);
                 void clear();
 
-                void resize(int_t new_size);
+                void resize(int_t new_size, const instance* fill);
 
                 void sort();
                 void reverse();

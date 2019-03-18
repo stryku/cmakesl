@@ -7,6 +7,7 @@
 #include "exec/parameter_alternatives_getter.hpp"
 
 #include <algorithm>
+#include <sema/homogeneous_generic_type.hpp>
 
 #define CASE_BUILTIN_FUNCTION_CALL(function) \
 case sema::builtin_function_kind::function: \
@@ -1147,7 +1148,7 @@ namespace cmsl
         {
             auto& list = instance.get_value_ref().get_list_ref();
             list.push_back(params[0]->copy());
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1156,7 +1157,7 @@ namespace cmsl
             auto& list = instance.get_value_ref().get_list_ref();
             const auto& [list2] = get_params<alternative_t::list>(params);
             list.push_back(list2);
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1164,7 +1165,7 @@ namespace cmsl
         {
             auto& list = instance.get_value_ref().get_list_ref();
             list.push_front(params[0]->copy());
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1173,7 +1174,7 @@ namespace cmsl
             auto& list = instance.get_value_ref().get_list_ref();
             const auto& [list2] = get_params<alternative_t::list>(params);
             list.push_front(list2);
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1181,7 +1182,7 @@ namespace cmsl
         {
             auto& list = instance.get_value_ref().get_list_ref();
             list.pop_back();
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1189,7 +1190,7 @@ namespace cmsl
         {
             auto& list = instance.get_value_ref().get_list_ref();
             list.pop_front();
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1223,7 +1224,7 @@ namespace cmsl
             auto& list = instance.get_value_ref().get_list_ref();
             const auto& [position] = get_params<alternative_t::int_>(params);
             list.insert(position, params[1]->copy());
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1232,7 +1233,7 @@ namespace cmsl
             auto& list = instance.get_value_ref().get_list_ref();
             const auto& [position, list2] = get_params<alternative_t::int_, alternative_t::list>(params);
             list.insert(position, list2);
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1241,7 +1242,7 @@ namespace cmsl
             auto& list = instance.get_value_ref().get_list_ref();
             const auto& [position] = get_params<alternative_t::int_>(params);
             list.erase(position);
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1250,7 +1251,7 @@ namespace cmsl
             auto& list = instance.get_value_ref().get_list_ref();
             const auto& [position, count] = get_params<alternative_t::int_, alternative_t::int_>(params);
             list.erase(position, count);
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1278,7 +1279,7 @@ namespace cmsl
             auto& list = instance.get_value_ref().get_list_ref();
             const auto& value = *params[0];
             const auto& count = params[1]->get_value_cref().get_int();
-            const auto removed_count = list.remove(value, count);
+            const auto removed_count = list.remove_last(value, count);
             return m_instances.create2(removed_count);
         }
 
@@ -1287,16 +1288,21 @@ namespace cmsl
         {
             auto& list = instance.get_value_ref().get_list_ref();
             list.clear();
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
         builtin_function_caller2::list_resize(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
+            const auto& list_type = *dynamic_cast<const sema::homogeneous_generic_type*>(&instance.get_sema_type());
+            const auto& value_type = list_type.value_type();
+
             auto& list = instance.get_value_ref().get_list_ref();
             const auto& [new_size] = get_params<alternative_t::int_>(params);
-            list.resize(new_size);
-            return m_instances.create_void();
+
+            const auto fill_value = new_size > list.size() ? m_instances.create2(value_type) : nullptr;
+            list.resize(new_size, fill_value);
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1304,7 +1310,7 @@ namespace cmsl
         {
             auto& list = instance.get_value_ref().get_list_ref();
             list.sort();
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1312,7 +1318,7 @@ namespace cmsl
         {
             auto& list = instance.get_value_ref().get_list_ref();
             list.reverse();
-            return m_instances.create_void();
+            return m_instances.create2_void();
         }
 
         inst::instance *
@@ -1337,7 +1343,7 @@ namespace cmsl
             const auto& list = instance.get_value_cref().get_list_cref();
             const auto& [position] = get_params<alternative_t::int_>(params);
             auto sublist = list.sublist(position);
-            return m_instances.create2(std::move(sublist));
+            return m_instances.create2(instance.get_sema_type(), std::move(sublist));
         }
 
         inst::instance *
