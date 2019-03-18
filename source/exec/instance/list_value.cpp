@@ -178,7 +178,6 @@ namespace cmsl
                 const auto where = place(pos);
                 const auto end = place(pos + count);
                 m_list.erase(where, end);
-
             }
 
             int_t list_value::interpret_count(int_t value, int_t special_value) const
@@ -253,7 +252,7 @@ namespace cmsl
                 std::reverse(begin(), end());
             }
 
-            int_t list_value::min()
+            int_t list_value::min() const
             {
                 const auto min_it = std::min_element(cbegin(), cend());
                 if(min_it == cend())
@@ -265,7 +264,7 @@ namespace cmsl
                 return static_cast<int_t>(index);
             }
 
-            int_t list_value::max()
+            int_t list_value::max() const
             {
                 const auto min_it = std::max_element(cbegin(), cend());
                 if(min_it == cend())
@@ -297,7 +296,7 @@ namespace cmsl
                 return std::cend(m_list);
             }
 
-            list_value list_value::sublist(int_t pos, int_t count)
+            list_value list_value::sublist(int_t pos, int_t count) const
             {
                 count = interpret_count(count, m_list.size() - pos);
                 const auto from = place(pos);
@@ -323,7 +322,7 @@ namespace cmsl
                 return m_list.empty();
             }
 
-            int_t list_value::find(const instance &value, int_t pos)
+            int_t list_value::find(const instance &value, int_t pos) const
             {
                 pos = interpret_count(pos, 0);
                 const auto start = place(pos);

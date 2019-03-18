@@ -148,7 +148,6 @@ namespace cmsl
             inst::instance* list_erase_pos_count(inst::instance& instance, const params_t& params);
             inst::instance* list_remove_value(inst::instance& instance, const params_t& params);
             inst::instance* list_remove_value_count(inst::instance& instance, const params_t& params);
-            inst::instance* list_remove_last_value(inst::instance& instance, const params_t& params);
             inst::instance* list_remove_last_value_count(inst::instance& instance, const params_t& params);
             inst::instance* list_clear(inst::instance& instance, const params_t& params);
             inst::instance* list_resize(inst::instance& instance, const params_t& params);
