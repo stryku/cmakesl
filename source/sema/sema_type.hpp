@@ -29,6 +29,7 @@ namespace cmsl
 
             sema_type(const sema_type&) = delete;
             sema_type& operator=(sema_type&&) = delete;
+            virtual ~sema_type() = default;
 
             const ast::type_representation& name() const;
             const sema_context_interface& context() const;

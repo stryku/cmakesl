@@ -219,7 +219,7 @@ namespace cmsl
                         continue;
                     }
 
-                    erase(i);
+                    erase(check_index);
                     --count;
                     ++erased_counter;
                 }
@@ -232,9 +232,19 @@ namespace cmsl
                 m_list.clear();
             }
 
-            void list_value::resize(int_t new_size)
+            void list_value::resize(int_t new_size, const instance* fill)
             {
+                const auto old_size = size();
                 m_list.resize(static_cast<unsigned>(new_size));
+
+                if(old_size < new_size)
+                {
+                    std::generate(std::next(begin(), old_size), end(),
+                                  [fill]
+                                  {
+                                      return fill->copy();
+                                  });
+                }
             }
 
             void list_value::sort()
@@ -254,7 +264,11 @@ namespace cmsl
 
             int_t list_value::min() const
             {
-                const auto min_it = std::min_element(cbegin(), cend());
+                const auto pred = [](const auto& lhs, const auto& rhs)
+                {
+                    return lhs->get_value_cref() < rhs->get_value_cref();
+                };
+                const auto min_it = std::min_element(cbegin(), cend(), pred);
                 if(min_it == cend())
                 {
                     return -1;
@@ -266,13 +280,17 @@ namespace cmsl
 
             int_t list_value::max() const
             {
-                const auto min_it = std::max_element(cbegin(), cend());
-                if(min_it == cend())
+                const auto pred = [](const auto& lhs, const auto& rhs)
+                {
+                    return lhs->get_value_cref() < rhs->get_value_cref();
+                };
+                const auto max_it = std::max_element(cbegin(), cend(), pred);
+                if(max_it == cend())
                 {
                     return -1;
                 }
 
-                const auto index = std::distance(cbegin(), min_it);
+                const auto index = std::distance(cbegin(), max_it);
                 return static_cast<int_t>(index);
             }
 

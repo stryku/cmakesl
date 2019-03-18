@@ -52,7 +52,7 @@ namespace cmsl
                     }break;
                     case which_t::list:
                     {
-                        reassign(std::move(moved.m_value.m_list), which_t::version);
+                        reassign(std::move(moved.m_value.m_list), which_t::list);
                     }break;
                     case which_t::generic:
                     {

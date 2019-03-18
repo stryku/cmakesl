@@ -104,6 +104,19 @@ namespace cmsl
                 m_instances.emplace_back(std::move(instance));
                 return ptr;
             }
+
+            inst::instance *instances_holder::create2_void()
+            {
+                return create2(true); // Todo: introduce void types
+            }
+
+            inst::instance *instances_holder::create2(const sema::sema_type &type, instance_value_t value)
+            {
+                auto instance = instance_factory2{}.create(type, std::move(value));
+                auto ptr = instance.get();
+                m_instances.emplace_back(std::move(instance));
+                return ptr;
+            }
         }
     }
 }

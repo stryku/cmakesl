@@ -51,6 +51,7 @@ namespace cmsl
             }
 
             const sema_type& build_and_register_in_context();
+            const sema_type& build_homogeneous_generic_and_register_in_context(const sema_type& value_type);
 
             const sema_context_interface& context();
 

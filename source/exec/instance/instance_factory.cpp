@@ -173,13 +173,16 @@ namespace cmsl
                         {
                             return finder.find_string();
                         }
+                        case instance_value_variant::which_t::list:
+                        {
+                            return finder.find_string();
+                        }
                         default:
                             CMSL_UNREACHABLE("Unknown type requested");
                     }
                 };
 
                 const auto& type = type_getter();
-
                 return std::make_unique<simple_unnamed_instance>(type, value);
             }
 
@@ -198,6 +201,11 @@ namespace cmsl
                 {
                     return std::make_unique<simple_unnamed_instance>(type);
                 }
+            }
+
+            std::unique_ptr<instance> instance_factory2::create(const sema::sema_type &type, instance_value_t value) const
+            {
+                return std::make_unique<simple_unnamed_instance>(type, std::move(value));
             }
         }
     }
