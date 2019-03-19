@@ -147,7 +147,11 @@ namespace cmsl
             list_operator_plus_value,
             list_operator_plus_list,
             list_operator_plus_equal_value,
-            list_operator_plus_equal_list
+            list_operator_plus_equal_list,
+
+            project_ctor_name,
+            project_name,
+            project_add_executable
         };
     }
 }

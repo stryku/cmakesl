@@ -191,6 +191,10 @@ namespace cmsl
                 CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_operator_plus_equal_value);
                 CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_operator_plus_equal_list);
 
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_ctor_name);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_name);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_add_executable);
+
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
                     return nullptr;
@@ -1463,6 +1467,32 @@ namespace cmsl
                 // Todo: Propagate error to our execution system, so it knows it needs to stop execution.
             }
 
+            return m_instances.create2_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::project_ctor_name(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& project = instance.get_value_ref().get_project_ref();
+            const auto& [name] = get_params<alternative_t::string>(params);
+            project = inst::project_value{ m_cmake_facade, name };
+            m_cmake_facade.register_project(name);
+            return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::project_name(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& project = instance.get_value_cref().get_project_cref();
+            return m_instances.create2(project.name());
+        }
+
+        inst::instance *
+        builtin_function_caller2::project_add_executable(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& project = instance.get_value_ref().get_project_ref();
+            const auto& [name, sources] = get_params<alternative_t::string, alternative_t::list>(params);
+            project.add_executable(name, sources);
             return m_instances.create2_void();
         }
     }

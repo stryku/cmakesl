@@ -47,7 +47,7 @@ namespace cmsl
             virtual std::string get_current_binary_dir() const = 0;
             virtual std::string get_current_source_dir() const = 0;
 
-            virtual void add_executable(const std::string& name, const std::vector<std::string>& sources) = 0;
+            virtual void add_executable(const std::string& name, const std::vector<std::string>& sources) = 0; // Todo: Change sources to vector of string_views
         };
     }
 }
