@@ -48,6 +48,7 @@ namespace cmsl
                 void pop_front();
 
                 instance& at(int_t index);
+                const instance& at(int_t index) const;
                 instance& front();
                 instance& back();
 
