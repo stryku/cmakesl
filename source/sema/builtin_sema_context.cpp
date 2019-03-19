@@ -6,6 +6,7 @@
 #include "sema/builtin_sema_function.hpp"
 
 #include "sema/builtin_types_finder.hpp"
+#include "builtin_sema_context.hpp"
 
 
 namespace cmsl
@@ -48,12 +49,14 @@ namespace cmsl
             auto double_manipulator = add_double_type();
             auto string_manipulator = add_string_type();
             auto version_manipulator = add_version_type();
+            auto project_manipulator = add_project_type();
 
             add_bool_member_functions(bool_manipulator);
             add_int_member_functions(int_manipulator);
             add_double_member_functions(double_manipulator);
             add_string_member_functions(string_manipulator);
             add_version_member_functions(version_manipulator);
+            add_project_member_functions(project_manipulator);
         }
 
         void builtin_sema_context::add_functions()
@@ -767,6 +770,64 @@ namespace cmsl
             };
 
             add_type_member_functions(string_manipulator, functions);
+        }
+
+        type_builder builtin_sema_context::add_project_type()
+        {
+            static const auto token = make_token(token_type_t::kw_version, "project");
+            static const auto name_representation = ast::type_representation{ token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
+            builder.build_and_register_in_context();
+            return builder;
+        }
+
+        void builtin_sema_context::add_project_member_functions(type_builder &project_manipulator)
+        {
+            const auto types_finder = builtin_types_finder{ *this };
+            const auto& int_type = types_finder.find_int();
+            const auto& bool_type = types_finder.find_bool();
+            const auto& string_type = types_finder.find_string();
+            const auto& version_type = types_finder.find_version();
+            const auto& project_type = types_finder.find_project();
+
+            const auto string_token = make_token( token_type_t::kw_string, "string" );
+            const auto string_type_representation = ast::type_representation{ string_token };
+            const auto sources_list_type_name_representation = ast::type_representation{
+                    { make_token( token_type_t::kw_list, "string" ),
+                      make_token( token_type_t::less, "<" ),
+                      string_token,
+                      make_token( token_type_t::greater, ">" ) },
+                    { string_type_representation }
+            };
+            auto factory = sema_generic_type_factory{ *this,
+                                                      *this,
+                                                      m_type_factory,
+                                                      m_function_factory,
+                                                      m_context_factory };
+            const auto& sources_type = *factory.create_generic(sources_list_type_name_representation);
+
+            const auto functions = {
+                    builtin_function_info{ // project(string name)
+                            project_type,
+                            function_signature{make_id_token("project"),
+                                               {parameter_declaration{string_type, make_id_token("")}}},
+                            builtin_function_kind::project_ctor_name
+                    },
+                    builtin_function_info{ // string name()
+                            project_type,
+                            function_signature{make_id_token("name"), {}},
+                            builtin_function_kind::project_ctor_name
+                    },
+                    builtin_function_info{ // string name()
+                            project_type,
+                            function_signature{make_id_token("add_executable"),
+                                               {parameter_declaration{string_type, make_id_token("")},
+                                                parameter_declaration{sources_type, make_id_token("")}} },
+                            builtin_function_kind::project_add_executable
+                    }
+            };
+
+            add_type_member_functions(project_manipulator, functions);
         }
     }
 }

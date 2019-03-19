@@ -139,6 +139,12 @@ namespace cmsl
                 return *instance_ptr;
             }
 
+            const instance &list_value::at(int_t index) const
+            {
+                auto& instance_ptr = m_list.at(static_cast<unsigned>(index));
+                return *instance_ptr;
+            }
+
             instance &list_value::front()
             {
                 auto& instance_ptr = m_list.front();

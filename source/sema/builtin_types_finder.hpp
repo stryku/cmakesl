@@ -41,6 +41,11 @@ namespace cmsl
                 return find<token_type_t::kw_version>("version");
             }
 
+            const sema_type& find_project() const
+            {
+                return find<token_type_t::kw_project>("project");
+            }
+
             const sema_type& find_void() const
             {
                 return find<token_type_t::kw_void>("void");
