@@ -14,6 +14,7 @@ namespace cmsl
                 string,
                 version,
                 list,
+                project,
                 generic
             };
         }

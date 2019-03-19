@@ -5,6 +5,7 @@
 #include "exec/instance/version_value.hpp"
 #include "exec/instance/list_value.hpp"
 #include "exec/instance/instance_value_alternative.hpp"
+#include "exec/instance/project_value.hpp"
 
 #include <string>
 #include <vector>
@@ -30,6 +31,7 @@ namespace cmsl
                     value(generic_instance_value val) : m_generic{ std::move(val) } {}
                     value(version_value val) : m_version{ std::move(val) } {}
                     value(list_value val) : m_list{ std::move(val) } {}
+                    value(project_value val) : m_project{ std::move(val) } {}
                     ~value() {}
 
                     bool m_bool;
@@ -38,6 +40,7 @@ namespace cmsl
                     std::string m_string;
                     version_value m_version;
                     list_value m_list;
+                    project_value m_project;
                     generic_instance_value m_generic;
                 } m_value;
 
@@ -65,6 +68,7 @@ namespace cmsl
                 instance_value_variant(version_value val);
 
                 instance_value_variant(list_value val);
+                instance_value_variant(project_value val);
 
                 instance_value_variant(generic_instance_value val);
                 ~instance_value_variant();
@@ -92,6 +96,10 @@ namespace cmsl
                 list_value& get_list_ref();
                 void set_list(list_value value);
 
+                const project_value& get_project_cref() const;
+                project_value& get_project_ref();
+                void set_project(project_value value);
+
                 const generic_instance_value& get_generic_cref() const;
                 generic_instance_value& get_generic_ref();
                 void set_generic(generic_instance_value value);
@@ -107,6 +115,7 @@ namespace cmsl
                         case which_t::string: return visitor(get_string_cref());
                         case which_t::version: return visitor(get_version_cref());
                         case which_t::list: return visitor(get_list_cref());
+                        case which_t::project: return visitor(get_project_cref());
                         case which_t::generic: return visitor(get_generic_cref());
                     }
                 }
@@ -136,6 +145,7 @@ namespace cmsl
                 void construct(std::string value);
                 void construct(version_value value);
                 void construct(list_value value);
+                void construct(project_value value);
                 void construct(generic_instance_value value);
 
                 template <typename T>
