@@ -11,14 +11,14 @@ namespace cmsl
         namespace inst
         {
             project_value::project_value(facade::cmake_facade &cmake_facade,
-                                         cmsl::string_view name)
+                                         const std::string& name)
                  : m_cmake_facade{ cmake_facade }
                  , m_name{ name }
             {}
 
             std::string project_value::name() const
             {
-                return m_name.to_string();
+                return m_name;
             }
 
             void project_value::add_executable(const std::string &name, const list_value &sources)
@@ -32,7 +32,7 @@ namespace cmsl
                     collected_sources.emplace_back(instance.get_value_cref().get_string_cref());
                 }
 
-                m_cmake_facade.add_executable(name, collected_sources);
+                m_cmake_facade.get().add_executable(name, collected_sources);
             }
         }
     }
