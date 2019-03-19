@@ -16,6 +16,14 @@ namespace cmsl
         class type;
     }
 
+    namespace lexer
+    {
+        namespace token
+        {
+            class token;
+        }
+    }
+
     namespace sema
     {
         class sema_function;
@@ -48,7 +56,7 @@ namespace cmsl
                 virtual bool is_ctor(cmsl::string_view name) const = 0;
                 virtual const ast::function* get_function(cmsl::string_view name) const = 0;
                 virtual const ast::type& get_type() const = 0;
-                virtual sema::single_scope_function_lookup_result_t get_sema_function(cmsl::string_view name) const = 0;
+                virtual sema::single_scope_function_lookup_result_t get_sema_function(lexer::token::token name) const = 0;
                 virtual const sema::sema_type& get_sema_type() const = 0;
             };
         }

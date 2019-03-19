@@ -7,13 +7,13 @@ namespace cmsl
 {
     namespace sema
     {
-        sema_type::sema_type(const sema_context_interface& ctx, token_t name, std::vector<member_info> members)
+        sema_type::sema_type(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members)
             : m_ctx{ ctx }
-            , m_name{ name }
+            , m_name{ std::move(name) }
             , m_members{ std::move(members) }
         {}
 
-        sema_type::token_t sema_type::name() const
+        const ast::type_representation& sema_type::name() const
         {
             return m_name;
         }
@@ -39,7 +39,7 @@ namespace cmsl
             return *found;
         }
 
-        single_scope_function_lookup_result_t sema_type::find_member_function(cmsl::string_view name) const
+        single_scope_function_lookup_result_t sema_type::find_member_function(token_t name) const
         {
             return m_ctx.find_function_in_this_scope(name);
         }

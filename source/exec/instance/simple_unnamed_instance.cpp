@@ -64,7 +64,7 @@ namespace cmsl
                 }
                 else
                 {
-                    const auto name = m_sema_type->name().str();
+                    const auto name = m_sema_type->name().primary_name().str();
                     // Todo: find better way than comparing strings.
                     if(name == "bool")
                     {
@@ -85,6 +85,10 @@ namespace cmsl
                     else if(name == "version")
                     {
                         return version_value{ 0u };
+                    }
+                    else if(name == "list")
+                    {
+                        return list_value{};
                     }
 
                     CMSL_UNREACHABLE("Unknown type");
@@ -128,7 +132,15 @@ namespace cmsl
 
             std::unique_ptr<instance> simple_unnamed_instance::copy() const
             {
-                return std::make_unique<simple_unnamed_instance>(*m_type, get_value());
+                if(m_type)
+                {
+                    return std::make_unique<simple_unnamed_instance>(*m_type, get_value());
+                }
+                else
+                {
+                    return std::make_unique<simple_unnamed_instance>(*m_sema_type, get_value());
+                }
+
             }
 
             bool simple_unnamed_instance::has_function(cmsl::string_view name) const
@@ -157,7 +169,7 @@ namespace cmsl
                 return get_type().get_name() == name;
             }
 
-            sema::single_scope_function_lookup_result_t simple_unnamed_instance::get_sema_function(cmsl::string_view name) const
+            sema::single_scope_function_lookup_result_t simple_unnamed_instance::get_sema_function(lexer::token::token name) const
             {
                 return m_sema_type->find_member_function(name);
             }

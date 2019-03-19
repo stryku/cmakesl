@@ -87,8 +87,7 @@ namespace cmsl
             }
 
             // Let's pretend that ctors return something.
-            const auto return_type_reference = type_reference{class_name, class_name};
-            return std::make_unique<user_function_node2>(return_type_reference,
+            return std::make_unique<user_function_node2>(type_representation{ class_name },
                                                         *type_name,
                                                         std::move(*parameters),
                                                         std::move(block_expr));
@@ -221,7 +220,7 @@ namespace cmsl
 
         bool parser2::declaration_starts() const
         {
-            return current_is_type() && next_is(token_type_t::identifier);
+            return current_is_type() && (next_is(token_type_t::identifier) || current_is_generic_type());
         }
 
         std::unique_ptr<conditional_node> parser2::get_conditional_node()
@@ -513,7 +512,7 @@ namespace cmsl
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization));
         }
 
-        boost::optional<type_reference> parser2::type()
+        boost::optional<type_representation> parser2::type()
         {
             if(generic_type_starts())
             {
@@ -531,13 +530,26 @@ namespace cmsl
             {
                 // Constructor call.
                 // Todo: handle generic types
-                return eat_simple_type();
+                const auto simple_type_token = eat_simple_type_token();
+                if(!simple_type_token)
+                {
+                    return {};
+                }
+
+                // Constructor call always has one token, even for generic type constructor call.
+                return *simple_type_token;
             }
 
-            return eat(token_type_t::identifier);
+            const auto fun_name_token = eat(token_type_t::identifier);
+            if(!fun_name_token)
+            {
+                return {};
+            }
+
+            return *fun_name_token;
         }
 
-        boost::optional<parser2::token_t> parser2::eat_simple_type()
+        boost::optional<parser2::token_t> parser2::eat_simple_type_token()
         {
             const auto token_type = curr_type();
 
@@ -560,40 +572,41 @@ namespace cmsl
                     token_type_t::kw_int,
                     token_type_t::kw_double,
                     token_type_t::kw_bool,
-                    token_type_t::kw_string
+                    token_type_t::kw_string,
+                    token_type_t::kw_version,
+                    token_type_t::kw_list
             };
 
             return cmsl::contains(simple_types, token_type);
         }
 
-        boost::optional<type_reference> parser2::simple_type()
+        boost::optional<type_representation> parser2::simple_type()
         {
-            const auto type_token = *m_token;
+            const auto type_token = eat_simple_type_token();
 
-            if (!eat_simple_type())
+            if (!type_token)
             {
                 return {};
             }
 
-            return type_reference{type_token, type_token};
+            return type_representation{ *type_token };
         }
 
-        boost::optional<type_reference> parser2::generic_type()
+        boost::optional<type_representation> parser2::generic_type()
         {
-            const auto name_token = *m_token;
-
-            if(!eat_generic_type())
+            const auto name_token = eat_generic_type_token();
+            if(!name_token)
             {
                 return {};
             }
 
-            if(!eat(token_type_t::less))
+            const auto less_token = eat(token_type_t::less);
+            if(!less_token)
             {
                 return {};
             }
 
-            const auto value_type = type();
-
+            auto value_type = type();
             if(!value_type)
             {
                 return {};
@@ -605,14 +618,20 @@ namespace cmsl
                 return {};
             }
 
-            const auto closing_greater_token = *m_token;
-
-            if(!eat(token_type_t::greater))
+            const auto greater_token = eat(token_type_t::greater);
+            if(!greater_token)
             {
                 return {};
             }
 
-            return type_reference{name_token, closing_greater_token};
+            token_container_t tokens;
+            tokens.emplace_back(*name_token);
+            tokens.emplace_back(*less_token);
+            tokens.insert(std::end(tokens),
+                                         std::cbegin(value_type->tokens()), std::cend(value_type->tokens()));
+            tokens.emplace_back(*greater_token);
+
+            return type_representation{ tokens, { std::move(*value_type) } };
         }
 
         bool parser2::generic_type_starts() const
@@ -639,7 +658,7 @@ namespace cmsl
             return cmsl::contains(generic_types, curr_type());
         }
 
-        boost::optional<parser2::token_t> parser2::eat_generic_type()
+        boost::optional<parser2::token_t> parser2::eat_generic_type_token()
         {
             if(!current_is_generic_type())
             {

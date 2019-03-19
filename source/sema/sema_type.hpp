@@ -3,6 +3,7 @@
 #include "lexer/token/token.hpp"
 #include "sema/type_member_info.hpp"
 #include "sema/function_lookup_result.hpp"
+#include "ast/type_representation.hpp"
 
 #include <boost/optional.hpp>
 
@@ -11,6 +12,7 @@
 
 namespace cmsl
 {
+
     namespace sema
     {
         class sema_context_interface;
@@ -23,17 +25,18 @@ namespace cmsl
             using token_t = lexer::token::token;
 
         public:
-            explicit sema_type(const sema_context_interface& ctx, token_t name, std::vector<member_info> members);
+            explicit sema_type(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members);
 
             sema_type(const sema_type&) = delete;
             sema_type& operator=(sema_type&&) = delete;
+            virtual ~sema_type() = default;
 
-            token_t name() const;
+            const ast::type_representation& name() const;
             const sema_context_interface& context() const;
             const std::vector<member_info>& members() const;
 
             boost::optional<member_info> find_member(cmsl::string_view name) const;
-            single_scope_function_lookup_result_t find_member_function(cmsl::string_view name) const;
+            single_scope_function_lookup_result_t find_member_function(token_t name) const;
 
             bool is_complex() const;
             bool is_builtin() const;
@@ -42,10 +45,11 @@ namespace cmsl
 
 
         private:
+            // Todo: is it needed?
             friend class sema_type_builder;
 
             const sema_context_interface& m_ctx;
-            token_t m_name;
+            ast::type_representation m_name;
             std::vector<member_info> m_members;
         };
     }

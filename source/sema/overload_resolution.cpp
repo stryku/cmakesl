@@ -113,5 +113,37 @@ namespace cmsl
                 m_errs.nofify_error({m_call_token.src_range(), "No matching function for call"});
             }
         }
+
+        const sema_function *
+        overload_resolution::choose(const single_scope_function_lookup_result_t &functions, const expression_node &call_parameter) const
+        {
+            for(const auto function : functions)
+            {
+                const auto& params = function->signature().params;
+                if(params.size() == 1u && params[0].ty == call_parameter.type())
+                {
+                    return function;
+                }
+            }
+
+            raise_wrong_call_error(functions, call_parameter);
+
+            return nullptr;
+        }
+
+        void
+        overload_resolution::raise_wrong_call_error(const single_scope_function_lookup_result_t &functions, const expression_node &call_parameter) const
+        {
+            // Todo: implement function::to_string to have a nicely printed error
+            // Todo: improve error explanation
+            if(functions.size() == 1u)
+            {
+                m_errs.nofify_error({m_call_token.src_range(), "Function call parameters does not match"}); // Todo: more meaningful error
+            }
+            else
+            {
+                m_errs.nofify_error({m_call_token.src_range(), "No matching function for call"});
+            }
+        }
     }
 }

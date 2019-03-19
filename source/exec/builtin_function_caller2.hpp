@@ -1,9 +1,10 @@
 #pragma once
 
+#include "exec/instance/int_alias.hpp"
+
 #include <memory>
 #include <vector>
 #include <locale>
-#include "exec/instance/int_alias.hpp"
 
 namespace cmsl
 {
@@ -127,6 +128,43 @@ namespace cmsl
             inst::instance* version_patch(inst::instance& instance, const params_t& params);
             inst::instance* version_tweak(inst::instance& instance, const params_t& params);
             inst::instance* version_to_string(inst::instance& instance, const params_t& params);
+
+            inst::instance* list_ctor(inst::instance& instance, const params_t& params);
+            inst::instance* list_ctor_list(inst::instance& instance, const params_t& params);
+            inst::instance* list_ctor_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_ctor_value_count(inst::instance& instance, const params_t& params);
+            inst::instance* list_push_back_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_push_back_list(inst::instance& instance, const params_t& params);
+            inst::instance* list_push_front_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_push_front_list(inst::instance& instance, const params_t& params);
+            inst::instance* list_pop_back(inst::instance& instance, const params_t& params);
+            inst::instance* list_pop_front(inst::instance& instance, const params_t& params);
+            inst::instance* list_at(inst::instance& instance, const params_t& params);
+            inst::instance* list_front(inst::instance& instance, const params_t& params);
+            inst::instance* list_back(inst::instance& instance, const params_t& params);
+            inst::instance* list_insert_pos_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_insert_pos_list(inst::instance& instance, const params_t& params);
+            inst::instance* list_erase_pos(inst::instance& instance, const params_t& params);
+            inst::instance* list_erase_pos_count(inst::instance& instance, const params_t& params);
+            inst::instance* list_remove_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_remove_value_count(inst::instance& instance, const params_t& params);
+            inst::instance* list_remove_last_value_count(inst::instance& instance, const params_t& params);
+            inst::instance* list_clear(inst::instance& instance, const params_t& params);
+            inst::instance* list_resize(inst::instance& instance, const params_t& params);
+            inst::instance* list_sort(inst::instance& instance, const params_t& params);
+            inst::instance* list_reverse(inst::instance& instance, const params_t& params);
+            inst::instance* list_min(inst::instance& instance, const params_t& params);
+            inst::instance* list_max(inst::instance& instance, const params_t& params);
+            inst::instance* list_sublist_pos(inst::instance& instance, const params_t& params);
+            inst::instance* list_sublist_pos_count(inst::instance& instance, const params_t& params);
+            inst::instance* list_size(inst::instance& instance, const params_t& params);
+            inst::instance* list_empty(inst::instance& instance, const params_t& params);
+            inst::instance* list_find_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_find_value_pos(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_plus_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_plus_list(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_plus_equal_value(inst::instance& instance, const params_t& params);
+            inst::instance* list_operator_plus_equal_list(inst::instance& instance, const params_t& params);
 
         private:
             inst::int_t string_pos_to_int(std::string::size_type pos) const;

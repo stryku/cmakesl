@@ -31,7 +31,7 @@ namespace cmsl
             using namespace cmsl::test::common;
 
             const sema::sema_context valid_context;
-            const sema::sema_type valid_type{ valid_context, token_identifier("foo"), {} };
+            const sema::sema_type valid_type{ valid_context, ast::type_representation{token_identifier("foo")}, {} };
 
             class ExpressionEvaluationVisitorTest : public ::testing::Test
             {
