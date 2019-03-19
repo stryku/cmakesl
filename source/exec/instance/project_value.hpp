@@ -2,6 +2,8 @@
 
 #include "common/string.hpp"
 
+#include <functional>
+
 namespace cmsl
 {
     namespace facade
@@ -19,15 +21,15 @@ namespace cmsl
             {
             public:
                 explicit project_value(facade::cmake_facade& cmake_facade,
-                                       cmsl::string_view name);
+                                       const std::string& name);
 
                 std::string name() const;
 
                 void add_executable(const std::string& name, const list_value& sources);
 
             private:
-                facade::cmake_facade& m_cmake_facade;
-                cmsl::string_view m_name;
+                std::reference_wrapper<facade::cmake_facade> m_cmake_facade;
+                std::string m_name;
             };
         }
     }

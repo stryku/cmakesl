@@ -173,6 +173,10 @@ namespace cmsl
             inst::instance* list_operator_plus_equal_value(inst::instance& instance, const params_t& params);
             inst::instance* list_operator_plus_equal_list(inst::instance& instance, const params_t& params);
 
+            inst::instance* project_ctor_name(inst::instance& instance, const params_t& params);
+            inst::instance* project_name(inst::instance& instance, const params_t& params);
+            inst::instance* project_add_executable(inst::instance& instance, const params_t& params);
+
             inst::instance* cmake_minimum_required(const params_t& params);
 
         private:
