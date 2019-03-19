@@ -3,7 +3,7 @@
 #include "sema/factories.hpp"
 #include "sema/type_builder.hpp"
 #include "sema/builtin_function_kind.hpp"
-#include "builtin_sema_context.hpp"
+#include "sema/builtin_sema_function.hpp"
 
 #include "sema/builtin_types_finder.hpp"
 
@@ -58,7 +58,27 @@ namespace cmsl
 
         void builtin_sema_context::add_functions()
         {
+            const auto types_finder = builtin_types_finder{ *this };
+            const auto& version_type = types_finder.find_version();
+            const auto& void_type = types_finder.find_void();
 
+            const auto functions = {
+                builtin_function_info{ // void cmake_minimum_required(version)
+                        void_type,
+                        function_signature{make_id_token("cmake_minimum_required"),
+                                           { parameter_declaration{version_type, make_id_token("")}}},
+                        builtin_function_kind::cmake_minimum_required
+                }
+            };
+
+            for(const auto& function : functions)
+            {
+                const auto& created = m_function_factory.create_builtin(*this,
+                                                                        function.return_type,
+                                                                        std::move(function.signature),
+                                                                        function.kind);
+                add_function(created);
+            }
         }
 
         template<typename Functions>
