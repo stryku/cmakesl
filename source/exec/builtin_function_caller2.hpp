@@ -8,6 +8,11 @@
 
 namespace cmsl
 {
+    namespace facade
+    {
+        class cmake_facade;
+    }
+
     namespace sema
     {
         enum class builtin_function_kind;
@@ -26,8 +31,10 @@ namespace cmsl
         public:
             using params_t = std::vector<inst::instance*>;
 
-            explicit builtin_function_caller2(inst::instances_holder_interface& instances);
+            explicit builtin_function_caller2(facade::cmake_facade& cmake_facade,
+                                              inst::instances_holder_interface& instances);
 
+            std::unique_ptr<inst::instance> call(sema::builtin_function_kind function_kind, const params_t& params);
             std::unique_ptr<inst::instance> call_member(inst::instance& instance, sema::builtin_function_kind function_kind, const params_t& params);
 
         private:
@@ -166,12 +173,15 @@ namespace cmsl
             inst::instance* list_operator_plus_equal_value(inst::instance& instance, const params_t& params);
             inst::instance* list_operator_plus_equal_list(inst::instance& instance, const params_t& params);
 
+            inst::instance* cmake_minimum_required(const params_t& params);
+
         private:
             inst::int_t string_pos_to_int(std::string::size_type pos) const;
 
         private:
             static const std::locale m_utf8_locale;
 
+            facade::cmake_facade& m_cmake_facade;
             inst::instances_holder_interface& m_instances;
         };
     }
