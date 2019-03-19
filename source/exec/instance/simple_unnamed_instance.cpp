@@ -90,6 +90,10 @@ namespace cmsl
                     {
                         return list_value{};
                     }
+                    else if(name == "project")
+                    {
+                        return project_value{""};
+                    }
 
                     CMSL_UNREACHABLE("Unknown type");
                 }

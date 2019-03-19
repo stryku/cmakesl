@@ -37,7 +37,8 @@ namespace cmsl
                 }
                 else
                 {
-                    // Todo: handle builtin functions
+                    auto builtin_function = dynamic_cast<const sema::builtin_sema_function*>(&fun);
+                    return builtin_function_caller2{ m_cmake_facade, instances }.call(builtin_function->kind(), params);
                 }
 
                 return std::move(m_function_return_value);

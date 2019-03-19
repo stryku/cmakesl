@@ -793,7 +793,7 @@ namespace cmsl
             const auto string_token = make_token( token_type_t::kw_string, "string" );
             const auto string_type_representation = ast::type_representation{ string_token };
             const auto sources_list_type_name_representation = ast::type_representation{
-                    { make_token( token_type_t::kw_list, "string" ),
+                    { make_token( token_type_t::kw_list, "list" ),
                       make_token( token_type_t::less, "<" ),
                       string_token,
                       make_token( token_type_t::greater, ">" ) },

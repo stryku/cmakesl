@@ -20,15 +20,13 @@ namespace cmsl
             class project_value
             {
             public:
-                explicit project_value(facade::cmake_facade& cmake_facade,
-                                       const std::string& name);
+                explicit project_value(const std::string& name);
 
                 std::string name() const;
 
-                void add_executable(const std::string& name, const list_value& sources);
+                void add_executable(facade::cmake_facade& cmake_facade, const std::string& name, const list_value& sources);
 
             private:
-                std::reference_wrapper<facade::cmake_facade> m_cmake_facade;
                 std::string m_name;
             };
         }
