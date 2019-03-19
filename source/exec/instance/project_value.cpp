@@ -10,10 +10,8 @@ namespace cmsl
     {
         namespace inst
         {
-            project_value::project_value(facade::cmake_facade &cmake_facade,
-                                         const std::string& name)
-                 : m_cmake_facade{ cmake_facade }
-                 , m_name{ name }
+            project_value::project_value(const std::string& name)
+                 : m_name{ name }
             {}
 
             std::string project_value::name() const
@@ -21,7 +19,7 @@ namespace cmsl
                 return m_name;
             }
 
-            void project_value::add_executable(const std::string &name, const list_value &sources)
+            void project_value::add_executable(facade::cmake_facade& cmake_facade, const std::string &name, const list_value &sources)
             {
                 std::vector<std::string> collected_sources;
                 collected_sources.reserve(sources.size());
@@ -32,7 +30,7 @@ namespace cmsl
                     collected_sources.emplace_back(instance.get_value_cref().get_string_cref());
                 }
 
-                m_cmake_facade.get().add_executable(name, collected_sources);
+                cmake_facade.add_executable(name, collected_sources);
             }
         }
     }
