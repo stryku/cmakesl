@@ -6,6 +6,11 @@ namespace cmsl
     {
         enum class builtin_function_kind
         {
+            // Stand-alone functions:
+            cmake_minimum_required,
+
+            // Class methods:
+
             bool_ctor,
             bool_ctor_bool,
             bool_ctor_int,
