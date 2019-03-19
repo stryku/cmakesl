@@ -20,6 +20,10 @@ namespace cmsl
         class execution2 : public identifiers_context, public function_caller2
         {
         public:
+            explicit execution2(facade::cmake_facade& cmake_facade)
+                : m_cmake_facade{ cmake_facade }
+            {}
+
             // Todo: consider returning a reference
             std::unique_ptr<inst::instance> call(const sema::sema_function& fun,
                                  const std::vector<inst::instance*>& params,
@@ -56,7 +60,7 @@ namespace cmsl
                 else
                 {
                     auto builtin_function = dynamic_cast<const sema::builtin_sema_function*>(&fun);
-                    return builtin_function_caller2{instances}.call_member(class_instance, builtin_function->kind(), params);
+                    return builtin_function_caller2{ m_cmake_facade, instances }.call_member(class_instance, builtin_function->kind(), params);
                 }
             }
 
@@ -155,6 +159,7 @@ namespace cmsl
                 execution_context exec_ctx;
             };
 
+            facade::cmake_facade& m_cmake_facade;
             std::unique_ptr<inst::instance> m_function_return_value;
             std::stack<callstack_frame> m_callstack;
         };

@@ -66,7 +66,7 @@ namespace cmsl
             const auto main_function = ctx.find_function(make_token(lexer::token::token_type::identifier, "main")).front().front(); // Todo: handle no main function
             const auto casted = dynamic_cast<const sema::user_sema_function*>(main_function);
 
-            execution2 e;
+            execution2 e{ m_cmake_facade };
 
             inst::instances_holder instances{ ctx };
             auto main_result = e.call(*casted, {}, instances);
