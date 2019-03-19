@@ -17,6 +17,18 @@
 
 namespace cmsl
 {
+    // Todo: remove
+    template<unsigned N>
+    lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N])
+    {
+        // N counts also '\0'
+        const auto src_range = source_range{
+                source_location{ 1u, 1u, 0u },
+                source_location{ 1u, N, N - 1u }
+        };
+        return lexer::token::token{ token_type, src_range, tok };
+    }
+
     namespace exec
     {
         source_executor::source_executor(facade::cmake_facade &f)
@@ -51,7 +63,7 @@ namespace cmsl
                 return -1;
             }
 
-            const auto main_function = ctx.find_function("main").front().front(); // Todo: handle no main function
+            const auto main_function = ctx.find_function(make_token(lexer::token::token_type::identifier, "main")).front().front(); // Todo: handle no main function
             const auto casted = dynamic_cast<const sema::user_sema_function*>(main_function);
 
             execution2 e;

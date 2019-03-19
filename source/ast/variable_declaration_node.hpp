@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ast/ast_node.hpp"
-#include "ast/type_reference.hpp"
+#include "ast/type_representation.hpp"
 #include "ast/ast_node_visitor.hpp" // todo: to cpp
 
 namespace cmsl
@@ -11,13 +11,13 @@ namespace cmsl
         class variable_declaration_node : public ast_node
         {
         public:
-            explicit variable_declaration_node(type_reference ty, lexer::token::token name, std::unique_ptr<ast_node> initialization)
-                : m_ty{ ty }
+            explicit variable_declaration_node(type_representation ty, lexer::token::token name, std::unique_ptr<ast_node> initialization)
+                : m_ty{ std::move(ty) }
                 , m_name{ name }
                 , m_initialization{ std::move(initialization) }
             {}
 
-            type_reference get_type_reference() const
+            const type_representation& get_type_reference() const
             {
                 return m_ty;
             }
@@ -38,7 +38,7 @@ namespace cmsl
             }
 
         private:
-            type_reference m_ty;
+            type_representation m_ty;
             lexer::token::token m_name;
             std::unique_ptr<ast_node> m_initialization;
         };

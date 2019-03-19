@@ -1,8 +1,11 @@
+#include "common/assert.hpp"
 #include "sema/builtin_sema_context.hpp"
 #include "sema/factories.hpp"
 #include "sema/type_builder.hpp"
 #include "sema/builtin_function_kind.hpp"
 #include "builtin_sema_context.hpp"
+
+#include "sema/builtin_types_finder.hpp"
 
 
 namespace cmsl
@@ -71,16 +74,19 @@ namespace cmsl
 
         type_builder builtin_sema_context::add_bool_type()
         {
-            const auto token = make_token(token_type_t::kw_bool, "bool");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            static const auto token = make_token(token_type_t::kw_bool, "bool");
+            static const auto name_representation = ast::type_representation{ token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
             builder.build_and_register_in_context();
             return builder;
         }
 
         void builtin_sema_context::add_bool_member_functions(type_builder &bool_manipulator)
         {
-            const auto& int_type = *find_type("int");
-            const auto& bool_type = *find_type("bool");
+            const auto types_finder = builtin_types_finder{ *this };
+            const auto& int_type = types_finder.find_int();
+            const auto& bool_type = types_finder.find_bool();
+            const auto& string_type = types_finder.find_string();
 
             const auto functions = {
                 builtin_function_info{ // bool()
@@ -125,7 +131,7 @@ namespace cmsl
                         builtin_function_kind::bool_operator_amp_amp
                 },
                 builtin_function_info{ // to_string()
-                        *find_type("string"),
+                        string_type,
                         function_signature{ make_id_token("to_string"), {} },
                         builtin_function_kind::bool_to_string
                 }
@@ -136,16 +142,20 @@ namespace cmsl
 
         type_builder builtin_sema_context::add_int_type()
         {
-            const auto token = make_token(token_type_t::kw_int, "int");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            static const auto token = make_token(token_type_t::kw_int, "int");
+            static const auto name_representation = ast::type_representation{ token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
             builder.build_and_register_in_context();
             return builder;
         }
 
         void builtin_sema_context::add_int_member_functions(type_builder &int_manipulator)
         {
-            const auto& int_type = *find_type("int");
-            const auto& bool_type = *find_type("bool");
+            const auto types_finder = builtin_types_finder{ *this };
+            const auto& int_type = types_finder.find_int();
+            const auto& bool_type = types_finder.find_bool();
+            const auto& double_type = types_finder.find_double();
+            const auto& string_type = types_finder.find_string();
 
             const auto functions = {
                     builtin_function_info{ // int()
@@ -168,11 +178,11 @@ namespace cmsl
                     builtin_function_info{ // int(double)
                             int_type,
                             function_signature{ make_id_token("int"),
-                                                { parameter_declaration{*find_type("double"), make_id_token("") } } },
+                                                { parameter_declaration{double_type, make_id_token("") } } },
                             builtin_function_kind::int_ctor_double
                     },
                     builtin_function_info{ // to_string()
-                            *find_type("string"),
+                            string_type,
                             function_signature{ make_id_token("to_string"), {} },
                             builtin_function_kind::int_to_string
                     },
@@ -267,16 +277,20 @@ namespace cmsl
 
         type_builder builtin_sema_context::add_double_type()
         {
-            const auto token = make_token(token_type_t::kw_double, "double");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            static const auto token = make_token(token_type_t::kw_double, "double");
+            static const auto name_representation = ast::type_representation{ token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
             builder.build_and_register_in_context();
             return builder;
         }
 
         void builtin_sema_context::add_double_member_functions(type_builder &double_manipulator)
         {
-            const auto& double_type = *find_type("double");
-            const auto& bool_type = *find_type("bool");
+            const auto types_finder = builtin_types_finder{ *this };
+            const auto& int_type = types_finder.find_int();
+            const auto& bool_type = types_finder.find_bool();
+            const auto& double_type = types_finder.find_double();
+            const auto& string_type = types_finder.find_string();
 
             const auto functions = {
                     builtin_function_info{ // double()
@@ -293,7 +307,7 @@ namespace cmsl
                     builtin_function_info{ // double(int)
                             double_type,
                             function_signature{ make_id_token("double"),
-                                                { parameter_declaration{*find_type("int"), make_id_token("") } } },
+                                                { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::double_ctor_int
                     },
                     builtin_function_info{ // operator+(double)
@@ -375,7 +389,7 @@ namespace cmsl
                             builtin_function_kind::double_operator_greater_equal
                     },
                     builtin_function_info{
-                            *find_type("string"),
+                            string_type,
                             function_signature{ make_id_token("to_string"), {} },
                             builtin_function_kind::double_to_string
                     }
@@ -386,18 +400,21 @@ namespace cmsl
 
         type_builder builtin_sema_context::add_string_type()
         {
-            const auto token = make_token(token_type_t::kw_string, "string");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            static const auto token = make_token(token_type_t::kw_string, "string");
+            static const auto name_representation = ast::type_representation{ token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
             builder.build_and_register_in_context();
             return builder;
         }
 
         void builtin_sema_context::add_string_member_functions(type_builder &string_manipulator)
         {
-            const auto& string_type = *find_type("string");
-            const auto& bool_type = *find_type("bool");
-            const auto& int_type = *find_type("int");
-            const auto& void_type = *find_type("void");
+            const auto types_finder = builtin_types_finder{ *this };
+            const auto& int_type = types_finder.find_int();
+            const auto& bool_type = types_finder.find_bool();
+            const auto& double_type = types_finder.find_double();
+            const auto& string_type = types_finder.find_string();
+            const auto& void_type = types_finder.find_string();
 
 
             const auto functions = {
@@ -425,7 +442,7 @@ namespace cmsl
                             builtin_function_kind::string_empty
                     },
                     builtin_function_info{ // int size()
-                            *find_type("int"),
+                            int_type,
                             function_signature{ make_id_token("size"), {} },
                             builtin_function_kind::string_size
                     },
@@ -620,18 +637,20 @@ namespace cmsl
 
         type_builder builtin_sema_context::add_version_type()
         {
-            const auto token = make_token(token_type_t::kw_version, "version");
-            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, token };
+            static const auto token = make_token(token_type_t::kw_version, "version");
+            static const auto name_representation = ast::type_representation{ token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
             builder.build_and_register_in_context();
             return builder;
         }
 
         void builtin_sema_context::add_version_member_functions(type_builder &string_manipulator)
         {
-            const auto& version_type = *find_type("version");
-            const auto& int_type = *find_type("int");
-            const auto& bool_type = *find_type("bool");
-            const auto& string_type = *find_type("string");
+            const auto types_finder = builtin_types_finder{ *this };
+            const auto& int_type = types_finder.find_int();
+            const auto& bool_type = types_finder.find_bool();
+            const auto& string_type = types_finder.find_string();
+            const auto& version_type = types_finder.find_version();
 
             const auto functions = {
                     builtin_function_info{ // version(int major)
@@ -667,37 +686,37 @@ namespace cmsl
                     builtin_function_info{ // bool operator==(version)
                             bool_type,
                             function_signature{ make_id_token("=="),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_equal_equal
                     },
                     builtin_function_info{ // bool operator!=(version)
                             bool_type,
                             function_signature{ make_id_token("!="),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_not_equal
                     },
                     builtin_function_info{ // bool operator<(version)
                             bool_type,
                             function_signature{ make_id_token("<"),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_less
                     },
                     builtin_function_info{ // bool operator<=(version)
                             bool_type,
                             function_signature{ make_id_token("<="),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_less_equal
                     },
                     builtin_function_info{ // bool operator>(version)
                             bool_type,
                             function_signature{ make_id_token(">"),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_greater
                     },
                     builtin_function_info{ // bool operator>=(version)
                             bool_type,
                             function_signature{ make_id_token(">="),
-                                                { parameter_declaration{int_type, make_id_token("") } } },
+                                                { parameter_declaration{version_type, make_id_token("") } } },
                             builtin_function_kind::version_operator_greater_equal
                     },
                     builtin_function_info{ // int major()

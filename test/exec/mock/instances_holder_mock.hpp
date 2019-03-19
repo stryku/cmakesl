@@ -28,6 +28,8 @@ namespace cmsl
                     MOCK_METHOD1(create2, instance*(instance_value_t));
                     MOCK_METHOD1(create2_reference, instance*(instance&));
                     MOCK_METHOD1(create2, instance*(const sema::sema_type&));
+                    MOCK_METHOD2(create2, instance*(const sema::sema_type&, instance_value_t));
+                    MOCK_METHOD0(create2_void, instance*());
                 };
             }
         }

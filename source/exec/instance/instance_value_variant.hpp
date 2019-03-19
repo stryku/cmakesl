@@ -3,8 +3,11 @@
 #include "exec/instance/int_alias.hpp"
 #include "exec/instance/generic_instance_value.hpp"
 #include "exec/instance/version_value.hpp"
+#include "exec/instance/list_value.hpp"
+#include "exec/instance/instance_value_alternative.hpp"
 
 #include <string>
+#include <vector>
 
 namespace cmsl
 {
@@ -12,6 +15,8 @@ namespace cmsl
     {
         namespace inst
         {
+            class instance;
+
             class instance_value_variant
             {
             private:
@@ -24,6 +29,7 @@ namespace cmsl
                     value(std::string val) : m_string{ std::move(val) } {}
                     value(generic_instance_value val) : m_generic{ std::move(val) } {}
                     value(version_value val) : m_version{ std::move(val) } {}
+                    value(list_value val) : m_list{ std::move(val) } {}
                     ~value() {}
 
                     bool m_bool;
@@ -31,19 +37,12 @@ namespace cmsl
                     double m_double;
                     std::string m_string;
                     version_value m_version;
+                    list_value m_list;
                     generic_instance_value m_generic;
                 } m_value;
 
             public:
-                enum class which_type
-                {
-                    bool_,
-                    int_,
-                    double_,
-                    string,
-                    version,
-                    generic
-                };
+                using which_t = instance_value_alternative;
 
                 instance_value_variant(const instance_value_variant& other);
                 instance_value_variant& operator=(const instance_value_variant& other);
@@ -65,10 +64,12 @@ namespace cmsl
 
                 instance_value_variant(version_value val);
 
+                instance_value_variant(list_value val);
+
                 instance_value_variant(generic_instance_value val);
                 ~instance_value_variant();
 
-                which_type which() const;
+                which_t which() const;
 
                 bool get_bool() const;
                 void set_bool(bool value);
@@ -87,6 +88,10 @@ namespace cmsl
                 version_value& get_version_ref();
                 void set_version(version_value value);
 
+                const list_value& get_list_cref() const;
+                list_value& get_list_ref();
+                void set_list(list_value value);
+
                 const generic_instance_value& get_generic_cref() const;
                 generic_instance_value& get_generic_ref();
                 void set_generic(generic_instance_value value);
@@ -96,26 +101,32 @@ namespace cmsl
                 {
                     switch(m_which)
                     {
-                        case which_type::bool_: return visitor(get_bool());
-                        case which_type::int_: return visitor(get_int());
-                        case which_type::double_: return visitor(get_double());
-                        case which_type::string: return visitor(get_string_cref());
-                        case which_type::version: return visitor(get_version_cref());
-                        case which_type::generic: return visitor(get_generic_cref());
+                        case which_t::bool_: return visitor(get_bool());
+                        case which_t::int_: return visitor(get_int());
+                        case which_t::double_: return visitor(get_double());
+                        case which_t::string: return visitor(get_string_cref());
+                        case which_t::version: return visitor(get_version_cref());
+                        case which_t::list: return visitor(get_list_cref());
+                        case which_t::generic: return visitor(get_generic_cref());
                     }
                 }
 
                 // Todo: move to tests. It's not needed in production code.
                 bool operator==(const instance_value_variant& rhs) const;
                 bool operator!=(const instance_value_variant& rhs) const;
+                bool operator<(const instance_value_variant& rhs) const;
+                bool operator<=(const instance_value_variant& rhs) const;
+                bool operator>(const instance_value_variant& rhs) const;
+                bool operator>=(const instance_value_variant& rhs) const;
 
             private:
                 template <typename T>
-                void reassign(T&& val, which_type w);
+                void reassign(T&& val, which_t w);
 
                 template <typename T>
-                void assign(T&& val, which_type w);
-                void assign(const value& other, which_type w);
+                void assign(T&& val, which_t w);
+                void assign(const value& other, which_t w);
+                void assign(value&& other, which_t w);
 
                 template <typename Value>
                 void construct(Value& destination_ptr, Value&& value);
@@ -124,6 +135,7 @@ namespace cmsl
                 void construct(double value);
                 void construct(std::string value);
                 void construct(version_value value);
+                void construct(list_value value);
                 void construct(generic_instance_value value);
 
                 template <typename T>
@@ -133,7 +145,7 @@ namespace cmsl
                 void move_from(instance_value_variant&& moved);
 
             private:
-                which_type m_which{ which_type::bool_ };
+                which_t m_which{ which_t::bool_ };
             };
         }
     }

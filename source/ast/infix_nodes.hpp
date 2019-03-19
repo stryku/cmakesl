@@ -78,7 +78,7 @@ namespace cmsl
             using params_t = std::vector<std::unique_ptr<ast_node>>;
 
             explicit call_node(lexer::token::token name, params_t parameter_nodes)
-                : m_name{ name }
+                : m_name{ std::move(name) }
                 , m_parameter_nodes{ std::move(parameter_nodes) }
             {}
 

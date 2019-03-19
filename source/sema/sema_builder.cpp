@@ -22,7 +22,8 @@ namespace cmsl
 
         std::unique_ptr<sema_node> sema_builder::build(const ast::ast_node &ast_tree)
         {
-            sema_builder_ast_visitor visitor{ m_ctx,
+            sema_builder_ast_visitor visitor{ m_ctx, // generic types ctx
+                                              m_ctx, // global ctx
                                               m_errs,
                                               m_ids_context,
                                               m_type_factory,

@@ -31,6 +31,7 @@
 #include "sema/type_builder.hpp"
 #include "sema/overload_resolution.hpp"
 #include "common/assert.hpp"
+#include "sema/builtin_types_finder.hpp"
 
 namespace cmsl
 {
@@ -42,13 +43,15 @@ namespace cmsl
             using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
         public:
-            explicit sema_builder_ast_visitor(sema_context_interface& ctx,
+            explicit sema_builder_ast_visitor(sema_context_interface& generic_types_context,
+                                              sema_context_interface& ctx,
                                               errors::errors_observer& errs,
                                               identifiers_context& ids_context,
                                               sema_type_factory& type_factory,
                                               sema_function_factory& function_factory,
                                               sema_context_factory& context_factory)
-                : m_ctx{ ctx }
+                : m_generic_types_context{ generic_types_context }
+                , m_ctx{ ctx }
                 , m_errors_observer{ errs }
                 , m_ids_context{ ids_context }
                 , m_function_factory{ function_factory }
@@ -79,7 +82,8 @@ namespace cmsl
             void visit(const ast::class_node2& node) override
             {
                 const auto name = node.get_name();
-                if(const auto found_type = m_ctx.find_type_in_this_scope(name.str()))
+                const auto class_name_representation = ast::type_representation{ name };
+                if(const auto found_type = m_ctx.find_type_in_this_scope(class_name_representation))
                 {
                     // Todo: type redefinition
                     raise_error(name, "Type redefinition");
@@ -101,7 +105,7 @@ namespace cmsl
 
                 // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
                 // Todo: ast shouldn't store ast ctx somewhere else?
-                auto& class_type = m_type_factory.create(class_context, name, std::move(members->info));
+                auto& class_type = m_type_factory.create(class_context, class_name_representation, std::move(members->info));
 //                auto created_class_type = std::make_unique<sema_type>(class_context, name, std::move(members->info));
 //                auto class_type = created_class_type.get();
 
@@ -188,11 +192,11 @@ namespace cmsl
 
                 // Todo: handle operators like ++ and ++(int)
                 const auto op = node.get_operator();
-                auto operator_function = lhs->type().find_member_function(op.str());
-                if(operator_function.empty())
+                auto lookup_result = lhs->type().find_member_function(op);
+                if(lookup_result.empty())
                 {
                     // Todo: lhs's type doesn't support such operator
-                    raise_error(op, lhs->type().name().str().to_string() + " doesn't support operator " + op.str().to_string());
+                    raise_error(op, lhs->type().name().to_string() + " doesn't support operator " + op.str().to_string());
                     return;
                 }
 
@@ -202,19 +206,18 @@ namespace cmsl
                     return;
                 }
 
-                if(lhs->type() != rhs->type())
+                overload_resolution over_resolution{ m_errors_observer, op };
+                const auto chosen_function = over_resolution.choose(lookup_result, *rhs);
+                if(!chosen_function)
                 {
-                    // Todo: can not apply operator to different types
-                    raise_error(op, "Can not apply operator to with different operand types");
                     return;
                 }
 
-                const auto& fun = *operator_function.front(); // Todo: implement overload resolution to choose matching function
                 m_result_node = std::make_unique<binary_operator_node>(std::move(lhs),
                                                                        node.get_operator(),
-                                                                       fun,
+                                                                       *chosen_function,
                                                                        std::move(rhs),
-                                                                       fun.return_type());
+                                                                       chosen_function->return_type());
             }
 
             void visit(const ast::class_member_access_node& node) override
@@ -231,7 +234,7 @@ namespace cmsl
                 if(!member_info)
                 {
                     // Todo: type does not have such member.
-                    raise_error(member_name, lhs_type.name().str().to_string() + " does not have member " + member_name.str().to_string());
+                    raise_error(member_name, lhs_type.name().to_string() + " does not have member " + member_name.str().to_string());
                     return;
                 }
 
@@ -240,7 +243,7 @@ namespace cmsl
 
             void visit(const ast::function_call_node& node) override
             {
-                const auto function_lookup_result = m_ctx.find_function(node.get_name().str());
+                const auto function_lookup_result = m_ctx.find_function(node.get_name());
 
                 auto params = get_function_call_params(node.get_param_nodes());
                 if(!params)
@@ -263,7 +266,7 @@ namespace cmsl
                     } break;
                     case sema_context_interface::context_type::class_:
                     {
-                        const auto is_constructor = chosen_function->signature().name.str() == chosen_function->return_type().name().str();
+                        const auto is_constructor = chosen_function->signature().name.str() == chosen_function->return_type().name().to_string();
                         if(is_constructor)
                         {
                             m_result_node = std::make_unique<constructor_call_node>(chosen_function->return_type(),
@@ -297,7 +300,7 @@ namespace cmsl
                     return;
                 }
 
-                const auto member_functions = lhs->type().find_member_function(name.str());
+                const auto member_functions = lhs->type().find_member_function(name);
                 overload_resolution over_resolution{ m_errors_observer, node.get_name() };
                 const auto chosen_function = over_resolution.choose(member_functions, *params);
                 if(!chosen_function)
@@ -310,14 +313,14 @@ namespace cmsl
 
             void visit(const ast::bool_value_node& node) override
             {
-                const auto& type = *m_ctx.find_type("bool");
+                const auto& type = builtin_types_finder{ m_ctx }.find_bool();
                 const auto value = node.get_token().str() == "true";
                 m_result_node = std::make_unique<bool_value_node>(type, value);
             }
 
             void visit(const ast::int_value_node& node) override
             {
-                const auto& type = *m_ctx.find_type("int");
+                const auto& type = builtin_types_finder{ m_ctx }.find_int();
                 const auto token = node.get_token();
                 char* end;
                 const auto value = std::strtol(token.str().data(), &end, 10); // todo: handle hex etc
@@ -326,7 +329,8 @@ namespace cmsl
 
             void visit(const ast::double_value_node& node) override
             {
-                const auto& type = *m_ctx.find_type("double");
+                // Todo: figure out better way to find builtin types
+                const auto& type = builtin_types_finder{ m_ctx }.find_double();
                 const auto token = node.get_token();
                 char* end;
                 const auto value = std::strtod(token.str().data(), &end); // todo: handle hex etc
@@ -335,7 +339,8 @@ namespace cmsl
 
             void visit(const ast::string_value_node& node) override
             {
-                const auto& type = *m_ctx.find_type("string");
+                // Todo: figure out better way to find builtin types
+                const auto& type = builtin_types_finder{ m_ctx }.find_string();
                 // At this point node contains string value including "". We need to get rid of them.
 
                 const auto node_string = node.get_token().str();
@@ -395,11 +400,9 @@ namespace cmsl
             void visit(const ast::user_function_node2& node) override
             {
                 const auto return_type_reference = node.get_return_type_reference();
-                auto return_type = m_ctx.find_type(return_type_reference.to_string());
+                auto return_type = try_get_or_create_generic_type(m_ctx, return_type_reference);
                 if(!return_type)
                 {
-                    // Todo: unknown return type
-                    raise_error(return_type_reference.begin, "Unknown return type");
                     return;
                 }
 
@@ -411,11 +414,9 @@ namespace cmsl
 
                 for(const auto& param_decl : node.get_param_declarations())
                 {
-                    auto param_type = m_ctx.find_type(param_decl.ty.to_string());
+                    auto param_type = try_get_or_create_generic_type(m_ctx, param_decl.ty);
                     if(!param_type)
                     {
-                        //Todo: unknown parameter type
-                        raise_error(param_decl.ty.begin, "Unknown parameter type");
                         return;
                     }
 
@@ -446,14 +447,12 @@ namespace cmsl
 
             void visit(const ast::variable_declaration_node& node) override
             {
-                const auto type_reference = node.get_type_reference();
-                const auto type = m_ctx.find_type(type_reference.to_string());
+                const auto& type_reference = node.get_type_reference();
+                const auto type = try_get_or_create_generic_type(m_ctx, type_reference);
 
                 // Todo: handle generic types
                 if(!type)
                 {
-                    // Todo: type not found
-                    raise_error(type_reference.begin, "Unknown variable type");
                     return;
                 }
 
@@ -470,7 +469,7 @@ namespace cmsl
                     {
                         // Todo: Init does not have same type as declared.
                         // Todo: introduce auto
-                        raise_error(initialization->type().name(), "Initialization and declared variable type does not match");
+                        raise_error(initialization->type().name().primary_name(), "Initialization and declared variable type does not match");
                         return;
                     }
                 }
@@ -494,6 +493,28 @@ namespace cmsl
             std::unique_ptr<sema_node> m_result_node;
 
         private:
+            const sema_type* try_get_or_create_generic_type(const sema_context_interface& search_context, const ast::type_representation& name)
+            {
+                const auto found = search_context.find_type(name);
+                if(found)
+                {
+                    return found;
+                }
+
+                if(!name.is_generic())
+                {
+                    raise_error(name.primary_name(), name.to_string() + " type not found.");
+                    return nullptr;
+                }
+
+                auto factory = sema_generic_type_factory{ m_generic_types_context,
+                                                          search_context,
+                                                          m_type_factory,
+                                                          m_function_factory,
+                                                          m_context_factory };
+                return factory.create_generic(name);
+            }
+
             template <typename T>
             std::unique_ptr<T> to_node(std::unique_ptr<sema_node> node) const
             {
@@ -517,7 +538,7 @@ namespace cmsl
 
             sema_builder_ast_visitor clone(sema_context_interface& ctx_to_visit) const
             {
-                return sema_builder_ast_visitor{ ctx_to_visit, m_errors_observer, m_ids_context, m_type_factory, m_function_factory, m_context_factory };
+                return sema_builder_ast_visitor{ m_generic_types_context, ctx_to_visit, m_errors_observer, m_ids_context, m_type_factory, m_function_factory, m_context_factory };
             }
 
             std::unique_ptr<expression_node> visit_child_expr(const ast::ast_node& node)
@@ -629,11 +650,9 @@ namespace cmsl
                     sema_context& ctx)
             {
                 const auto return_type_reference = node.get_return_type_reference();
-                auto return_type = ctx.find_type(return_type_reference.to_string());
+                auto return_type = try_get_or_create_generic_type(ctx, return_type_reference);
                 if(!return_type)
                 {
-                    // Todo: unknown return type
-                    raise_error(return_type_reference.begin, return_type_reference.to_string().to_string() + " unknown return type");
                     return {};
                 }
 
@@ -644,11 +663,11 @@ namespace cmsl
 
                 for(const auto& param_decl : node.get_param_declarations())
                 {
-                    auto param_type = ctx.find_type(param_decl.ty.to_string());
+                    auto param_type = try_get_or_create_generic_type(ctx, param_decl.ty);
                     if(!param_type)
                     {
                         //Todo: unknown parameter type
-                        raise_error(param_decl.ty.begin, param_decl.ty.to_string().to_string() + " unknown parameter type");
+                        raise_error(param_decl.ty.primary_name(), param_decl.ty.to_string() + " unknown parameter type");
                         return {};
                     }
 
@@ -702,7 +721,19 @@ namespace cmsl
                 return members;
             }
 
+            template<unsigned N>
+            lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N])
+            {
+                // N counts also '\0'
+                const auto src_range = source_range{
+                        source_location{ 1u, 1u, 0u },
+                        source_location{ 1u, N, N - 1u }
+                };
+                return lexer::token::token{ token_type, src_range, tok };
+            }
+
         private:
+            sema_context_interface& m_generic_types_context;
             sema_context_interface& m_ctx;
             errors::errors_observer& m_errors_observer;
             identifiers_context& m_ids_context;

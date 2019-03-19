@@ -12,13 +12,13 @@ namespace cmsl
                                    sema_function_factory &function_factory,
                                    sema_context_factory &context_factory,
                                    sema_context_interface &current_ctx,
-                                   lexer::token::token name)
+                                   ast::type_representation name)
                 : m_type_factory{ type_factory }
                 , m_function_factory{ function_factory }
                 , m_context_factory{ context_factory }
                 , m_current_ctx{ current_ctx }
                 , m_type_ctx{ m_context_factory.create_class(&current_ctx) }
-                , m_name{ name }
+                , m_name{ std::move(name) }
         {}
 
         type_builder &type_builder::with_member(const member_info &member)
@@ -44,6 +44,13 @@ namespace cmsl
         const sema_type& type_builder::build_and_register_in_context()
         {
             const auto& type = m_type_factory.create(m_type_ctx, m_name, std::move(m_members));
+            m_current_ctx.add_type(type);
+            return type;
+        }
+
+        const sema_type& type_builder::build_homogeneous_generic_and_register_in_context(const sema_type& value_type)
+        {
+            const auto& type = m_type_factory.create_homogeneous_generic(m_type_ctx, m_name, value_type);
             m_current_ctx.add_type(type);
             return type;
         }

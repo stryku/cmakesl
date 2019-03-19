@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ast/type_reference.hpp"
+#include "ast/type_representation.hpp"
 #include "ast/parameter_declaration.hpp"
 #include "lexer/token/token.hpp"
 
@@ -44,12 +44,13 @@ namespace cmsl
             std::unique_ptr<ast_node> get_if_else_node();
             std::unique_ptr<ast_node> get_while_node();
             std::unique_ptr<ast_node> get_return_node();
-            boost::optional<type_reference> type();
+            boost::optional<type_representation> type();
             std::unique_ptr<block_node> block();
 
         private:
             struct function_call_values
             {
+                // Name can possibly be multiple tokens when it's a generic type constructor call.
                 token_t name;
                 std::vector<std::unique_ptr<ast_node>> params;
             };
@@ -61,13 +62,14 @@ namespace cmsl
 
             token_type_t peek(size_t n = 1u) const;
             boost::optional<token_t> eat(boost::optional<token_type_t> type = {});
-            boost::optional<token_t> eat_generic_type();
-            boost::optional<token_t> eat_simple_type();
+            boost::optional<token_t> eat_generic_type_token();
+            boost::optional<token_t> eat_simple_type_token();
+            // Can possibly return multiple tokens when it's a generic type constructor call.
             boost::optional<token_t> eat_function_call_name();
 
 
-            boost::optional<type_reference> generic_type();
-            boost::optional<type_reference> simple_type();
+            boost::optional<type_representation> generic_type();
+            boost::optional<type_representation> simple_type();
             bool generic_type_starts() const;
 
             token_type_t curr_type() const;
