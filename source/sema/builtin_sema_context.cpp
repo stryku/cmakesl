@@ -3,7 +3,7 @@
 #include "sema/factories.hpp"
 #include "sema/type_builder.hpp"
 #include "sema/builtin_function_kind.hpp"
-#include "builtin_sema_context.hpp"
+#include "sema/builtin_sema_function.hpp"
 
 #include "sema/builtin_types_finder.hpp"
 
@@ -75,7 +75,8 @@ namespace cmsl
             {
                 const auto& created = m_function_factory.create_builtin(*this,
                                                                         function.return_type,
-                                                                        std::move(function.signature));
+                                                                        std::move(function.signature),
+                                                                        function.kind);
                 add_function(created);
             }
         }

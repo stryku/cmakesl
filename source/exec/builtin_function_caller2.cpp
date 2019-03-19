@@ -8,11 +8,18 @@
 
 #include <algorithm>
 #include <sema/homogeneous_generic_type.hpp>
+#include "cmake_facade.hpp"
+
+#define CASE_BUILTIN_MEMBER_FUNCTION_CALL(function) \
+case sema::builtin_function_kind::function: \
+{ \
+    result = function(instance, params); \
+} break
 
 #define CASE_BUILTIN_FUNCTION_CALL(function) \
 case sema::builtin_function_kind::function: \
 { \
-    result = function(instance, params); \
+    result = function(params); \
 } break
 
 namespace cmsl
@@ -30,8 +37,10 @@ namespace cmsl
 
         const std::locale builtin_function_caller2::m_utf8_locale("en_US.utf8");
 
-        builtin_function_caller2::builtin_function_caller2(inst::instances_holder_interface &instances)
-            : m_instances{ instances }
+        builtin_function_caller2::builtin_function_caller2(facade::cmake_facade& cmake_facade,
+                                                           inst::instances_holder_interface &instances)
+            : m_cmake_facade{ cmake_facade }
+            , m_instances{ instances }
         {}
 
         std::unique_ptr<inst::instance>
@@ -42,148 +51,166 @@ namespace cmsl
             switch (function_kind)
             {
                 // bool
-                CASE_BUILTIN_FUNCTION_CALL(bool_ctor);
-                CASE_BUILTIN_FUNCTION_CALL(bool_ctor_bool);
-                CASE_BUILTIN_FUNCTION_CALL(bool_ctor_int);
-                CASE_BUILTIN_FUNCTION_CALL(bool_operator_equal);
-                CASE_BUILTIN_FUNCTION_CALL(bool_operator_equal_equal);
-                CASE_BUILTIN_FUNCTION_CALL(bool_operator_pipe_pipe);
-                CASE_BUILTIN_FUNCTION_CALL(bool_operator_amp_amp);
-                CASE_BUILTIN_FUNCTION_CALL(bool_to_string);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_ctor);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_ctor_bool);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_ctor_int);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_operator_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_operator_equal_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_operator_pipe_pipe);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_operator_amp_amp);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_to_string);
 
                 // int
-                CASE_BUILTIN_FUNCTION_CALL(int_ctor);
-                CASE_BUILTIN_FUNCTION_CALL(int_ctor_bool);
-                CASE_BUILTIN_FUNCTION_CALL(int_ctor_int);
-                CASE_BUILTIN_FUNCTION_CALL(int_ctor_double);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_plus);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_minus);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_star);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_slash);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_equal);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_plus_equal);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_minus_equal);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_star_equal);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_slash_equal);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_less);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_less_equal);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_greater);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_greater_equal);
-                CASE_BUILTIN_FUNCTION_CALL(int_operator_equal_equal);
-                CASE_BUILTIN_FUNCTION_CALL(int_to_string);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_ctor);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_ctor_bool);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_ctor_int);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_ctor_double);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_plus);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_minus);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_star);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_slash);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_plus_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_minus_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_star_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_slash_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_less);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_less_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_greater);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_greater_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_equal_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_to_string);
 
                 // double
-                CASE_BUILTIN_FUNCTION_CALL(double_ctor);
-                CASE_BUILTIN_FUNCTION_CALL(double_ctor_double);
-                CASE_BUILTIN_FUNCTION_CALL(double_ctor_int);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_plus);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_minus);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_star);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_slash);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_equal);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_plus_equal);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_minus_equal);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_star_equal);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_slash_equal);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_less);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_less_equal);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_greater);
-                CASE_BUILTIN_FUNCTION_CALL(double_operator_greater_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_ctor);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_ctor_double);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_ctor_int);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_plus);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_minus);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_star);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_slash);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_plus_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_minus_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_star_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_slash_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_less);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_less_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_greater);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_greater_equal);
 
                 // string
-                CASE_BUILTIN_FUNCTION_CALL(string_ctor);
-                CASE_BUILTIN_FUNCTION_CALL(string_ctor_string);
-                CASE_BUILTIN_FUNCTION_CALL(string_ctor_string_count);
-                CASE_BUILTIN_FUNCTION_CALL(string_empty);
-                CASE_BUILTIN_FUNCTION_CALL(string_size);
-                CASE_BUILTIN_FUNCTION_CALL(string_operator_equal_equal);
-                CASE_BUILTIN_FUNCTION_CALL(string_operator_not_equal);
-                CASE_BUILTIN_FUNCTION_CALL(string_operator_less);
-                CASE_BUILTIN_FUNCTION_CALL(string_operator_less_equal);
-                CASE_BUILTIN_FUNCTION_CALL(string_operator_greater);
-                CASE_BUILTIN_FUNCTION_CALL(string_operator_greater_equal);
-                CASE_BUILTIN_FUNCTION_CALL(string_operator_plus);
-                CASE_BUILTIN_FUNCTION_CALL(string_operator_plus_equal);
-                CASE_BUILTIN_FUNCTION_CALL(string_clear);
-                CASE_BUILTIN_FUNCTION_CALL(string_insert_pos_str);
-                CASE_BUILTIN_FUNCTION_CALL(string_erase_pos);
-                CASE_BUILTIN_FUNCTION_CALL(string_erase_pos_count);
-                CASE_BUILTIN_FUNCTION_CALL(string_starts_with);
-                CASE_BUILTIN_FUNCTION_CALL(string_ends_with);
-                CASE_BUILTIN_FUNCTION_CALL(string_replace_pos_count_str);
-                CASE_BUILTIN_FUNCTION_CALL(string_substr_pos);
-                CASE_BUILTIN_FUNCTION_CALL(string_substr_pos_count);
-                CASE_BUILTIN_FUNCTION_CALL(string_resize_newsize);
-                CASE_BUILTIN_FUNCTION_CALL(string_resize_newsize_fill);
-                CASE_BUILTIN_FUNCTION_CALL(string_find_str);
-                CASE_BUILTIN_FUNCTION_CALL(string_find_str_pos);
-                CASE_BUILTIN_FUNCTION_CALL(string_find_not_of_str);
-                CASE_BUILTIN_FUNCTION_CALL(string_find_not_of_str_pos);
-                CASE_BUILTIN_FUNCTION_CALL(string_find_last_str);
-                CASE_BUILTIN_FUNCTION_CALL(string_find_last_not_of_str);
-                CASE_BUILTIN_FUNCTION_CALL(string_contains);
-                CASE_BUILTIN_FUNCTION_CALL(string_lower);
-                CASE_BUILTIN_FUNCTION_CALL(string_make_lower);
-                CASE_BUILTIN_FUNCTION_CALL(string_upper);
-                CASE_BUILTIN_FUNCTION_CALL(string_make_upper);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_ctor);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_ctor_string);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_ctor_string_count);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_empty);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_size);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_equal_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_not_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_less);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_less_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_greater);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_greater_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_plus);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_plus_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_clear);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_insert_pos_str);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_erase_pos);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_erase_pos_count);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_starts_with);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_ends_with);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_replace_pos_count_str);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_substr_pos);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_substr_pos_count);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_resize_newsize);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_resize_newsize_fill);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_find_str);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_find_str_pos);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_find_not_of_str);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_find_not_of_str_pos);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_find_last_str);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_find_last_not_of_str);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_contains);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_lower);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_make_lower);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_upper);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_make_upper);
 
                 // version
-                CASE_BUILTIN_FUNCTION_CALL(version_ctor_major);
-                CASE_BUILTIN_FUNCTION_CALL(version_ctor_major_minor);
-                CASE_BUILTIN_FUNCTION_CALL(version_ctor_major_minor_patch);
-                CASE_BUILTIN_FUNCTION_CALL(version_ctor_major_minor_patch_tweak);
-                CASE_BUILTIN_FUNCTION_CALL(version_operator_equal_equal);
-                CASE_BUILTIN_FUNCTION_CALL(version_operator_not_equal);
-                CASE_BUILTIN_FUNCTION_CALL(version_operator_less);
-                CASE_BUILTIN_FUNCTION_CALL(version_operator_less_equal);
-                CASE_BUILTIN_FUNCTION_CALL(version_operator_greater);
-                CASE_BUILTIN_FUNCTION_CALL(version_operator_greater_equal);
-                CASE_BUILTIN_FUNCTION_CALL(version_major);
-                CASE_BUILTIN_FUNCTION_CALL(version_minor);
-                CASE_BUILTIN_FUNCTION_CALL(version_patch);
-                CASE_BUILTIN_FUNCTION_CALL(version_tweak);
-                CASE_BUILTIN_FUNCTION_CALL(version_to_string);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_ctor_major);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_ctor_major_minor);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_ctor_major_minor_patch);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_ctor_major_minor_patch_tweak);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_operator_equal_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_operator_not_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_operator_less);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_operator_less_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_operator_greater);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_operator_greater_equal);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_major);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_minor);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_patch);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_tweak);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_to_string);
 
                 // list
-                CASE_BUILTIN_FUNCTION_CALL(list_ctor);
-                CASE_BUILTIN_FUNCTION_CALL(list_ctor_list);
-                CASE_BUILTIN_FUNCTION_CALL(list_ctor_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_ctor_value_count);
-                CASE_BUILTIN_FUNCTION_CALL(list_push_back_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_push_back_list);
-                CASE_BUILTIN_FUNCTION_CALL(list_push_front_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_push_front_list);
-                CASE_BUILTIN_FUNCTION_CALL(list_pop_back);
-                CASE_BUILTIN_FUNCTION_CALL(list_pop_front);
-                CASE_BUILTIN_FUNCTION_CALL(list_at);
-                CASE_BUILTIN_FUNCTION_CALL(list_front);
-                CASE_BUILTIN_FUNCTION_CALL(list_back);
-                CASE_BUILTIN_FUNCTION_CALL(list_insert_pos_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_insert_pos_list);
-                CASE_BUILTIN_FUNCTION_CALL(list_erase_pos);
-                CASE_BUILTIN_FUNCTION_CALL(list_erase_pos_count);
-                CASE_BUILTIN_FUNCTION_CALL(list_remove_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_remove_value_count);
-                CASE_BUILTIN_FUNCTION_CALL(list_remove_last_value_count);
-                CASE_BUILTIN_FUNCTION_CALL(list_clear);
-                CASE_BUILTIN_FUNCTION_CALL(list_resize);
-                CASE_BUILTIN_FUNCTION_CALL(list_sort);
-                CASE_BUILTIN_FUNCTION_CALL(list_reverse);
-                CASE_BUILTIN_FUNCTION_CALL(list_min);
-                CASE_BUILTIN_FUNCTION_CALL(list_max);
-                CASE_BUILTIN_FUNCTION_CALL(list_sublist_pos);
-                CASE_BUILTIN_FUNCTION_CALL(list_sublist_pos_count);
-                CASE_BUILTIN_FUNCTION_CALL(list_size);
-                CASE_BUILTIN_FUNCTION_CALL(list_empty);
-                CASE_BUILTIN_FUNCTION_CALL(list_find_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_find_value_pos);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_list);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_equal_value);
-                CASE_BUILTIN_FUNCTION_CALL(list_operator_plus_equal_list);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_ctor);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_ctor_list);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_ctor_value);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_ctor_value_count);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_push_back_value);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_push_back_list);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_push_front_value);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_push_front_list);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_pop_back);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_pop_front);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_at);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_front);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_back);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_insert_pos_value);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_insert_pos_list);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_erase_pos);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_erase_pos_count);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_remove_value);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_remove_value_count);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_remove_last_value_count);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_clear);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_resize);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_sort);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_reverse);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_min);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_max);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_sublist_pos);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_sublist_pos_count);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_size);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_empty);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_find_value);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_find_value_pos);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_operator_plus_value);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_operator_plus_list);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_operator_plus_equal_value);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_operator_plus_equal_list);
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
+                    return nullptr;
+
+            }
+
+            return m_instances.gather_ownership(result);
+        }
+
+        std::unique_ptr<inst::instance>
+        builtin_function_caller2::call(sema::builtin_function_kind function_kind, const builtin_function_caller2::params_t &params)
+        {
+            inst::instance* result{ nullptr };
+
+            switch (function_kind)
+            {
+                CASE_BUILTIN_FUNCTION_CALL(cmake_minimum_required);
+
+                default:
+                    CMSL_UNREACHABLE("Calling unimplemented function");
                     return nullptr;
 
             }
@@ -1416,6 +1443,27 @@ namespace cmsl
             auto [list_to_append] = get_params<alternative_t::list>(params);
             list.push_back(std::move(list_to_append));
             return m_instances.create2_reference(instance);
+        }
+
+        inst::instance *
+        builtin_function_caller2::cmake_minimum_required(const builtin_function_caller2::params_t &params)
+        {
+            const auto got_version = m_cmake_facade.get_cmake_version();
+            const inst::version_value current_version{ static_cast<inst::int_t>(got_version.major),
+                                                       static_cast<inst::int_t>(got_version.minor),
+                                                       static_cast<inst::int_t>(got_version.patch),
+                                                       static_cast<inst::int_t>(got_version.tweak) };
+
+            const auto& [requested_version] = get_params<alternative_t::version>(params);
+            const auto version_satisfied = requested_version <= current_version;
+
+            if(!version_satisfied)
+            {
+                m_cmake_facade.fatal_error("Running on a older version that is required.");
+                // Todo: Propagate error to our execution system, so it knows it needs to stop execution.
+            }
+
+            return m_instances.create2_void();
         }
     }
 }
