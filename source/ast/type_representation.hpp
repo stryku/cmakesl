@@ -53,6 +53,18 @@ namespace cmsl
 
             std::string to_string() const
             {
+                auto str = to_string_without_reference();
+                if(!is_reference())
+                {
+                    return str;
+                }
+
+                str += '&';
+                return str;
+            }
+
+            std::string to_string_without_reference() const
+            {
                 // Todo: create string once, store it somewhere (some strings container) and return string_view.
                 std::string result;
 
