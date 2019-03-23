@@ -220,7 +220,10 @@ namespace cmsl
 
         bool parser2::declaration_starts() const
         {
-            return current_is_type() && (next_is(token_type_t::identifier) || current_is_generic_type());
+            return current_is_type() &&
+                (next_is(token_type_t::identifier) // variable name
+                 || next_is(token_type_t::amp) // reference
+                 || current_is_generic_type());
         }
 
         std::unique_ptr<conditional_node> parser2::get_conditional_node()
@@ -583,10 +586,17 @@ namespace cmsl
         boost::optional<type_representation> parser2::simple_type()
         {
             const auto type_token = eat_simple_type_token();
-
             if (!type_token)
             {
                 return {};
+            }
+
+            const auto is_reference =current_is(token_type_t::amp);
+            if(is_reference)
+            {
+                const auto ref_token = eat(token_type_t::amp);
+                return type_representation{ *type_token,
+                                            *ref_token};
             }
 
             return type_representation{ *type_token };
@@ -630,6 +640,15 @@ namespace cmsl
             tokens.insert(std::end(tokens),
                                          std::cbegin(value_type->tokens()), std::cend(value_type->tokens()));
             tokens.emplace_back(*greater_token);
+
+            const auto is_reference = next_is(token_type_t::amp);
+            if(is_reference)
+            {
+                const auto ref_token = eat(token_type_t::amp);
+                return type_representation{ tokens,
+                                            *ref_token,
+                                            { std::move(*value_type) } };
+            }
 
             return type_representation{ tokens, { std::move(*value_type) } };
         }
