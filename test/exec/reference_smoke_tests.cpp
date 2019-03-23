@@ -18,12 +18,14 @@ namespace cmsl
                 source_executor m_executor{m_facade};
             };
 
+            // Todo: rename
             TEST_F(ReferenceTypeSmokeTest, DefaultConstructor)
             {
                 const auto source =
-                        "void foo(int& ref)\n"
+                        "int foo(int& ref)\n"
                         "{\n"
                         "    ref = 42;\n"
+                        "    return 0;"
                         "}\n"
                         "\n"
                         "int main()\n"

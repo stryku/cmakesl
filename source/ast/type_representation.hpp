@@ -78,6 +78,7 @@ namespace cmsl
 
             bool operator==(const type_representation& rhs) const
             {
+                // Todo: Do we need to compare nested types? Full name is already compared with to_string_without_reference() comparison
                 return this == &rhs || (to_string() == rhs.to_string() && m_nested_types == rhs.m_nested_types);
             }
 

@@ -501,6 +501,19 @@ namespace cmsl
                     return found;
                 }
 
+                // If it's a reference, try to find referenced type and create a reference type.
+                if(name.is_reference())
+                {
+                    const auto referenced_type = search_context.find_referenced_type(name);
+                    if(referenced_type)
+                    {
+                        return &m_type_factory.create_reference(*referenced_type);
+                    }
+
+                    // If referenced type is not found - don't report error.
+                    // It can be a generic type, which has to be created.
+                }
+
                 if(!name.is_generic())
                 {
                     raise_error(name.primary_name(), name.to_string() + " type not found.");
@@ -512,7 +525,14 @@ namespace cmsl
                                                           m_type_factory,
                                                           m_function_factory,
                                                           m_context_factory };
-                return factory.create_generic(name);
+                const auto created_generic_type = factory.create_generic(name);
+
+                if(!name.is_reference())
+                {
+                    return created_generic_type;
+                }
+
+                return &m_type_factory.create_reference(*created_generic_type);
             }
 
             template <typename T>
