@@ -187,7 +187,7 @@ namespace cmsl
                 virtual void visit(const variable_declaration_node& node) override
                 {
                     m_result += "variable_declaration{type:";
-                    const auto ret_type_reference = node.get_type_reference();
+                    const auto ret_type_reference = node.get_type_representation();
                     m_result += ret_type_reference.to_string() + ";name:";
                     m_result += node.get_name().str().to_string() + ";initialization:";
                     if(const auto init = node.get_initialization())

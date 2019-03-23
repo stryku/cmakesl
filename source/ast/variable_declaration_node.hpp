@@ -17,7 +17,7 @@ namespace cmsl
                 , m_initialization{ std::move(initialization) }
             {}
 
-            const type_representation& get_type_reference() const
+            const type_representation& get_type_representation() const
             {
                 return m_ty;
             }
