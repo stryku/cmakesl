@@ -2,6 +2,12 @@
 
 #include "ast/infix_nodes.hpp"
 #include "ast/return_node.hpp"
+#include "ast/variable_declaration_node.hpp"
+#include "ast/class_node.hpp"
+#include "ast/while_node.hpp"
+#include "ast/if_else_node.hpp"
+#include "ast/translation_unit_node.hpp"
+#include "ast/conditional_node.hpp"
 
 #include "errors/errors_observer.hpp"
 
