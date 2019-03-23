@@ -451,7 +451,7 @@ namespace cmsl
 
         void sema_builder_ast_visitor::visit(const ast::variable_declaration_node& node)
         {
-            const auto& type_reference = node.get_type_reference();
+            const auto& type_reference = node.get_type_representation();
             const auto type = try_get_or_create_generic_type(m_ctx, type_reference);
 
             // Todo: handle generic types
