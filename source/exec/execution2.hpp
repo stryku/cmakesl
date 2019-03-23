@@ -83,6 +83,26 @@ namespace cmsl
                 }
             }
 
+            void execute_variable_declaration(const sema::variable_declaration_node& node)
+            {
+                auto& exec_ctx = m_callstack.top().exec_ctx;
+                inst::instances_holder instances{ current_context() };
+                std::unique_ptr<inst::instance> created_instance;
+
+                if(auto initialization = node.initialization())
+                {
+                    created_instance = execute_infix_expression(*initialization);
+                }
+                else
+                {
+                    // Todo: create variable without instances holder
+                    auto variable_instance_ptr = instances.create2(node.type());
+                    created_instance = instances.gather_ownership(variable_instance_ptr);
+                }
+
+                exec_ctx.add_variable(node.name().str(), std::move(created_instance));
+            }
+
             void execute_node(const sema::sema_node& node)
             {
                 if(auto ret_node = dynamic_cast<const sema::return_node*>(&node))
@@ -91,22 +111,7 @@ namespace cmsl
                 }
                 else if(auto var_decl = dynamic_cast<const sema::variable_declaration_node*>(&node))
                 {
-                    auto& exec_ctx = m_callstack.top().exec_ctx;
-                    inst::instances_holder instances{ current_context() };
-                    std::unique_ptr<inst::instance> created_instance;
-
-                    if(auto initialization = var_decl->initialization())
-                    {
-                        created_instance = execute_infix_expression(*initialization);
-                    }
-                    else
-                    {
-                        // Todo: create variable without instances holder
-                        auto variable_instance_ptr = instances.create2(var_decl->type());
-                        created_instance = instances.gather_ownership(variable_instance_ptr);
-                    }
-
-                    exec_ctx.add_variable(var_decl->name().str(), std::move(created_instance));
+                    execute_variable_declaration(*var_decl);
                 }
                 else
                 {
