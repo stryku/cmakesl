@@ -7,6 +7,8 @@
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/homogeneous_generic_type.hpp"
+#include "factories.hpp"
+
 
 
 // Todo: Move to common place.
@@ -67,6 +69,12 @@ namespace cmsl
                                                       const sema_type &value_type)
         {
             return create_impl<homogeneous_generic_type>(ctx, std::move(name), value_type);
+        }
+
+        const sema_type &
+        sema_type_factory::create_reference(const sema_type& referenced_type)
+        {
+            return create_impl<sema_type>( sema_type_reference{ referenced_type });
         }
 
         sema_generic_type_factory::sema_generic_type_factory(sema_context_interface& generic_types_context,
