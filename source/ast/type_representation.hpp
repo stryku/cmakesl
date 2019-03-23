@@ -12,6 +12,20 @@ namespace cmsl
 
         public:
             explicit type_representation(lexer::token::token primary_name,
+                                         lexer::token::token reference_token,
+                                         std::vector<type_representation> nested_types  = {})
+                    : m_tokens{ { primary_name } }
+                    , m_nested_types{ std::move(nested_types) }
+                    , m_reference_token{ reference_token }
+            {}
+            explicit type_representation(lexer::token::token_container_t tokens,
+                                         lexer::token::token reference_token,
+                                         std::vector<type_representation> nested_types  = {})
+                    : m_tokens{ std::move(tokens) }
+                    , m_nested_types{ std::move(nested_types) }
+                    , m_reference_token{ reference_token }
+            {}
+            explicit type_representation(lexer::token::token primary_name,
                                          std::vector<type_representation> nested_types  = {})
                     : m_tokens{ { primary_name } }
                     , m_nested_types{ std::move(nested_types) }
@@ -65,8 +79,14 @@ namespace cmsl
                 return !m_nested_types.empty();
             }
 
+            bool is_reference() const
+            {
+                return m_reference_token.has_value();
+            }
+
         private:
             lexer::token::token_container_t m_tokens;
+            std::optional<lexer::token::token> m_reference_token;
 
             // 'template parameters' of generic types.
             std::vector<type_representation> m_nested_types;
