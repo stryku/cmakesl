@@ -545,5 +545,65 @@ namespace cmsl
         private:
             nodes_t m_nodes;
         };
+
+        class cast_to_reference_node : public expression_node
+        {
+        public:
+            explicit cast_to_reference_node(const sema_type& t, std::unique_ptr<expression_node> expr)
+                    : m_type{ t }
+                    , m_expr{ std::move(expr) }
+            {}
+
+            const sema_type& type() const override
+            {
+                return m_type;
+            }
+
+            bool produces_temporary_value() const override
+            {
+                return false;
+            }
+
+            const expression_node& expression() const
+            {
+                return *m_expr;
+            }
+
+            VISIT_METHOD
+
+        private:
+            const sema_type& m_type;
+            std::unique_ptr<expression_node> m_expr;
+        };
+
+        class cast_to_value_node : public expression_node
+        {
+        public:
+            explicit cast_to_value_node(const sema_type& t, std::unique_ptr<expression_node> expr)
+                : m_type{ t }
+                , m_expr{ std::move(expr) }
+            {}
+
+            const sema_type& type() const override
+            {
+                return m_type;
+            }
+
+            bool produces_temporary_value() const override
+            {
+                return false;
+            }
+
+            const expression_node& expression() const
+            {
+                return *m_expr;
+            }
+
+            VISIT_METHOD
+
+        private:
+            const sema_type& m_type;
+            std::unique_ptr<expression_node> m_expr;
+        };
     }
 }

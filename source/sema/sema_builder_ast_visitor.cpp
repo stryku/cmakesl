@@ -32,6 +32,8 @@
 #include "common/assert.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/variable_initialization_checker.hpp"
+#include "sema_builder_ast_visitor.hpp"
+
 
 namespace cmsl
 {
@@ -263,6 +265,10 @@ namespace cmsl
                 return;
             }
 
+            // Convert call parameter nodes if need, e.g. to a cast_to_reference_node, if function accepts a reference.
+            params = convert_params_to_cast_nodes_if_need(chosen_function->signature(),
+                                                          std::move(*params));
+
             switch (chosen_function->context().type())
             {
                 case sema_context_interface::context_type::namespace_:
@@ -312,6 +318,10 @@ namespace cmsl
             {
                 return;
             }
+
+            // Convert call parameter nodes if need, e.g. to a cast_to_reference_node, if function accepts a reference.
+            params = convert_params_to_cast_nodes_if_need(chosen_function->signature(),
+                                                          std::move(*params));
 
             m_result_node = std::make_unique<member_function_call_node>(std::move(lhs), *chosen_function, std::move(*params));
         }
@@ -490,6 +500,8 @@ namespace cmsl
                         return;
                     }
                 }
+
+                initialization = convert_to_cast_node_if_need(*type, std::move(initialization));
             }
             else
             {
@@ -745,6 +757,37 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
                     source_location{ 1u, N, N - 1u }
             };
             return lexer::token::token{ token_type, src_range, tok };
+        }
+
+        std::unique_ptr<expression_node>
+        sema_builder_ast_visitor::convert_to_cast_node_if_need(const sema_type& expected_result_type,
+                                                               std::unique_ptr<expression_node> expression)
+        {
+            if(expected_result_type == expression->type())
+            {
+                return std::move(expression);
+            }
+
+            if(expected_result_type.is_reference())
+            {
+                return std::make_unique<cast_to_reference_node>(expected_result_type, std::move(expression));
+            }
+            else
+            {
+                return std::make_unique<cast_to_value_node>(expected_result_type, std::move(expression));
+            }
+        }
+
+        sema_builder_ast_visitor::param_expressions_t
+        sema_builder_ast_visitor::convert_params_to_cast_nodes_if_need(const function_signature &signature, param_expressions_t params)
+        {
+            for(auto i = 0u; i < params.size(); ++i)
+            {
+                const auto& declared_param_type = signature.params[i].ty;
+                params[i] = convert_to_cast_node_if_need(declared_param_type, std::move(params[i]));
+            }
+
+            return std::move(params);
         }
     }
 }
