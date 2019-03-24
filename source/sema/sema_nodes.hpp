@@ -21,6 +21,7 @@ namespace cmsl
         {
         public:
             virtual const sema_type& type() const = 0;
+            virtual bool produces_temporary_value() const = 0;
         };
 
         template <typename T>
@@ -40,6 +41,11 @@ namespace cmsl
             const sema_type& type() const override
             {
                 return m_type;
+            }
+
+            bool produces_temporary_value() const override
+            {
+                return true;
             }
 
         private:
@@ -101,6 +107,11 @@ namespace cmsl
                 return m_type;
             }
 
+            bool produces_temporary_value() const override
+            {
+                return false;
+            }
+
             // Todo: consider renaming getters to get_*
             lexer::token::token id() const
             {
@@ -125,6 +136,11 @@ namespace cmsl
             const sema_type& type() const override
             {
                 return m_expr->type();
+            }
+
+            bool produces_temporary_value() const override
+            {
+                return !type().is_reference();
             }
 
             const expression_node& expression() const
@@ -176,6 +192,11 @@ namespace cmsl
             const sema_type& type() const override
             {
                 return m_type;
+            }
+
+            bool produces_temporary_value() const override
+            {
+                return !type().is_reference();
             }
 
             VISIT_METHOD
@@ -248,6 +269,11 @@ namespace cmsl
             const sema_function& function() const
             {
                 return m_function;
+            }
+
+            bool produces_temporary_value() const override
+            {
+                return !type().is_reference();
             }
 
         private:
@@ -483,6 +509,11 @@ namespace cmsl
                 return m_member_info.ty;
             }
 
+            bool produces_temporary_value() const override
+            {
+                return false;
+            }
+
             lexer::token::token member_name() const
             {
                 return m_member_info.name;
@@ -513,6 +544,66 @@ namespace cmsl
 
         private:
             nodes_t m_nodes;
+        };
+
+        class cast_to_reference_node : public expression_node
+        {
+        public:
+            explicit cast_to_reference_node(const sema_type& t, std::unique_ptr<expression_node> expr)
+                    : m_type{ t }
+                    , m_expr{ std::move(expr) }
+            {}
+
+            const sema_type& type() const override
+            {
+                return m_type;
+            }
+
+            bool produces_temporary_value() const override
+            {
+                return false;
+            }
+
+            const expression_node& expression() const
+            {
+                return *m_expr;
+            }
+
+            VISIT_METHOD
+
+        private:
+            const sema_type& m_type;
+            std::unique_ptr<expression_node> m_expr;
+        };
+
+        class cast_to_value_node : public expression_node
+        {
+        public:
+            explicit cast_to_value_node(const sema_type& t, std::unique_ptr<expression_node> expr)
+                : m_type{ t }
+                , m_expr{ std::move(expr) }
+            {}
+
+            const sema_type& type() const override
+            {
+                return m_type;
+            }
+
+            bool produces_temporary_value() const override
+            {
+                return false;
+            }
+
+            const expression_node& expression() const
+            {
+                return *m_expr;
+            }
+
+            VISIT_METHOD
+
+        private:
+            const sema_type& m_type;
+            std::unique_ptr<expression_node> m_expr;
         };
     }
 }

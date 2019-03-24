@@ -1,15 +1,18 @@
 #include "sema/overload_resolution.hpp"
 #include "sema/sema_nodes.hpp"
 #include "sema/sema_function.hpp"
+#include "sema/variable_initialization_checker.hpp"
 #include "errors/errors_observer.hpp"
 #include "errors/error.hpp"
-#include "overload_resolution.hpp"
 
 
 namespace cmsl
 {
     namespace sema
     {
+        // Todo: While choosing a function, diagnostic for all possible funciton should be collected.
+        // Then, if there is an unambiguous function, return it. If not, provide a meaningful error.
+
         overload_resolution::overload_resolution(errors::errors_observer &errs, lexer::token::token call_token)
             : m_errs{ errs }
             , m_call_token{ call_token }
@@ -90,9 +93,24 @@ namespace cmsl
 
             for(auto i = 0u; i < call_parameters.size(); ++i)
             {
-                if(call_parameters[i]->type() != signature.params[i].ty)
+                const auto& declared_param_type = signature.params[i].ty;
+                const auto& param_expression_type = call_parameters[i]->type();
+
+                variable_initialization_checker checker;
+                const auto init_check_result = checker.check(declared_param_type, *call_parameters[i]);
+
+                using check_result_t = variable_initialization_checker::check_result;
+                switch(init_check_result)
                 {
-                    return false;
+                    case check_result_t::can_init:
+                    {
+                        continue;
+                    }
+                    case check_result_t::different_types:
+                    case check_result_t::reference_init_from_temporary_value:
+                    {
+                        return false;
+                    }
                 }
             }
 

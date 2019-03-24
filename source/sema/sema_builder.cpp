@@ -1,5 +1,7 @@
 #include "sema/sema_builder.hpp"
 
+#include "ast/ast_node.hpp"
+
 #include "sema/sema_builder_ast_visitor.hpp"
 
 namespace cmsl
