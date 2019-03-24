@@ -15,9 +15,12 @@ namespace cmsl::sema
             reference_init_from_temporary_value
         };
 
-        check_result can_initialize(const sema_type& variable_type, const expression_node& initialization_expression) const;
+        check_result check(const sema_type &variable_type, const expression_node &initialization_expression) const;
 
     private:
+        // For reference types returns the referenced type.
+        const sema_type& effective_type(const sema_type& type) const;
+
         check_result check_initialization_of_reference_type(const sema_type& variable_type, const expression_node& initialization_expression) const;
         check_result check_initialization(const sema_type& variable_type, const expression_node& initialization_expression) const;
     };
