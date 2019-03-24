@@ -8,14 +8,19 @@
 namespace cmsl::sema
 {
     variable_initialization_checker::check_result
-    variable_initialization_checker::can_initialize(const sema_type &variable_type,
-                                                    const expression_node &initialization_expression) const
+    variable_initialization_checker::check(const sema_type &variable_type,
+                                           const expression_node &initialization_expression) const
     {
         const auto& expression_type = initialization_expression.type();
 
         if(variable_type == expression_type)
         {
             return check_result::can_init;
+        }
+
+        if(effective_type(variable_type) != effective_type(expression_type))
+        {
+            return check_result::different_types;
         }
 
         if(variable_type.is_reference())
@@ -64,5 +69,10 @@ namespace cmsl::sema
         }
 
         return check_result::can_init;
+    }
+
+    const sema_type &variable_initialization_checker::effective_type(const sema_type &type) const
+    {
+        return type.is_reference() ? type.referenced_type() : type;
     }
 }
