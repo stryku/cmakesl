@@ -25,13 +25,14 @@ namespace cmsl
             {}
 
             // Todo: consider returning a reference
+            // Todo: Call parameters should be a vector of std::unique_ptrs, not raw pointers. Thanks to that, we'd avoid unnecessary instances copies.
             std::unique_ptr<inst::instance> call(const sema::sema_function& fun,
                                  const std::vector<inst::instance*>& params,
                                  inst::instances_holder_interface& instances) override
             {
                 if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
                 {
-                    enter_function_scope(fun);
+                    enter_function_scope(fun, params);
                     execute_block(user_function->body());
                     leave_function_scope();
                 }
@@ -53,7 +54,7 @@ namespace cmsl
             {
                 if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
                 {
-                    enter_function_scope(fun, class_instance);
+                    enter_function_scope(fun, class_instance, params);
                     execute_block(user_function->body());
                     leave_function_scope();
                     return std::move(m_function_return_value);
@@ -131,16 +132,33 @@ namespace cmsl
                 return current_function.context();
             }
 
-            void enter_function_scope(const sema::sema_function& fun)
+            void enter_function_scope(const sema::sema_function& fun, const std::vector<inst::instance*>& params)
             {
                 m_callstack.push(callstack_frame{fun});
                 m_callstack.top().exec_ctx.enter_scope();
+                auto& exec_ctx = m_callstack.top().exec_ctx;
+                const auto& declared_params = fun.signature().params;
+
+                for(auto i = 0u; i < params.size(); ++i)
+                {
+                    auto param = params[i]->copy();
+                    exec_ctx.add_variable(declared_params[i].name.str(), std::move(param));
+                }
+
             }
 
-            void enter_function_scope(const sema::sema_function& fun, inst::instance& class_instance)
+            void enter_function_scope(const sema::sema_function& fun, inst::instance& class_instance, const std::vector<inst::instance*>& params)
             {
                 m_callstack.push(callstack_frame{fun});
                 m_callstack.top().exec_ctx.enter_member_function_scope(&class_instance);
+                auto& exec_ctx = m_callstack.top().exec_ctx;
+                const auto& declared_params = fun.signature().params;
+
+                for(auto i = 0u; i < params.size(); ++i)
+                {
+                    auto param = params[i]->copy();
+                    exec_ctx.add_variable(declared_params[i].name.str(), std::move(param));
+                }
             }
 
             void leave_function_scope()

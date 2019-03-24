@@ -19,7 +19,7 @@ namespace cmsl
             };
 
             // Todo: rename
-            TEST_F(ReferenceTypeSmokeTest, DefaultConstructor)
+            TEST_F(ReferenceTypeSmokeTest, WorksAsExpected)
             {
                 const auto source =
                         "int foo(int& ref)\n"

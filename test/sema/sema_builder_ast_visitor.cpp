@@ -236,7 +236,7 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
-                const auto type_ref = ast::type_representation{ token_identifier() };
+                const auto type_representation = ast::type_representation{ token_identifier() };
                 const auto name_token = token_identifier("foo");
 
                 // Todo: use int alias
@@ -244,7 +244,7 @@ namespace cmsl
                 const auto initialization_token = token_integer("42");
                 auto initializaton_node = std::make_unique<ast::int_value_node>(initialization_token);
 
-                ast::variable_declaration_node variable_node(type_ref, name_token, std::move(initializaton_node));
+                ast::variable_declaration_node variable_node(type_representation, name_token, std::move(initializaton_node));
 
                 EXPECT_CALL(ctx, find_type(_))
                         .WillRepeatedly(Return(&valid_type));
