@@ -1,9 +1,9 @@
 #include "sema/overload_resolution.hpp"
 #include "sema/sema_nodes.hpp"
 #include "sema/sema_function.hpp"
+#include "sema/variable_initialization_check.hpp"
 #include "errors/errors_observer.hpp"
 #include "errors/error.hpp"
-#include "overload_resolution.hpp"
 
 
 namespace cmsl
@@ -96,24 +96,22 @@ namespace cmsl
                 const auto& declared_param_type = signature.params[i].ty;
                 const auto& param_expression_type = call_parameters[i]->type();
 
-                if(param_expression_type == declared_param_type)
-                {
-                    continue;
-                }
+                variable_initialization_checker checker;
+                const auto init_check_result = checker.check(declared_param_type, *call_parameters[i]);
 
-                if(declared_param_type.is_reference()
-                   && declared_param_type.referenced_type() == param_expression_type)
+                using check_result_t = variable_initialization_checker::check_result;
+                switch(init_check_result)
                 {
-                    if(call_parameters[i]->produces_temporary_value())
+                    case check_result_t::can_init:
                     {
-                        m_errs.nofify_error({m_call_token.src_range(), "Parameter " + std::to_string(i + 1) + " of reference type, can not be initialized from a temporary value"});
+                        continue;
+                    }
+                    case check_result_t::different_types:
+                    case check_result_t::reference_init_from_temporary_value:
+                    {
                         return false;
                     }
-
-                    return true;
                 }
-
-                return false;
             }
 
             return true;
