@@ -56,6 +56,7 @@ namespace cmsl
         {
         public:
             const sema_type& create(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members);
+            const sema_type& create_reference(const sema_type& referenced_type);
             const sema_type& create_homogeneous_generic(const sema_context_interface &ctx,
                                                         ast::type_representation name,
                                                         const sema_type &value_type);

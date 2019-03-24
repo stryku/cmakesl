@@ -123,6 +123,20 @@ namespace cmsl
                 result = evaluate_child(node.expression());
             }
 
+            void visit(const sema::cast_to_reference_node& node) override
+            {
+                const auto evaluated = evaluate_child(node.expression());
+                result = m_ctx.instances.create2_reference(*evaluated);
+            }
+
+            void visit(const sema::cast_to_value_node& node) override
+            {
+                const auto evaluated = evaluate_child(node.expression());
+                const auto& evaluated_reference_type = evaluated->get_sema_type();
+                const auto& referenced_type = evaluated_reference_type.referenced_type();
+                result = m_ctx.instances.create2(referenced_type, evaluated->get_value());
+            }
+
         public:
             inst::instance* result;
 

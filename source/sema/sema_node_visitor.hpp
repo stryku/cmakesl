@@ -24,6 +24,8 @@ namespace cmsl
         class if_else_node;
         class class_member_access_node;
         class translation_unit_node;
+        class cast_to_reference_node;
+        class cast_to_value_node;
 
         class sema_node_visitor
         {
@@ -50,6 +52,8 @@ namespace cmsl
             virtual void visit(const if_else_node& node) = 0;
             virtual void visit(const class_member_access_node& node) = 0;
             virtual void visit(const translation_unit_node& node) = 0;
+            virtual void visit(const cast_to_reference_node& node) = 0;
+            virtual void visit(const cast_to_value_node& node) = 0;
         };
 
         class empty_sema_node_visitor : public sema_node_visitor
@@ -77,6 +81,8 @@ namespace cmsl
             virtual void visit(const if_else_node& node) override {}
             virtual void visit(const class_member_access_node& node) override {}
             virtual void visit(const translation_unit_node& node) override {}
+            virtual void visit(const cast_to_reference_node& node) override {}
+            virtual void visit(const cast_to_value_node& node) override {}
         };
     }
 }

@@ -13,6 +13,13 @@ namespace cmsl
             , m_members{ std::move(members) }
         {}
 
+        sema_type::sema_type(const sema_type_reference reference)
+            : m_ctx{ reference.referenced_type.m_ctx }
+            , m_name{ reference.referenced_type.m_name }
+            , m_members{ reference.referenced_type.m_members }
+            , m_referenced_type{ &reference.referenced_type }
+        {}
+
         const ast::type_representation& sema_type::name() const
         {
             return m_name;
@@ -68,6 +75,16 @@ namespace cmsl
         const std::vector<member_info> &sema_type::members() const
         {
             return m_members;
+        }
+
+        bool sema_type::is_reference() const
+        {
+            return m_referenced_type != nullptr;
+        }
+
+        const sema_type &sema_type::referenced_type() const
+        {
+            return *m_referenced_type;
         }
     }
 }

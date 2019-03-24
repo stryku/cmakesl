@@ -1,0 +1,66 @@
+#include "exec/source_executor.hpp"
+#include "test/exec/mock/cmake_facade_mock.hpp"
+
+#include <gmock/gmock.h>
+
+namespace cmsl
+{
+    namespace exec
+    {
+        namespace test
+        {
+            using ::testing::Eq;
+
+            class ReferenceTypeSmokeTest : public ::testing::Test
+            {
+            protected:
+                cmake_facade_mock m_facade;
+                source_executor m_executor{m_facade};
+            };
+
+            // Todo: rename
+            TEST_F(ReferenceTypeSmokeTest, WorksAsExpected)
+            {
+                const auto source =
+                        "int foo(int& ref)\n"
+                        "{\n"
+                        "    ref = 42;\n"
+                        "    return 0;"
+                        "}\n"
+                        "\n"
+                        "int& set_and_get_ref(int& ref)\n"
+                        "{\n"
+                        "    ref = 24;\n"
+                        "    return ref;\n"
+                        "}\n"
+                        "\n"
+                        "int main()\n"
+                        "{\n"
+                        "    int i;\n"
+                        "    int& i_ref = i;\n"
+                        "    bool result = true;\n"
+                        "    result = result && i == 0 && i_ref == 0;\n"
+                        "\n"
+                        "    i = 42;\n"
+                        "    result = result && i == 42 && i_ref == 42;\n"
+                        "\n"
+                        "    i_ref = 24;\n"
+                        "    result = result && i == 24 && i_ref == 24;\n"
+                        "\n"
+                        "    foo(i_ref);\n"
+                        "    result = result && i == 42 && i_ref == 42;\n"
+                        "\n"
+                        "    int& got_ref = set_and_get_ref(i);\n"
+                        "    result = result && i == 24 && i_ref == 24 && got_ref == 24;\n"
+                        "\n"
+                        "    got_ref = 42;\n"
+                        "    result = result && i == 42 && i_ref == 42 && got_ref == 42;\n"
+                        "\n"
+                        "    return int(result);\n"
+                        "}";
+                const auto result = m_executor.execute2(source);
+                EXPECT_THAT(result, Eq(1));
+            }
+        }
+    }
+}

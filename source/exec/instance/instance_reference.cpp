@@ -38,7 +38,7 @@ namespace cmsl
 
             std::unique_ptr<instance> instance_reference::copy() const
             {
-                return m_instance.copy();
+                return std::make_unique<instance_reference>(m_instance);
             }
 
             instance* instance_reference::get_member(cmsl::string_view name)

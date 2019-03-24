@@ -2,6 +2,12 @@
 
 #include "ast/infix_nodes.hpp"
 #include "ast/return_node.hpp"
+#include "ast/variable_declaration_node.hpp"
+#include "ast/class_node.hpp"
+#include "ast/while_node.hpp"
+#include "ast/if_else_node.hpp"
+#include "ast/translation_unit_node.hpp"
+#include "ast/conditional_node.hpp"
 
 #include "errors/errors_observer.hpp"
 
@@ -230,7 +236,7 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
-                const auto type_ref = ast::type_representation{ token_identifier() };
+                const auto type_representation = ast::type_representation{ token_identifier() };
                 const auto name_token = token_identifier("foo");
 
                 // Todo: use int alias
@@ -238,7 +244,7 @@ namespace cmsl
                 const auto initialization_token = token_integer("42");
                 auto initializaton_node = std::make_unique<ast::int_value_node>(initialization_token);
 
-                ast::variable_declaration_node variable_node(type_ref, name_token, std::move(initializaton_node));
+                ast::variable_declaration_node variable_node(type_representation, name_token, std::move(initializaton_node));
 
                 EXPECT_CALL(ctx, find_type(_))
                         .WillRepeatedly(Return(&valid_type));
@@ -305,16 +311,16 @@ namespace cmsl
                         .WillOnce(Return(lookup_result));
 
                 EXPECT_CALL(function_mock, context())
-                        .WillOnce(ReturnRef(ctx));
+                        .WillRepeatedly(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
-                        .WillOnce(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, return_type())
-                        .WillOnce(ReturnRef(valid_type));
+                        .WillRepeatedly(ReturnRef(valid_type));
 
                 EXPECT_CALL(function_mock, signature())
-                        .WillOnce(ReturnRef(signature));
+                        .WillRepeatedly(ReturnRef(signature));
 
                 visitor.visit(node);
 
@@ -351,22 +357,22 @@ namespace cmsl
                         .WillOnce(Return(lookup_result));
 
                 EXPECT_CALL(function_mock, context())
-                        .WillOnce(ReturnRef(ctx));
+                        .WillRepeatedly(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
-                        .WillOnce(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, signature())
-                        .WillOnce(ReturnRef(signature));
+                        .WillRepeatedly(ReturnRef(signature));
 
                 EXPECT_CALL(function_mock, return_type())
-                        .WillOnce(ReturnRef(valid_type));
+                        .WillRepeatedly(ReturnRef(valid_type));
 
                 EXPECT_CALL(ids_ctx, type_of(param1_id_token.str()))
-                        .WillOnce(Return(&valid_type));
+                        .WillRepeatedly(Return(&valid_type));
 
                 EXPECT_CALL(ids_ctx, type_of(param2_id_token.str()))
-                        .WillOnce(Return(&valid_type));
+                        .WillRepeatedly(Return(&valid_type));
 
                 // Todo: use mocks
                 auto param1_ast_node = std::make_unique<ast::id_node>(param1_id_token);
@@ -413,16 +419,16 @@ namespace cmsl
                         .WillOnce(Return(lookup_result));
 
                 EXPECT_CALL(function_mock, context())
-                        .WillOnce(ReturnRef(ctx));
+                        .WillRepeatedly(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
-                        .WillOnce(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, return_type())
-                        .WillOnce(ReturnRef(valid_type));
+                        .WillRepeatedly(ReturnRef(valid_type));
 
                 EXPECT_CALL(function_mock, signature())
-                        .WillOnce(ReturnRef(signature));
+                        .WillRepeatedly(ReturnRef(signature));
 
                 visitor.visit(node);
 
@@ -461,10 +467,10 @@ namespace cmsl
                         .WillOnce(Return(lookup_result));
 
                 EXPECT_CALL(function_mock, signature())
-                        .WillOnce(ReturnRef(signature));
+                        .WillRepeatedly(ReturnRef(signature));
 
                 EXPECT_CALL(function_mock, return_type())
-                        .WillOnce(ReturnRef(valid_type));
+                        .WillRepeatedly(ReturnRef(valid_type));
 
                 visitor.visit(node);
 
@@ -508,23 +514,23 @@ namespace cmsl
                 const ast::member_function_call_node node{ std::move(lhs_ast_node), fun_name_token, std::move(ast_params) };
 
                 EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
-                        .WillOnce(Return(&lhs_type));
+                        .WillRepeatedly(Return(&lhs_type));
 
                 const auto lookup_result = single_scope_function_lookup_result_t{ &function_mock };
                 EXPECT_CALL(ctx, find_function_in_this_scope(fun_name_token))
                         .WillOnce(Return(lookup_result));
 
                 EXPECT_CALL(function_mock, signature())
-                        .WillOnce(ReturnRef(signature));
+                        .WillRepeatedly(ReturnRef(signature));
 
                 EXPECT_CALL(ids_ctx, type_of(param1_id_token.str()))
-                        .WillOnce(Return(&valid_type));
+                        .WillRepeatedly(Return(&valid_type));
 
                 EXPECT_CALL(ids_ctx, type_of(param2_id_token.str()))
-                        .WillOnce(Return(&valid_type));
+                        .WillRepeatedly(Return(&valid_type));
 
                 EXPECT_CALL(function_mock, return_type())
-                        .WillOnce(ReturnRef(valid_type));
+                        .WillRepeatedly(ReturnRef(valid_type));
 
                 visitor.visit(node);
 
