@@ -81,5 +81,10 @@ namespace cmsl
         {
             return m_referenced_type != nullptr;
         }
+
+        const sema_type &sema_type::referenced_type() const
+        {
+            return *m_referenced_type;
+        }
     }
 }

@@ -469,11 +469,25 @@ namespace cmsl
                     return;
                 }
 
+                if(type->is_reference() && initialization->produces_temporary_value())
+                {
+                    raise_error(initialization->type().name().primary_name(), "Reference variable can not be initialized with a temporary value");
+                    return;
+                }
+
                 if(initialization->type() != *type)
                 {
                     // Todo: Init does not have same type as declared.
                     // Todo: introduce auto
                     raise_error(initialization->type().name().primary_name(), "Initialization and declared variable type does not match");
+                    return;
+                }
+            }
+            else
+            {
+                if(type->is_reference())
+                {
+                    raise_error(initialization->type().name().primary_name(), "Declaration of a reference variable requires an initializer");
                     return;
                 }
             }
