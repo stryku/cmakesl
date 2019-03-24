@@ -107,7 +107,7 @@ namespace cmsl
                         .WillOnce(ReturnRef(signature));
 
                 EXPECT_CALL(*param_expression_ptr, type())
-                        .WillOnce(ReturnRef(param_type));
+                        .WillRepeatedly(ReturnRef(param_type));
 
                 EXPECT_CALL(errs.mock, notify_error(_));
 
@@ -141,13 +141,12 @@ namespace cmsl
                         .WillOnce(ReturnRef(signature));
 
                 EXPECT_CALL(*param_expression_ptr, type())
-                        .WillOnce(ReturnRef(valid_type));
+                        .WillRepeatedly(ReturnRef(valid_type));
 
                 EXPECT_CALL(*param_expression_ptr, produces_temporary_value())
                         .WillOnce(Return(true));
 
-                EXPECT_CALL(errs.mock, notify_error(_))
-                    .Times(2);
+                EXPECT_CALL(errs.mock, notify_error(_));
 
                 overload_resolution resolution{ errs.observer, call_token };
                 const auto chosen = resolution.choose(lookup_result, param_expressions);
@@ -178,7 +177,7 @@ namespace cmsl
                         .WillOnce(ReturnRef(signature));
 
                 EXPECT_CALL(*param_expression_ptr, type())
-                        .WillOnce(ReturnRef(valid_type));
+                        .WillRepeatedly(ReturnRef(valid_type));
 
                 overload_resolution resolution{ errs.observer, call_token };
                 const auto chosen = resolution.choose(lookup_result, param_expressions);
@@ -214,7 +213,7 @@ namespace cmsl
                         .WillOnce(ReturnRef(bad_function_signature));
 
                 EXPECT_CALL(*param_expression_ptr, type())
-                        .WillOnce(ReturnRef(valid_type));
+                        .WillRepeatedly(ReturnRef(valid_type));
 
                 EXPECT_CALL(errs.mock, notify_error(_));
 
@@ -248,7 +247,7 @@ namespace cmsl
                         .WillOnce(ReturnRef(signature));
 
                 EXPECT_CALL(*param_expression_ptr, type())
-                        .WillOnce(ReturnRef(valid_type));
+                        .WillRepeatedly(ReturnRef(valid_type));
 
                 overload_resolution resolution{ errs.observer, call_token };
                 const auto chosen = resolution.choose(lookup_result, param_expressions);
