@@ -42,6 +42,7 @@ namespace cmsl
         class sema_context_factory;
         class user_sema_function;
         class sema_context;
+        class function_signature;
 
         class sema_builder_ast_visitor : public ast::ast_node_visitor
         {
@@ -131,6 +132,11 @@ namespace cmsl
 
             template<unsigned N>
             lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N]);
+
+            std::unique_ptr<expression_node> convert_to_cast_node_if_need(const sema_type& expected_result_type,
+                                                                          std::unique_ptr<expression_node> expression);
+
+            param_expressions_t convert_params_to_cast_nodes_if_need(const function_signature& signature, param_expressions_t params);
 
         public:
             std::unique_ptr<sema_node> m_result_node;
