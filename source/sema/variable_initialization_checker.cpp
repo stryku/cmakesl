@@ -1,8 +1,8 @@
-#include "sema/variable_initialization_check.hpp"
+#include "sema/variable_initialization_checker.hpp"
 
 #include "sema/sema_nodes.hpp"
 #include "sema/sema_type.hpp"
-#include "variable_initialization_check.hpp"
+#include "variable_initialization_checker.hpp"
 
 
 namespace cmsl::sema
