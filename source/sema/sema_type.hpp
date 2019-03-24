@@ -52,6 +52,7 @@ namespace cmsl
             bool operator==(const sema_type& rhs) const;
             bool operator!=(const sema_type& rhs) const;
 
+            const sema_type& referenced_type() const;
 
         private:
             // Todo: is it needed?

@@ -10,6 +10,9 @@ namespace cmsl
 {
     namespace sema
     {
+        // Todo: While choosing a function, diagnostic for all possible funciton should be collected.
+        // Then, if there is an unambiguous function, return it. If not, provide a meaningful error.
+
         overload_resolution::overload_resolution(errors::errors_observer &errs, lexer::token::token call_token)
             : m_errs{ errs }
             , m_call_token{ call_token }
@@ -90,9 +93,24 @@ namespace cmsl
 
             for(auto i = 0u; i < call_parameters.size(); ++i)
             {
-                if(call_parameters[i]->type() != signature.params[i].ty)
+                const auto& declared_param_type = signature.params[i].ty;
+                const auto& param_expression_type = call_parameters[i]->type();
+
+                if(param_expression_type == declared_param_type)
                 {
-                    return false;
+                    continue;
+                }
+
+                if(declared_param_type.is_reference()
+                   && declared_param_type.referenced_type() == param_expression_type)
+                {
+                    if(call_parameters[i]->produces_temporary_value())
+                    {
+                        m_errs.nofify_error({m_call_token.src_range(), "Parameter " + std::to_string(i + 1) + " of reference type, can not be initialized from a temporary value"});
+                        return false;
+                    }
+
+                    return true;
                 }
             }
 
