@@ -1,7 +1,7 @@
 #include "sema/overload_resolution.hpp"
 #include "sema/sema_nodes.hpp"
 #include "sema/sema_function.hpp"
-#include "sema/variable_initialization_check.hpp"
+#include "sema/variable_initialization_checker.hpp"
 #include "errors/errors_observer.hpp"
 #include "errors/error.hpp"
 

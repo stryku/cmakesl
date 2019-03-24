@@ -1,7 +1,7 @@
 
 #include "sema/sema_nodes.hpp"
 #include "sema/sema_context.hpp"
-#include "sema/variable_initialization_check.hpp"
+#include "sema/variable_initialization_checker.hpp"
 
 #include "test/common/tokens.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"

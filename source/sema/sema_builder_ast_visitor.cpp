@@ -31,6 +31,7 @@
 #include "sema/overload_resolution.hpp"
 #include "common/assert.hpp"
 #include "sema/builtin_types_finder.hpp"
+#include "sema/variable_initialization_checker.hpp"
 
 namespace cmsl
 {
@@ -451,10 +452,8 @@ namespace cmsl
 
         void sema_builder_ast_visitor::visit(const ast::variable_declaration_node& node)
         {
-            const auto& type_reference = node.get_type_representation();
-            const auto type = try_get_or_create_generic_type(m_ctx, type_reference);
-
-            // Todo: handle generic types
+            const auto& type_representation = node.get_type_representation();
+            const auto type = try_get_or_create_generic_type(m_ctx, type_representation);
             if(!type)
             {
                 return;
@@ -469,18 +468,27 @@ namespace cmsl
                     return;
                 }
 
-                if(type->is_reference() && initialization->produces_temporary_value())
-                {
-                    raise_error(initialization->type().name().primary_name(), "Reference variable can not be initialized with a temporary value");
-                    return;
-                }
+                variable_initialization_checker checker;
+                const auto check_result = checker.check(*type, *initialization);
 
-                if(initialization->type() != *type)
+                switch(check_result)
                 {
-                    // Todo: Init does not have same type as declared.
-                    // Todo: introduce auto
-                    raise_error(initialization->type().name().primary_name(), "Initialization and declared variable type does not match");
-                    return;
+                    case variable_initialization_checker::check_result::can_init:
+                    {
+                        // Can initialize, do nothing.
+                    }break;
+                    case variable_initialization_checker::check_result::different_types:
+                    {
+                        // Todo: Init does not have same type as declared.
+                        // Todo: introduce auto
+                        raise_error(initialization->type().name().primary_name(), "Initialization and declared variable type does not match");
+                        return;
+                    }
+                    case variable_initialization_checker::check_result::reference_init_from_temporary_value:
+                    {
+                        raise_error(initialization->type().name().primary_name(), "Reference variable can not be initialized with a temporary value");
+                        return;
+                    }
                 }
             }
             else
