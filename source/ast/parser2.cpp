@@ -23,16 +23,90 @@ namespace cmsl
 {
     namespace ast
     {
-        parser2::parser2(errors::errors_observer& err_observer, const token_container_t& tokens)
-                : m_err_observer{ err_observer }
-                , m_token{ tokens.cbegin() }
-                , m_end{ tokens.cend() }
+        parser_utils::parser_utils(errors::errors_observer& err_observer, token_it current, token_it end)
+            : m_err_observer{ err_observer }
+            , m_current{ current }
+            , m_end{ end }
         {}
 
-        void parser2::raise_error(lexer::token::token token, std::string message)
+        void parser_utils::raise_error(lexer::token::token token, std::string message)
         {
             m_err_observer.nofify_error(errors::error{token.src_range(), message});
         }
+
+        bool parser_utils::is_at_end() const
+        {
+            return m_current == m_end;
+        }
+
+        bool parser_utils::expect_not_at_end()
+        {
+            if (is_at_end())
+            {
+                // Todo: proper token
+                raise_error(lexer::token::token{}, "Unexpected end of source");
+                return false;
+            }
+
+            return true;
+        }
+
+        parser_utils::token_type_t parser_utils::peek(size_t n) const
+        {
+            if (std::distance(m_current, m_end) <= n)
+            {
+                return token_type_t::undef;
+            }
+
+            return std::next(m_current, n)->get_type();
+        }
+
+        boost::optional<parser_utils::token_t> parser_utils::eat(boost::optional<token_type_t> type)
+        {
+            if (!expect_not_at_end())
+            {
+                return {};
+            }
+
+            if (type && !current_is(*type))
+            {
+                raise_error(*m_current, "Expected " + to_string(*type));
+                return {};
+            }
+
+            const auto t = *m_current;
+            ++m_current;
+            return t;
+        }
+
+        const parser_utils::token_t& parser_utils::current() const
+        {
+            return *m_current;
+        }
+
+        parser_utils::token_type_t parser_utils::curr_type() const
+        {
+            return is_at_end() ? token_type_t::undef : m_current->get_type();
+        }
+
+        bool parser_utils::next_is(token_type_t token_type) const
+        {
+            return peek() == token_type;
+        }
+
+        bool parser_utils::current_is(token_type_t token_type) const
+        {
+            if(is_at_end())
+            {
+                return false;
+            }
+
+            return curr_type() == token_type;
+        }
+
+        parser2::parser2(errors::errors_observer& err_observer, const token_container_t& tokens)
+            : parser_utils{ err_observer, tokens.cbegin(), tokens.cend() }
+        {}
 
         std::unique_ptr<ast_node> parser2::translation_unit()
         {
@@ -115,7 +189,7 @@ namespace cmsl
 
             while (!current_is(token_type_t::close_brace))
             {
-                const auto class_ctor_starts = m_token->str() == name->str();
+                const auto class_ctor_starts = current().str() == name->str();
                 if(class_ctor_starts)
                 {
                     auto ctor = constructor(*name);
@@ -149,7 +223,7 @@ namespace cmsl
 
             if (!eat(token_type_t::close_brace))
             {
-                raise_error(*m_token, "Expected }");
+                raise_error(current(), "Expected }");
                 return nullptr;
             }
 
@@ -259,7 +333,7 @@ namespace cmsl
             if(!current_is(token_type_t::kw_if))
             {
                 // Expected if
-                raise_error(*m_token, "Expected if");
+                raise_error(current(), "Expected if");
                 return nullptr;
             }
 
@@ -425,7 +499,7 @@ namespace cmsl
             if (!is_at_end() && current_is(token_type_t::close_paren))
             {
                 // Missed last parameter declaration
-                raise_error(*m_token, "Expected parameter declaration");
+                raise_error(current(), "Expected parameter declaration");
                 return false;
             }
 
@@ -658,16 +732,6 @@ namespace cmsl
             return current_is_generic_type() && peek() == token_type_t::less;
         }
 
-        parser2::token_type_t parser2::peek(size_t n) const
-        {
-            if (std::distance(m_token, m_end) <= n)
-            {
-                return token_type_t::undef;
-            }
-
-            return std::next(m_token, n)->get_type();
-        }
-
         bool parser2::current_is_generic_type() const
         {
             const auto generic_types = {
@@ -687,56 +751,6 @@ namespace cmsl
             }
 
             return eat();
-        }
-
-        bool parser2::expect_not_at_end()
-        {
-            if (is_at_end())
-            {
-                // Todo: proper token
-                raise_error(lexer::token::token{}, "Unexpected end of source");
-                return false;
-            }
-
-            return true;
-        }
-
-        boost::optional<parser2::token_t> parser2::eat(boost::optional<token_type_t> type)
-        {
-            if (!expect_not_at_end())
-            {
-                return {};
-            }
-
-            if (type && !current_is(*type))
-            {
-                raise_error(*m_token, "Expected " + to_string(*type));
-                return {};
-            }
-
-            const auto t = *m_token;
-            ++m_token;
-            return t;
-        }
-
-        bool parser2::current_is(token_type_t token_type) const
-        {
-            if(is_at_end())
-            {
-                return false;
-            }
-
-            return curr_type() == token_type;
-        }
-
-        bool parser2::is_at_end() const
-        {
-            return m_token == m_end;
-        }
-
-        bool parser2::next_is(token_type_t token_type) const
-        {
-            return peek() == token_type;
         }
 
         bool parser2::is_current_operator_2() const
@@ -868,7 +882,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_3())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_2();
@@ -895,7 +909,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_5())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_3();
@@ -922,7 +936,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_6())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_5();
@@ -949,7 +963,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_9())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_6();
@@ -976,7 +990,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_10())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_9();
@@ -1003,7 +1017,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_11())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_10();
@@ -1030,7 +1044,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_12())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_11();
@@ -1057,7 +1071,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_13())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_12();
@@ -1084,7 +1098,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_14())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_13();
@@ -1111,7 +1125,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_15())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_14();
@@ -1138,7 +1152,7 @@ namespace cmsl
             while(!is_at_end() &&
                   is_current_operator_16())
             {
-                const auto op = *m_token;
+                const auto op = current();
                 eat(); // eat operator
 
                 auto rhs = operator_15();
@@ -1152,11 +1166,6 @@ namespace cmsl
             }
 
             return std::move(f);
-        }
-
-        parser2::token_type_t parser2::curr_type() const
-        {
-            return is_at_end() ? token_type_t::undef : m_token->get_type();
         }
 
         bool parser2::current_is_class_member_access() const
@@ -1240,7 +1249,7 @@ namespace cmsl
             }
 
             // Todo: Unexpected token
-            raise_error(*m_token, "Unexpected token");
+            raise_error(current(), "Unexpected token");
             return nullptr;
         }
 
