@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ast/type_representation.hpp"
 #include "ast/parameter_declaration.hpp"
 #include "ast/parser_utils.hpp"
+#include "ast/parse_errors_observer.hpp"
 
 #include <memory>
 
@@ -18,6 +18,7 @@ namespace cmsl
         class ast_node;
         class conditional_node;
         class block_node;
+        class type_representation;
 
         // Todo: rename methods to parse_*
         class parser2 : public parser_utils
@@ -46,20 +47,11 @@ namespace cmsl
                 std::vector<std::unique_ptr<ast_node>> params;
             };
 
-            boost::optional<token_t> eat_generic_type_token();
-            boost::optional<token_t> eat_simple_type_token();
             boost::optional<token_t> eat_function_call_name();
 
-            boost::optional<type_representation> generic_type();
-            boost::optional<type_representation> simple_type();
-            bool generic_type_starts() const;
-
-            bool is_builtin_simple_type(token_type_t token_type) const;
-            bool current_is_generic_type() const;
             bool current_is_class_member_access() const;
             bool current_is_function_call() const;
             bool current_is_fundamental_value() const;
-            bool current_is_type() const;
             bool function_declaration_starts() const;
             bool declaration_starts() const;
 
@@ -102,6 +94,9 @@ namespace cmsl
             std::unique_ptr<conditional_node> get_conditional_node();
 
             std::unique_ptr<ast_node> constructor(token_t class_name);
+
+        private:
+            parse_errors_reporter m_errors_reporter;
         };
     }
 }
