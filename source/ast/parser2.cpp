@@ -16,16 +16,17 @@
 
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
-#include "parser2.hpp"
+#include "ast/type_parser.hpp"
+#include "ast/type_parsing_result.hpp"
 
 
 namespace cmsl
 {
     namespace ast
     {
-
         parser2::parser2(errors::errors_observer& err_observer, const token_container_t& tokens)
-            : parser_utils{ err_observer, tokens.cbegin(), tokens.cend() }
+            : parser_utils{ m_errors_reporter, tokens.cbegin(), tokens.cend() }
+            , m_errors_reporter{ err_observer }
         {}
 
         std::unique_ptr<ast_node> parser2::translation_unit()
@@ -143,7 +144,7 @@ namespace cmsl
 
             if (!eat(token_type_t::close_brace))
             {
-                raise_error(current(), "Expected }");
+                m_errors_reporter.raise_expected_token(current(), token_type_t::close_brace);
                 return nullptr;
             }
 
@@ -207,17 +208,18 @@ namespace cmsl
             return std::make_unique<return_node>(std::move(e));
         }
 
-        bool parser2::current_is_type() const
-        {
-            return is_builtin_simple_type(curr_type()) || current_is(token_type_t::identifier);
-        }
-
         bool parser2::declaration_starts() const
         {
-            return current_is_type() &&
-                (next_is(token_type_t::identifier) // variable name
-                 || next_is(token_type_t::amp) // reference
-                 || current_is_generic_type());
+            parse_errors_sink errs_sink;
+            type_parser p{ errs_sink, current_iterator(), end_iterator() };
+            const auto parsing_result = p.type();
+
+            if(!parsing_result.ty)
+            {
+                return false;
+            }
+
+            return type_of_token_is(parsing_result.stopped_at, token_type_t::identifier);
         }
 
         std::unique_ptr<conditional_node> parser2::get_conditional_node()
@@ -253,7 +255,7 @@ namespace cmsl
             if(!current_is(token_type_t::kw_if))
             {
                 // Expected if
-                raise_error(current(), "Expected if");
+                m_errors_reporter.raise_expected_keyword(current(), token_type_t::kw_if);
                 return nullptr;
             }
 
@@ -419,7 +421,7 @@ namespace cmsl
             if (!is_at_end() && current_is(token_type_t::close_paren))
             {
                 // Missed last parameter declaration
-                raise_error(current(), "Expected parameter declaration");
+                m_errors_reporter.raise_expected_parameter_declaration(current());
                 return false;
             }
 
@@ -441,7 +443,7 @@ namespace cmsl
                 {
                     // Unexpected end of tokens
                     // Todo: proper token
-                    raise_error(lexer::token::token{}, "Unexpected end of source");
+                    m_errors_reporter.raise_unexpected_end_of_file(lexer::token::token{});
                     return boost::none;
                 }
 
@@ -511,166 +513,27 @@ namespace cmsl
 
         boost::optional<type_representation> parser2::type()
         {
-            if(generic_type_starts())
-            {
-                return generic_type();
-            }
-            else
-            {
-                return simple_type();
-            }
+            type_parser ty_parser{ m_errors_reporter, current_iterator(), end_iterator() };
+            auto parsing_result = ty_parser.type();
+            adjust_current_iterator(parsing_result.stopped_at);
+            return std::move(parsing_result.ty);
         }
 
         boost::optional<parser2::token_t> parser2::eat_function_call_name()
         {
-            if(current_is_type())
+            if(!current_is_name_of_function_call())
             {
-                // Constructor call.
-                // Todo: handle generic types
-                const auto simple_type_token = eat_simple_type_token();
-                if(!simple_type_token)
-                {
-                    return {};
-                }
-
-                // Constructor call always has one token, even for generic type constructor call.
-                return *simple_type_token;
+                m_errors_reporter.raise_unexpected_token(current());
+                return {};
             }
 
-            const auto fun_name_token = eat(token_type_t::identifier);
+            const auto fun_name_token = eat();
             if(!fun_name_token)
             {
                 return {};
             }
 
             return *fun_name_token;
-        }
-
-        boost::optional<parser2::token_t> parser2::eat_simple_type_token()
-        {
-            const auto token_type = curr_type();
-
-            if (is_builtin_simple_type(token_type) ||
-                token_type == token_type_t::identifier)
-            {
-                return eat();
-            }
-            else
-            {
-                // Todo: proper token
-                raise_error(lexer::token::token{}, "Expected type");
-                return {};
-            }
-        }
-
-        bool parser2::is_builtin_simple_type(token_type_t token_type) const
-        {
-            const auto simple_types = {
-                    token_type_t::kw_int,
-                    token_type_t::kw_double,
-                    token_type_t::kw_bool,
-                    token_type_t::kw_string,
-                    token_type_t::kw_version,
-                    token_type_t::kw_list
-            };
-
-            return cmsl::contains(simple_types, token_type);
-        }
-
-        boost::optional<type_representation> parser2::simple_type()
-        {
-            const auto type_token = eat_simple_type_token();
-            if (!type_token)
-            {
-                return {};
-            }
-
-            const auto is_reference =current_is(token_type_t::amp);
-            if(is_reference)
-            {
-                const auto ref_token = eat(token_type_t::amp);
-                return type_representation{ *type_token,
-                                            *ref_token};
-            }
-
-            return type_representation{ *type_token };
-        }
-
-        boost::optional<type_representation> parser2::generic_type()
-        {
-            const auto name_token = eat_generic_type_token();
-            if(!name_token)
-            {
-                return {};
-            }
-
-            const auto less_token = eat(token_type_t::less);
-            if(!less_token)
-            {
-                return {};
-            }
-
-            auto value_type = type();
-            if(!value_type)
-            {
-                return {};
-            }
-
-            if(is_at_end())
-            {
-                raise_error(lexer::token::token{}, "Unexpected end of source");
-                return {};
-            }
-
-            const auto greater_token = eat(token_type_t::greater);
-            if(!greater_token)
-            {
-                return {};
-            }
-
-            token_container_t tokens;
-            tokens.emplace_back(*name_token);
-            tokens.emplace_back(*less_token);
-            tokens.insert(std::end(tokens),
-                                         std::cbegin(value_type->tokens()), std::cend(value_type->tokens()));
-            tokens.emplace_back(*greater_token);
-
-            const auto is_reference = next_is(token_type_t::amp);
-            if(is_reference)
-            {
-                const auto ref_token = eat(token_type_t::amp);
-                return type_representation{ tokens,
-                                            *ref_token,
-                                            { std::move(*value_type) } };
-            }
-
-            return type_representation{ tokens, { std::move(*value_type) } };
-        }
-
-        bool parser2::generic_type_starts() const
-        {
-            return current_is_generic_type() && peek() == token_type_t::less;
-        }
-
-        bool parser2::current_is_generic_type() const
-        {
-            const auto generic_types = {
-                    token_type_t::kw_list
-            };
-
-            return cmsl::contains(generic_types, curr_type());
-        }
-
-        boost::optional<parser2::token_t> parser2::eat_generic_type_token()
-        {
-            if(!current_is_generic_type())
-            {
-                // Todo: proper token
-                raise_error(lexer::token::token{}, "Expected type");
-                return {};
-            }
-
-            return eat();
         }
 
         bool parser2::is_current_operator_2() const
@@ -1096,7 +959,7 @@ namespace cmsl
 
         bool parser2::current_is_function_call() const
         {
-            return current_is_type()
+            return current_is_name_of_function_call()
                    && next_is(token_type_t::open_paren);
         }
 
@@ -1169,7 +1032,7 @@ namespace cmsl
             }
 
             // Todo: Unexpected token
-            raise_error(current(), "Unexpected token");
+            m_errors_reporter.raise_unexpected_token(current());
             return nullptr;
         }
 
@@ -1247,7 +1110,7 @@ namespace cmsl
                     if(is_at_end() || current_is(token_type_t::close_paren))
                     {
                         // Todo: proper token
-                        raise_error(lexer::token::token{}, "Expected parameter");
+                        m_errors_reporter.raise_expected_parameter(lexer::token::token{});
                         return {};
                     }
                 }
