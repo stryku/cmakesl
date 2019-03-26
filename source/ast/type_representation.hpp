@@ -8,9 +8,9 @@ namespace cmsl
     {
         class type_representation
         {
-        private:
-
         public:
+            struct is_reference_tag{};
+
             explicit type_representation(lexer::token::token primary_name,
                                          lexer::token::token reference_token,
                                          std::vector<type_representation> nested_types  = {})
@@ -24,6 +24,21 @@ namespace cmsl
                     : m_tokens{ std::move(tokens) }
                     , m_nested_types{ std::move(nested_types) }
                     , m_reference_token{ reference_token }
+            {}
+
+            explicit type_representation(lexer::token::token primary_name,
+                                         is_reference_tag,
+                                         std::vector<type_representation> nested_types  = {})
+                    : m_tokens{ { primary_name } }
+                    , m_nested_types{ std::move(nested_types) }
+                    , m_is_reference{ true }
+            {}
+            explicit type_representation(lexer::token::token_container_t tokens,
+                                         is_reference_tag,
+                                         std::vector<type_representation> nested_types  = {})
+                    : m_tokens{ std::move(tokens) }
+                    , m_nested_types{ std::move(nested_types) }
+                    , m_is_reference{ true }
             {}
             explicit type_representation(lexer::token::token primary_name,
                                          std::vector<type_representation> nested_types  = {})
@@ -94,12 +109,13 @@ namespace cmsl
 
             bool is_reference() const
             {
-                return m_reference_token.has_value();
+                return m_reference_token.has_value() || m_is_reference;
             }
 
         private:
             lexer::token::token_container_t m_tokens;
             std::optional<lexer::token::token> m_reference_token;
+            bool m_is_reference{ false };
 
             // 'template parameters' of generic types.
             std::vector<type_representation> m_nested_types;

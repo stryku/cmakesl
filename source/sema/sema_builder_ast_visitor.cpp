@@ -115,11 +115,13 @@ namespace cmsl
             // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
             // Todo: ast shouldn't store ast ctx somewhere else?
             auto& class_type = m_type_factory.create(class_context, class_name_representation, std::move(members->info));
+            auto& class_type_reference = m_type_factory.create_reference(class_type);
 //                auto created_class_type = std::make_unique<sema_type>(class_context, name, std::move(members->info));
 //                auto class_type = created_class_type.get();
 
             // Same as with ast context. class_type raw pointer will be valid. We move it to context to make this class findable as a regular type (so e.g. inside this class methods, the type will appear as a regular type).
             m_ctx.add_type(class_type);
+            m_ctx.add_type(class_type_reference);
 
             std::vector<std::unique_ptr<function_node>> functions;
 
@@ -546,21 +548,6 @@ namespace cmsl
                 return found;
             }
 
-            // If it's a reference, try to find referenced type and create a reference type.
-            if(name.is_reference())
-            {
-                const auto referenced_type = search_context.find_referenced_type(name);
-                if(referenced_type)
-                {
-                    const auto& created_reference_type = m_type_factory.create_reference(*referenced_type);
-                    referenced_type->context().add_type(created_reference_type);
-                    return &created_reference_type;
-                }
-
-                // If referenced type is not found - don't report error.
-                // It can be a generic type, which has to be created.
-            }
-
             if(!name.is_generic())
             {
                 raise_error(name.primary_name(), name.to_string() + " type not found.");
@@ -572,14 +559,9 @@ namespace cmsl
                                                       m_type_factory,
                                                       m_function_factory,
                                                       m_context_factory };
-            const auto created_generic_type = factory.create_generic(name);
 
-            if(!name.is_reference())
-            {
-                return created_generic_type;
-            }
-
-            return &m_type_factory.create_reference(*created_generic_type);
+            // Todo: Add assert.
+            return factory.create_generic(name);
         }
 
         template <typename T>
@@ -783,12 +765,6 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
         sema_builder_ast_visitor::convert_to_cast_node_if_need(const sema_type& expected_result_type,
                                                                std::unique_ptr<expression_node> expression)
         {
-            const auto lhs_str = expected_result_type.name().to_string();
-            const auto rhs_str = expression->type().name().to_string();
-
-            const auto lhs_ptr = &expected_result_type;
-            const auto rhs_ptr = &expression->type();
-
             if(expected_result_type == expression->type())
             {
                 return std::move(expression);
