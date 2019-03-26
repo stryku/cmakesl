@@ -396,8 +396,7 @@ namespace cmsl
             }
 
             auto expr = to_expression(std::move(v.m_result_node));
-            const auto& current_function_return_type = m_currently_parsed_function->return_type();
-            expr = convert_to_cast_node_if_need(current_function_return_type, std::move(expr));
+            expr = convert_to_cast_return_node_if_need(std::move(expr));
             m_result_node = std::make_unique<return_node>(std::move(expr));
         }
 
@@ -760,6 +759,19 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
             };
             return lexer::token::token{ token_type, src_range, tok };
         }
+
+        std::unique_ptr<expression_node>
+        sema_builder_ast_visitor::convert_to_cast_return_node_if_need(std::unique_ptr<expression_node> expression)
+        {
+            if(!m_currently_parsed_function)
+            {
+                return std::move(expression);
+            }
+
+            const auto& expected_result_type = m_currently_parsed_function->return_type();
+            return convert_to_cast_node_if_need(expected_result_type, std::move(expression));
+        }
+
 
         std::unique_ptr<expression_node>
         sema_builder_ast_visitor::convert_to_cast_node_if_need(const sema_type& expected_result_type,
