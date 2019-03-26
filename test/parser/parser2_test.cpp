@@ -234,7 +234,7 @@ namespace cmsl
                 auto expected_ast = std::make_unique<bool_value_node>(token);
 
                 const auto tokens = tokens_container_t{ token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.factor();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -248,7 +248,7 @@ namespace cmsl
                 auto expected_ast = std::make_unique<bool_value_node>(token);
 
                 const auto tokens = tokens_container_t{ token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.factor();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -262,7 +262,7 @@ namespace cmsl
                 auto expected_ast = std::make_unique<int_value_node>(token);
 
                 const auto tokens = tokens_container_t{ token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.factor();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -276,7 +276,7 @@ namespace cmsl
                 auto expected_ast = std::make_unique<double_value_node>(token);
 
                 const auto tokens = tokens_container_t{ token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.factor();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -290,7 +290,7 @@ namespace cmsl
                 auto expected_ast = std::make_unique<string_value_node>(token);
 
                 const auto tokens = tokens_container_t{ token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.factor();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -304,7 +304,7 @@ namespace cmsl
                 auto expected_ast = std::make_unique<id_node>(token);
 
                 const auto tokens = tokens_container_t{ token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.factor();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -320,7 +320,7 @@ namespace cmsl
                 auto expected_ast = std::make_unique<id_node>(id);
 
                 const auto tokens = tokens_container_t{ lparen, id, rparen };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.factor();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -341,7 +341,7 @@ namespace cmsl
                                                                            std::move(rhs_node));
 
                 const auto tokens = tokens_container_t{ lhs_token, op_token, rhs_token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -370,7 +370,7 @@ namespace cmsl
                                                                            std::move(rhs_node));
 
                 const auto tokens = tokens_container_t{ lhs_lhs_token, lhs_op_token, lhs_rhs_token, op_token, rhs_token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -399,7 +399,7 @@ namespace cmsl
                                                                            std::move(rhs_node));
 
                 const auto tokens = tokens_container_t{ lhs_token, op_token, rhs_lhs_token, rhs_op_token, rhs_rhs_token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -414,7 +414,7 @@ namespace cmsl
                 auto expected_ast = std::make_unique<function_call_node>(fun_name_token, function_call_node::params_t{});
 
                 const auto tokens = tokens_container_t{ fun_name_token, token_open_paren(), token_close_paren() };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -446,7 +446,7 @@ namespace cmsl
                                                         comma,
                                                         param3,
                                                         token_close_paren() };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -470,7 +470,7 @@ namespace cmsl
                                                        fun_name_token,
                                                        token_open_paren(),
                                                        token_close_paren() };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -509,7 +509,7 @@ namespace cmsl
                                                         comma,
                                                         param3,
                                                         token_close_paren() };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -543,7 +543,7 @@ namespace cmsl
                                                        fun_name_token,
                                                        token_open_paren(),
                                                        token_close_paren() };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -590,7 +590,7 @@ namespace cmsl
                                                        comma,
                                                        param3,
                                                        token_close_paren() };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -608,7 +608,7 @@ namespace cmsl
                 auto expected_ast = std::make_unique<class_member_access_node>(std::move(lhs_node), member_name_token);
 
                 const auto tokens = tokens_container_t{class_name_token, token_dot(), member_name_token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -638,7 +638,7 @@ namespace cmsl
                                                        token_close_paren(),
                                                        token_dot(),
                                                        member_name_token };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.expr();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -665,7 +665,7 @@ namespace cmsl
                                                        token_close_paren(),
                                                        token_open_brace(),
                                                        token_close_brace() };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.get_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -697,7 +697,7 @@ namespace cmsl
                                                         token_kw_else(),
                                                         token_open_brace(),
                                                         token_close_brace()};
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.get_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -744,7 +744,7 @@ namespace cmsl
                                                         token_kw_else(),
                                                         token_open_brace(),
                                                         token_close_brace() };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.get_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -785,7 +785,7 @@ namespace cmsl
                                                         token_close_paren(),
                                                         token_open_brace(),
                                                         token_close_brace() };
-                auto parser = parser_t{  dummy_err_observer, tokens };
+                auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.get_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -809,7 +809,7 @@ namespace cmsl
                                                         token_close_paren(),
                                                         token_open_brace(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.get_while_node();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -827,7 +827,7 @@ namespace cmsl
                 const auto tokens = tokens_container_t{ token_kw_return(),
                                                         expression_token,
                                                         token_semicolon() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.get_return_node();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -845,7 +845,7 @@ namespace cmsl
                     const auto expected_reference = type_representation{ token };
 
                     const auto tokens = tokens_container_t{ token };
-                    auto parser = parser_t{ dummy_err_observer, tokens };
+                    auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                     auto result_type_reference = parser.type();
 
                     ASSERT_TRUE(result_type_reference);
@@ -873,7 +873,7 @@ namespace cmsl
                 const auto expected_reference = type_representation{ expected_type_tokens,
                                                                      { value_type_representation } };
 
-                auto parser = parser_t{ dummy_err_observer, expected_type_tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, expected_type_tokens };
                 auto result_type_reference = parser.type();
 
                 ASSERT_TRUE(result_type_reference);
@@ -910,7 +910,7 @@ namespace cmsl
                 const auto expected_representation = type_representation{ expected_type_tokens,
                                                                      { value_type_representation }};
 
-                auto parser = parser_t{ dummy_err_observer, expected_type_tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, expected_type_tokens };
                 auto result_type_reference = parser.type();
 
                 ASSERT_TRUE(result_type_reference);
@@ -930,7 +930,7 @@ namespace cmsl
                 const auto tokens = tokens_container_t{ type_token,
                                                         name_token,
                                                         token_semicolon() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -963,7 +963,7 @@ namespace cmsl
                                                         greater_token,
                                                         name_token,
                                                         token_semicolon() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -987,7 +987,7 @@ namespace cmsl
                                                         token_equal(),
                                                         int_expr_token,
                                                         token_semicolon() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1024,7 +1024,7 @@ namespace cmsl
                                                         token_equal(),
                                                         int_expr_token,
                                                         token_semicolon() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1038,7 +1038,7 @@ namespace cmsl
 
                 const auto tokens = tokens_container_t{ token_open_brace(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.block();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1063,7 +1063,7 @@ namespace cmsl
                                                         variable_name_token,
                                                         token_semicolon(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.block();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1119,7 +1119,7 @@ namespace cmsl
                                                         token_close_brace(),
 
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.block();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1150,7 +1150,7 @@ namespace cmsl
                                                         rhs_token,
                                                         token_semicolon(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.block();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1181,7 +1181,7 @@ namespace cmsl
                                                         token_open_brace(),
                                                         token_close_brace(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.block();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1206,7 +1206,7 @@ namespace cmsl
                                                         expression_token,
                                                         token_semicolon(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.block();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1227,7 +1227,7 @@ namespace cmsl
                                                         token_open_brace(),
                                                         token_close_brace(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.block();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1252,7 +1252,7 @@ namespace cmsl
                                                         token_close_paren(),
                                                         token_open_brace(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.function();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1290,7 +1290,7 @@ namespace cmsl
                                                         token_close_paren(),
                                                         token_open_brace(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.function();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1338,7 +1338,7 @@ namespace cmsl
                                                         token_close_paren(),
                                                         token_open_brace(),
                                                         token_close_brace() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.function();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1357,7 +1357,7 @@ namespace cmsl
                                                         token_open_brace(),
                                                         token_close_brace(),
                                                         token_semicolon() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.class_();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1386,7 +1386,7 @@ namespace cmsl
                                                         token_semicolon(),
                                                         token_close_brace(),
                                                         token_semicolon() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.class_();
 
                 ASSERT_THAT(result_ast, NotNull());
@@ -1435,7 +1435,7 @@ namespace cmsl
 
                                                         token_close_brace(),
                                                         token_semicolon() };
-                auto parser = parser_t{ dummy_err_observer, tokens };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
                 auto result_ast = parser.class_();
 
                 ASSERT_THAT(result_ast, NotNull());

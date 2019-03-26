@@ -576,7 +576,14 @@ namespace cmsl
 
         void sema_builder_ast_visitor::raise_error(const lexer::token::token token, const std::string& message)
         {
-            m_errors_observer.nofify_error({token.src_range(), message}); // todo: get error via parameter
+            const auto err = errors::error{
+                token.source().path(),
+                token.source().line(token.src_range().begin.line),
+                message,
+                errors::error_type::error,
+                token.src_range()
+            };
+            m_errors_observer.nofify_error(err); // todo: get error via parameter
         }
 
         sema_builder_ast_visitor sema_builder_ast_visitor::clone() const

@@ -42,7 +42,7 @@ namespace cmsl
             lexer::lexer lex{ err_observer , source };
             const auto tokens = lex.lex();
 
-            ast::parser2 parser{ err_observer, tokens };
+            ast::parser2 parser{ err_observer, source, tokens };
             auto ast_tree = parser.translation_unit();
 
             sema::identifiers_context_impl ids_ctx;

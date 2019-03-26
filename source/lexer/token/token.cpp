@@ -1,4 +1,6 @@
 #include "lexer/token/token.hpp"
+#include "token.hpp"
+
 
 namespace cmsl
 {
@@ -58,6 +60,11 @@ namespace cmsl
             source_range token::src_range() const
             {
                 return m_source_range;
+            }
+
+            cmsl::source_view token::source() const
+            {
+                return m_source;
             }
 
         }

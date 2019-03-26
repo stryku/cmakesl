@@ -31,7 +31,7 @@ namespace cmsl
 
         while(counter < line_no)
         {
-            pos = m_source.find('\n', pos);
+            pos = m_source.find('\n', pos + 1);
             if(pos == cmsl::string_view::npos)
             {
                 return "";
@@ -42,12 +42,12 @@ namespace cmsl
 
         const auto line_end = [pos, source = m_source]
         {
-            const auto p = source.find('\n', pos);
+            const auto p = source.find('\n', pos + 1);
             return p != cmsl::string_view::npos ? p : source.size();
         }();
 
         const auto line_size = line_end - pos;
-        const auto line_begin = std::next(m_source.cbegin(), pos);
+        const auto line_begin = std::next(m_source.cbegin(), pos + 1);
 
         return cmsl::string_view{ line_begin, line_size };
     }

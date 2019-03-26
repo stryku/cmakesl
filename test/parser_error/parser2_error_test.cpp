@@ -45,7 +45,7 @@ namespace cmsl
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = tokens_container_t{ GetParam() };
-                    parser2 p{ errs.err_observer, tokens };
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.factor();
 
                     EXPECT_THAT(result, IsNull());
@@ -111,7 +111,7 @@ namespace cmsl
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, tokens };
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.expr();
 
                     EXPECT_THAT(result, IsNull());
@@ -139,7 +139,7 @@ namespace cmsl
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, tokens };
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.expr();
 
                     EXPECT_THAT(result, IsNull());
@@ -173,7 +173,7 @@ namespace cmsl
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, tokens };
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.variable_declaration();
 
                     EXPECT_THAT(result, IsNull());
@@ -209,7 +209,7 @@ namespace cmsl
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, tokens };
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.get_while_node();
 
                     EXPECT_THAT(result, IsNull());
@@ -246,7 +246,7 @@ namespace cmsl
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, tokens };
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.get_if_else_node();
 
                     EXPECT_THAT(result, IsNull());
@@ -298,7 +298,7 @@ namespace cmsl
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, tokens };
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.block();
 
                     EXPECT_THAT(result, IsNull());
@@ -329,7 +329,7 @@ namespace cmsl
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, tokens };
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.function();
 
                     EXPECT_THAT(result, IsNull());
@@ -376,7 +376,7 @@ namespace cmsl
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, tokens };
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.class_();
 
                     EXPECT_THAT(result, IsNull());
