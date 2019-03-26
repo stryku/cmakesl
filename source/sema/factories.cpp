@@ -22,7 +22,7 @@ namespace
                 cmsl::source_location{ 1u, 1u, 0u },
                 cmsl::source_location{ 1u, N, N - 1u }
         };
-        return cmsl::lexer::token::token{ token_type, src_range, tok };
+        return cmsl::lexer::token::token{ token_type, src_range, cmsl::source_view{ tok } };
     }
 
     template<unsigned N>

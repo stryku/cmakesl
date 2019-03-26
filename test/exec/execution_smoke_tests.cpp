@@ -1,5 +1,6 @@
 #include "exec/source_executor.hpp"
 #include "test/exec/mock/cmake_facade_mock.hpp"
+#include "common/source_view.hpp"
 
 #include <gmock/gmock.h>
 
@@ -16,7 +17,7 @@ namespace cmsl
                 const auto source = "int main() { return 42; }";
                 cmake_facade_mock facade;
                 source_executor executor{ facade };
-                const auto result = executor.execute2(source);
+                const auto result = executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -35,7 +36,7 @@ namespace cmsl
 
                 cmake_facade_mock facade;
                 source_executor executor{ facade };
-                const auto result = executor.execute2(source);
+                const auto result = executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -49,7 +50,7 @@ namespace cmsl
 
                 cmake_facade_mock facade;
                 source_executor executor{ facade };
-                const auto result = executor.execute2(source);
+                const auto result = executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(-42));
             }
 
@@ -71,7 +72,7 @@ namespace cmsl
 
                 cmake_facade_mock facade;
                 source_executor executor{ facade };
-                const auto result = executor.execute2(source);
+                const auto result = executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -101,7 +102,7 @@ namespace cmsl
 
                 cmake_facade_mock facade;
                 source_executor executor{ facade };
-                const auto result = executor.execute2(source);
+                const auto result = executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(-42));
             }
         }
