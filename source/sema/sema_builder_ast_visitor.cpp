@@ -51,12 +51,13 @@ namespace cmsl
         }
 
         sema_builder_ast_visitor::sema_builder_ast_visitor(sema_context_interface& generic_types_context,
-                                              sema_context_interface& ctx,
-                                              errors::errors_observer& errs,
-                                              identifiers_context& ids_context,
-                                              sema_type_factory& type_factory,
-                                              sema_function_factory& function_factory,
-                                              sema_context_factory& context_factory)
+                                                           sema_context_interface& ctx,
+                                                           errors::errors_observer& errs,
+                                                           identifiers_context& ids_context,
+                                                           sema_type_factory& type_factory,
+                                                           sema_function_factory& function_factory,
+                                                           sema_context_factory& context_factory,
+                                                           sema_function* currently_parsing_function)
                 : m_generic_types_context{ generic_types_context }
                 , m_ctx{ ctx }
                 , m_errors_observer{ errs }
@@ -64,6 +65,7 @@ namespace cmsl
                 , m_function_factory{ function_factory }
                 , m_context_factory{ context_factory }
                 , m_type_factory{ type_factory }
+                , m_currently_parsed_function{ currently_parsing_function }
         {}
 
         void sema_builder_ast_visitor::visit(const ast::block_node& node)
@@ -113,17 +115,21 @@ namespace cmsl
             // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
             // Todo: ast shouldn't store ast ctx somewhere else?
             auto& class_type = m_type_factory.create(class_context, class_name_representation, std::move(members->info));
+            auto& class_type_reference = m_type_factory.create_reference(class_type);
 //                auto created_class_type = std::make_unique<sema_type>(class_context, name, std::move(members->info));
 //                auto class_type = created_class_type.get();
 
             // Same as with ast context. class_type raw pointer will be valid. We move it to context to make this class findable as a regular type (so e.g. inside this class methods, the type will appear as a regular type).
             m_ctx.add_type(class_type);
+            m_ctx.add_type(class_type_reference);
 
             std::vector<std::unique_ptr<function_node>> functions;
 
             for(auto function_declaration : members->functions)
             {
+                m_currently_parsed_function = function_declaration.fun;
                 auto body = visit_child_node<block_node>(function_declaration.body_to_visit, class_context);
+                m_currently_parsed_function = nullptr;
                 if(!body)
                 {
                     return;
@@ -390,6 +396,7 @@ namespace cmsl
             }
 
             auto expr = to_expression(std::move(v.m_result_node));
+            expr = convert_to_cast_return_node_if_need(std::move(expr));
             m_result_node = std::make_unique<return_node>(std::move(expr));
         }
 
@@ -448,7 +455,12 @@ namespace cmsl
             // Add function (without a body yet) to context, so it will be visible inside function body in case of a recursive call.
             m_ctx.add_function(function);
 
+            // Store pointer to function that is currently parsed,
+            // so function body will be able to figure out function return type
+            // and make casted return expression nodes as needed.
+            m_currently_parsed_function = &function;
             auto block = visit_child_node<block_node>(node.get_body());
+            m_currently_parsed_function = nullptr;
             if(!block)
             {
                 return;
@@ -535,19 +547,6 @@ namespace cmsl
                 return found;
             }
 
-            // If it's a reference, try to find referenced type and create a reference type.
-            if(name.is_reference())
-            {
-                const auto referenced_type = search_context.find_referenced_type(name);
-                if(referenced_type)
-                {
-                    return &m_type_factory.create_reference(*referenced_type);
-                }
-
-                // If referenced type is not found - don't report error.
-                // It can be a generic type, which has to be created.
-            }
-
             if(!name.is_generic())
             {
                 raise_error(name.primary_name(), name.to_string() + " type not found.");
@@ -559,14 +558,9 @@ namespace cmsl
                                                       m_type_factory,
                                                       m_function_factory,
                                                       m_context_factory };
-            const auto created_generic_type = factory.create_generic(name);
 
-            if(!name.is_reference())
-            {
-                return created_generic_type;
-            }
-
-            return &m_type_factory.create_reference(*created_generic_type);
+            // Todo: Add assert.
+            return factory.create_generic(name);
         }
 
         template <typename T>
@@ -592,7 +586,14 @@ namespace cmsl
 
         sema_builder_ast_visitor sema_builder_ast_visitor::clone(sema_context_interface& ctx_to_visit) const
         {
-            return sema_builder_ast_visitor{ m_generic_types_context, ctx_to_visit, m_errors_observer, m_ids_context, m_type_factory, m_function_factory, m_context_factory };
+            return sema_builder_ast_visitor{ m_generic_types_context,
+                                             ctx_to_visit,
+                                             m_errors_observer,
+                                             m_ids_context,
+                                             m_type_factory,
+                                             m_function_factory,
+                                             m_context_factory,
+                                             m_currently_parsed_function };
         }
 
         std::unique_ptr<expression_node> sema_builder_ast_visitor::visit_child_expr(const ast::ast_node& node)
@@ -758,6 +759,19 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
             };
             return lexer::token::token{ token_type, src_range, tok };
         }
+
+        std::unique_ptr<expression_node>
+        sema_builder_ast_visitor::convert_to_cast_return_node_if_need(std::unique_ptr<expression_node> expression)
+        {
+            if(!m_currently_parsed_function)
+            {
+                return std::move(expression);
+            }
+
+            const auto& expected_result_type = m_currently_parsed_function->return_type();
+            return convert_to_cast_node_if_need(expected_result_type, std::move(expression));
+        }
+
 
         std::unique_ptr<expression_node>
         sema_builder_ast_visitor::convert_to_cast_node_if_need(const sema_type& expected_result_type,

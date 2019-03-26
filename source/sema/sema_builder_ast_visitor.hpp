@@ -56,7 +56,8 @@ namespace cmsl
                                               identifiers_context& ids_context,
                                               sema_type_factory& type_factory,
                                               sema_function_factory& function_factory,
-                                              sema_context_factory& context_factory);
+                                              sema_context_factory& context_factory,
+                                              sema_function* currently_parsing_function = nullptr); // Todo: Create private ctor that trakes currently_parsing_function
 
             void visit(const ast::block_node& node) override;
             void visit(const ast::class_node2& node) override;
@@ -133,10 +134,11 @@ namespace cmsl
             template<unsigned N>
             lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N]);
 
+            param_expressions_t convert_params_to_cast_nodes_if_need(const function_signature& signature, param_expressions_t params);
+            std::unique_ptr<expression_node> convert_to_cast_return_node_if_need(std::unique_ptr<expression_node> expression);
             std::unique_ptr<expression_node> convert_to_cast_node_if_need(const sema_type& expected_result_type,
                                                                           std::unique_ptr<expression_node> expression);
 
-            param_expressions_t convert_params_to_cast_nodes_if_need(const function_signature& signature, param_expressions_t params);
 
         public:
             std::unique_ptr<sema_node> m_result_node;
@@ -149,6 +151,7 @@ namespace cmsl
             sema_type_factory& m_type_factory;
             sema_function_factory& m_function_factory;
             sema_context_factory& m_context_factory;
+            sema_function* m_currently_parsed_function{ nullptr };
         };
     }
 }
