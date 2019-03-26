@@ -194,6 +194,7 @@ namespace cmsl
                 CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_ctor_name);
                 CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_name);
                 CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_add_executable);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_add_library);
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
@@ -1493,6 +1494,15 @@ namespace cmsl
             auto& project = instance.get_value_ref().get_project_ref();
             const auto& [name, sources] = get_params<alternative_t::string, alternative_t::list>(params);
             project.add_executable(m_cmake_facade, name, sources);
+            return m_instances.create2_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::project_add_library(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            auto& project = instance.get_value_ref().get_project_ref();
+            const auto& [name, sources] = get_params<alternative_t::string, alternative_t::list>(params);
+            project.add_library(m_cmake_facade, name, sources);
             return m_instances.create2_void();
         }
     }

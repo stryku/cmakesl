@@ -176,6 +176,7 @@ namespace cmsl
             inst::instance* project_ctor_name(inst::instance& instance, const params_t& params);
             inst::instance* project_name(inst::instance& instance, const params_t& params);
             inst::instance* project_add_executable(inst::instance& instance, const params_t& params);
+            inst::instance* project_add_library(inst::instance& instance, const params_t& params);
 
             inst::instance* cmake_minimum_required(const params_t& params);
 

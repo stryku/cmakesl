@@ -21,6 +21,7 @@ namespace cmsl
                 MOCK_CONST_METHOD0(get_current_source_dir, std::string());
 
                 MOCK_METHOD2(add_executable, void(const std::string&, const std::vector<std::string>&));
+                MOCK_METHOD2(add_library, void(const std::string&, const std::vector<std::string>&));
             };
         }
     }

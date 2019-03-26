@@ -818,12 +818,19 @@ namespace cmsl
                             function_signature{make_id_token("name"), {}},
                             builtin_function_kind::project_ctor_name
                     },
-                    builtin_function_info{ // string name()
+                    builtin_function_info{ // string add_executable(string name, list<string> sources)
                             project_type,
                             function_signature{make_id_token("add_executable"),
                                                {parameter_declaration{string_type, make_id_token("")},
                                                 parameter_declaration{sources_type, make_id_token("")}} },
                             builtin_function_kind::project_add_executable
+                    },
+                    builtin_function_info{ // string add_library(string name, list<string> sources)
+                            project_type,
+                            function_signature{make_id_token("add_library"),
+                                               {parameter_declaration{string_type, make_id_token("")},
+                                                parameter_declaration{sources_type, make_id_token("")}} },
+                            builtin_function_kind::project_add_library
                     }
             };
 
