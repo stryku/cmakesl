@@ -1,4 +1,5 @@
 #include "exec/source_executor.hpp"
+#include "common/source_view.hpp"
 #include "test/exec/mock/cmake_facade_mock.hpp"
 
 #include <gmock/gmock.h>
@@ -26,7 +27,7 @@ namespace cmsl
                         "    double d;\n"
                         "    return int(d);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(0));
             }
 
@@ -38,7 +39,7 @@ namespace cmsl
                         "    double d = double();\n"
                         "    return int(d);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(0));
             }
 
@@ -50,7 +51,7 @@ namespace cmsl
                         "    double d = double(42.6);\n"
                         "    return int(d);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -61,7 +62,7 @@ namespace cmsl
                         "{\n"
                         "    return int(40.42 + 1.58);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -72,7 +73,7 @@ namespace cmsl
                         "{\n"
                         "    return int(44.123 - 2.123);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -83,7 +84,7 @@ namespace cmsl
                         "{\n"
                         "    return int(84.0 * 0.5);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -94,7 +95,7 @@ namespace cmsl
                         "{\n"
                         "    return int(21.0 / 0.5);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -107,7 +108,7 @@ namespace cmsl
                         "    d = 42.0;"
                         "    return int(d);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -120,7 +121,7 @@ namespace cmsl
                         "    d += 20.3;\n"
                         "    return int(d);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -133,7 +134,7 @@ namespace cmsl
                         "    d -= 21.7;\n"
                         "    return int(d);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -146,7 +147,7 @@ namespace cmsl
                         "    d *= 2.0;\n"
                         "    return int(d);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -159,7 +160,7 @@ namespace cmsl
                         "    d /= 0.5;\n"
                         "    return int(d);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(42));
             }
 
@@ -170,7 +171,7 @@ namespace cmsl
                         "{\n"
                         "    return int(43.0 < 44.1);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -181,7 +182,7 @@ namespace cmsl
                         "{\n"
                         "    return int(44.0 <= 44.0);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -192,7 +193,7 @@ namespace cmsl
                         "{\n"
                         "    return int(42.1 > 42.0);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -203,7 +204,7 @@ namespace cmsl
                         "{\n"
                         "    return int(42.0 >= 42.0);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
         }

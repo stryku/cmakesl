@@ -1,4 +1,6 @@
 #include "lexer/token/token.hpp"
+#include "token.hpp"
+
 
 namespace cmsl
 {
@@ -11,10 +13,10 @@ namespace cmsl
             {}
 
             token::token(token_type_t type)
-                : token{ type, source_range{}, cmsl::string_view{} }
+                : token{ type, source_range{}, cmsl::source_view{""} }
             {}
 
-            token::token(token_type_t type, const source_range& src_range, cmsl::string_view source)
+            token::token(token_type_t type, const source_range& src_range, cmsl::source_view source)
                 : m_type{ type }
                 , m_source_range{ src_range }
                 , m_source{ source }
@@ -38,7 +40,7 @@ namespace cmsl
             cmsl::string_view token::str() const
             {
                 return cmsl::string_view{
-                    std::next(m_source.begin(), m_source_range.begin.absolute),
+                    std::next(m_source.cbegin(), m_source_range.begin.absolute),
                     m_source_range.size()
                 };
             }
@@ -58,6 +60,11 @@ namespace cmsl
             source_range token::src_range() const
             {
                 return m_source_range;
+            }
+
+            cmsl::source_view token::source() const
+            {
+                return m_source;
             }
 
         }

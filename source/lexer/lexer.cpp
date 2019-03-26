@@ -13,7 +13,7 @@ namespace cmsl
         lexer::lexer(errors::errors_observer& err_observer, source_t source)
             : m_err_observer{ err_observer }
             , m_source{ source }
-            , m_source_loc{ m_source }
+            , m_source_loc{ m_source.source() }
             , m_aritmetical_token_definitions{ create_arithmetical_token_definitions() }
             , m_one_char_tokens{ create_one_char_tokens() }
             , m_keyword_tokens{ create_keyword_tokens() }
@@ -22,7 +22,7 @@ namespace cmsl
         std::vector<token::token> lexer::lex()
         {
             auto tokens = std::vector<token::token>{};
-            const auto end = m_source.cend();
+            const auto end = m_source.source().cend();
 
             while (!is_end())
             {
@@ -270,7 +270,7 @@ namespace cmsl
 
         lexer::aritmetical_token_definition_t lexer::create_arithmetical_token_definitions() const
         {
-            using def_t = aritmetical_token_definition;
+            using def_t = arithmetical_token_definition;
 
             aritmetical_token_definition_t definitions;
 

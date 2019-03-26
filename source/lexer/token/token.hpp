@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/source_view.hpp"
 #include "common/source_location.hpp"
 #include "common/string.hpp"
 #include "lexer/token/token_type.hpp"
@@ -20,7 +21,7 @@ namespace cmsl
                 // Creates token with invalid begin and end locations
                 explicit token();
                 explicit token(token_type_t type);
-                explicit token(token_type_t type, const source_range& src_range, cmsl::string_view source);
+                explicit token(token_type_t type, const source_range& src_range, cmsl::source_view source);
 
                 token(const token&) = default;
                 token& operator=(const token&) = default;
@@ -35,6 +36,7 @@ namespace cmsl
                 cmsl::string_view str() const;
 
                 source_range src_range() const;
+                cmsl::source_view source() const;
 
                 bool operator==(const token& rhs) const;
 
@@ -43,7 +45,7 @@ namespace cmsl
             private:
                 token_type_t m_type;
                 source_range m_source_range;
-                cmsl::string_view m_source;
+                cmsl::source_view m_source;
             };
 
             using token_container_t = std::vector<token>;

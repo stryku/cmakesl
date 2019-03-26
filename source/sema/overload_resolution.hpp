@@ -34,6 +34,7 @@ namespace cmsl
 
             void raise_wrong_call_error(const single_scope_function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
             void raise_wrong_call_error(const single_scope_function_lookup_result_t& functions, const expression_node& call_parameter) const;
+            void raise_wrong_call_error(const single_scope_function_lookup_result_t& functions) const;
 
         private:
             errors::errors_observer& m_errs;
