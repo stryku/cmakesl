@@ -3,6 +3,8 @@
 #include "exec/instance/instance.hpp"
 
 #include "cmake_facade.hpp"
+#include "project_value.hpp"
+
 
 namespace cmsl
 {
@@ -21,6 +23,19 @@ namespace cmsl
 
             void project_value::add_executable(facade::cmake_facade& cmake_facade, const std::string &name, const list_value &sources)
             {
+                const auto collected_sources = list_to_sources(sources);
+                cmake_facade.add_executable(name, collected_sources);
+            }
+
+            void
+            project_value::add_library(facade::cmake_facade &cmake_facade, const std::string &name, const list_value &sources)
+            {
+                const auto collected_sources = list_to_sources(sources);
+                cmake_facade.add_library(name, collected_sources);
+            }
+
+            std::vector<std::string> project_value::list_to_sources(const list_value& sources)
+            {
                 std::vector<std::string> collected_sources;
                 collected_sources.reserve(sources.size());
 
@@ -30,7 +45,7 @@ namespace cmsl
                     collected_sources.emplace_back(instance.get_value_cref().get_string_cref());
                 }
 
-                cmake_facade.add_executable(name, collected_sources);
+                return collected_sources;
             }
         }
     }

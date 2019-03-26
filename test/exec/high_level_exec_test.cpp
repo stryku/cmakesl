@@ -37,6 +37,10 @@ namespace cmsl
                 void add_executable(const std::string& name, const std::vector<std::string>& sources) override
                 {
                 }
+
+                void add_library(const std::string& name, const std::vector<std::string>& sources) override
+                {
+                }
             };
 
             fake_facade facade;
