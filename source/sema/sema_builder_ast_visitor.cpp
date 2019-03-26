@@ -51,12 +51,13 @@ namespace cmsl
         }
 
         sema_builder_ast_visitor::sema_builder_ast_visitor(sema_context_interface& generic_types_context,
-                                              sema_context_interface& ctx,
-                                              errors::errors_observer& errs,
-                                              identifiers_context& ids_context,
-                                              sema_type_factory& type_factory,
-                                              sema_function_factory& function_factory,
-                                              sema_context_factory& context_factory)
+                                                           sema_context_interface& ctx,
+                                                           errors::errors_observer& errs,
+                                                           identifiers_context& ids_context,
+                                                           sema_type_factory& type_factory,
+                                                           sema_function_factory& function_factory,
+                                                           sema_context_factory& context_factory,
+                                                           sema_function* currently_parsing_function)
                 : m_generic_types_context{ generic_types_context }
                 , m_ctx{ ctx }
                 , m_errors_observer{ errs }
@@ -64,6 +65,7 @@ namespace cmsl
                 , m_function_factory{ function_factory }
                 , m_context_factory{ context_factory }
                 , m_type_factory{ type_factory }
+                , m_currently_parsed_function{ currently_parsing_function }
         {}
 
         void sema_builder_ast_visitor::visit(const ast::block_node& node)
@@ -123,7 +125,9 @@ namespace cmsl
 
             for(auto function_declaration : members->functions)
             {
+                m_currently_parsed_function = function_declaration.fun;
                 auto body = visit_child_node<block_node>(function_declaration.body_to_visit, class_context);
+                m_currently_parsed_function = nullptr;
                 if(!body)
                 {
                     return;
@@ -390,6 +394,8 @@ namespace cmsl
             }
 
             auto expr = to_expression(std::move(v.m_result_node));
+            const auto& current_function_return_type = m_currently_parsed_function->return_type();
+            expr = convert_to_cast_node_if_need(current_function_return_type, std::move(expr));
             m_result_node = std::make_unique<return_node>(std::move(expr));
         }
 
@@ -448,7 +454,12 @@ namespace cmsl
             // Add function (without a body yet) to context, so it will be visible inside function body in case of a recursive call.
             m_ctx.add_function(function);
 
+            // Store pointer to function that is currently parsed,
+            // so function body will be able to figure out function return type
+            // and make casted return expression nodes as needed.
+            m_currently_parsed_function = &function;
             auto block = visit_child_node<block_node>(node.get_body());
+            m_currently_parsed_function = nullptr;
             if(!block)
             {
                 return;
@@ -541,7 +552,9 @@ namespace cmsl
                 const auto referenced_type = search_context.find_referenced_type(name);
                 if(referenced_type)
                 {
-                    return &m_type_factory.create_reference(*referenced_type);
+                    const auto& created_reference_type = m_type_factory.create_reference(*referenced_type);
+                    referenced_type->context().add_type(created_reference_type);
+                    return &created_reference_type;
                 }
 
                 // If referenced type is not found - don't report error.
@@ -592,7 +605,14 @@ namespace cmsl
 
         sema_builder_ast_visitor sema_builder_ast_visitor::clone(sema_context_interface& ctx_to_visit) const
         {
-            return sema_builder_ast_visitor{ m_generic_types_context, ctx_to_visit, m_errors_observer, m_ids_context, m_type_factory, m_function_factory, m_context_factory };
+            return sema_builder_ast_visitor{ m_generic_types_context,
+                                             ctx_to_visit,
+                                             m_errors_observer,
+                                             m_ids_context,
+                                             m_type_factory,
+                                             m_function_factory,
+                                             m_context_factory,
+                                             m_currently_parsed_function };
         }
 
         std::unique_ptr<expression_node> sema_builder_ast_visitor::visit_child_expr(const ast::ast_node& node)
@@ -763,6 +783,12 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
         sema_builder_ast_visitor::convert_to_cast_node_if_need(const sema_type& expected_result_type,
                                                                std::unique_ptr<expression_node> expression)
         {
+            const auto lhs_str = expected_result_type.name().to_string();
+            const auto rhs_str = expression->type().name().to_string();
+
+            const auto lhs_ptr = &expected_result_type;
+            const auto rhs_ptr = &expression->type();
+
             if(expected_result_type == expression->type())
             {
                 return std::move(expression);

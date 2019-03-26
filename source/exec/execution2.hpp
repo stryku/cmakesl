@@ -30,20 +30,21 @@ namespace cmsl
                                  const std::vector<inst::instance*>& params,
                                  inst::instances_holder_interface& instances) override
             {
+                std::unique_ptr<inst::instance> result;
                 if(auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun))
                 {
                     enter_function_scope(fun, params);
                     execute_block(user_function->body());
+                    result = std::move(m_function_return_value);
                     leave_function_scope();
                 }
                 else
                 {
                     auto builtin_function = dynamic_cast<const sema::builtin_sema_function*>(&fun);
-                    return builtin_function_caller2{ m_cmake_facade, instances }.call(builtin_function->kind(), params);
+                    result = builtin_function_caller2{ m_cmake_facade, instances }.call(builtin_function->kind(), params);
                 }
 
-                return std::move(m_function_return_value);
-
+                return std::move(result);
             }
 
             // Todo: consider returning a reference

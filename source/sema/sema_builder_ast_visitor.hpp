@@ -56,7 +56,8 @@ namespace cmsl
                                               identifiers_context& ids_context,
                                               sema_type_factory& type_factory,
                                               sema_function_factory& function_factory,
-                                              sema_context_factory& context_factory);
+                                              sema_context_factory& context_factory,
+                                              sema_function* currently_parsing_function = nullptr); // Todo: Create private ctor that trakes currently_parsing_function
 
             void visit(const ast::block_node& node) override;
             void visit(const ast::class_node2& node) override;
@@ -149,6 +150,7 @@ namespace cmsl
             sema_type_factory& m_type_factory;
             sema_function_factory& m_function_factory;
             sema_context_factory& m_context_factory;
+            sema_function* m_currently_parsed_function{ nullptr };
         };
     }
 }
