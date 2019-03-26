@@ -15,7 +15,7 @@ namespace cmsl
 
         sema_type::sema_type(const sema_type_reference reference)
             : m_ctx{ reference.referenced_type.m_ctx }
-            , m_name{ reference.referenced_type.m_name }
+            , m_name{ ast::type_representation{ reference.referenced_type.m_name.tokens(), ast::type_representation::is_reference_tag{} } }
             , m_members{ reference.referenced_type.m_members }
             , m_referenced_type{ &reference.referenced_type }
         {}
