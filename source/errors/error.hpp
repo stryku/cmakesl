@@ -7,10 +7,20 @@ namespace cmsl
 {
     namespace errors
     {
+        enum class error_type
+        {
+            error,
+            warning,
+            note
+        };
+
         struct error
         {
-            source_range range;
+            cmsl::string_view source_path;
+            cmsl::string_view line_snippet;
             std::string message;
+            error_type type;
+            source_range range;
         };
     }
 }

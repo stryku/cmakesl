@@ -23,7 +23,7 @@ namespace cmsl
                 testing::StrictMock<errors::test::errors_observer_mock> err_observer_mock;
                 errors::errors_observer err_observer;
                 const auto source = "";
-                cmsl::lexer::lexer lex{ err_observer, source };
+                cmsl::lexer::lexer lex{ err_observer, cmsl::source_view{ source } };
                 (void)lex.lex();
             }
 
@@ -40,7 +40,7 @@ namespace cmsl
                     EXPECT_CALL(err_observer_mock, notify_error(_)).Times(1);
 
                     const auto source = GetParam();
-                    auto lex = lexer_t{ err_observer, source };
+                    auto lex = lexer_t{ err_observer, cmsl::source_view{ source } };
                     (void)lex.lex();
                 }
 

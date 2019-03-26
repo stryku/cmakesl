@@ -33,7 +33,7 @@ namespace cmsl
                     source_location{ 1u, 1u, 0u },
                     source_location{ 1u, N, N - 1u }
             };
-            return lexer::token::token{ token_type, src_range, tok };
+            return lexer::token::token{ token_type, src_range, cmsl::source_view{ tok } };
         }
 
         template<unsigned N>

@@ -24,7 +24,7 @@ namespace cmsl
         class parser2 : public parser_utils
         {
         public:
-            parser2(errors::errors_observer& err_observer, const token_container_t& tokens);
+            parser2(errors::errors_observer& err_observer, cmsl::source_view source, const token_container_t& tokens);
 
             std::unique_ptr<ast_node> translation_unit();
             std::unique_ptr<ast_node> variable_declaration();

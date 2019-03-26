@@ -1,4 +1,5 @@
 #include "exec/source_executor.hpp"
+#include "common/source_view.hpp"
 #include "test/exec/mock/cmake_facade_mock.hpp"
 
 #include <gmock/gmock.h>
@@ -26,7 +27,7 @@ namespace cmsl
                         "    bool b;\n"
                         "    return int(b);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(0));
             }
 
@@ -38,7 +39,7 @@ namespace cmsl
                         "    bool b = bool();\n"
                         "    return int(b);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(0));
             }
 
@@ -51,7 +52,7 @@ namespace cmsl
                         "    bool b2 = bool(false);\n"
                         "    return int(b);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -64,7 +65,7 @@ namespace cmsl
                         "    bool b = bool(foo);\n"
                         "    return int(b);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -77,7 +78,7 @@ namespace cmsl
                         "    bool b = bool(foo);\n"
                         "    return int(b);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(0));
             }
 
@@ -90,7 +91,7 @@ namespace cmsl
                         "    b = true;\n"
                         "    return int(b);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -101,7 +102,7 @@ namespace cmsl
                         "{\n"
                         "    return int(false || true);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -112,7 +113,7 @@ namespace cmsl
                         "{\n"
                         "    return int(true && false);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(0));
             }
         }

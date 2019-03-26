@@ -14,6 +14,7 @@
 #include "sema/builtin_sema_context.hpp"
 #include "sema/sema_function.hpp"
 #include "sema/user_sema_function.hpp"
+#include "common/source_view.hpp"
 
 namespace cmsl
 {
@@ -26,7 +27,7 @@ namespace cmsl
                 source_location{ 1u, 1u, 0u },
                 source_location{ 1u, N, N - 1u }
         };
-        return lexer::token::token{ token_type, src_range, tok };
+        return lexer::token::token{ token_type, src_range, cmsl::source_view{ tok } };
     }
 
     namespace exec
@@ -35,13 +36,13 @@ namespace cmsl
             : m_cmake_facade{ f }
         {}
 
-        int source_executor::execute2(cmsl::string_view source)
+        int source_executor::execute2(source_view source)
         {
             errors::errors_observer err_observer;
             lexer::lexer lex{ err_observer , source };
             const auto tokens = lex.lex();
 
-            ast::parser2 parser{ err_observer, tokens };
+            ast::parser2 parser{ err_observer, source, tokens };
             auto ast_tree = parser.translation_unit();
 
             sema::identifiers_context_impl ids_ctx;
@@ -76,7 +77,7 @@ namespace cmsl
         int source_executor::execute(cmsl::string_view source)
         {
             errors::errors_observer err_observer;
-            lexer::lexer lex{ err_observer , source };
+            lexer::lexer lex{ err_observer , cmsl::source_view{ source } };
             const auto tokens = lex.lex();
 
             ast::ast_builder builder;
