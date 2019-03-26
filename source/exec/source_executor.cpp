@@ -15,6 +15,8 @@
 #include "sema/sema_function.hpp"
 #include "sema/user_sema_function.hpp"
 #include "common/source_view.hpp"
+#include "source_executor.hpp"
+
 
 namespace cmsl
 {
@@ -92,6 +94,11 @@ namespace cmsl
             const auto main_result = e.get_function_return_value();
             const auto int_result = main_result->get_value_cref().get_int();
             return int_result;
+        }
+
+        int source_executor::execute2(cmsl::string_view source_path, cmsl::string_view source)
+        {
+            return execute2(source_view{ source_path, source });
         }
     }
 }
