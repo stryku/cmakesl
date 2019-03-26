@@ -81,7 +81,7 @@ namespace cmsl
                     end.absolute = source.size();
                     const auto source_range = cmsl::source_range{ begin, end };
 
-                    return token_t{ type, source_range, source };
+                    return token_t{ type, source_range, cmsl::source_view{ source } };
                 }
 
                 token_t simple_token(token_type_t type)
@@ -174,7 +174,7 @@ namespace cmsl
                 end_loc.column = end_loc.absolute = end;
                 const auto source_range = cmsl::source_range{ begin_loc, end_loc };
 
-                return token_t{ type, source_range, source };
+                return token_t{ type, source_range, cmsl::source_view{ source } };
             }
         }
     }

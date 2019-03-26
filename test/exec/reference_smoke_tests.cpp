@@ -1,4 +1,5 @@
 #include "exec/source_executor.hpp"
+#include "common/source_view.hpp"
 #include "test/exec/mock/cmake_facade_mock.hpp"
 
 #include <gmock/gmock.h>
@@ -57,7 +58,7 @@ namespace cmsl
                         "\n"
                         "    return int(result);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -105,7 +106,7 @@ namespace cmsl
                         "\n"
                         "    return int(result);\n"
                         "}";
-                const auto result = m_executor.execute2(source);
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
         }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/string.hpp"
+#include "common/source_view.hpp"
 #include "lexer/token/token.hpp"
 #include "lexer/source_location_manipulator.hpp"
 
@@ -20,8 +21,8 @@ namespace cmsl
         class lexer
         {
         private:
-            using source_t = cmsl::string_view;
-            using source_it_t = source_t::const_iterator;
+            using source_t = cmsl::source_view;
+            using source_it_t = cmsl::string_view::const_iterator;
             using token_t = token::token;
 
         public:
@@ -30,7 +31,7 @@ namespace cmsl
             std::vector<token_t> lex();
 
         private:
-            struct aritmetical_token_definition
+            struct arithmetical_token_definition
             {
                 token_t::token_type_t single;
                 token_t::token_type_t op_equal;
@@ -42,7 +43,7 @@ namespace cmsl
                 }
             };
 
-            using aritmetical_token_definition_t = std::unordered_map<char, aritmetical_token_definition>;
+            using aritmetical_token_definition_t = std::unordered_map<char, arithmetical_token_definition>;
             aritmetical_token_definition_t create_arithmetical_token_definitions() const;
 
             using one_char_tokens_t = std::unordered_map<char, token_t::token_type_t>;

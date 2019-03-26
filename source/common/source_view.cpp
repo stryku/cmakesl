@@ -51,4 +51,14 @@ namespace cmsl
 
         return cmsl::string_view{ line_begin, line_size };
     }
+
+    cmsl::string_view::const_iterator source_view::cbegin() const
+    {
+        return std::cbegin(m_source);
+    }
+
+    cmsl::string_view::const_iterator source_view::cend() const
+    {
+        return std::cend(m_source);
+    }
 }

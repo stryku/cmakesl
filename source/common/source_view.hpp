@@ -13,6 +13,9 @@ namespace cmsl
         cmsl::string_view path() const;
         cmsl::string_view source() const;
 
+        cmsl::string_view::const_iterator cbegin() const;
+        cmsl::string_view::const_iterator cend() const;
+
         // Line numbers start from 1, not 0.
         cmsl::string_view line(unsigned line_no) const;
 

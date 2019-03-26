@@ -32,7 +32,7 @@ namespace cmsl
 
             auto create_lexer(const std::string& source)
             {
-                return cmsl::lexer::lexer{ dummy_err_observer, source };
+                return cmsl::lexer::lexer{ dummy_err_observer, cmsl::source_view{ source } };
             }
 
             TEST(Lexer_Lex, Empty_GetEmpty)
