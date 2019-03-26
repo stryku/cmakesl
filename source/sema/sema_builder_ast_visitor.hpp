@@ -134,10 +134,11 @@ namespace cmsl
             template<unsigned N>
             lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N]);
 
+            param_expressions_t convert_params_to_cast_nodes_if_need(const function_signature& signature, param_expressions_t params);
+            std::unique_ptr<expression_node> convert_to_cast_return_node_if_need(std::unique_ptr<expression_node> expression);
             std::unique_ptr<expression_node> convert_to_cast_node_if_need(const sema_type& expected_result_type,
                                                                           std::unique_ptr<expression_node> expression);
 
-            param_expressions_t convert_params_to_cast_nodes_if_need(const function_signature& signature, param_expressions_t params);
 
         public:
             std::unique_ptr<sema_node> m_result_node;
