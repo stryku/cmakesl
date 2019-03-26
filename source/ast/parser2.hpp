@@ -1,10 +1,8 @@
 #pragma once
 
-#include "ast/type_representation.hpp"
 #include "ast/parameter_declaration.hpp"
-#include "lexer/token/token.hpp"
-
-#include <boost/optional.hpp>
+#include "ast/parser_utils.hpp"
+#include "ast/parse_errors_observer.hpp"
 
 #include <memory>
 
@@ -20,16 +18,11 @@ namespace cmsl
         class ast_node;
         class conditional_node;
         class block_node;
+        class type_representation;
 
         // Todo: rename methods to parse_*
-        class parser2
+        class parser2 : public parser_utils
         {
-        private:
-            using token_container_t = lexer::token::token_container_t;
-            using token_it = token_container_t::const_iterator;
-            using token_type_t = lexer::token::token_type;
-            using token_t = lexer::token::token;
-
         public:
             parser2(errors::errors_observer& err_observer, const token_container_t& tokens);
 
@@ -50,37 +43,15 @@ namespace cmsl
         private:
             struct function_call_values
             {
-                // Name can possibly be multiple tokens when it's a generic type constructor call.
                 token_t name;
                 std::vector<std::unique_ptr<ast_node>> params;
             };
 
-            void raise_error(lexer::token::token token, std::string message);
-
-            bool expect_not_at_end();
-            bool is_at_end() const;
-
-            token_type_t peek(size_t n = 1u) const;
-            boost::optional<token_t> eat(boost::optional<token_type_t> type = {});
-            boost::optional<token_t> eat_generic_type_token();
-            boost::optional<token_t> eat_simple_type_token();
-            // Can possibly return multiple tokens when it's a generic type constructor call.
             boost::optional<token_t> eat_function_call_name();
 
-
-            boost::optional<type_representation> generic_type();
-            boost::optional<type_representation> simple_type();
-            bool generic_type_starts() const;
-
-            token_type_t curr_type() const;
-            bool next_is(token_type_t token_type) const;
-            bool is_builtin_simple_type(token_type_t token_type) const;
-            bool current_is_generic_type() const;
-            bool current_is(token_type_t token_type) const;
             bool current_is_class_member_access() const;
             bool current_is_function_call() const;
             bool current_is_fundamental_value() const;
-            bool current_is_type() const;
             bool function_declaration_starts() const;
             bool declaration_starts() const;
 
@@ -125,9 +96,7 @@ namespace cmsl
             std::unique_ptr<ast_node> constructor(token_t class_name);
 
         private:
-            errors::errors_observer& m_err_observer;
-            token_it m_token;
-            token_it m_end;
+            parse_errors_reporter m_errors_reporter;
         };
     }
 }

@@ -667,7 +667,8 @@ namespace cmsl
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
                         .WillOnce(Return(nullptr));
 
-                EXPECT_CALL(ctx, add_type(_));
+                EXPECT_CALL(ctx, add_type(_))
+                     .Times(2); // Type and reference
 
                 EXPECT_CALL(ids_ctx, enter_ctx());
                 EXPECT_CALL(ids_ctx, leave_ctx());
@@ -712,7 +713,8 @@ namespace cmsl
                 EXPECT_CALL(ctx, find_type(member_type_name_ref))
                         .WillOnce(Return(&valid_type));
 
-                EXPECT_CALL(ctx, add_type(_));
+                EXPECT_CALL(ctx, add_type(_))
+                        .Times(2); // Type and reference
 
                 EXPECT_CALL(ids_ctx, enter_ctx());
                 EXPECT_CALL(ids_ctx, register_identifier(member_name_token, &valid_type));
@@ -762,7 +764,8 @@ namespace cmsl
                 EXPECT_CALL(ctx, find_type(function_return_type_reference))
                         .WillOnce(Return(&valid_type));
 
-                EXPECT_CALL(ctx, add_type(_));
+                EXPECT_CALL(ctx, add_type(_))
+                        .Times(2); // Type and reference
 
                 // There are three identifier contextes: class, function parameters and function body.
                 EXPECT_CALL(ids_ctx, enter_ctx())
@@ -823,7 +826,8 @@ namespace cmsl
                         .WillOnce(Return(&valid_type))
                         .WillOnce(Return(&valid_type));
 
-                EXPECT_CALL(ctx, add_type(_));
+                EXPECT_CALL(ctx, add_type(_))
+                        .Times(2); // Type and reference
 
                 // There are three identifier contextes: class, function parameters and function body. Member is registered in class context.
                 EXPECT_CALL(ids_ctx, enter_ctx())
@@ -1120,7 +1124,8 @@ namespace cmsl
                         .WillOnce(Return(nullptr));
 
                 EXPECT_CALL(ctx, add_function(_));
-                EXPECT_CALL(ctx, add_type(_));
+                EXPECT_CALL(ctx, add_type(_))
+                        .Times(2); // Type and reference
 
                 EXPECT_CALL(ids_ctx, register_identifier(variable_name_token, &valid_type));
 

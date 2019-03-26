@@ -1,0 +1,140 @@
+#include "ast/parser_utils.hpp"
+
+#include "ast/parse_errors_observer.hpp"
+#include "common/algorithm.hpp"
+#include "parser_utils.hpp"
+
+
+namespace cmsl::ast
+{
+    parser_utils::parser_utils(parse_errors_observer &err_observer, token_it current, token_it end)
+            : m_err_observer{ err_observer }
+            , m_current{ current }
+            , m_end{ end }
+    {}
+
+    bool parser_utils::is_at_end() const
+    {
+        return m_current == m_end;
+    }
+
+    bool parser_utils::expect_not_at_end()
+    {
+        if (is_at_end())
+        {
+            // Todo: proper token
+            m_err_observer.raise_unexpected_end_of_file(lexer::token::token{});
+            return false;
+        }
+
+        return true;
+    }
+
+    parser_utils::token_type_t parser_utils::peek(size_t n) const
+    {
+        return peek_from(m_current, n);
+    }
+
+    parser_utils::token_type_t parser_utils::peek_from(token_it it, size_t n) const
+    {
+        if (std::distance(it, m_end) <= n)
+        {
+            return token_type_t::undef;
+        }
+
+        return std::next(it, n)->get_type();
+    }
+
+    boost::optional<parser_utils::token_t> parser_utils::eat(boost::optional<token_type_t> type)
+    {
+        if (!expect_not_at_end())
+        {
+            return {};
+        }
+
+        if (type && !current_is(*type))
+        {
+            m_err_observer.raise_expected_token(*m_current, *type);
+            return {};
+        }
+
+        const auto t = *m_current;
+        ++m_current;
+        return t;
+    }
+
+    const parser_utils::token_t& parser_utils::current() const
+    {
+        return *m_current;
+    }
+
+    parser_utils::token_type_t parser_utils::curr_type() const
+    {
+        return is_at_end() ? token_type_t::undef : m_current->get_type();
+    }
+
+    bool parser_utils::next_is(token_type_t token_type) const
+    {
+        return next_to_is(m_current, token_type);
+    }
+
+    bool parser_utils::next_to_is(token_it it, token_type_t token_type) const
+    {
+        return peek_from(it) == token_type;
+    }
+
+    bool parser_utils::current_is(token_type_t token_type) const
+    {
+        if(is_at_end())
+        {
+            return false;
+        }
+
+        return curr_type() == token_type;
+    }
+
+    bool parser_utils::is_builtin_type(token_type_t token_type) const
+    {
+        const auto simple_types = {
+                token_type_t::kw_int,
+                token_type_t::kw_double,
+                token_type_t::kw_bool,
+                token_type_t::kw_string,
+                token_type_t::kw_version,
+                token_type_t::kw_list
+        };
+
+        return cmsl::contains(simple_types, token_type);
+    }
+
+    bool parser_utils::current_is_type() const
+    {
+        return is_builtin_type(curr_type()) || current_is(token_type_t::identifier);
+    }
+
+    bool parser_utils::current_is_name_of_function_call() const
+    {
+        // Constructor of user defined function.
+        return is_builtin_type(curr_type()) || current_is(token_type_t::identifier);
+    }
+
+    bool parser_utils::type_of_token_is(token_it it, token_type_t token_type) const
+    {
+        return it != m_end && it->get_type() == token_type;
+    }
+
+    parser_utils::token_it parser_utils::current_iterator() const
+    {
+        return m_current;
+    }
+
+    parser_utils::token_it parser_utils::end_iterator() const
+    {
+        return m_end;
+    }
+
+    void parser_utils::adjust_current_iterator(parser_utils::token_it new_current_it)
+    {
+        m_current = new_current_it;
+    }
+}
