@@ -36,6 +36,7 @@ namespace cmsl
                 cmsl::string_view str() const;
 
                 source_range src_range() const;
+                cmsl::source_view source() const;
 
                 bool operator==(const token& rhs) const;
 

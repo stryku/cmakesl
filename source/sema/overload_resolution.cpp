@@ -4,6 +4,7 @@
 #include "sema/variable_initialization_checker.hpp"
 #include "errors/errors_observer.hpp"
 #include "errors/error.hpp"
+#include "overload_resolution.hpp"
 
 
 namespace cmsl
@@ -39,7 +40,14 @@ namespace cmsl
                 return chosen_function;
             }
 
-            m_errs.nofify_error({m_call_token.src_range(), '\'' + m_call_token.str().to_string() + "\' function not found"});
+            auto err = errors::error{
+                m_call_token.source().path(),
+                m_call_token.source().line(m_call_token.src_range().begin.line),
+                '\'' + m_call_token.str().to_string() + "\' function not found",
+                errors::error_type::error,
+                m_call_token.src_range()
+            };
+            m_errs.nofify_error(std::move(err));
 
             return nullptr;
         }
@@ -51,7 +59,14 @@ namespace cmsl
             // Todo: is it even possible to have empty vector here?
             if(functions.empty())
             {
-                m_errs.nofify_error({m_call_token.src_range(), '\'' + m_call_token.str().to_string() + "\' function not found"});
+                auto err = errors::error{
+                        m_call_token.source().path(),
+                        m_call_token.source().line(m_call_token.src_range().begin.line),
+                        '\'' + m_call_token.str().to_string() + "\' function not found",
+                        errors::error_type::error,
+                        m_call_token.src_range()
+                };
+                m_errs.nofify_error(err);
                 return nullptr;
             }
 
@@ -122,14 +137,7 @@ namespace cmsl
         {
             // Todo: implement function::to_string to have a nicely printed error
             // Todo: improve error explanation
-            if(functions.size() == 1u)
-            {
-                m_errs.nofify_error({m_call_token.src_range(), "Function call parameters does not match"}); // Todo: more meaningful error
-            }
-            else
-            {
-                m_errs.nofify_error({m_call_token.src_range(), "No matching function for call"});
-            }
+            raise_wrong_call_error(functions);
         }
 
         const sema_function *
@@ -154,13 +162,32 @@ namespace cmsl
         {
             // Todo: implement function::to_string to have a nicely printed error
             // Todo: improve error explanation
+            raise_wrong_call_error(functions);
+        }
+
+        void overload_resolution::raise_wrong_call_error(const single_scope_function_lookup_result_t &functions) const
+        {
             if(functions.size() == 1u)
             {
-                m_errs.nofify_error({m_call_token.src_range(), "Function call parameters does not match"}); // Todo: more meaningful error
+                auto err = errors::error{
+                        m_call_token.source().path(),
+                        m_call_token.source().line(m_call_token.src_range().begin.line),
+                        "Function call parameters does not match",
+                        errors::error_type::error,
+                        m_call_token.src_range()
+                };
+                m_errs.nofify_error(err);
             }
             else
             {
-                m_errs.nofify_error({m_call_token.src_range(), "No matching function for call"});
+                auto err = errors::error{
+                        m_call_token.source().path(),
+                        m_call_token.source().line(m_call_token.src_range().begin.line),
+                        "No matching function for call",
+                        errors::error_type::error,
+                        m_call_token.src_range()
+                };
+                m_errs.nofify_error(err);
             }
         }
     }

@@ -24,9 +24,9 @@ namespace cmsl
 {
     namespace ast
     {
-        parser2::parser2(errors::errors_observer& err_observer, const token_container_t& tokens)
+        parser2::parser2(errors::errors_observer& err_observer, cmsl::source_view source, const token_container_t& tokens)
             : parser_utils{ m_errors_reporter, tokens.cbegin(), tokens.cend() }
-            , m_errors_reporter{ err_observer }
+            , m_errors_reporter{ err_observer, source }
         {}
 
         std::unique_ptr<ast_node> parser2::translation_unit()

@@ -24,47 +24,64 @@ namespace cmsl::ast
     class parse_errors_reporter : public parse_errors_observer
     {
     public:
-        explicit parse_errors_reporter(errors::errors_observer& errs_observer)
+        explicit parse_errors_reporter(errors::errors_observer& errs_observer,
+                                       cmsl::source_view source)
             : m_errors_observer{ errs_observer }
+            , m_source{ source }
         {}
 
         void raise_unexpected_end_of_file(lexer::token::token token) override
         {
-            m_errors_observer.nofify_error(errors::error{token.src_range(), "unexpected end of file"});
+            raise(token, "unexpected end of file");
         }
 
         void raise_expected_token(lexer::token::token token, lexer::token::token_type type) override
         {
-            m_errors_observer.nofify_error(errors::error{token.src_range(), "expected " + to_string(type)});
+            raise(token, "expected " + to_string(type));
         }
 
         void raise_unexpected_token(lexer::token::token token) override
         {
-            m_errors_observer.nofify_error(errors::error{token.src_range(), "unexpected token"});
+            raise(token, "unexpected token");
         }
 
         void raise_expected_type(lexer::token::token token) override
         {
-            m_errors_observer.nofify_error(errors::error{token.src_range(), "expected a type"});
+            raise(token, "expected a type");
         }
 
         void raise_expected_keyword(lexer::token::token token, lexer::token::token_type keyword) override
         {
-            m_errors_observer.nofify_error(errors::error{token.src_range(), "expected " + to_string(keyword)});
+            raise(token, "expected " + to_string(keyword));
         }
 
         void raise_expected_parameter_declaration(lexer::token::token token) override
         {
-            m_errors_observer.nofify_error(errors::error{token.src_range(), "expected a parameter declaration"});
+            raise(token, "expected a parameter declaration");
         }
 
         void raise_expected_parameter(lexer::token::token token) override
         {
-            m_errors_observer.nofify_error(errors::error{token.src_range(), "expected a parameter"});
+            raise(token, "expected a parameter");
         }
 
     private:
+        void raise(lexer::token::token token, std::string message)
+        {
+            auto err = errors::error{
+                    m_source.path(),
+                    m_source.line(token.src_range().begin.line),
+                    std::move(message),
+                    errors::error_type::error,
+                    token.src_range()
+            };
+            m_errors_observer.nofify_error(std::move(err));
+        }
+
+
+    private:
         errors::errors_observer& m_errors_observer;
+        cmsl::source_view m_source;
     };
 
     class parse_errors_sink : public parse_errors_observer
