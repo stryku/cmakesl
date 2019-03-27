@@ -19,6 +19,7 @@ namespace cmsl
             explicit source_executor(facade::cmake_facade& f);
             int execute(cmsl::string_view source);
             int execute2(source_view source);
+            int execute2(cmsl::string_view source_path, cmsl::string_view source);
 
         private:
             facade::cmake_facade& m_cmake_facade;
