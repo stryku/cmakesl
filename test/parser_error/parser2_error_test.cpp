@@ -409,6 +409,43 @@ namespace cmsl
 
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Class, values);
             }
+
+            namespace initializer_list
+            {
+                using InitializerList = TestWithParam<tokens_container_t>;
+
+                TEST_P(InitializerList, Malformed_ReportError)
+                {
+                    errs_t errs;
+                    EXPECT_CALL(errs.mock, notify_error(_));
+
+                    const auto tokens = GetParam();
+                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.initializer_list();
+
+                    EXPECT_THAT(result, IsNull());
+                }
+
+                const auto foo_token = token_identifier("foo");
+                const auto bar_token = token_identifier("bar");
+                const auto ob_token = token_open_brace();
+                const auto cb_token = token_close_brace();
+                const auto semicolon_token = token_semicolon();
+                const auto comma_token = token_comma();
+                const auto expr_token = token_integer("1");
+
+                const auto values = Values(
+                        tokens_container_t{ ob_token }, // {
+                        tokens_container_t{ cb_token }, // }
+                        tokens_container_t{ ob_token, foo_token }, // { foo
+                        tokens_container_t{ foo_token, cb_token }, // foo }
+                        tokens_container_t{ ob_token, foo_token, comma_token, cb_token }, // { foo, }
+                        tokens_container_t{ ob_token, comma_token, foo_token, cb_token }, // { ,foo
+                        tokens_container_t{ ob_token, comma_token, comma_token, cb_token } // { ,,
+                                          );
+
+                INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, InitializerList, values);
+            }
         }
     }
 }
