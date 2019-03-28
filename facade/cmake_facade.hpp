@@ -50,7 +50,7 @@ namespace cmsl
             virtual void add_executable(const std::string& name, const std::vector<std::string>& sources) = 0; // Todo: Change sources to vector of string_views
             virtual void add_library(const std::string& name, const std::vector<std::string>& sources) = 0; // Todo: Change sources to vector of string_views
 
-            virtual void target_link_library(const std::string& target, const std::string& library) = 0; // Todo: Change sources to vector of string_views
+            virtual void target_link_library(const std::string& target_name, const std::string& library_name) = 0; // Todo: Change sources to vector of string_views
         };
     }
 }

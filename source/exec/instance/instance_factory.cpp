@@ -173,6 +173,10 @@ namespace cmsl
                         {
                             return finder.find_string();
                         }
+                        case instance_value_variant::which_t::target:
+                        {
+                            return finder.find_target();
+                        }
                         case instance_value_variant::which_t::list:
                         {
                             return finder.find_string();
