@@ -810,5 +810,10 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
 
             return std::move(params);
         }
+
+        void sema_builder_ast_visitor::visit(const ast::initializer_list_node &node)
+        {
+
+        }
     }
 }

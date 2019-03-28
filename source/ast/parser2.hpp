@@ -31,6 +31,7 @@ namespace cmsl
             std::unique_ptr<ast_node> function();
             std::unique_ptr<ast_node> class_();
             std::unique_ptr<ast_node> factor();
+            std::unique_ptr<ast_node> initializer_list();
 
             // expr() doesn't eat terminating semicolon. Callee has to handle that if there is a need.
             std::unique_ptr<ast_node> expr();
@@ -84,6 +85,7 @@ namespace cmsl
             std::unique_ptr<ast_node> fundamental_value();
             std::unique_ptr<ast_node> function_call();
 
+            boost::optional<std::vector<std::unique_ptr<ast_node>>> comma_separated_expression_list(token_type_t valid_end_of_list_token);
             boost::optional<std::vector<std::unique_ptr<ast_node>>> parameter_list();
             boost::optional<function_call_values> get_function_call_values();
 

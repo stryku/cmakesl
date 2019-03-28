@@ -22,6 +22,7 @@ namespace cmsl
         class user_function_node2;
         class variable_declaration_node;
         class while_node;
+        class initializer_list_node;
 
         class ast_node_visitor
         {
@@ -46,6 +47,7 @@ namespace cmsl
             virtual void visit(const user_function_node2& node) = 0;
             virtual void visit(const variable_declaration_node& node) = 0;
             virtual void visit(const while_node& node) = 0;
+            virtual void visit(const initializer_list_node& node) = 0;
         };
     }
 }

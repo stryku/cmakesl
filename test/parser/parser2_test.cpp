@@ -204,6 +204,19 @@ namespace cmsl
                     m_result += "}";
                 }
 
+                virtual void visit(const initializer_list_node& node) override
+                {
+                    m_result += "initializer_list_node{";
+                    std::string separator = "";
+                    for(const auto& value : node.values())
+                    {
+                        m_result += separator;
+                        value->visit(*this);
+                        separator = ';';
+                    }
+                    m_result += "}";
+                }
+
                 std::string result() const
                 {
                     return m_result;
