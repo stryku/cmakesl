@@ -580,8 +580,8 @@ namespace cmsl
         {
         public:
             explicit cast_to_value_node(const sema_type& t, std::unique_ptr<expression_node> expr)
-                : m_type{ t }
-                , m_expr{ std::move(expr) }
+                    : m_type{ t }
+                    , m_expr{ std::move(expr) }
             {}
 
             const sema_type& type() const override
@@ -604,6 +604,36 @@ namespace cmsl
         private:
             const sema_type& m_type;
             std::unique_ptr<expression_node> m_expr;
+        };
+
+        class initializer_list_node : public expression_node
+        {
+        public:
+            explicit initializer_list_node(const sema_type& t, std::vector<std::unique_ptr<expression_node>> values)
+                : m_type{ t }
+                , m_values{ std::move(values) }
+            {}
+
+            const sema_type& type() const override
+            {
+                return m_type;
+            }
+
+            bool produces_temporary_value() const override
+            {
+                return true;
+            }
+
+            const std::vector<std::unique_ptr<expression_node>>& values() const
+            {
+                return m_values;
+            }
+
+            VISIT_METHOD
+
+        private:
+            const sema_type& m_type;
+            std::vector<std::unique_ptr<expression_node>> m_values;
         };
     }
 }

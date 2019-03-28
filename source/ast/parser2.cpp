@@ -18,6 +18,7 @@
 #include "errors/errors_observer.hpp"
 #include "ast/type_parser.hpp"
 #include "ast/type_parsing_result.hpp"
+#include "parser2.hpp"
 
 
 namespace cmsl
@@ -1030,6 +1031,10 @@ namespace cmsl
                 const auto id = eat(token_type_t::identifier);
                 return id ? std::make_unique<id_node>(*id) : nullptr;
             }
+            else if(current_is(token_type_t::open_brace))
+            {
+                return initializer_list();
+            }
 
             // Todo: Unexpected token
             m_errors_reporter.raise_unexpected_token(current());
@@ -1083,23 +1088,20 @@ namespace cmsl
             return std::move(vals);
         }
 
-        boost::optional<std::vector<std::unique_ptr<ast_node>>> parser2::parameter_list()
+        boost::optional<std::vector<std::unique_ptr<ast_node>>> parser2::comma_separated_expression_list(token_type_t valid_end_of_list_token)
         {
-            eat(token_type_t::open_paren);
+            std::vector<std::unique_ptr<ast_node>> exprs;
 
-            std::vector<std::unique_ptr<ast_node>> params;
-
-            while(!is_at_end() && !current_is(token_type_t::close_paren))
+            while(!is_at_end() && !current_is(valid_end_of_list_token))
             {
-                auto param = expr();
-
-                if(!param)
+                auto expression = expr();
+                if(!expression)
                 {
                     // Todo: Unexpected token e.g. semicolon
                     return {};
                 }
 
-                params.emplace_back(std::move(param));
+                exprs.emplace_back(std::move(expression));
 
                 // Todo: move to its own function
                 // Todo: Introduce try_eat(type) method to simplify such checks
@@ -1107,13 +1109,27 @@ namespace cmsl
                 {
                     eat(token_type_t::comma);
 
-                    if(is_at_end() || current_is(token_type_t::close_paren))
+                    if(is_at_end() || current_is(valid_end_of_list_token))
                     {
                         // Todo: proper token
+                        // Todo: expected expression/parameter
                         m_errors_reporter.raise_expected_parameter(lexer::token::token{});
                         return {};
                     }
                 }
+            }
+
+            return std::move(exprs);
+        }
+
+        boost::optional<std::vector<std::unique_ptr<ast_node>>> parser2::parameter_list()
+        {
+            eat(token_type_t::open_paren);
+
+            auto params = comma_separated_expression_list(token_type_t::close_paren);
+            if(!params)
+            {
+                return {};
             }
 
             if(!eat(token_type_t::close_paren))
@@ -1150,6 +1166,29 @@ namespace cmsl
 
             return type_of_token_is(parsing_result.stopped_at, token_type_t::identifier)
                 && next_to_is(parsing_result.stopped_at, token_type_t::open_paren);
+        }
+
+        std::unique_ptr<ast_node> parser2::initializer_list()
+        {
+            auto begin = eat(token_type_t::open_brace);
+            if(!begin)
+            {
+                return nullptr;
+            }
+
+            auto values = comma_separated_expression_list(token_type_t::close_brace);
+            if(!values)
+            {
+                return {};
+            }
+
+            auto end =eat(token_type_t::close_brace);
+            if(!end)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<initializer_list_node>(*begin, *end, std::move(*values));
         }
     }
 }

@@ -77,6 +77,7 @@ namespace cmsl
             void visit(const ast::user_function_node2& node) override;
             void visit(const ast::variable_declaration_node& node) override;
             void visit(const ast::while_node& node) override;
+            void visit(const ast::initializer_list_node& node) override;
 
         private:
             const sema_type* try_get_or_create_generic_type(const sema_context_interface& search_context, const ast::type_representation& name);
