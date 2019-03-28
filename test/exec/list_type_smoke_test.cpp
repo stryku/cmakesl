@@ -587,6 +587,27 @@ namespace cmsl
                 const auto result = m_executor.execute2(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
+
+            TEST_F(ListTypeSmokeTest, InitializerList)
+            {
+                const auto source =
+                        "int main()\n"
+                        "{\n"
+                        "    list<int> l;\n"
+                        "    l += 1;\n"
+                        "    l += { 2, 6 };\n"
+                        "    l.insert(2, { 3, 4, 5 });\n"
+                        "    return int(l.size() == 6\n"
+                        "               && l.at(0) == 1\n"
+                        "               && l.at(1) == 2\n"
+                        "               && l.at(2) == 3\n"
+                        "               && l.at(3) == 4\n"
+                        "               && l.at(4) == 5\n"
+                        "               && l.at(5) == 6);\n"
+                        "}";
+                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                EXPECT_THAT(result, Eq(1));
+            }
         }
     }
 }
