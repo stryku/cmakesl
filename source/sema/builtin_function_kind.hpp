@@ -152,7 +152,10 @@ namespace cmsl
             project_ctor_name,
             project_name,
             project_add_executable,
-            project_add_library
+            project_add_library,
+
+            target_name,
+            target_link_to
         };
     }
 }

@@ -51,6 +51,11 @@ namespace cmsl
                 return find<token_type_t::kw_void>("void");
             }
 
+            const sema_type& find_target() const
+            {
+                return find<token_type_t::kw_target>("target");
+            }
+
         private:
             template<unsigned N>
             lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N]) const

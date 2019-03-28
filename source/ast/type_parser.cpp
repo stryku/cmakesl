@@ -143,7 +143,8 @@ namespace cmsl::ast
                 token_type_t::kw_bool,
                 token_type_t::kw_string,
                 token_type_t::kw_version,
-                token_type_t::kw_list
+                token_type_t::kw_list,
+                token_type_t::kw_target
         };
 
         return cmsl::contains(simple_types, token_type);

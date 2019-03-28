@@ -66,6 +66,7 @@ namespace cmsl
                             { token_type_t::kw_true, "true" },
                             { token_type_t::kw_false, "false" },
                             { token_type_t::kw_string, "string" },
+                            { token_type_t::kw_target, "target" },
                             { token_type_t::kw_list, "list" }
                     };
 
@@ -142,6 +143,7 @@ namespace cmsl
             token_t token_kw_true() { return details::simple_token(token_type_t::kw_true); }
             token_t token_kw_false() { return details::simple_token(token_type_t::kw_false); }
             token_t token_kw_string() { return details::simple_token(token_type_t::kw_string); }
+            token_t token_kw_target() { return details::simple_token(token_type_t::kw_target); }
             token_t token_kw_list() { return details::simple_token(token_type_t::kw_list); }
 
 

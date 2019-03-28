@@ -49,6 +49,7 @@ namespace cmsl
             auto double_manipulator = add_double_type();
             auto string_manipulator = add_string_type();
             auto version_manipulator = add_version_type();
+            auto target_manipulator = add_target_type();
             auto project_manipulator = add_project_type();
 
             add_bool_member_functions(bool_manipulator);
@@ -56,6 +57,7 @@ namespace cmsl
             add_double_member_functions(double_manipulator);
             add_string_member_functions(string_manipulator);
             add_version_member_functions(version_manipulator);
+            add_target_member_functions(target_manipulator);
             add_project_member_functions(project_manipulator);
         }
 
@@ -814,9 +816,9 @@ namespace cmsl
                             builtin_function_kind::project_ctor_name
                     },
                     builtin_function_info{ // string name()
-                            project_type,
+                            string_type,
                             function_signature{make_id_token("name"), {}},
-                            builtin_function_kind::project_ctor_name
+                            builtin_function_kind::project_name
                     },
                     builtin_function_info{ // string add_executable(string name, list<string> sources)
                             project_type,
@@ -831,6 +833,42 @@ namespace cmsl
                                                {parameter_declaration{string_type, make_id_token("")},
                                                 parameter_declaration{sources_type, make_id_token("")}} },
                             builtin_function_kind::project_add_library
+                    }
+            };
+
+            add_type_member_functions(project_manipulator, functions);
+        }
+
+        type_builder builtin_sema_context::add_target_type()
+        {
+            static const auto token = make_token(token_type_t::kw_target, "target");
+            static const auto name_representation = ast::type_representation{ token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
+            builder.build_and_register_in_context();
+            return builder;
+        }
+
+        void builtin_sema_context::add_target_member_functions(type_builder &project_manipulator)
+        {
+            const auto types_finder = builtin_types_finder{ *this };
+            const auto& int_type = types_finder.find_int();
+            const auto& bool_type = types_finder.find_bool();
+            const auto& string_type = types_finder.find_string();
+            const auto& target_type = types_finder.find_target();
+            const auto& void_type = types_finder.find_void();
+
+            const auto functions = {
+
+                    builtin_function_info{ // string name()
+                            string_type,
+                            function_signature{make_id_token("name"), {}},
+                            builtin_function_kind::target_name
+                    },
+                    builtin_function_info{ // void link_to(target target)
+                            void_type,
+                            function_signature{make_id_token("link_to"),
+                                               { parameter_declaration{target_type, make_id_token("")} } },
+                            builtin_function_kind::target_link_to
                     }
             };
 

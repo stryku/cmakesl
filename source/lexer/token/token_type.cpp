@@ -57,6 +57,7 @@ namespace cmsl
             case lexer::token::token_type::kw_true: return "true keyword";
             case lexer::token::token_type::kw_false: return "false keyword";
             case lexer::token::token_type::kw_string: return "string keyword";
+            case lexer::token::token_type::kw_target: return "target keyword";
             case lexer::token::token_type::kw_list: return "list keyword";
             case lexer::token::token_type::kw_return: return "return keyword";
             case lexer::token::token_type::kw_class: return "class keyword";

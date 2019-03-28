@@ -86,6 +86,12 @@ namespace cmsl
             {
                 return instance.get_value_cref().get_list_cref();
             }
+
+            template <>
+            static decltype(auto) get_param<index_t::target>(const inst::instance& instance)
+            {
+                return instance.get_value_cref().get_target_cref();
+            }
         };
     }
 }
