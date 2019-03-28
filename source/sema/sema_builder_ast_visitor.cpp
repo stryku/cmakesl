@@ -764,7 +764,7 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
                     source_location{ 1u, 1u, 0u },
                     source_location{ 1u, N, N - 1u }
             };
-            return lexer::token::token{ token_type, src_range, tok };
+            return lexer::token::token{ token_type, src_range, source_view{ tok } };
         }
 
         std::unique_ptr<expression_node>
@@ -813,7 +813,62 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
 
         void sema_builder_ast_visitor::visit(const ast::initializer_list_node &node)
         {
+            if(node.values().empty())
+            {
+                raise_error(node.begin_end().first, "initializer lsit must contain values");
+                return;
+            }
 
+            std::vector<std::unique_ptr<expression_node>> expression_values;
+            const sema_type* value_type{ nullptr };
+
+            for(const auto& value : node.values())
+            {
+                auto expression = visit_child_expr(*value);
+                if(!expression)
+                {
+                    return;
+                }
+
+                const auto& expr_type = expression->type();
+                if(value_type && *value_type != expr_type)
+                {
+                    raise_error(node.begin_end().first, "all values of initializer list must have the same type");
+                    return;
+                }
+
+                if(!value_type)
+                {
+                    value_type = &expr_type;
+                }
+
+                expression_values.emplace_back(std::move(expression));
+            }
+
+            // Todo: Introduce utilityt to create generic name representations
+            using token_type_t = lexer::token::token_type;
+            lexer::token::token_container_t tokens{
+                make_token(token_type_t::kw_list, "list"),
+                make_token(token_type_t::less, "<")
+            };
+            const auto& value_type_tokens = value_type->name().tokens();
+            tokens.insert(std::end(tokens), std::cbegin(value_type_tokens), std::cend(value_type_tokens));
+            tokens.emplace_back(make_token(token_type_t::greater, ">"));
+
+            const auto list_type_representation = ast::type_representation{
+                std::move(tokens),
+                { value_type->name() }
+            };
+
+            auto type = try_get_or_create_generic_type(m_ctx, list_type_representation);
+            if(!type)
+            {
+                // Should be impossible to get here.
+                raise_error(node.begin_end().first, "could not create initalizer_list type");
+                return;
+            }
+
+            m_result_node = std::make_unique<initializer_list_node>(*type, std::move(expression_values));
         }
     }
 }
