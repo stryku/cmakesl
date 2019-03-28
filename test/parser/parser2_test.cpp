@@ -1454,6 +1454,61 @@ namespace cmsl
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
             }
+
+            TEST(Parser2Test, Factor_InitializerList_GetInitializerList)
+            {
+                // { foo, bar(baz, qux), { nest_foo, nest_bar } }
+                const auto foo_token = token_identifier("foo");
+                const auto bar_token = token_identifier("bar");
+                const auto baz_token = token_identifier("baz");
+                const auto qux_token = token_identifier("qux");
+                const auto nest_foo_token = token_identifier("nest_foo");
+                const auto nest_bar_token = token_identifier("nest_bar");
+
+                auto foo = std::make_unique<id_node>(foo_token);
+
+                auto baz = std::make_unique<id_node>(baz_token);
+                auto qux = std::make_unique<id_node>(qux_token);
+                std::vector<std::unique_ptr<ast_node>> bar_params;
+                bar_params.emplace_back(std::move(baz));
+                bar_params.emplace_back(std::move(qux));
+                auto bar = std::make_unique<function_call_node>(bar_token, std::move(bar_params));
+
+                auto nested_foo = std::make_unique<id_node>(nest_foo_token);
+                auto nested_bar = std::make_unique<id_node>(nest_bar_token);
+                std::vector<std::unique_ptr<ast_node>> nested_list_values;
+                nested_list_values.emplace_back(std::move(nested_foo));
+                nested_list_values.emplace_back(std::move(nested_bar));
+                auto nested_list = std::make_unique<initializer_list_node>(std::move(nested_list_values));
+
+                std::vector<std::unique_ptr<ast_node>> expected_list_values;
+                expected_list_values.emplace_back(std::move(foo));
+                expected_list_values.emplace_back(std::move(bar));
+                expected_list_values.emplace_back(std::move(nested_list));
+                auto expected_ast = std::make_unique<initializer_list_node>(std::move(expected_list_values));
+
+                const auto tokens = tokens_container_t{ token_open_brace(),
+                                                        foo_token,
+                                                        token_comma(),
+                                                        bar_token,
+                                                        token_open_paren(),
+                                                        baz_token,
+                                                        token_comma(),
+                                                        qux_token,
+                                                        token_close_paren(),
+                                                        token_comma(),
+                                                        token_open_brace(),
+                                                        nest_foo_token,
+                                                        token_comma(),
+                                                        nest_bar_token,
+                                                        token_close_brace(),
+                                                        token_close_brace() };
+                auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+                auto result_ast = parser.initializer_list();
+
+                ASSERT_THAT(result_ast, NotNull());
+                EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+            }
         }
     }
 }
