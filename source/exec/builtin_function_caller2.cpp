@@ -1481,7 +1481,7 @@ namespace cmsl
             const auto& [name] = get_params<alternative_t::string>(params);
             project = inst::project_value{ name };
             m_cmake_facade.register_project(name);
-            return m_instances.create2_reference(instance);
+            return &instance;
         }
 
         inst::instance *
