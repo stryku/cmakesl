@@ -137,6 +137,21 @@ namespace cmsl
                 result = m_ctx.instances.create2(referenced_type, evaluated->get_value());
             }
 
+            void visit(const sema::initializer_list_node& node) override
+            {
+                auto list_instance = m_ctx.instances.create2(node.type());
+                auto& list = list_instance->get_value_ref().get_list_ref();
+
+                for(const auto& value_expression : node.values())
+                {
+                    const auto evaluated = evaluate_child(*value_expression);
+                    auto owned_value = m_ctx.instances.gather_ownership(evaluated);
+                    list.push_back(std::move(owned_value));
+                }
+
+                result = list_instance;
+            }
+
         public:
             inst::instance* result;
 
