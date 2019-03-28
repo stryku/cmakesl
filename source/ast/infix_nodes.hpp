@@ -223,14 +223,26 @@ namespace cmsl
 
         class initializer_list_node : public ast_node
         {
+        private:
+            using token_t = lexer::token::token;
+
         public:
-            explicit initializer_list_node(std::vector<std::unique_ptr<ast_node>> values)
-                    : m_values{ std::move(values) }
+            explicit initializer_list_node(token_t begin_token,
+                                           token_t end_token,
+                                           std::vector<std::unique_ptr<ast_node>> values)
+                    : m_begin_token{ begin_token }
+                    , m_end_token{ end_token }
+                    , m_values{ std::move(values) }
             {}
 
             const std::vector<std::unique_ptr<ast_node>>& values() const
             {
                 return m_values;
+            }
+
+            std::pair<token_t, token_t> begin_end() const
+            {
+                return { m_begin_token, m_end_token };
             }
 
             void visit(ast_node_visitor &visitor) const override
@@ -239,6 +251,8 @@ namespace cmsl
             }
 
         private:
+            token_t m_begin_token;
+            token_t m_end_token;
             std::vector<std::unique_ptr<ast_node>> m_values;
         };
     }

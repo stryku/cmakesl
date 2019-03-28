@@ -1464,6 +1464,8 @@ namespace cmsl
                 const auto qux_token = token_identifier("qux");
                 const auto nest_foo_token = token_identifier("nest_foo");
                 const auto nest_bar_token = token_identifier("nest_bar");
+                const auto ob_token = token_open_brace();
+                const auto cb_token = token_close_brace();
 
                 auto foo = std::make_unique<id_node>(foo_token);
 
@@ -1479,13 +1481,13 @@ namespace cmsl
                 std::vector<std::unique_ptr<ast_node>> nested_list_values;
                 nested_list_values.emplace_back(std::move(nested_foo));
                 nested_list_values.emplace_back(std::move(nested_bar));
-                auto nested_list = std::make_unique<initializer_list_node>(std::move(nested_list_values));
+                auto nested_list = std::make_unique<initializer_list_node>(ob_token, cb_token, std::move(nested_list_values));
 
                 std::vector<std::unique_ptr<ast_node>> expected_list_values;
                 expected_list_values.emplace_back(std::move(foo));
                 expected_list_values.emplace_back(std::move(bar));
                 expected_list_values.emplace_back(std::move(nested_list));
-                auto expected_ast = std::make_unique<initializer_list_node>(std::move(expected_list_values));
+                auto expected_ast = std::make_unique<initializer_list_node>(ob_token, cb_token, std::move(expected_list_values));
 
                 const auto tokens = tokens_container_t{ token_open_brace(),
                                                         foo_token,

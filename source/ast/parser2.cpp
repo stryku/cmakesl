@@ -1170,7 +1170,8 @@ namespace cmsl
 
         std::unique_ptr<ast_node> parser2::initializer_list()
         {
-            if(!eat(token_type_t::open_brace))
+            auto begin = eat(token_type_t::open_brace);
+            if(!begin)
             {
                 return nullptr;
             }
@@ -1181,12 +1182,13 @@ namespace cmsl
                 return {};
             }
 
-            if(!eat(token_type_t::close_brace))
+            auto end =eat(token_type_t::close_brace);
+            if(!end)
             {
                 return nullptr;
             }
 
-            return std::make_unique<initializer_list_node>(std::move(*values));
+            return std::make_unique<initializer_list_node>(*begin, *end, std::move(*values));
         }
     }
 }
