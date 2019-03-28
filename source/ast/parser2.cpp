@@ -1109,7 +1109,7 @@ namespace cmsl
                 {
                     eat(token_type_t::comma);
 
-                    if(is_at_end() || current_is(token_type_t::close_paren))
+                    if(is_at_end() || current_is(valid_end_of_list_token))
                     {
                         // Todo: proper token
                         // Todo: expected expression/parameter
