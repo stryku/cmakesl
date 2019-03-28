@@ -41,6 +41,9 @@ namespace cmsl
                 void add_library(const std::string& name, const std::vector<std::string>& sources) override
                 {
                 }
+
+                void target_link_library(const std::string& , const std::string& ) override
+                {}
             };
 
             fake_facade facade;

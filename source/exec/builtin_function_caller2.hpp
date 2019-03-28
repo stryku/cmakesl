@@ -178,6 +178,9 @@ namespace cmsl
             inst::instance* project_add_executable(inst::instance& instance, const params_t& params);
             inst::instance* project_add_library(inst::instance& instance, const params_t& params);
 
+            inst::instance* target_name(inst::instance& instance, const params_t& params);
+            inst::instance* target_link_to(inst::instance& instance, const params_t& params);
+
             inst::instance* cmake_minimum_required(const params_t& params);
 
         private:

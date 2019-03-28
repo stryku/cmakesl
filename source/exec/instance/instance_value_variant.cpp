@@ -58,6 +58,10 @@ namespace cmsl
                     {
                         reassign(std::move(moved.m_value.m_project), which_t::project);
                     }break;
+                    case which_t::target:
+                    {
+                        reassign(std::move(moved.m_value.m_target), which_t::target);
+                    }break;
                     case which_t::generic:
                     {
                         reassign(std::move(moved.m_value.m_generic), which_t::generic);
@@ -122,6 +126,11 @@ namespace cmsl
             instance_value_variant::instance_value_variant(project_value val)
             {
                 assign(std::move(val), which_t::project);
+            }
+
+            instance_value_variant::instance_value_variant(target_value val)
+            {
+                assign(std::move(val), which_t::target);
             }
 
             instance_value_variant::instance_value_variant(generic_instance_value val)
@@ -239,6 +248,10 @@ namespace cmsl
                     {
                         assign(other.m_project, w);
                     }break;
+                    case which_t::target:
+                    {
+                        assign(other.m_target, w);
+                    }break;
                     case which_t::generic:
                     {
                         assign(other.m_generic, w);
@@ -288,6 +301,11 @@ namespace cmsl
                 construct(m_value.m_project, std::move(value));
             }
 
+            void instance_value_variant::construct(target_value value)
+            {
+                construct(m_value.m_target, std::move(value));
+            }
+
             void instance_value_variant::construct(generic_instance_value value)
             {
                 construct(m_value.m_generic, std::move(value));
@@ -321,6 +339,10 @@ namespace cmsl
                     {
                         call_dtor(m_value.m_project);
                     } break;
+                    case which_t::target:
+                    {
+                        call_dtor(m_value.m_target);
+                    } break;
                     case which_t::generic:
                     {
                         call_dtor(m_value.m_generic);
@@ -350,6 +372,7 @@ switch (m_which) \
     case which_t::list: return get_list_cref() op rhs.get_list_cref(); \
     case which_t::generic: return get_generic_cref() op rhs.get_generic_cref(); \
     case which_t::project: break; \
+    case which_t::target: break; \
 } \
 CMSL_UNREACHABLE("Unknown alternative")
 
@@ -426,6 +449,21 @@ CMSL_UNREACHABLE("Unknown alternative")
             void instance_value_variant::set_project(project_value value)
             {
                 reassign(std::move(value), which_t::project);
+            }
+
+            const target_value &instance_value_variant::get_target_cref() const
+            {
+                return m_value.m_target;
+            }
+
+            target_value &instance_value_variant::get_target_ref()
+            {
+                return m_value.m_target;
+            }
+
+            void instance_value_variant::set_target(target_value value)
+            {
+                reassign(std::move(value), which_t::target);
             }
         }
     }

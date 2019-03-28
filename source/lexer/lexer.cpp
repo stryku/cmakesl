@@ -349,6 +349,7 @@ namespace cmsl
             tokens["true"] = token_t::token_type_t::kw_true;
             tokens["false"] = token_t::token_type_t::kw_false;
             tokens["string"] = token_t::token_type_t::kw_string;
+            tokens["target"] = token_t::token_type_t::kw_target;
             tokens["list"] = token_t::token_type_t::kw_list;
             tokens["version"] = token_t::token_type_t::kw_version;
 
