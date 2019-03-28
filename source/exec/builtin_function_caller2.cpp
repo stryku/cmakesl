@@ -1497,7 +1497,7 @@ namespace cmsl
             auto& project = instance.get_value_ref().get_project_ref();
             const auto& [name, sources] = get_params<alternative_t::string, alternative_t::list>(params);
             project.add_executable(m_cmake_facade, name, sources);
-            return m_instances.create2_void();
+            return m_instances.create2(inst::target_value{ name });
         }
 
         inst::instance *
@@ -1506,7 +1506,7 @@ namespace cmsl
             auto& project = instance.get_value_ref().get_project_ref();
             const auto& [name, sources] = get_params<alternative_t::string, alternative_t::list>(params);
             project.add_library(m_cmake_facade, name, sources);
-            return m_instances.create2_void();
+            return m_instances.create2(inst::target_value{ name });
         }
 
         inst::instance *

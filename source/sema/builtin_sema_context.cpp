@@ -791,6 +791,7 @@ namespace cmsl
             const auto& string_type = types_finder.find_string();
             const auto& version_type = types_finder.find_version();
             const auto& project_type = types_finder.find_project();
+            const auto& target_type = types_finder.find_target();
 
             const auto string_token = make_token( token_type_t::kw_string, "string" );
             const auto string_type_representation = ast::type_representation{ string_token };
@@ -820,15 +821,15 @@ namespace cmsl
                             function_signature{make_id_token("name"), {}},
                             builtin_function_kind::project_name
                     },
-                    builtin_function_info{ // string add_executable(string name, list<string> sources)
-                            project_type,
+                    builtin_function_info{ // target add_executable(string name, list<string> sources)
+                            target_type,
                             function_signature{make_id_token("add_executable"),
                                                {parameter_declaration{string_type, make_id_token("")},
                                                 parameter_declaration{sources_type, make_id_token("")}} },
                             builtin_function_kind::project_add_executable
                     },
-                    builtin_function_info{ // string add_library(string name, list<string> sources)
-                            project_type,
+                    builtin_function_info{ // target add_library(string name, list<string> sources)
+                            target_type,
                             function_signature{make_id_token("add_library"),
                                                {parameter_declaration{string_type, make_id_token("")},
                                                 parameter_declaration{sources_type, make_id_token("")}} },
