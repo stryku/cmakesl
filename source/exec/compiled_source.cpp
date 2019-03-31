@@ -1,6 +1,7 @@
 #include "exec/compiled_source.hpp"
+#include "ast/ast_node.hpp"
 #include "sema/sema_context.hpp"
-#include "compiled_source.hpp"
+#include "sema/sema_node.hpp"
 
 
 namespace cmsl::exec
@@ -26,6 +27,8 @@ namespace cmsl::exec
         , m_sema_tree{ std::move(sema_tree) }
         , m_source{ source }
     {}
+
+    compiled_source::~compiled_source() = default;
 
     const sema::sema_context_interface &compiled_source::get_global_context() const
     {

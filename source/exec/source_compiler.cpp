@@ -6,6 +6,7 @@
 #include "sema/builtin_sema_context.hpp"
 #include "sema/sema_builder.hpp"
 #include "exec/compiled_source.hpp"
+#include "sema/sema_node.hpp"
 
 namespace cmsl::exec
 {
@@ -19,7 +20,7 @@ namespace cmsl::exec
         , m_context_factory{ context_factory }
     {}
 
-    compiled_source source_compiler::compile(source_view source)
+    std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
     {
         lexer::lexer lex{ m_errors_observer , source };
         const auto tokens = lex.lex();
@@ -39,9 +40,9 @@ namespace cmsl::exec
                                          m_function_factory,
                                          m_context_factory };
         auto sema_tree = sema_builder.build(*ast_tree);
-        return compiled_source{ std::move(ast_tree),
-                                std::move(global_context),
-                                std::move(sema_tree),
-                                source};
+        return std::make_unique<compiled_source>( std::move(ast_tree),
+                                                  std::move(global_context),
+                                                  std::move(sema_tree),
+                                                  source);
     }
 }

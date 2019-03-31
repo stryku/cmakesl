@@ -41,6 +41,8 @@ namespace cmsl
         class sema_function_factory : public factory<sema_function>
         {
         public:
+            ~sema_function_factory();
+
             user_sema_function& create_user(const sema_context_interface& ctx, const sema_type& return_type, function_signature s);
             builtin_sema_function& create_builtin(const sema_context_interface& ctx, const sema_type& return_type, function_signature s, builtin_function_kind kind);
         };
@@ -48,6 +50,7 @@ namespace cmsl
         class sema_context_factory : public factory<sema_context_interface>
         {
         public:
+            ~sema_context_factory();
             sema_context& create(const sema_context_interface* parent);
             sema_context& create_class(const sema_context_interface* parent);
         };
@@ -55,6 +58,7 @@ namespace cmsl
         class sema_type_factory : public factory<sema_type>
         {
         public:
+            ~sema_type_factory();
             const sema_type& create(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members);
             const sema_type& create_reference(const sema_type& referenced_type);
             const sema_type& create_homogeneous_generic(const sema_context_interface &ctx,

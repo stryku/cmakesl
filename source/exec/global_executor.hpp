@@ -21,6 +21,7 @@ namespace cmsl
         {
         public:
             explicit global_executor(facade::cmake_facade& cmake_facade);
+            ~global_executor();
 
             int execute(source_view source);
 
@@ -30,7 +31,7 @@ namespace cmsl
             sema::sema_type_factory m_type_factory;
             sema::sema_function_factory m_function_factory;
             sema::sema_context_factory m_context_factory;
-            std::vector<compiled_source> m_compiled_sources;
+            std::vector<std::unique_ptr<compiled_source>> m_compiled_sources;
         };
     }
 }

@@ -3,12 +3,16 @@
 #include "exec/compiled_source.hpp"
 #include "sema/user_sema_function.hpp"
 #include "exec/execution2.hpp"
+#include "global_executor.hpp"
+
 
 namespace cmsl::exec
 {
     global_executor::global_executor(facade::cmake_facade &cmake_facade)
         :m_cmake_facade{ cmake_facade }
     {}
+
+    global_executor::~global_executor() = default;
 
     int global_executor::execute(source_view source)
     {
@@ -18,8 +22,8 @@ namespace cmsl::exec
                                   m_context_factory };
 
         auto compiled = compiler.compile(source);
-        const auto main_function = compiled.get_main();
-        const auto& global_context = compiled.get_global_context();
+        const auto main_function = compiled->get_main();
+        const auto& global_context = compiled->get_global_context();
 
         // Todo: hanlde no main
 
