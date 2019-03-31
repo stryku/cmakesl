@@ -1,6 +1,4 @@
-#include "exec/source_executor.hpp"
-#include "common/source_view.hpp"
-#include "test/exec/mock/cmake_facade_mock.hpp"
+#include "test/exec/smoke_test_fixture.hpp"
 
 #include <gmock/gmock.h>
 
@@ -12,12 +10,7 @@ namespace cmsl
         {
             using ::testing::Eq;
 
-            class ReferenceTypeSmokeTest : public ::testing::Test
-            {
-            protected:
-                cmake_facade_mock m_facade;
-                source_executor m_executor{m_facade};
-            };
+            using ReferenceTypeSmokeTest = ExecutionSmokeTest;
 
             TEST_F(ReferenceTypeSmokeTest, BuiltinType)
             {
@@ -58,7 +51,7 @@ namespace cmsl
                         "\n"
                         "    return int(result);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -106,7 +99,7 @@ namespace cmsl
                         "\n"
                         "    return int(result);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(cmsl::source_view{ source });
                 EXPECT_THAT(result, Eq(1));
             }
         }

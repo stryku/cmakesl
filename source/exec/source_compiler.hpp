@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 namespace cmsl
 {
     class source_view;
@@ -28,7 +30,7 @@ namespace cmsl
                                      sema::sema_function_factory& function_factory,
                                      sema::sema_context_factory& context_factory);
 
-            compiled_source compile(source_view source);
+            std::unique_ptr<compiled_source> compile(source_view source);
 
         private:
             errors::errors_observer& m_errors_observer;

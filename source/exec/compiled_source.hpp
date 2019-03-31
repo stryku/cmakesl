@@ -27,6 +27,7 @@ namespace cmsl
                                      std::unique_ptr<sema::sema_context_interface> global_context,
                                      std::unique_ptr<sema::sema_node> sema_tree,
                                      source_view source);
+            ~compiled_source();
 
             const sema::sema_function* get_main() const;
             const sema::sema_context_interface& get_global_context() const;

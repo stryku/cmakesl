@@ -38,7 +38,7 @@ namespace cmsl
             : m_cmake_facade{ f }
         {}
 
-        int source_executor::execute2(source_view source)
+        int source_executor::execute2_old(source_view source)
         {
             errors::errors_observer err_observer;
             lexer::lexer lex{ err_observer , source };
@@ -96,9 +96,9 @@ namespace cmsl
             return int_result;
         }
 
-        int source_executor::execute2(cmsl::string_view source_path, cmsl::string_view source)
+        int source_executor::execute2_old(cmsl::string_view source_path, cmsl::string_view source)
         {
-            return execute2(source_view{ source_path, source });
+            return execute2_old(source_view{ source_path, source });
         }
     }
 }
