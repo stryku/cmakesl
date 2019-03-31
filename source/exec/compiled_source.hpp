@@ -14,6 +14,7 @@ namespace cmsl
     namespace sema
     {
         class sema_node;
+        class sema_function;
         class sema_context_interface;
     }
 
@@ -26,6 +27,9 @@ namespace cmsl
                                      std::unique_ptr<sema::sema_context_interface> global_context,
                                      std::unique_ptr<sema::sema_node> sema_tree,
                                      source_view source);
+
+            const sema::sema_function* get_main() const;
+            const sema::sema_context_interface& get_global_context() const;
 
         private:
             std::unique_ptr<ast::ast_node> m_ast_tree;
