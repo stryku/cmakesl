@@ -32,7 +32,7 @@
 #include "common/assert.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/variable_initialization_checker.hpp"
-#include "sema_builder_ast_visitor.hpp"
+#include "sema/add_subdirectory_semantic_handler.hpp"
 
 
 namespace cmsl
@@ -57,6 +57,7 @@ namespace cmsl
                                                            sema_type_factory& type_factory,
                                                            sema_function_factory& function_factory,
                                                            sema_context_factory& context_factory,
+                                                           add_subdirectory_semantic_handler& add_subdirectory_handler,
                                                            sema_function* currently_parsing_function)
                 : m_generic_types_context{ generic_types_context }
                 , m_ctx{ ctx }
@@ -65,6 +66,7 @@ namespace cmsl
                 , m_function_factory{ function_factory }
                 , m_context_factory{ context_factory }
                 , m_type_factory{ type_factory }
+                , m_add_subdirectory_handler{ add_subdirectory_handler }
                 , m_currently_parsed_function{ currently_parsing_function }
         {}
 
@@ -257,9 +259,20 @@ namespace cmsl
         const sema_function *sema_builder_ast_visitor::get_function_to_call(lexer::token::token name,
                                                                             const param_expressions_t& params) const
         {
-            const auto function_lookup_result = m_ctx.find_function(name);
-            overload_resolution over_resolution{ m_errors_observer, name };
-            return over_resolution.choose(function_lookup_result, params);
+            // add_subdirectory() builtin function is special. At high level,
+            // it is suppose to execute script from the given directory.
+            // Here, in sema, we need to parse this script, and get pointer to its main
+            // function. If it's not found, error is already reported and we should not proceed.
+            if(name.str() == "add_subdirectory")
+            {
+                return m_add_subdirectory_handler.handle(params);
+            }
+            else
+            {
+                const auto function_lookup_result = m_ctx.find_function(name);
+                overload_resolution over_resolution{ m_errors_observer, name };
+                return over_resolution.choose(function_lookup_result, params);
+            }
         }
 
         void sema_builder_ast_visitor::visit(const ast::function_call_node& node)
