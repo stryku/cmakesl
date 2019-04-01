@@ -254,18 +254,23 @@ namespace cmsl
             m_result_node = std::make_unique<class_member_access_node>(std::move(lhs), *member_info);
         }
 
+        const sema_function *sema_builder_ast_visitor::get_function_to_call(lexer::token::token name,
+                                                                            const param_expressions_t& params) const
+        {
+            const auto function_lookup_result = m_ctx.find_function(name);
+            overload_resolution over_resolution{ m_errors_observer, name };
+            return over_resolution.choose(function_lookup_result, params);
+        }
+
         void sema_builder_ast_visitor::visit(const ast::function_call_node& node)
         {
-            const auto function_lookup_result = m_ctx.find_function(node.get_name());
-
             auto params = get_function_call_params(node.get_param_nodes());
             if(!params)
             {
                 return;
             }
 
-            overload_resolution over_resolution{ m_errors_observer, node.get_name() };
-            const auto chosen_function = over_resolution.choose(function_lookup_result, *params);
+            const auto chosen_function = get_function_to_call(node.get_name(), *params);
             if(!chosen_function)
             {
                 return;
