@@ -265,7 +265,29 @@ namespace cmsl
             // function. If it's not found, error is already reported and we should not proceed.
             if(name.str() == "add_subdirectory")
             {
-                return m_add_subdirectory_handler.handle(params);
+                if(params.empty())
+                {
+                    // Todo: Error, no dir name provided
+                    return nullptr;
+                }
+
+                const auto casted = dynamic_cast<const string_value_node*>(params[0].get());
+                if(!casted)
+                {
+                    // Todo: Error, only string literal is allowed.
+                    return nullptr;
+                }
+
+                const auto name = casted->value();
+
+                std::vector<const expression_node*> params_but_name;
+                std::transform(std::next(std::cbegin(params)), std::cend(params),
+                        std::back_inserter(params_but_name),
+                        [](const auto& param)
+                       {
+                            return param.get();
+                       });
+                return m_add_subdirectory_handler.handle_add_subdirectory(name, params_but_name);
             }
             else
             {
@@ -618,6 +640,7 @@ namespace cmsl
                                              m_type_factory,
                                              m_function_factory,
                                              m_context_factory,
+                                             m_add_subdirectory_handler,
                                              m_currently_parsed_function };
         }
 
