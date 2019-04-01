@@ -20,6 +20,7 @@
 #include "test/sema/mock/identifiers_context_mock.hpp"
 #include "test/sema/mock/sema_context_mock.hpp"
 #include "test/sema/mock/sema_function_mock.hpp"
+#include "test/sema/mock/add_subdirectory_semantic_handler_mock.hpp"
 
 #include <gmock/gmock.h>
 
@@ -56,6 +57,7 @@ namespace cmsl
                 sema_type_factory m_type_factory;
                 sema_function_factory m_function_factory;
                 sema_context_factory m_context_factory;
+                add_subdirectory_semantic_handler_mock m_add_subdirectory_mock;
 
                 sema_builder_ast_visitor create_visitor(errs_t& errs,
                                                         sema_context_interface& ctx,
@@ -68,7 +70,8 @@ namespace cmsl
                             ids_ctx,
                             m_type_factory,
                             m_function_factory,
-                            m_context_factory
+                            m_context_factory,
+                            m_add_subdirectory_mock
                     };
                 }
             };

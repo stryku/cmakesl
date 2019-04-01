@@ -13,11 +13,13 @@ namespace cmsl::exec
     source_compiler::source_compiler(errors::errors_observer& errors_observer,
                                      sema::sema_type_factory &type_factory,
                                      sema::sema_function_factory &function_factory,
-                                     sema::sema_context_factory &context_factory)
+                                     sema::sema_context_factory &context_factory,
+                                     sema::add_subdirectory_semantic_handler& add_subdirectory_handler)
         : m_errors_observer{ errors_observer }
         , m_type_factory{ type_factory }
         , m_function_factory{ function_factory }
         , m_context_factory{ context_factory }
+        , m_add_subdirectory_handler{ add_subdirectory_handler }
     {}
 
     std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
@@ -38,7 +40,8 @@ namespace cmsl::exec
                                          ids_ctx,
                                          m_type_factory,
                                          m_function_factory,
-                                         m_context_factory };
+                                         m_context_factory,
+                                         m_add_subdirectory_handler};
         auto sema_tree = sema_builder.build(*ast_tree);
         return std::make_unique<compiled_source>( std::move(ast_tree),
                                                   std::move(global_context),

@@ -51,7 +51,7 @@ namespace cmsl
                         "\n"
                         "    return int(result);\n"
                         "}";
-                const auto result = m_executor.execute(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -99,7 +99,7 @@ namespace cmsl
                         "\n"
                         "    return int(result);\n"
                         "}";
-                const auto result = m_executor.execute(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
         }
