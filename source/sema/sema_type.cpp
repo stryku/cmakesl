@@ -53,7 +53,8 @@ namespace cmsl
 
         bool sema_type::operator==(const sema_type& rhs) const
         {
-            return this == &rhs;
+
+            return this == &rhs || name() == rhs.name();
         }
 
         bool sema_type::operator!=(const sema_type &rhs) const

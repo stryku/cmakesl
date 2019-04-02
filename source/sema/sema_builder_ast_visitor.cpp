@@ -256,8 +256,8 @@ namespace cmsl
             m_result_node = std::make_unique<class_member_access_node>(std::move(lhs), *member_info);
         }
 
-        const sema_function *sema_builder_ast_visitor::get_function_to_call(lexer::token::token name,
-                                                                            const param_expressions_t& params) const
+        sema_builder_ast_visitor::function_and_params sema_builder_ast_visitor::get_function_to_call(lexer::token::token name,
+                                                                                                     param_expressions_t  params) const
         {
             // add_subdirectory() builtin function is special. At high level,
             // it is suppose to execute script from the given directory.
@@ -268,32 +268,35 @@ namespace cmsl
                 if(params.empty())
                 {
                     // Todo: Error, no dir name provided
-                    return nullptr;
+                    return { nullptr };
                 }
 
                 const auto casted = dynamic_cast<const string_value_node*>(params[0].get());
                 if(!casted)
                 {
                     // Todo: Error, only string literal is allowed.
-                    return nullptr;
+                    return { nullptr };
                 }
 
                 const auto name = casted->value();
 
-                std::vector<const expression_node*> params_but_name;
-                std::transform(std::next(std::cbegin(params)), std::cend(params),
+                std::vector<std::unique_ptr<expression_node>> params_but_name;
+                std::transform(std::next(std::begin(params)), std::end(params),
                         std::back_inserter(params_but_name),
-                        [](const auto& param)
+                        [](auto& param)
                        {
-                            return param.get();
+                            return std::move(param);
                        });
-                return m_add_subdirectory_handler.handle_add_subdirectory(name, params_but_name);
+
+                const auto fun = m_add_subdirectory_handler.handle_add_subdirectory(name, params_but_name);
+                return { fun, std::move(params_but_name) };
             }
             else
             {
                 const auto function_lookup_result = m_ctx.find_function(name);
                 overload_resolution over_resolution{ m_errors_observer, name };
-                return over_resolution.choose(function_lookup_result, params);
+                auto fun = over_resolution.choose(function_lookup_result, params);
+                return { fun, std::move(params) };
             }
         }
 
@@ -305,7 +308,9 @@ namespace cmsl
                 return;
             }
 
-            const auto chosen_function = get_function_to_call(node.get_name(), *params);
+            auto fun_and_params = get_function_to_call(node.get_name(), std::move(*params));
+            const auto chosen_function = fun_and_params.function;
+            params = std::move(fun_and_params.params);
             if(!chosen_function)
             {
                 return;

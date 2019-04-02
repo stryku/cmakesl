@@ -84,7 +84,12 @@ namespace cmsl
         private:
             const sema_type* try_get_or_create_generic_type(const sema_context_interface& search_context, const ast::type_representation& name);
 
-            const sema_function* get_function_to_call(lexer::token::token name, const param_expressions_t& params) const;
+            struct function_and_params
+            {
+                const sema_function* function;
+                param_expressions_t params;
+            };
+            function_and_params get_function_to_call(lexer::token::token name, param_expressions_t params) const;
 
             template <typename T>
             std::unique_ptr<T> to_node(std::unique_ptr<sema_node> node) const;
