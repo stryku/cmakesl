@@ -400,6 +400,59 @@ namespace cmsl
                 // Todo: consider checking params one by one
             }
 
+            TEST_F(SemaBuilderAstVisitorTest, Visit_FunctionCallWithAddSubdirectoryName_CallsAddSubdirectoryHandler)
+            {
+                errs_t errs;
+                StrictMock<sema_context_mock> ctx;
+                StrictMock<identifiers_context_mock> ids_ctx;
+                StrictMock<sema_function_mock> function_mock;
+                const ast::function::params_declaration_t param_declarations;
+                auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+                const auto fun_name_token = token_identifier("add_subdirectory");
+                const auto name_param_token = token_string("\"subdir\"");
+
+                function_signature signature;
+                signature.name = fun_name_token;
+                signature.params .emplace_back(parameter_declaration{valid_type, name_param_token});
+
+                auto param1_ast_node = std::make_unique<ast::string_value_node>(name_param_token);
+
+                ast::function_call_node::params_t ast_params;
+                ast_params.emplace_back(std::move(param1_ast_node));
+                const ast::function_call_node node{fun_name_token, std::move(ast_params)};
+
+                const auto lookup_result = function_lookup_result_t{ { &function_mock } };
+
+                EXPECT_CALL(function_mock, context())
+                        .WillRepeatedly(ReturnRef(ctx));
+
+                EXPECT_CALL(function_mock, signature())
+                        .WillRepeatedly(ReturnRef(signature));
+
+                EXPECT_CALL(function_mock, return_type())
+                        .WillRepeatedly(ReturnRef(valid_type));
+
+                EXPECT_CALL(ctx, type())
+                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
+
+                EXPECT_CALL(ctx, find_type(_))
+                        .WillRepeatedly(Return(&valid_type));
+
+                EXPECT_CALL(m_add_subdirectory_mock, handle_add_subdirectory(cmsl::string_view{"subdir"}, _))
+                        .WillRepeatedly(Return(&function_mock));
+
+                visitor.visit(node);
+
+                ASSERT_THAT(visitor.m_result_node, NotNull());
+
+                const auto casted_node = dynamic_cast<function_call_node*>(visitor.m_result_node.get());
+                ASSERT_THAT(casted_node, NotNull());
+
+                EXPECT_THAT(casted_node->type(), IsValidType());
+                EXPECT_THAT(casted_node->param_expressions().size(), Eq(1u));
+            }
+
             // Todo: Do we need this? Context tests should test whether context returns ctor's function.
             TEST_F(SemaBuilderAstVisitorTest, Visit_ConstructorCallWithoutParameters_GetConstructorCallNodeWithoutParameters)
             {
