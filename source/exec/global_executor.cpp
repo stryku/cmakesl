@@ -4,16 +4,31 @@
 #include "sema/user_sema_function.hpp"
 #include "exec/execution2.hpp"
 
+#include "cmake_facade.hpp"
+
+
 #include <fstream>
 #include <iterator>
 
 
 namespace cmsl::exec
 {
+    global_executor::directory_guard::directory_guard(facade::cmake_facade& cmake_facade, const std::string &dir)
+            : m_cmake_facade{ cmake_facade }
+    {
+        m_cmake_facade.go_into_subdirectory(dir);
+    }
+    global_executor::directory_guard::~directory_guard()
+    {
+        m_cmake_facade.go_directory_up();
+    }
+
     global_executor::global_executor(const std::string& root_path, facade::cmake_facade &cmake_facade)
-        :m_root_path { root_path }
+        : m_root_path { root_path }
         , m_cmake_facade{ cmake_facade }
-    {}
+    {
+        m_cmake_facade.go_into_subdirectory(m_root_path);
+    }
 
     global_executor::~global_executor() = default;
 
@@ -48,7 +63,9 @@ namespace cmsl::exec
     const sema::sema_function *
     global_executor::handle_add_subdirectory(cmsl::string_view name, const std::vector<std::unique_ptr<sema::expression_node>>& params)
     {
-        auto path = m_root_path + '/' + name.to_string() + "/CMakeLists.cmsl";
+        directory_guard dg{ m_cmake_facade, name.to_string() };
+
+        auto path = m_cmake_facade.current_directory() + "/CMakeLists.cmsl";
         std::ifstream file{ path };
         if(!file.is_open())
         {

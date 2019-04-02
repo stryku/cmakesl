@@ -29,6 +29,15 @@ namespace cmsl
             const sema::sema_function* handle_add_subdirectory(cmsl::string_view name, const std::vector<std::unique_ptr<sema::expression_node>>& params) override;
 
         private:
+            class directory_guard
+            {
+            public:
+                explicit directory_guard(facade::cmake_facade& cmake_facade, const std::string& dir);
+                ~directory_guard();
+
+            private:
+                facade::cmake_facade& m_cmake_facade;
+            };
 
             std::string m_root_path;
             facade::cmake_facade& m_cmake_facade;
