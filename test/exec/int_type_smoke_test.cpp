@@ -1,7 +1,4 @@
-#include "exec/source_executor.hpp"
-#include "common/source_view.hpp"
-#include "exec/global_executor.hpp"
-#include "test/exec/mock/cmake_facade_mock.hpp"
+#include "test/exec/smoke_test_fixture.hpp"
 
 #include <gmock/gmock.h>
 
@@ -12,13 +9,7 @@ namespace cmsl
         namespace test
         {
             using ::testing::Eq;
-
-            class IntTypeSmokeTest : public ::testing::Test
-            {
-            protected:
-                cmake_facade_mock m_facade;
-                global_executor m_executor{m_facade};
-            };
+            using IntTypeSmokeTest = ExecutionSmokeTest;
 
             TEST_F(IntTypeSmokeTest, DefaultConstructor)
             {
