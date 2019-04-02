@@ -9,6 +9,6 @@ namespace cmsl::sema::test
     class add_subdirectory_semantic_handler_mock : public add_subdirectory_semantic_handler
     {
     public:
-        MOCK_METHOD2(handle_add_subdirectory, const sema_function*(cmsl::string_view, const std::vector<const expression_node*>&));
+        MOCK_METHOD2(handle_add_subdirectory, const sema_function*(cmsl::string_view, const std::vector<std::unique_ptr<expression_node>>&));
     };
 }

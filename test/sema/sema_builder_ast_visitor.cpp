@@ -450,7 +450,8 @@ namespace cmsl
                 ASSERT_THAT(casted_node, NotNull());
 
                 EXPECT_THAT(casted_node->type(), IsValidType());
-                EXPECT_THAT(casted_node->param_expressions().size(), Eq(1u));
+                // No parameters, because sema builder removes the directory name parameter.
+                EXPECT_THAT(casted_node->param_expressions().size(), Eq(0u));
             }
 
             // Todo: Do we need this? Context tests should test whether context returns ctor's function.

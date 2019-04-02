@@ -11,6 +11,6 @@ namespace cmsl::exec::test
     {
     protected:
         cmake_facade_mock m_facade;
-        global_executor m_executor{m_facade};
+        global_executor m_executor{"<unknown source>", m_facade};
     };
 }
