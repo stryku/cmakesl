@@ -28,7 +28,7 @@ namespace cmsl
                 void add_library(facade::cmake_facade& cmake_facade, const std::string& name, const list_value& sources);
 
             private:
-                std::vector<std::string> list_to_sources(const list_value& sources);
+                std::vector<std::string> list_to_sources(facade::cmake_facade& cmake_facade, const list_value& sources);
 
             private:
                 std::string m_name;
