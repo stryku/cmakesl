@@ -12,6 +12,6 @@ namespace cmsl::sema
     {
     public:
         virtual ~add_subdirectory_semantic_handler() = default;
-        virtual const sema_function* handle_add_subdirectory(cmsl::string_view name, const std::vector<const expression_node*>& params) = 0;
+        virtual const sema_function* handle_add_subdirectory(cmsl::string_view name, const std::vector<std::unique_ptr<expression_node>>& params) = 0;
     };
 }

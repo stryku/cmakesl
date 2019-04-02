@@ -10,8 +10,9 @@
 
 namespace cmsl::exec
 {
-    global_executor::global_executor(facade::cmake_facade &cmake_facade)
-        :m_cmake_facade{ cmake_facade }
+    global_executor::global_executor(const std::string& root_path, facade::cmake_facade &cmake_facade)
+        :m_root_path { root_path }
+        , m_cmake_facade{ cmake_facade }
     {}
 
     global_executor::~global_executor() = default;
@@ -45,17 +46,20 @@ namespace cmsl::exec
     }
 
     const sema::sema_function *
-    global_executor::handle_add_subdirectory(cmsl::string_view name, const std::vector<const sema::expression_node*>& params)
+    global_executor::handle_add_subdirectory(cmsl::string_view name, const std::vector<std::unique_ptr<sema::expression_node>>& params)
     {
-        std::ifstream file{ name.to_string() };
+        auto path = m_root_path + '/' + name.to_string() + "/CMakeLists.cmsl";
+        std::ifstream file{ path };
         if(!file.is_open())
         {
             // Todo: script not found
             return nullptr;
         }
+        cmsl::string_view path_view = path;
+        m_paths.emplace_back(std::move(path));
 
         std::string source(std::istreambuf_iterator<char>{file}, {});
-        const auto src_view = source_view{ name, source };
+        const auto src_view = source_view{ path_view, source };
 
         m_sources.emplace_back(std::move(source));
 
