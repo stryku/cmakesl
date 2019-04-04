@@ -33,6 +33,7 @@
 #include "sema/builtin_types_finder.hpp"
 #include "sema/variable_initialization_checker.hpp"
 #include "sema/add_subdirectory_semantic_handler.hpp"
+#include "sema_builder_ast_visitor.hpp"
 
 
 namespace cmsl
@@ -256,64 +257,21 @@ namespace cmsl
             m_result_node = std::make_unique<class_member_access_node>(std::move(lhs), *member_info);
         }
 
-        sema_builder_ast_visitor::function_and_params sema_builder_ast_visitor::get_function_to_call(lexer::token::token name,
-                                                                                                     param_expressions_t  params) const
-        {
-            // add_subdirectory() builtin function is special. At high level,
-            // it is suppose to execute script from the given directory.
-            // Here, in sema, we need to parse this script, and get pointer to its main
-            // function. If it's not found, error is already reported and we should not proceed.
-            if(name.str() == "add_subdirectory")
-            {
-                if(params.empty())
-                {
-                    // Todo: Error, no dir name provided
-                    return { nullptr };
-                }
-
-                const auto casted = dynamic_cast<const string_value_node*>(params[0].get());
-                if(!casted)
-                {
-                    // Todo: Error, only string literal is allowed.
-                    return { nullptr };
-                }
-
-                const auto name = casted->value();
-
-                std::vector<std::unique_ptr<expression_node>> params_but_name;
-                std::transform(std::next(std::begin(params)), std::end(params),
-                        std::back_inserter(params_but_name),
-                        [](auto& param)
-                       {
-                            return std::move(param);
-                       });
-
-                const auto fun = m_add_subdirectory_handler.handle_add_subdirectory(name, params_but_name);
-                return { fun, std::move(params_but_name) };
-            }
-            else
-            {
-                const auto function_lookup_result = m_ctx.find_function(name);
-                overload_resolution over_resolution{ m_errors_observer, name };
-                auto fun = over_resolution.choose(function_lookup_result, params);
-                return { fun, std::move(params) };
-            }
-        }
-
-        void sema_builder_ast_visitor::visit(const ast::function_call_node& node)
+        std::unique_ptr<expression_node>
+        sema_builder_ast_visitor::build_function_call(const ast::function_call_node &node)
         {
             auto params = get_function_call_params(node.get_param_nodes());
             if(!params)
             {
-                return;
+                return nullptr;
             }
 
-            auto fun_and_params = get_function_to_call(node.get_name(), std::move(*params));
-            const auto chosen_function = fun_and_params.function;
-            params = std::move(fun_and_params.params);
+            const auto function_lookup_result = m_ctx.find_function(node.get_name());
+            overload_resolution over_resolution{ m_errors_observer, node.get_name() };
+            const auto chosen_function = over_resolution.choose(function_lookup_result, *params);
             if(!chosen_function)
             {
-                return;
+                return nullptr;
             }
 
             // Convert call parameter nodes if need, e.g. to a cast_to_reference_node, if function accepts a reference.
@@ -324,26 +282,85 @@ namespace cmsl
             {
                 case sema_context_interface::context_type::namespace_:
                 {
-                    m_result_node = std::make_unique<function_call_node>(*chosen_function, std::move(*params));
+                    return std::make_unique<function_call_node>(*chosen_function, std::move(*params));
                 } break;
                 case sema_context_interface::context_type::class_:
                 {
                     const auto is_constructor = chosen_function->signature().name.str() == chosen_function->return_type().name().to_string();
                     if(is_constructor)
                     {
-                        m_result_node = std::make_unique<constructor_call_node>(chosen_function->return_type(),
+                        return std::make_unique<constructor_call_node>(chosen_function->return_type(),
                                                                                 *chosen_function,
                                                                                 std::move(*params));
                     }
                     else
                     {
-                        m_result_node = std::make_unique<implicit_member_function_call_node>(*chosen_function,
+                        return std::make_unique<implicit_member_function_call_node>(*chosen_function,
                                                                                              std::move(*params));
                     }
                 } break;
 
                 default:
                     CMSL_UNREACHABLE("Unknown context type");
+            }
+
+            return nullptr;
+        }
+
+        std::unique_ptr<expression_node>
+        sema_builder_ast_visitor::build_add_subdirectory_call(const ast::function_call_node &node)
+        {
+            auto params_opt = get_function_call_params(node.get_param_nodes());
+            if(!params_opt)
+            {
+                return nullptr;
+            }
+
+            auto& params = *params_opt;
+            if(params.empty())
+            {
+                // Todo: Error, no dir name provided
+                return nullptr;
+            }
+
+            auto casted = dynamic_cast<string_value_node*>(params[0].get());
+            if(!casted)
+            {
+                // Todo: Error, only string literal is allowed.
+                return nullptr;
+            }
+
+            params[0].release();
+            auto name_string_node = std::unique_ptr<string_value_node>(casted);
+            const auto name = name_string_node->value();
+
+            std::vector<std::unique_ptr<expression_node>> params_but_name;
+            std::transform(std::next(std::begin(params)), std::end(params),
+                           std::back_inserter(params_but_name),
+                           [](auto& param)
+                           {
+                               return std::move(param);
+                           });
+
+            const auto fun = m_add_subdirectory_handler.handle_add_subdirectory(name, params_but_name);
+            if(!fun)
+            {
+                return nullptr;
+            }
+
+            return std::make_unique<add_subdirectory_node>(std::move(name_string_node), *fun, std::move(params_but_name));
+        }
+
+        void sema_builder_ast_visitor::visit(const ast::function_call_node& node)
+        {
+
+            if(node.get_name().str() == "add_subdirectory")
+            {
+                m_result_node = build_add_subdirectory_call(node);
+            }
+            else
+            {
+                m_result_node = build_function_call(node);
             }
         }
 
