@@ -2,6 +2,11 @@
 
 namespace cmsl
 {
+    namespace facade
+    {
+        class cmake_facade;
+    }
+
     namespace exec
     {
         class function_caller2;
@@ -17,6 +22,7 @@ namespace cmsl
             function_caller2& function_caller;
             inst::instances_holder_interface& instances;
             identifiers_context& ids_context;
+            facade::cmake_facade& cmake_facade;
         };
     }
 }

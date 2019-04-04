@@ -74,7 +74,9 @@ set(EXEC_SOURCES
     stmt/while_statement.hpp
         builtin/container.cpp builtin/container.hpp builtin/cmake_minimum_required.cpp builtin/cmake_minimum_required.hpp instance/instance_value_getter.hpp builtin/evaluatable_function.hpp builtin/builtin_function_factory.cpp builtin/builtin_function_factory.hpp builtin/evaluatable_member_function.hpp builtin/builtin_member_functions.cpp builtin/builtin_member_functions.hpp builtin/version.cpp builtin/version.hpp execution2.hpp expression_evaluation_visitor.hpp
         expression_evaluation_context.hpp
-        identifiers_context.hpp instance/instance_value_variant.cpp instance/instance_value_variant.hpp builtin_function_caller2.cpp builtin_function_caller2.hpp instance/version_value.hpp instance/version_value.cpp instance/list_value.cpp instance/list_value.hpp instance/instance_value_alternative.hpp parameter_alternatives_getter.hpp instance/project_value.cpp instance/project_value.hpp instance/target_value.cpp instance/target_value.hpp)
+        identifiers_context.hpp instance/instance_value_variant.cpp instance/instance_value_variant.hpp builtin_function_caller2.cpp builtin_function_caller2.hpp instance/version_value.hpp instance/version_value.cpp instance/list_value.cpp instance/list_value.hpp instance/instance_value_alternative.hpp parameter_alternatives_getter.hpp instance/project_value.cpp instance/project_value.hpp instance/target_value.cpp instance/target_value.hpp global_executor.cpp global_executor.hpp compiled_source.cpp
+        source_compiler.cpp
+        source_compiler.hpp)
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_FACADE_DIR})

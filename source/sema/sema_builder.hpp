@@ -18,9 +18,10 @@ namespace cmsl
 
     namespace sema
     {
+        class add_subdirectory_semantic_handler;
+        class identifiers_context;
         class sema_context;
         class sema_node;
-        class identifiers_context;
         class sema_type_factory;
         class sema_function_factory;
         class sema_context_factory;
@@ -33,7 +34,8 @@ namespace cmsl
                                   identifiers_context& ids_context,
                                   sema_type_factory& type_factory,
                                   sema_function_factory &function_factory,
-                                  sema_context_factory& context_factory);
+                                  sema_context_factory& context_factory,
+                                  add_subdirectory_semantic_handler& add_subdirectory_handler);
 
             std::unique_ptr<sema_node> build(const ast::ast_node& ast_tree);
 
@@ -44,6 +46,7 @@ namespace cmsl
             sema_type_factory &m_type_factory;
             sema_function_factory &m_function_factory;
             sema_context_factory &m_context_factory;
+            add_subdirectory_semantic_handler& m_add_subdirectory_handler;
         };
     }
 }

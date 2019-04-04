@@ -34,6 +34,12 @@ public:
 
     void target_link_library(const std::string& , const std::string& ) override
     {}
+    std::string current_directory() const
+    {
+        return "";
+    }
+    void go_into_subdirectory(const std::string& dir) {}
+    void go_directory_up() {}
 };
 
 int main()
