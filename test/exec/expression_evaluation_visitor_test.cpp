@@ -10,6 +10,7 @@
 #include "test/exec/mock/instance_mock.hpp"
 #include "test/sema/mock/sema_function_mock.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"
+#include "test/exec/mock/cmake_facade_mock.hpp"
 
 #include <gmock/gmock.h>
 #include "exec/instance/int_alias.hpp"
@@ -39,10 +40,12 @@ namespace cmsl
                 StrictMock<identifiers_context_mock> m_ids_ctx;
                 StrictMock<function_caller2_mock> m_caller;
                 StrictMock<inst::test::instances_holder_mock> m_instances;
+                StrictMock<cmake_facade_mock> m_cmake_facade;
                 expression_evaluation_context m_ctx{
                         m_caller,
                         m_instances,
-                        m_ids_ctx
+                        m_ids_ctx,
+                        m_cmake_facade
                 };
             };
 
