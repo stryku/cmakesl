@@ -13,6 +13,8 @@
 #include "sema/builtin_sema_function.hpp"
 #include "exec/instance/instance_factory.hpp"
 
+#include "cmake_facade.hpp"
+
 namespace cmsl
 {
     namespace exec
@@ -171,7 +173,7 @@ namespace cmsl
             std::unique_ptr<inst::instance> execute_infix_expression(const sema::sema_node& node)
             {
                 inst::instances_holder instances{ current_context() };
-                expression_evaluation_context ctx{ *this, instances, *this };
+                expression_evaluation_context ctx{ *this, instances, *this, m_cmake_facade };
                 expression_evaluation_visitor visitor{ ctx };
                 node.visit(visitor);
                 return visitor.result->copy(); // Todo: it'd be good to move instead of copy.

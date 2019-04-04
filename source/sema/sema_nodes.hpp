@@ -347,7 +347,7 @@ namespace cmsl
                     , m_directory_name{ std::move(directory_name) }
             {}
 
-            const string_value_node& values() const
+            const string_value_node& dir_name() const
             {
                 return *m_directory_name;
             }
