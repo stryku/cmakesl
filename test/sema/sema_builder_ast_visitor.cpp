@@ -446,7 +446,7 @@ namespace cmsl
 
                 ASSERT_THAT(visitor.m_result_node, NotNull());
 
-                const auto casted_node = dynamic_cast<function_call_node*>(visitor.m_result_node.get());
+                const auto casted_node = dynamic_cast<add_subdirectory_node*>(visitor.m_result_node.get());
                 ASSERT_THAT(casted_node, NotNull());
 
                 EXPECT_THAT(casted_node->type(), IsValidType());
