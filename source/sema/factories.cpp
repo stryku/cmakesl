@@ -47,6 +47,9 @@ namespace cmsl
             return create_impl<builtin_sema_function>(ctx, return_type, std::move(s), kind);
         }
 
+        sema_function_factory::~sema_function_factory()
+        {}
+
         sema_context& sema_context_factory::create(const sema_context_interface *parent)
         {
             return create_impl<sema_context>(parent, sema_context_interface::context_type::namespace_);
@@ -55,6 +58,11 @@ namespace cmsl
         sema_context &sema_context_factory::create_class(const sema_context_interface *parent)
         {
             return create_impl<sema_context>(parent, sema_context_interface::context_type::class_);
+        }
+
+        sema_context_factory::~sema_context_factory()
+        {
+
         }
 
         const sema_type&
@@ -75,6 +83,11 @@ namespace cmsl
         sema_type_factory::create_reference(const sema_type& referenced_type)
         {
             return create_impl<sema_type>( sema_type_reference{ referenced_type });
+        }
+
+        sema_type_factory::~sema_type_factory()
+        {
+
         }
 
         sema_generic_type_factory::sema_generic_type_factory(sema_context_interface& generic_types_context,

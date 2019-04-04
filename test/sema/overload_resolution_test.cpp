@@ -90,7 +90,7 @@ namespace cmsl
                 StrictMock<sema_function_mock> function;
                 auto param_expression = std::make_unique<StrictMock<expression_node_mock>>();
                 auto param_expression_ptr = param_expression.get();
-                const sema_type param_type{ valid_context, ast::type_representation{ token_identifier("foo") }, {} };
+                const sema_type param_type{ valid_context, ast::type_representation{ token_identifier("param_type") }, {} };
                 std::vector<std::unique_ptr<expression_node>> param_expressions;
                 param_expressions.emplace_back(std::move(param_expression));
 

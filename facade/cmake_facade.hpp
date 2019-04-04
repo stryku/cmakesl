@@ -51,6 +51,10 @@ namespace cmsl
             virtual void add_library(const std::string& name, const std::vector<std::string>& sources) = 0; // Todo: Change sources to vector of string_views
 
             virtual void target_link_library(const std::string& target_name, const std::string& library_name) = 0; // Todo: Change sources to vector of string_views
+
+            virtual std::string current_directory() const = 0;
+            virtual void go_into_subdirectory(const std::string& dir) = 0;
+            virtual void go_directory_up() = 0;
         };
     }
 }

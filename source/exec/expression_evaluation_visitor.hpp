@@ -11,6 +11,7 @@
 #include "exec/function_caller.hpp"
 #include "exec/identifiers_context.hpp"
 #include "common/assert.hpp"
+#include "cmake_facade.hpp"
 
 namespace cmsl
 {
@@ -74,6 +75,20 @@ namespace cmsl
                                                                   m_ctx.instances);
                 result = result_instance.get();
                 m_ctx.instances.store(std::move(result_instance));
+            }
+
+            void visit(const sema::add_subdirectory_node& node) override
+            {
+                m_ctx.cmake_facade.go_into_subdirectory(node.dir_name().value().to_string());
+
+                auto evaluated_params = evaluate_call_parameters(node.param_expressions());
+                const auto& function = node.function();
+                auto result_instance = m_ctx.function_caller.call(function, evaluated_params,
+                                                                  m_ctx.instances);
+                result = result_instance.get();
+                m_ctx.instances.store(std::move(result_instance));
+
+                m_ctx.cmake_facade.go_directory_up();
             }
 
             void visit(const sema::implicit_member_function_call_node& node) override

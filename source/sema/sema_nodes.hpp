@@ -339,6 +339,25 @@ namespace cmsl
             const sema_type& m_class_type;
         };
 
+        class add_subdirectory_node : public call_node
+        {
+        public:
+            explicit add_subdirectory_node(std::unique_ptr<string_value_node> directory_name, const sema_function& function, param_expressions_t params)
+                    : call_node{ function, std::move(params) }
+                    , m_directory_name{ std::move(directory_name) }
+            {}
+
+            const string_value_node& dir_name() const
+            {
+                return *m_directory_name;
+            }
+
+            VISIT_METHOD
+
+        private:
+            std::unique_ptr<string_value_node> m_directory_name;
+        };
+
         class block_node : public sema_node
         {
         private:

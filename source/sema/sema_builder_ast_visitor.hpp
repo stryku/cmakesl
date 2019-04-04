@@ -33,6 +33,7 @@ namespace cmsl
 
     namespace sema
     {
+        class add_subdirectory_semantic_handler;
         class expression_node;
         class variable_declaration_node;
         class sema_type;
@@ -57,6 +58,7 @@ namespace cmsl
                                               sema_type_factory& type_factory,
                                               sema_function_factory& function_factory,
                                               sema_context_factory& context_factory,
+                                              add_subdirectory_semantic_handler& add_subdirectory_handler,
                                               sema_function* currently_parsing_function = nullptr); // Todo: Create private ctor that trakes currently_parsing_function
 
             void visit(const ast::block_node& node) override;
@@ -81,6 +83,9 @@ namespace cmsl
 
         private:
             const sema_type* try_get_or_create_generic_type(const sema_context_interface& search_context, const ast::type_representation& name);
+
+            std::unique_ptr<expression_node> build_function_call(const ast::function_call_node& node);
+            std::unique_ptr<expression_node> build_add_subdirectory_call(const ast::function_call_node& node);
 
             template <typename T>
             std::unique_ptr<T> to_node(std::unique_ptr<sema_node> node) const;
@@ -152,6 +157,7 @@ namespace cmsl
             sema_type_factory& m_type_factory;
             sema_function_factory& m_function_factory;
             sema_context_factory& m_context_factory;
+            add_subdirectory_semantic_handler& m_add_subdirectory_handler;
             sema_function* m_currently_parsed_function{ nullptr };
         };
     }

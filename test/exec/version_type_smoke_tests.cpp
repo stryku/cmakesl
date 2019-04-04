@@ -1,8 +1,5 @@
-#include "exec/source_executor.hpp"
-#include "common/source_view.hpp"
-#include "test/exec/mock/cmake_facade_mock.hpp"
-
-#include <gmock/gmock.h>
+#include "test/exec/smoke_test_fixture.hpp"
+#include "sema/sema_type.hpp"
 
 namespace cmsl
 {
@@ -11,13 +8,7 @@ namespace cmsl
         namespace test
         {
             using ::testing::Eq;
-
-            class VersionTypeSmokeTest : public ::testing::Test
-            {
-            protected:
-                cmake_facade_mock m_facade;
-                source_executor m_executor{m_facade};
-            };
+            using VersionTypeSmokeTest = ExecutionSmokeTest;
 
             TEST_F(VersionTypeSmokeTest, ConstructorMajor)
             {
@@ -27,7 +18,7 @@ namespace cmsl
                         "    version v = version(1);\n"
                         "    return int(v.major() == 1 && v.minor() == 0 && v.patch() == 0 && v.tweak() == 0);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -39,7 +30,7 @@ namespace cmsl
                         "    version v = version(1, 2);\n"
                         "    return int(v.major() == 1 && v.minor() == 2 && v.patch() == 0 && v.tweak() == 0);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -51,7 +42,7 @@ namespace cmsl
                         "    version v = version(1, 2, 3);\n"
                         "    return int(v.major() == 1 && v.minor() == 2 && v.patch() == 3 && v.tweak() == 0);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -63,7 +54,7 @@ namespace cmsl
                         "    version v = version(1, 2, 3, 4);\n"
                         "    return int(v.major() == 1 && v.minor() == 2 && v.patch() == 3 && v.tweak() == 4);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -84,7 +75,7 @@ namespace cmsl
                         "               v != v5 &&\n"
                         "               v != v6);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -104,7 +95,7 @@ namespace cmsl
                         "    version v8 = version(1, 2, 3, 5);\n"
                         "    return int(v < v5 && v2 < v6 && v3 < v7 && v4 < v8);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -127,7 +118,7 @@ namespace cmsl
                         "    version v10 = version(1, 2, 3, 4);\n"
                         "    return int(v <= v5 && v2 <= v6 && v3 <= v7 && v4 <= v8 && v9 <= v10);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -147,7 +138,7 @@ namespace cmsl
                         "    version v8 = version(1, 2, 3, 5);\n"
                         "    return int(v5 > v && v6 > v2 && v7 > v3 && v8 > v4);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -170,7 +161,7 @@ namespace cmsl
                         "    version v10 = version(1, 2, 3, 4);\n"
                         "    return int(v5 >= v && v6 >= v2 && v7 >= v3 && v8 >= v4 && v10 >= v9);\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
 
@@ -182,7 +173,7 @@ namespace cmsl
                         "    version v = version(1, 2, 3, 4);\n"
                         "    return int(v.to_string() == \"1.2.3.4\");\n"
                         "}";
-                const auto result = m_executor.execute2(cmsl::source_view{ source });
+                const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
         }
