@@ -66,7 +66,8 @@ namespace cmsl
                 kw_string,
                 kw_version,
                 kw_list,
-                kw_target,
+                kw_library,
+                kw_executable,
                 kw_project,
 
                 kw_return,
