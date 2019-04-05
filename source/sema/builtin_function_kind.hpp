@@ -154,8 +154,11 @@ namespace cmsl
             project_add_executable,
             project_add_library,
 
-            target_name,
-            target_link_to
+            library_name,
+            library_link_to,
+
+            executable_name,
+            executable_link_to
         };
     }
 }

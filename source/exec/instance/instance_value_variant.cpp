@@ -58,9 +58,13 @@ namespace cmsl
                     {
                         reassign(std::move(moved.m_value.m_project), which_t::project);
                     }break;
-                    case which_t::target:
+                    case which_t::library:
                     {
-                        reassign(std::move(moved.m_value.m_target), which_t::target);
+                        reassign(std::move(moved.m_value.m_library), which_t::library);
+                    }break;
+                    case which_t::executable:
+                    {
+                        reassign(std::move(moved.m_value.m_executable), which_t::executable);
                     }break;
                     case which_t::generic:
                     {
@@ -128,9 +132,14 @@ namespace cmsl
                 assign(std::move(val), which_t::project);
             }
 
-            instance_value_variant::instance_value_variant(target_value val)
+            instance_value_variant::instance_value_variant(library_value val)
             {
-                assign(std::move(val), which_t::target);
+                assign(std::move(val), which_t::library);
+            }
+
+            instance_value_variant::instance_value_variant(executable_value val)
+            {
+                assign(std::move(val), which_t::executable);
             }
 
             instance_value_variant::instance_value_variant(generic_instance_value val)
@@ -248,9 +257,13 @@ namespace cmsl
                     {
                         assign(other.m_project, w);
                     }break;
-                    case which_t::target:
+                    case which_t::library:
                     {
-                        assign(other.m_target, w);
+                        assign(other.m_library, w);
+                    }break;
+                    case which_t::executable:
+                    {
+                        assign(other.m_executable, w);
                     }break;
                     case which_t::generic:
                     {
@@ -301,9 +314,14 @@ namespace cmsl
                 construct(m_value.m_project, std::move(value));
             }
 
-            void instance_value_variant::construct(target_value value)
+            void instance_value_variant::construct(library_value value)
             {
-                construct(m_value.m_target, std::move(value));
+                construct(m_value.m_library, std::move(value));
+            }
+
+            void instance_value_variant::construct(executable_value value)
+            {
+                construct(m_value.m_executable, std::move(value));
             }
 
             void instance_value_variant::construct(generic_instance_value value)
@@ -339,9 +357,13 @@ namespace cmsl
                     {
                         call_dtor(m_value.m_project);
                     } break;
-                    case which_t::target:
+                    case which_t::library   :
                     {
-                        call_dtor(m_value.m_target);
+                        call_dtor(m_value.m_library);
+                    } break;
+                    case which_t::executable:
+                    {
+                        call_dtor(m_value.m_executable);
                     } break;
                     case which_t::generic:
                     {
@@ -372,7 +394,8 @@ switch (m_which) \
     case which_t::list: return get_list_cref() op rhs.get_list_cref(); \
     case which_t::generic: return get_generic_cref() op rhs.get_generic_cref(); \
     case which_t::project: break; \
-    case which_t::target: break; \
+    case which_t::library: break; \
+    case which_t::executable: break; \
 } \
 CMSL_UNREACHABLE("Unknown alternative")
 
@@ -451,19 +474,31 @@ CMSL_UNREACHABLE("Unknown alternative")
                 reassign(std::move(value), which_t::project);
             }
 
-            const target_value &instance_value_variant::get_target_cref() const
+            const library_value &instance_value_variant::get_library_cref() const
             {
-                return m_value.m_target;
+                return m_value.m_library;
             }
 
-            target_value &instance_value_variant::get_target_ref()
+            library_value &instance_value_variant::get_library_ref()
             {
-                return m_value.m_target;
+                return m_value.m_library;
             }
 
-            void instance_value_variant::set_target(target_value value)
+            void instance_value_variant::set_library(library_value value){
+                reassign(std::move(value), which_t::library);
+            }
+
+            const executable_value &instance_value_variant::get_executable_cref() const
             {
-                reassign(std::move(value), which_t::target);
+                return m_value.m_executable;
+            }
+
+            executable_value &instance_value_variant::get_executable_ref(){
+                return m_value.m_executable;
+            }
+
+            void instance_value_variant::set_executable(executable_value value){
+                reassign(std::move(value), which_t::executable);
             }
         }
     }
