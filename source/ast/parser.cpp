@@ -78,8 +78,7 @@ namespace cmsl
                 token_type_t::kw_double,
                 token_type_t::kw_bool,
                 token_type_t::kw_string,
-                token_type_t::kw_list,
-                token_type_t::kw_target
+                token_type_t::kw_list
             };
 
             return cmsl::contains(builtin_types, token_type);

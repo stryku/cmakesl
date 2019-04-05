@@ -33,7 +33,8 @@ namespace cmsl
                     value(version_value val) : m_version{ std::move(val) } {}
                     value(list_value val) : m_list{ std::move(val) } {}
                     value(project_value val) : m_project{ std::move(val) } {}
-                    value(target_value val) : m_target{ std::move(val) } {}
+                    value(library_value val) : m_library{ std::move(val) } {}
+                    value(executable_value val) : m_executable{ std::move(val) } {}
                     ~value() {}
 
                     bool m_bool;
@@ -43,7 +44,8 @@ namespace cmsl
                     version_value m_version;
                     list_value m_list;
                     project_value m_project;
-                    target_value m_target;
+                    library_value m_library;
+                    executable_value m_executable;
                     generic_instance_value m_generic;
                 } m_value;
 
@@ -72,7 +74,8 @@ namespace cmsl
 
                 instance_value_variant(list_value val);
                 instance_value_variant(project_value val);
-                instance_value_variant(target_value val);
+                instance_value_variant(library_value val);
+                instance_value_variant(executable_value val);
 
                 instance_value_variant(generic_instance_value val);
                 ~instance_value_variant();
@@ -104,9 +107,13 @@ namespace cmsl
                 project_value& get_project_ref();
                 void set_project(project_value value);
 
-                const target_value& get_target_cref() const;
-                target_value& get_target_ref();
-                void set_target(target_value value);
+                const library_value& get_library_cref() const;
+                library_value& get_library_ref();
+                void set_library(library_value value);
+
+                const executable_value& get_executable_cref() const;
+                executable_value& get_executable_ref();
+                void set_executable(executable_value value);
 
                 const generic_instance_value& get_generic_cref() const;
                 generic_instance_value& get_generic_ref();
@@ -124,7 +131,8 @@ namespace cmsl
                         case which_t::version: return visitor(get_version_cref());
                         case which_t::list: return visitor(get_list_cref());
                         case which_t::project: return visitor(get_project_cref());
-                        case which_t::target: return visitor(get_target_cref());
+                        case which_t::library: return visitor(get_library_cref());
+                        case which_t::executable: return visitor(get_executable_cref());
                         case which_t::generic: return visitor(get_generic_cref());
                     }
                 }
@@ -155,7 +163,8 @@ namespace cmsl
                 void construct(version_value value);
                 void construct(list_value value);
                 void construct(project_value value);
-                void construct(target_value value);
+                void construct(library_value value);
+                void construct(executable_value value);
                 void construct(generic_instance_value value);
 
                 template <typename T>

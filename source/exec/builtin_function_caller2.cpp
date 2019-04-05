@@ -196,8 +196,11 @@ namespace cmsl
                 CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_add_executable);
                 CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_add_library);
 
-                CASE_BUILTIN_MEMBER_FUNCTION_CALL(target_name);
-                CASE_BUILTIN_MEMBER_FUNCTION_CALL(target_link_to);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_name);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_link_to);
+
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_name);
+                CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_link_to);
 
                 default:
                     CMSL_UNREACHABLE("Calling unimplemented member function");
@@ -1497,7 +1500,7 @@ namespace cmsl
             auto& project = instance.get_value_ref().get_project_ref();
             const auto& [name, sources] = get_params<alternative_t::string, alternative_t::list>(params);
             project.add_executable(m_cmake_facade, name, sources);
-            return m_instances.create2(inst::target_value{ name });
+            return m_instances.create2(inst::executable_value{ name });
         }
 
         inst::instance *
@@ -1506,21 +1509,37 @@ namespace cmsl
             auto& project = instance.get_value_ref().get_project_ref();
             const auto& [name, sources] = get_params<alternative_t::string, alternative_t::list>(params);
             project.add_library(m_cmake_facade, name, sources);
-            return m_instances.create2(inst::target_value{ name });
+            return m_instances.create2(inst::library_value{ name });
         }
 
         inst::instance *
-        builtin_function_caller2::target_name(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        builtin_function_caller2::library_name(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& target = instance.get_value_cref().get_target_cref();
+            const auto& target = instance.get_value_cref().get_library_cref();
             return m_instances.create2(target.name());
         }
 
         inst::instance *
-        builtin_function_caller2::target_link_to(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        builtin_function_caller2::library_link_to(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& target = instance.get_value_cref().get_target_cref();
-            const auto& [library] = get_params<alternative_t::target>(params);
+            const auto& target = instance.get_value_cref().get_library_cref();
+            const auto& [library] = get_params<alternative_t::library>(params);
+            target.link_to(m_cmake_facade, library);
+            return m_instances.create2_void();
+        }
+
+        inst::instance *
+        builtin_function_caller2::executable_name(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& target = instance.get_value_cref().get_executable_cref();
+            return m_instances.create2(target.name());
+        }
+
+        inst::instance *
+        builtin_function_caller2::executable_link_to(inst::instance &instance, const builtin_function_caller2::params_t &params)
+        {
+            const auto& target = instance.get_value_cref().get_executable_cref();
+            const auto& [library] = get_params<alternative_t::library>(params);
             target.link_to(m_cmake_facade, library);
             return m_instances.create2_void();
         }

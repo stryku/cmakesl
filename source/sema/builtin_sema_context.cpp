@@ -49,7 +49,8 @@ namespace cmsl
             auto double_manipulator = add_double_type();
             auto string_manipulator = add_string_type();
             auto version_manipulator = add_version_type();
-            auto target_manipulator = add_target_type();
+            auto library_manipulator = add_library_type();
+            auto executable_manipulator = add_executable_type();
             auto project_manipulator = add_project_type();
 
             add_bool_member_functions(bool_manipulator);
@@ -57,7 +58,8 @@ namespace cmsl
             add_double_member_functions(double_manipulator);
             add_string_member_functions(string_manipulator);
             add_version_member_functions(version_manipulator);
-            add_target_member_functions(target_manipulator);
+            add_library_member_functions(library_manipulator);
+            add_executable_member_functions(executable_manipulator);
             add_project_member_functions(project_manipulator);
         }
 
@@ -791,7 +793,8 @@ namespace cmsl
             const auto& string_type = types_finder.find_string();
             const auto& version_type = types_finder.find_version();
             const auto& project_type = types_finder.find_project();
-            const auto& target_type = types_finder.find_target();
+            const auto& library_type = types_finder.find_library();
+            const auto& executable_type = types_finder.find_executable();
 
             const auto string_token = make_token( token_type_t::kw_string, "string" );
             const auto string_type_representation = ast::type_representation{ string_token };
@@ -821,15 +824,15 @@ namespace cmsl
                             function_signature{make_id_token("name"), {}},
                             builtin_function_kind::project_name
                     },
-                    builtin_function_info{ // target add_executable(string name, list<string> sources)
-                            target_type,
+                    builtin_function_info{ // executable add_executable(string name, list<string> sources)
+                            executable_type,
                             function_signature{make_id_token("add_executable"),
                                                {parameter_declaration{string_type, make_id_token("")},
                                                 parameter_declaration{sources_type, make_id_token("")}} },
                             builtin_function_kind::project_add_executable
                     },
-                    builtin_function_info{ // target add_library(string name, list<string> sources)
-                            target_type,
+                    builtin_function_info{ // library add_library(string name, list<string> sources)
+                            library_type,
                             function_signature{make_id_token("add_library"),
                                                {parameter_declaration{string_type, make_id_token("")},
                                                 parameter_declaration{sources_type, make_id_token("")}} },
@@ -840,36 +843,70 @@ namespace cmsl
             add_type_member_functions(project_manipulator, functions);
         }
 
-        type_builder builtin_sema_context::add_target_type()
+        type_builder builtin_sema_context::add_library_type()
         {
-            static const auto token = make_token(token_type_t::kw_target, "target");
+            static const auto token = make_token(token_type_t::kw_library, "library");
             static const auto name_representation = ast::type_representation{ token };
             type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
             builder.build_and_register_in_context();
             return builder;
         }
 
-        void builtin_sema_context::add_target_member_functions(type_builder &project_manipulator)
+        void builtin_sema_context::add_library_member_functions(type_builder &project_manipulator)
         {
             const auto types_finder = builtin_types_finder{ *this };
             const auto& int_type = types_finder.find_int();
             const auto& bool_type = types_finder.find_bool();
             const auto& string_type = types_finder.find_string();
-            const auto& target_type = types_finder.find_target();
+            const auto& library_type = types_finder.find_library();
             const auto& void_type = types_finder.find_void();
 
             const auto functions = {
-
                     builtin_function_info{ // string name()
                             string_type,
                             function_signature{make_id_token("name"), {}},
-                            builtin_function_kind::target_name
+                            builtin_function_kind::library_name
                     },
                     builtin_function_info{ // void link_to(target target)
                             void_type,
                             function_signature{make_id_token("link_to"),
-                                               { parameter_declaration{target_type, make_id_token("")} } },
-                            builtin_function_kind::target_link_to
+                                               { parameter_declaration{library_type, make_id_token("")} } },
+                            builtin_function_kind::library_link_to
+                    }
+            };
+
+            add_type_member_functions(project_manipulator, functions);
+        }
+
+        type_builder builtin_sema_context::add_executable_type()
+        {
+            static const auto token = make_token(token_type_t::kw_executable, "executable");
+            static const auto name_representation = ast::type_representation{ token };
+            type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
+            builder.build_and_register_in_context();
+            return builder;
+        }
+
+        void builtin_sema_context::add_executable_member_functions(type_builder &project_manipulator)
+        {
+            const auto types_finder = builtin_types_finder{ *this };
+            const auto& int_type = types_finder.find_int();
+            const auto& bool_type = types_finder.find_bool();
+            const auto& string_type = types_finder.find_string();
+            const auto& library_type = types_finder.find_library();
+            const auto& void_type = types_finder.find_void();
+
+            const auto functions = {
+                    builtin_function_info{ // string name()
+                            string_type,
+                            function_signature{make_id_token("name"), {}},
+                            builtin_function_kind::executable_name
+                    },
+                    builtin_function_info{ // void link_to(target target)
+                            void_type,
+                            function_signature{make_id_token("link_to"),
+                                               { parameter_declaration{library_type, make_id_token("")} } },
+                            builtin_function_kind::executable_link_to
                     }
             };
 

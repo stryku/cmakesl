@@ -15,7 +15,8 @@ namespace cmsl
                 version,
                 list,
                 project,
-                target,
+                library,
+                executable,
                 generic
             };
         }

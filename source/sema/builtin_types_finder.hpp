@@ -51,9 +51,14 @@ namespace cmsl
                 return find<token_type_t::kw_void>("void");
             }
 
-            const sema_type& find_target() const
+            const sema_type& find_library() const
             {
-                return find<token_type_t::kw_target>("target");
+                return find<token_type_t::kw_library>("library");
+            }
+
+            const sema_type& find_executable() const
+            {
+                return find<token_type_t::kw_executable>("executable");
             }
 
         private:

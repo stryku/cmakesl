@@ -173,9 +173,13 @@ namespace cmsl
                         {
                             return finder.find_string();
                         }
-                        case instance_value_variant::which_t::target:
+                        case instance_value_variant::which_t::library:
                         {
-                            return finder.find_target();
+                            return finder.find_library();
+                        }
+                        case instance_value_variant::which_t::executable:
+                        {
+                            return finder.find_executable();
                         }
                         case instance_value_variant::which_t::list:
                         {

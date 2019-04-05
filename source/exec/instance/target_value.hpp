@@ -23,5 +23,18 @@ namespace cmsl
         private:
             std::string m_name;
         };
+
+        class library_value : public target_value
+        {
+        public:
+            using target_value::target_value;
+        };
+
+        class executable_value : public target_value
+        {
+        public:
+            using target_value::target_value;
+        };
+
     }
 }
