@@ -88,9 +88,15 @@ namespace cmsl
             }
 
             template <>
-            static decltype(auto) get_param<index_t::target>(const inst::instance& instance)
+            static decltype(auto) get_param<index_t::library>(const inst::instance& instance)
             {
-                return instance.get_value_cref().get_target_cref();
+                return instance.get_value_cref().get_library_cref();
+            }
+
+            template <>
+            static decltype(auto) get_param<index_t::executable>(const inst::instance& instance)
+            {
+                return instance.get_value_cref().get_executable_cref();
             }
         };
     }
