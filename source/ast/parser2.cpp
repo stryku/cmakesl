@@ -20,6 +20,7 @@
 #include "ast/type_parsing_result.hpp"
 #include "parser2.hpp"
 
+#include <map>
 
 namespace cmsl::ast
 {
@@ -535,419 +536,113 @@ namespace cmsl::ast
             return *fun_name_token;
         }
 
-        bool parser2::is_current_operator_2() const
-        {
-            return curr_type() == token_type_t::dot;
-        }
 
-        bool parser2::is_current_operator_3() const
+        std::unique_ptr<ast_node> parser2::parse_operator(unsigned precedence)
         {
-            return curr_type() == token_type_t::exclaim;
-        }
-
-        bool parser2::is_current_operator_5() const
-        {
-            const auto operators = {token_type_t::star, token_type_t::slash, token_type_t::percent};
-            return contains(operators, curr_type());
-        }
-
-        bool parser2::is_current_operator_6() const
-        {
-            const auto operators = {token_type_t::plus, token_type_t::minus};
-            return contains(operators, curr_type());
-        }
-
-        bool parser2::is_current_operator_9() const
-        {
-            const auto operators = {
-                    token_type_t::less,
-                    token_type_t::lessequal,
-                    token_type_t::greater,
-                    token_type_t::greaterequal
+            static const std::map<unsigned, std::vector<token_type_t>> operators{
+                { 2, { token_type_t::dot } },
+                { 3, { token_type_t::exclaim } },
+                { 5, { token_type_t::star, token_type_t::slash, token_type_t::percent } },
+                { 6, { token_type_t::plus, token_type_t::minus } },
+                { 9, { token_type_t::less, token_type_t::lessequal, token_type_t::greater, token_type_t::greaterequal } },
+                { 10, { token_type_t::equalequal, token_type_t::exclaimequal } },
+                { 11, { token_type_t::amp } },
+                { 12, { token_type_t::xor_ } },
+                { 13, { token_type_t::pipe } },
+                { 14, { token_type_t::ampamp } },
+                { 15, { token_type_t::pipepipe } },
+                { 16, { token_type_t::equal,
+                              token_type_t::plusequal,
+                              token_type_t::minusequal,
+                              token_type_t::starequal,
+                              token_type_t::slashequal,
+                              token_type_t::ampequal,
+                              token_type_t::xorequal,
+                              token_type_t::pipeequal } }
             };
-            return contains(operators, curr_type());
-        }
 
-        bool parser2::is_current_operator_10() const
-        {
-            const auto operators = {
-                    token_type_t::equalequal,
-                    token_type_t::exclaimequal
-            };
-            return contains(operators, curr_type());
-        }
-
-        bool parser2::is_current_operator_11() const
-        {
-            return curr_type() == token_type_t::amp;
-        }
-
-        bool parser2::is_current_operator_12() const
-        {
-            return curr_type() == token_type_t::xor_;
-        }
-
-        bool parser2::is_current_operator_13() const
-        {
-            return curr_type() == token_type_t::pipe;
-        }
-
-        bool parser2::is_current_operator_14() const
-        {
-            return curr_type() == token_type_t::ampamp;
-        }
-
-        bool parser2::is_current_operator_15() const
-        {
-            return curr_type() == token_type_t::pipepipe;
-        }
-
-        bool parser2::is_current_operator_16() const
-        {
-            const auto operators = {
-                    token_type_t::equal,
-                    token_type_t::plusequal,
-                    token_type_t::minusequal,
-                    token_type_t::starequal,
-                    token_type_t::slashequal,
-                    token_type_t::ampequal,
-                    token_type_t::xorequal,
-                    token_type_t::pipeequal
-            };
-            return contains(operators, curr_type());
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_2()
-        {
-            auto f = factor();
-            if(!f)
+            const auto is_current_same_precedence_operator = [current_precedence = precedence, this]
             {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_2())
-            {
-                eat(); // dot
-                auto lhs = std::move(f);
-                if(current_is_class_member_access())
+                const auto found = operators.find(current_precedence);
+                if(found == std::cend(operators))
                 {
-                    const auto member_name = eat();
-                    f = std::make_unique<class_member_access_node>(std::move(lhs),
-                                                                   *member_name);
+                    return false;
                 }
-                else // class member function call
+
+                const auto& ops = found->second;
+
+                return contains(ops, curr_type());
+            };
+
+            const auto get_next_precedence = [current_precedence = precedence]
+            {
+                const auto found = operators.find(current_precedence);
+                const auto higher_precedence_it = std::prev(found);
+                return higher_precedence_it->first;
+            };
+
+            if(precedence == k_min_precedence)
+            {
+                auto f = factor();
+                if(!f)
                 {
-                    auto vals = get_function_call_values();
-                    if(!vals)
+                    return nullptr;
+                }
+
+                while(!is_at_end() &&
+                        is_current_same_precedence_operator())
+                {
+                    eat(); // dot
+                    auto lhs = std::move(f);
+                    if(current_is_class_member_access())
+                    {
+                        const auto member_name = eat();
+                        f = std::make_unique<class_member_access_node>(std::move(lhs),
+                                                                       *member_name);
+                    }
+                    else // class member function call
+                    {
+                        auto vals = get_function_call_values();
+                        if(!vals)
+                        {
+                            return nullptr;
+                        }
+
+                        f = std::make_unique<member_function_call_node>(std::move(lhs),
+                                                                        vals->name,
+                                                                        std::move(vals->params));
+                    }
+                }
+
+                return std::move(f);
+            }
+            else
+            {
+                const auto next_precedence = get_next_precedence();
+                auto f = parse_operator(next_precedence);
+                if(!f)
+                {
+                    return nullptr;
+                }
+
+                while(!is_at_end() &&
+                        is_current_same_precedence_operator())
+                {
+                    const auto op = current();
+                    eat(); // eat operator
+
+                    auto rhs = parse_operator(next_precedence);
+                    if(!rhs)
                     {
                         return nullptr;
                     }
 
-                    f = std::make_unique<member_function_call_node>(std::move(lhs),
-                                                                    vals->name,
-                                                                    std::move(vals->params));
-                }
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_3()
-        {
-            auto f = operator_2();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_3())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_2();
-                if(!rhs)
-                {
-                    return nullptr;
+                    auto lhs = std::move(f);
+                    f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
                 }
 
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
+                return std::move(f);
             }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_5()
-        {
-            auto f = operator_3();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_5())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_3();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_6()
-        {
-            auto f = operator_5();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_6())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_5();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_9()
-        {
-            auto f = operator_6();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_9())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_6();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_10()
-        {
-            auto f = operator_9();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_10())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_9();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_11()
-        {
-            auto f = operator_10();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_11())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_10();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_12()
-        {
-            auto f = operator_11();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_12())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_11();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_13()
-        {
-            auto f = operator_12();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_13())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_12();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_14()
-        {
-            auto f = operator_13();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_14())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_13();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_15()
-        {
-            auto f = operator_14();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_15())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_14();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
-        }
-
-        std::unique_ptr<ast_node> parser2::operator_16()
-        {
-            auto f = operator_15();
-            if(!f)
-            {
-                return nullptr;
-            }
-
-            while(!is_at_end() &&
-                  is_current_operator_16())
-            {
-                const auto op = current();
-                eat(); // eat operator
-
-                auto rhs = operator_15();
-                if(!rhs)
-                {
-                    return nullptr;
-                }
-
-                auto lhs = std::move(f);
-                f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
-            }
-
-            return std::move(f);
         }
 
         bool parser2::current_is_class_member_access() const
@@ -1041,7 +736,7 @@ namespace cmsl::ast
 
         std::unique_ptr<ast_node> parser2::expr()
         {
-                auto operator_expr = operator_16();
+                auto operator_expr = parse_operator();
 
                 if(current_is(token_type_t::dot))
                 {
@@ -1188,4 +883,5 @@ namespace cmsl::ast
 
             return std::make_unique<initializer_list_node>(*begin, *end, std::move(*values));
         }
+
 }
