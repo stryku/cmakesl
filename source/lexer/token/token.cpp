@@ -1,6 +1,7 @@
 #include "lexer/token/token.hpp"
 #include "token.hpp"
 
+#include <ostream>
 
 namespace cmsl
 {
@@ -53,7 +54,7 @@ namespace cmsl
 
             std::ostream& operator<<(std::ostream& out, const token& t)
             {
-                out << '(' << static_cast<int>(t.get_type()) << ')' << t.str().to_string();
+                out << '(' << static_cast<int>(t.get_type()) << ')' << t.str();
                 return out;
             }
 

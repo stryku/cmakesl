@@ -85,7 +85,7 @@ namespace cmsl
 
                 for(const auto& token : m_tokens)
                 {
-                    result += token.str().to_string();
+                    result += token.str();
                 }
 
                 return result;

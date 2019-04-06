@@ -4,8 +4,6 @@
 #include "exec/instance/instance_value.hpp"
 #include "sema/function_lookup_result.hpp"
 
-#include <boost/variant.hpp>
-
 #include <memory>
 
 namespace cmsl

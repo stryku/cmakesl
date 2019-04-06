@@ -4,6 +4,7 @@
 #include "ast/type_representation.hpp"
 #include "sema_context.hpp"
 
+#include <algorithm>
 
 namespace cmsl
 {

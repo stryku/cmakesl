@@ -5,7 +5,7 @@
 #include "sema/function_lookup_result.hpp"
 #include "ast/type_representation.hpp"
 
-#include <boost/optional.hpp>
+#include <optional>
 
 #include <utility>
 #include <vector>
@@ -43,7 +43,7 @@ namespace cmsl
             const sema_context_interface& context() const;
             const std::vector<member_info>& members() const;
 
-            boost::optional<member_info> find_member(cmsl::string_view name) const;
+            std::optional<member_info> find_member(cmsl::string_view name) const;
             single_scope_function_lookup_result_t find_member_function(token_t name) const;
 
             bool is_complex() const;

@@ -5,7 +5,7 @@
 #include "sema/sema_context.hpp"
 #include "sema/sema_node.hpp"
 
-#include <boost/optional.hpp>
+#include <optional>
 
 #include <memory>
 #include <vector>
@@ -106,7 +106,7 @@ namespace cmsl
             std::unique_ptr<sema_node> visit_child(const ast::ast_node& node, sema_context_interface& ctx_to_visit);
             std::unique_ptr<expression_node> visit_child_expr(const ast::ast_node& node);
 
-            boost::optional<param_expressions_t> get_function_call_params(const std::vector<std::unique_ptr<ast::ast_node>>& passed_params);
+            std::optional<param_expressions_t> get_function_call_params(const std::vector<std::unique_ptr<ast::ast_node>>& passed_params);
 
             struct ids_ctx_guard
             {
@@ -132,9 +132,9 @@ namespace cmsl
                 std::vector<function_declaration> functions;
             };
 
-            boost::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node,
+            std::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node,
                     sema_context& ctx);
-            boost::optional<class_members> collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node,
+            std::optional<class_members> collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node,
                     sema_context& class_context);
 
             template<unsigned N>

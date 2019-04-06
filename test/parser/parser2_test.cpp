@@ -52,7 +52,7 @@ namespace cmsl
 
                 virtual void visit(const class_node2& node) override
                 {
-                    m_result += "class{name:" + node.get_name().str().to_string() + ";members:";
+                    m_result += "class{name:" + std::string{ node.get_name().str() } + ";members:";
 
                     for(auto n : node.get_nodes())
                     {
@@ -91,7 +91,7 @@ namespace cmsl
                 {
                     m_result += "binary_operator{lhs:";
                     node.get_lhs().visit(*this);
-                    m_result += ";operator:" + node.get_operator().str().to_string() + ";rhs:";
+                    m_result += ";operator:" + std::string{ node.get_operator().str() } + ";rhs:";
                     node.get_rhs().visit(*this);
                     m_result += "}";
                 }
@@ -100,12 +100,12 @@ namespace cmsl
                 {
                     m_result += "class_member_access{lhs:";
                     node.get_lhs().visit(*this);
-                    m_result += ";member_name:" + node.get_member_name().str().to_string() + "}";
+                    m_result += ";member_name:" + std::string{ node.get_member_name().str() } + "}";
                 }
 
                 virtual void visit(const function_call_node& node) override
                 {
-                    m_result += "function_call{name:" + node.get_name().str().to_string() + ";params:";
+                    m_result += "function_call{name:" + std::string{ node.get_name().str() } + ";params:";
                     for(const auto& param : node.get_param_nodes())
                     {
                         param->visit(*this);
@@ -115,10 +115,10 @@ namespace cmsl
 
                 virtual void visit(const member_function_call_node& node) override
                 {
-                    m_result += "function_call{name:" + node.get_name().str().to_string() + ";params:";
+                    m_result += "function_call{name:" + std::string{ node.get_name().str() } + ";params:";
                     m_result += "function_call{lhs:";
                     node.get_lhs().visit(*this);
-                    m_result += ";name:" + node.get_name().str().to_string() + ";params:";
+                    m_result += ";name:" + std::string{ node.get_name().str() } + ";params:";
                     for(const auto& param : node.get_param_nodes())
                     {
                         param->visit(*this);
@@ -128,27 +128,27 @@ namespace cmsl
 
                 virtual void visit(const bool_value_node& node) override
                 {
-                    m_result += "bool_value{" + node.get_token().str().to_string() + "}";
+                    m_result += "bool_value{" + std::string{ node.get_token().str() } + "}";
                 }
 
                 virtual void visit(const int_value_node& node) override
                 {
-                    m_result += "int_value{" + node.get_token().str().to_string() + "}";
+                    m_result += "int_value{" + std::string{ node.get_token().str() } + "}";
                 }
 
                 virtual void visit(const double_value_node& node) override
                 {
-                    m_result += "double_value{" + node.get_token().str().to_string() + "}";
+                    m_result += "double_value{" + std::string{ node.get_token().str() } + "}";
                 }
 
                 virtual void visit(const string_value_node& node) override
                 {
-                    m_result += "string_value{" + node.get_token().str().to_string() + "}";
+                    m_result += "string_value{" + std::string{ node.get_token().str() } + "}";
                 }
 
                 virtual void visit(const id_node& node) override
                 {
-                    m_result += "id{" + node.get_identifier().str().to_string() + "}";
+                    m_result += "id{" + std::string{ node.get_identifier().str() } + "}";
                 }
 
                 virtual void visit(const return_node& node) override
@@ -173,11 +173,11 @@ namespace cmsl
                     m_result += "user_function{return_type:";
                     const auto ret_type_reference = node.get_return_type_reference();
                     m_result += ret_type_reference.to_string() + ";name:";
-                    m_result += node.get_name().str().to_string() + ";params:";
+                    m_result += std::string{ node.get_name().str() } + ";params:";
                     for(const auto& param_declaration : node.get_param_declarations())
                     {
                         m_result += "param_declaration{type:" + param_declaration.ty.to_string();
-                        m_result += ";name:" + param_declaration.name.str().to_string() + "}";
+                        m_result += ";name:" + std::string{ param_declaration.name.str() } + "}";
                     }
                     m_result += ";body:";
                     node.get_body().visit(*this);
@@ -189,7 +189,7 @@ namespace cmsl
                     m_result += "variable_declaration{type:";
                     const auto ret_type_reference = node.get_type_representation();
                     m_result += ret_type_reference.to_string() + ";name:";
-                    m_result += node.get_name().str().to_string() + ";initialization:";
+                    m_result += std::string{ node.get_name().str() } + ";initialization:";
                     if(const auto init = node.get_initialization())
                     {
                         init->visit(*this);

@@ -45,7 +45,7 @@ namespace cmsl::ast
         return std::next(it, n)->get_type();
     }
 
-    boost::optional<parser_utils::token_t> parser_utils::eat(boost::optional<token_type_t> type)
+    std::optional<parser_utils::token_t> parser_utils::eat(std::optional<token_type_t> type)
     {
         if (!expect_not_at_end())
         {

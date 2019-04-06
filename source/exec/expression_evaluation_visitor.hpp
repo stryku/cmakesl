@@ -41,7 +41,7 @@ namespace cmsl
 
             void visit(const sema::string_value_node& node) override
             {
-                result = m_ctx.instances.create2(node.value().to_string());
+                result = m_ctx.instances.create2(std::string{ node.value() });
             }
 
             void visit(const sema::id_node& node) override
@@ -79,7 +79,7 @@ namespace cmsl
 
             void visit(const sema::add_subdirectory_node& node) override
             {
-                m_ctx.cmake_facade.go_into_subdirectory(node.dir_name().value().to_string());
+                m_ctx.cmake_facade.go_into_subdirectory(std::string{ node.dir_name().value() });
 
                 auto evaluated_params = evaluate_call_parameters(node.param_expressions());
                 const auto& function = node.function();
@@ -230,7 +230,7 @@ namespace cmsl
                     case lexer::token::token_type::greater:
                     case lexer::token::token_type::greaterequal:
                     {
-                        return op.str().to_string();
+                        return std::string{ op.str() };
                     }
 
                     default:

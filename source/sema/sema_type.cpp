@@ -2,6 +2,7 @@
 #include "sema/sema_context.hpp"
 #include "sema_type.hpp"
 
+#include <algorithm>
 
 namespace cmsl
 {
@@ -30,7 +31,7 @@ namespace cmsl
             return m_ctx;
         }
 
-        boost::optional<member_info> sema_type::find_member(cmsl::string_view name) const
+        std::optional<member_info> sema_type::find_member(cmsl::string_view name) const
         {
             const auto pred = [name](const auto& member)
             {

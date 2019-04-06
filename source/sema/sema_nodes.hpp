@@ -7,6 +7,8 @@
 #include "sema/sema_function.hpp"
 #include "sema/sema_type.hpp"
 
+#include <memory>
+
 #define VISIT_METHOD \
 void visit(sema_node_visitor& visitor) const override \
 { \
