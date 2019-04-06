@@ -8,6 +8,7 @@ namespace cmsl::sema
     class expression_node;
     class sema_function;
 
+    // Todo: consider renaming to add_subdirectory_handler
     class add_subdirectory_semantic_handler
     {
     public:

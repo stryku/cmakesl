@@ -80,9 +80,11 @@ namespace cmsl::ast
     private:
         void raise(lexer::token::token token, std::string message)
         {
+            const auto line_info = m_source.line(token.src_range().begin.line);
             auto err = errors::error{
                     m_source.path(),
-                    m_source.line(token.src_range().begin.line),
+                    line_info.line,
+                    line_info.start_pos,
                     std::move(message),
                     errors::error_type::error,
                     token.src_range()
