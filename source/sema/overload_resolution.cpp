@@ -38,9 +38,12 @@ namespace cmsl::sema
                 return chosen_function;
             }
 
+            const auto line_info = m_call_token.source().line(m_call_token.src_range().begin.line);
+
             auto err = errors::error{
                 m_call_token.source().path(),
-                m_call_token.source().line(m_call_token.src_range().begin.line),
+                line_info.line,
+                line_info.start_pos,
                 '\'' + std::string{m_call_token.str() } + "\' function not found",
                 errors::error_type::error,
                 m_call_token.src_range()
@@ -57,9 +60,11 @@ namespace cmsl::sema
             // Todo: is it even possible to have empty vector here?
             if(functions.empty())
             {
+                const auto line_info = m_call_token.source().line(m_call_token.src_range().begin.line);
                 auto err = errors::error{
                         m_call_token.source().path(),
-                        m_call_token.source().line(m_call_token.src_range().begin.line),
+                        line_info.line,
+                        line_info.start_pos,
                         '\'' + std::string{m_call_token.str() } + "\' function not found",
                         errors::error_type::error,
                         m_call_token.src_range()
@@ -165,11 +170,13 @@ namespace cmsl::sema
 
         void overload_resolution::raise_wrong_call_error(const single_scope_function_lookup_result_t &functions) const
         {
+            const auto line_info = m_call_token.source().line(m_call_token.src_range().begin.line);
             if(functions.size() == 1u)
             {
                 auto err = errors::error{
                         m_call_token.source().path(),
-                        m_call_token.source().line(m_call_token.src_range().begin.line),
+                        line_info.line,
+                        line_info.start_pos,
                         "Function call parameters does not match",
                         errors::error_type::error,
                         m_call_token.src_range()
@@ -180,7 +187,8 @@ namespace cmsl::sema
             {
                 auto err = errors::error{
                         m_call_token.source().path(),
-                        m_call_token.source().line(m_call_token.src_range().begin.line),
+                        line_info.line,
+                        line_info.start_pos,
                         "No matching function for call",
                         errors::error_type::error,
                         m_call_token.src_range()

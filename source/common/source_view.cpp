@@ -23,7 +23,7 @@ namespace cmsl
         return m_source;
     }
 
-    cmsl::string_view source_view::line(unsigned line_no) const
+    source_view::line_info source_view::line(unsigned line_no) const
     {
         unsigned counter{ 1u };
 
@@ -34,7 +34,7 @@ namespace cmsl
             pos = m_source.find('\n', pos + 1);
             if(pos == cmsl::string_view::npos)
             {
-                return "";
+                return {"", 0};
             }
 
             ++counter;
@@ -46,10 +46,10 @@ namespace cmsl
             return p != cmsl::string_view::npos ? p : source.size();
         }();
 
-        const auto line_size = line_end - pos;
+        const auto line_size = line_end - (pos + 1);
         const auto line_begin = std::next(m_source.cbegin(), pos + 1);
 
-        return cmsl::string_view{ line_begin, line_size };
+        return { cmsl::string_view{ line_begin, line_size }, pos + 1 };
     }
 
     cmsl::string_view::const_iterator source_view::cbegin() const

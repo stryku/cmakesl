@@ -10,7 +10,7 @@ namespace cmsl::exec::test
     class ExecutionSmokeTest : public ::testing::Test
     {
     protected:
-        cmake_facade_mock m_facade;
+        ::testing::NiceMock<cmake_facade_mock> m_facade;
         global_executor m_executor{"<unknown source>", m_facade};
     };
 }

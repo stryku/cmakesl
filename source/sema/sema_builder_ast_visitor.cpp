@@ -619,9 +619,11 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::raise_error(const lexer::token::token token, const std::string& message)
         {
+            const auto line_info = token.source().line(token.src_range().begin.line);
             const auto err = errors::error{
                 token.source().path(),
-                token.source().line(token.src_range().begin.line),
+                line_info.line,
+                line_info.start_pos,
                 message,
                 errors::error_type::error,
                 token.src_range()
