@@ -118,7 +118,7 @@ namespace cmsl
             const auto functions = {
                 builtin_function_info{ // bool()
                         bool_type,
-                        function_signature{ make_id_token("bool"), {} },
+                        function_signature{ make_id_token("bool") },
                         builtin_function_kind::bool_ctor
                 },
                 builtin_function_info{ // bool(bool)
@@ -159,7 +159,7 @@ namespace cmsl
                 },
                 builtin_function_info{ // to_string()
                         string_type,
-                        function_signature{ make_id_token("to_string"), {} },
+                        function_signature{ make_id_token("to_string") },
                         builtin_function_kind::bool_to_string
                 }
             };
@@ -187,7 +187,7 @@ namespace cmsl
             const auto functions = {
                     builtin_function_info{ // int()
                             int_type,
-                            function_signature{ make_id_token("int"), {} },
+                            function_signature{ make_id_token("int") },
                             builtin_function_kind::int_ctor
                     },
                     builtin_function_info{ // int(bool)
@@ -322,7 +322,7 @@ namespace cmsl
             const auto functions = {
                     builtin_function_info{ // double()
                             double_type,
-                            function_signature{ make_id_token("double"), {} },
+                            function_signature{ make_id_token("double") },
                             builtin_function_kind::double_ctor
                     },
                     builtin_function_info{ // double(double)
@@ -447,7 +447,7 @@ namespace cmsl
             const auto functions = {
                     builtin_function_info{ // string()
                             string_type,
-                            function_signature{ make_id_token("string"), {} },
+                            function_signature{ make_id_token("string") },
                             builtin_function_kind::string_ctor
                     },
                     builtin_function_info{ // string(string)
@@ -465,12 +465,12 @@ namespace cmsl
                     },
                     builtin_function_info{ // bool empty()
                             bool_type,
-                            function_signature{ make_id_token("empty"), {} },
+                            function_signature{ make_id_token("empty") },
                             builtin_function_kind::string_empty
                     },
                     builtin_function_info{ // int size()
                             int_type,
-                            function_signature{ make_id_token("size"), {} },
+                            function_signature{ make_id_token("size")},
                             builtin_function_kind::string_size
                     },
                     builtin_function_info{ // bool operator==(string)
@@ -523,7 +523,7 @@ namespace cmsl
                     },
                     builtin_function_info{ // void clear()
                             void_type,
-                            function_signature{ make_id_token("clear"), {} },
+                            function_signature{ make_id_token("clear") },
                             builtin_function_kind::string_clear
                     },
                     builtin_function_info{ // string& insert(int position, string str)
@@ -638,22 +638,22 @@ namespace cmsl
                     },
                     builtin_function_info{ // void lower()
                             void_type,
-                            function_signature{ make_id_token("lower"), {} },
+                            function_signature{ make_id_token("lower") },
                             builtin_function_kind::string_lower
                     },
                     builtin_function_info{ // string make_lower()
                             string_type,
-                            function_signature{ make_id_token("make_lower"), {} },
+                            function_signature{ make_id_token("make_lower") },
                             builtin_function_kind::string_make_lower
                     },
                     builtin_function_info{ // void upper()
                             void_type,
-                            function_signature{ make_id_token("upper"), {} },
+                            function_signature{ make_id_token("upper") },
                             builtin_function_kind::string_upper
                     },
                     builtin_function_info{ // string make_upper()
                             string_type,
-                            function_signature{ make_id_token("make_upper"), {} },
+                            function_signature{ make_id_token("make_upper") },
                             builtin_function_kind::string_make_upper
                     }
 
@@ -748,27 +748,27 @@ namespace cmsl
                     },
                     builtin_function_info{ // int major()
                             int_type,
-                            function_signature{ make_id_token("major"), {} },
+                            function_signature{ make_id_token("major") },
                             builtin_function_kind::version_major
                     },
                     builtin_function_info{ // int minor()
                             int_type,
-                            function_signature{ make_id_token("minor"), {} },
+                            function_signature{ make_id_token("minor") },
                             builtin_function_kind::version_minor
                     },
                     builtin_function_info{ // int patch()
                             int_type,
-                            function_signature{ make_id_token("patch"), {} },
+                            function_signature{ make_id_token("patch") },
                             builtin_function_kind::version_patch
                     },
                     builtin_function_info{ // int tweak()
                             int_type,
-                            function_signature{ make_id_token("tweak"), {} },
+                            function_signature{ make_id_token("tweak") },
                             builtin_function_kind::version_tweak
                     },
                     builtin_function_info{ // string to_string()
                             string_type,
-                            function_signature{ make_id_token("to_string"), {} },
+                            function_signature{ make_id_token("to_string") },
                             builtin_function_kind::version_to_string
                     }
             };
@@ -821,7 +821,7 @@ namespace cmsl
                     },
                     builtin_function_info{ // string name()
                             string_type,
-                            function_signature{make_id_token("name"), {}},
+                            function_signature{make_id_token("name")},
                             builtin_function_kind::project_name
                     },
                     builtin_function_info{ // executable add_executable(string name, list<string> sources)
@@ -864,7 +864,7 @@ namespace cmsl
             const auto functions = {
                     builtin_function_info{ // string name()
                             string_type,
-                            function_signature{make_id_token("name"), {}},
+                            function_signature{make_id_token("name")},
                             builtin_function_kind::library_name
                     },
                     builtin_function_info{ // void link_to(target target)
@@ -899,7 +899,7 @@ namespace cmsl
             const auto functions = {
                     builtin_function_info{ // string name()
                             string_type,
-                            function_signature{make_id_token("name"), {}},
+                            function_signature{make_id_token("name")},
                             builtin_function_kind::executable_name
                     },
                     builtin_function_info{ // void link_to(target target)
