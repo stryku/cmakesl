@@ -92,7 +92,6 @@ namespace cmsl::sema
             const auto class_name_representation = ast::type_representation{ name };
             if(const auto found_type = m_ctx.find_type_in_this_scope(class_name_representation))
             {
-                // Todo: type redefinition
                 raise_error(name, "Type redefinition");
                 return;
             }
@@ -100,8 +99,6 @@ namespace cmsl::sema
             auto class_ids_guard = ids_guard();
 
             auto& class_context = m_context_factory.create_class(&m_ctx);
-//                auto created_class_sema_ctx = std::make_unique<sema_context>(&m_ctx);
-//                auto class_sema_ctx = created_class_sema_ctx.get();
 
             auto members = collect_class_members_and_add_functions_to_ctx(node, class_context);
 
@@ -111,11 +108,8 @@ namespace cmsl::sema
             }
 
             // We move created ast ctx ownership but it will live for the whole program lifetime, so it is safe to use class_ast_ctx raw pointer.
-            // Todo: ast shouldn't store ast ctx somewhere else?
             auto& class_type = m_type_factory.create(class_context, class_name_representation, std::move(members->info));
             auto& class_type_reference = m_type_factory.create_reference(class_type);
-//                auto created_class_type = std::make_unique<sema_type>(class_context, name, std::move(members->info));
-//                auto class_type = created_class_type.get();
 
             // Same as with ast context. class_type raw pointer will be valid. We move it to context to make this class findable as a regular type (so e.g. inside this class methods, the type will appear as a regular type).
             m_ctx.add_type(class_type);
@@ -204,7 +198,6 @@ namespace cmsl::sema
             auto lookup_result = lhs->type().find_member_function(op);
             if(lookup_result.empty())
             {
-                // Todo: lhs's type doesn't support such operator
                 raise_error(op, lhs->type().name().to_string() + " doesn't support operator " + std::string{ op.str() });
                 return;
             }
@@ -242,7 +235,6 @@ namespace cmsl::sema
             auto member_info = lhs_type.find_member(member_name.str());
             if(!member_info)
             {
-                // Todo: type does not have such member.
                 raise_error(member_name, lhs_type.name().to_string() + " does not have member " + std::string{ member_name.str() });
                 return;
             }
@@ -312,14 +304,14 @@ namespace cmsl::sema
             auto& params = *params_opt;
             if(params.empty())
             {
-                // Todo: Error, no dir name provided
+                raise_error(node.get_name(), "expected subdirectory name");
                 return nullptr;
             }
 
             auto casted = dynamic_cast<string_value_node*>(params[0].get());
             if(!casted)
             {
-                // Todo: Error, only string literal is allowed.
+                raise_error(node.get_name(), "expected string literal as a subdirectory name");
                 return nullptr;
             }
 
@@ -405,7 +397,6 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::double_value_node& node)
         {
-            // Todo: figure out better way to find builtin types
             const auto& type = builtin_types_finder{ m_ctx }.find_double();
             const auto token = node.get_token();
             char* end;
@@ -415,10 +406,9 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::string_value_node& node)
         {
-            // Todo: figure out better way to find builtin types
             const auto& type = builtin_types_finder{ m_ctx }.find_string();
-            // At this point node contains string value including "". We need to get rid of them.
 
+            // At this point node contains string value including "". We need to get rid of them.
             const auto node_string = node.get_token().str();
             const auto string_without_quotation_marks = cmsl::string_view{ std::next(node_string.begin()),
                                                                            node_string.size() - 2u };
@@ -433,7 +423,6 @@ namespace cmsl::sema
 
             if(!type)
             {
-                // Todo: identifier not found
                 raise_error(id_token, std::string{ id_token.str() } + " identifier not found");
                 return;
             }
@@ -556,7 +545,6 @@ namespace cmsl::sema
                     }break;
                     case variable_initialization_checker::check_result::different_types:
                     {
-                        // Todo: Init does not have same type as declared.
                         // Todo: introduce auto
                         raise_error(initialization->type().name().primary_name(), "Initialization and declared variable type does not match");
                         return;
@@ -638,7 +626,7 @@ namespace cmsl::sema
                 errors::error_type::error,
                 token.src_range()
             };
-            m_errors_observer.nofify_error(err); // todo: get error via parameter
+            m_errors_observer.nofify_error(err);
         }
 
         sema_builder_ast_visitor sema_builder_ast_visitor::clone() const
@@ -692,37 +680,15 @@ namespace cmsl::sema
 
         std::optional<sema_builder_ast_visitor::param_expressions_t> sema_builder_ast_visitor::get_function_call_params(const ast::call_node::params_t& passed_params)
         {
-//                const auto& param_declarations = signature.params;
-
-            /*
-            if(param_declarations.size() != passed_params.size())
-            {
-                // Todo passed wrong number of parameters
-                raise_error(signature.name, "Expected " + std::to_string(param_declarations.size()) + " parameters, got " + std::to_string(passed_params.size()));
-                return {};
-            }
-             */
-
             std::vector<std::unique_ptr<expression_node>> params;
 
-            for(auto i = 0u; i < passed_params.size(); ++i)
+            for(const auto& passed_param : passed_params)
             {
-                auto param = visit_child_expr(*passed_params[i]);
+                auto param = visit_child_expr(*passed_param);
                 if(!param)
                 {
                     return {};
                 }
-
-                /*
-                if(param_declarations[i].ty != param->type())
-                {
-                    //Todo passed param type mismatch
-                    // Todo: pass param tokens range instead of empty token
-                    raise_error(lexer::token::token{}, "Passed parameter does not match, expected " + param_declarations[i].ty.name().str().to_string()
-                    + " got " + param->type().name().str().to_string());
-                    return {};
-                }
-                 */
 
                 params.emplace_back(std::move(param));
             }
@@ -732,7 +698,7 @@ namespace cmsl::sema
 
 
 
-sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
+        sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
         {
             return ids_ctx_guard{ m_ids_context };
         }
@@ -757,7 +723,6 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
                 auto param_type = try_get_or_create_generic_type(ctx, param_decl.ty);
                 if(!param_type)
                 {
-                    //Todo: unknown parameter type
                     raise_error(param_decl.ty.primary_name(), param_decl.ty.to_string() + " unknown parameter type");
                     return {};
                 }
@@ -901,7 +866,7 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
                 expression_values.emplace_back(std::move(expression));
             }
 
-            // Todo: Introduce utilityt to create generic name representations
+            // Todo: Introduce utility to create generic name representations
             using token_type_t = lexer::token::token_type;
             lexer::token::token_container_t tokens{
                 make_token(token_type_t::kw_list, "list"),
