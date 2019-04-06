@@ -144,13 +144,11 @@ namespace cmsl::ast
 
             if (!eat(token_type_t::close_brace))
             {
-                m_errors_reporter.raise_expected_token(current(), token_type_t::close_brace);
                 return nullptr;
             }
 
             if (!eat(token_type_t::semicolon))
             {
-                // Todo: expected semicolon
                 return nullptr;
             }
 
@@ -294,7 +292,6 @@ namespace cmsl::ast
 
                 if(!else_block)
                 {
-                    // Todo: expected block
                     return nullptr;
                 }
             }
@@ -441,9 +438,7 @@ namespace cmsl::ast
             {
                 if (is_at_end())
                 {
-                    // Unexpected end of tokens
-                    // Todo: proper token
-                    m_errors_reporter.raise_unexpected_end_of_file(lexer::token::token{});
+                    m_errors_reporter.raise_unexpected_end_of_file(prev());
                     return {};
                 }
 
@@ -497,14 +492,12 @@ namespace cmsl::ast
                 initialization = expr();
                 if(!initialization)
                 {
-                    // todo expected expression
                     return nullptr;
                 }
             }
 
             if(!eat(token_type_t::semicolon))
             {
-                // Todo: expected semicolon
                 return nullptr;
             }
 
@@ -729,7 +722,6 @@ namespace cmsl::ast
                 return initializer_list();
             }
 
-            // Todo: Unexpected token
             m_errors_reporter.raise_unexpected_token(current());
             return nullptr;
         }
@@ -790,7 +782,7 @@ namespace cmsl::ast
                 auto expression = expr();
                 if(!expression)
                 {
-                    // Todo: Unexpected token e.g. semicolon
+                    // Unexpected token e.g. semicolon
                     return {};
                 }
 
@@ -804,9 +796,8 @@ namespace cmsl::ast
 
                     if(is_at_end() || current_is(valid_end_of_list_token))
                     {
-                        // Todo: proper token
-                        // Todo: expected expression/parameter
-                        m_errors_reporter.raise_expected_parameter(lexer::token::token{});
+                        const auto tok = is_at_end() ? prev() : current();
+                        m_errors_reporter.raise_expected_expression(tok);
                         return {};
                     }
                 }
@@ -827,7 +818,6 @@ namespace cmsl::ast
 
             if(!eat(token_type_t::close_paren))
             {
-                // Todo: missing close paren
                 return {};
             }
 

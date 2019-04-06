@@ -6,11 +6,6 @@
 
 namespace cmsl
 {
-    namespace errors
-    {
-        class errors_observer;
-    }
-
     namespace ast
     {
         class parse_errors_observer;
@@ -33,6 +28,7 @@ namespace cmsl
             std::optional<token_t> eat(std::optional<token_type_t> type = {});
 
             const token_t &current() const;
+            const token_t &prev() const;
             token_type_t curr_type() const;
             bool next_is(token_type_t token_type) const;
             bool next_to_is(token_it it, token_type_t token_type) const;
@@ -50,6 +46,7 @@ namespace cmsl
             parse_errors_observer &m_err_observer;
             token_it m_current;
             token_it m_end;
+            token_it m_prev;
         };
     }
 }

@@ -68,6 +68,11 @@ namespace cmsl::ast
         return *m_current;
     }
 
+    const parser_utils::token_t &parser_utils::prev() const
+    {
+        return *m_prev;
+    }
+
     parser_utils::token_type_t parser_utils::curr_type() const
     {
         return is_at_end() ? token_type_t::undef : m_current->get_type();

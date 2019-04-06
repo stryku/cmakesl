@@ -19,6 +19,8 @@ namespace cmsl::ast
         virtual void raise_expected_type(lexer::token::token token) = 0;
         virtual void raise_expected_parameter_declaration(lexer::token::token token) = 0;
         virtual void raise_expected_parameter(lexer::token::token token) = 0;
+        virtual void raise_expected_block(lexer::token::token token) = 0;
+        virtual void raise_expected_expression(lexer::token::token token) = 0;
     };
 
     class parse_errors_reporter : public parse_errors_observer
@@ -65,6 +67,16 @@ namespace cmsl::ast
             raise(token, "expected a parameter");
         }
 
+        void raise_expected_block(lexer::token::token token) override
+        {
+            raise(token, "expected block");
+        }
+
+        void raise_expected_expression(lexer::token::token token) override
+        {
+            raise(token, "expected expression");
+        }
+
     private:
         void raise(lexer::token::token token, std::string message)
         {
@@ -94,5 +106,7 @@ namespace cmsl::ast
         void raise_expected_keyword(lexer::token::token, lexer::token::token_type) override {}
         void raise_expected_parameter_declaration(lexer::token::token) override {}
         void raise_expected_parameter(lexer::token::token) override {}
+        void raise_expected_block(lexer::token::token) override {}
+        void raise_expected_expression(lexer::token::token) override{}
     };
 }
