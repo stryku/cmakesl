@@ -21,7 +21,7 @@ namespace cmsl::ast
         return type_parsing_result{ std::move(got_type), stopped_at };
     }
 
-    boost::optional<type_representation> type_parser::generic_type()
+    std::optional<type_representation> type_parser::generic_type()
     {
         const auto name_token = eat_generic_type_token();
         if(!name_token)
@@ -87,7 +87,7 @@ namespace cmsl::ast
         return cmsl::contains(generic_types, curr_type());
     }
 
-    boost::optional<type_parser::token_t> type_parser::eat_generic_type_token()
+    std::optional<type_parser::token_t> type_parser::eat_generic_type_token()
     {
         if(!current_is_generic_type())
         {
@@ -99,7 +99,7 @@ namespace cmsl::ast
         return eat();
     }
 
-    boost::optional<type_representation> type_parser::simple_type()
+    std::optional<type_representation> type_parser::simple_type()
     {
         const auto type_token = eat_simple_type_token();
         if (!type_token)
@@ -118,7 +118,7 @@ namespace cmsl::ast
         return type_representation{ *type_token };
     }
 
-    boost::optional<type_parser::token_t> type_parser::eat_simple_type_token()
+    std::optional<type_parser::token_t> type_parser::eat_simple_type_token()
     {
         const auto token_type = curr_type();
 
@@ -151,7 +151,7 @@ namespace cmsl::ast
         return cmsl::contains(simple_types, token_type);
     }
 
-    boost::optional<type_representation> type_parser::parse_type()
+    std::optional<type_representation> type_parser::parse_type()
     {
         return generic_type_starts() ? generic_type() : simple_type();;
     }

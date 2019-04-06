@@ -1,6 +1,5 @@
 #pragma once
 
-// Todo: get rid of boost
-#include <boost/assert.hpp>
+#include <cassert>
 
-#define CMSL_UNREACHABLE(MSG) BOOST_ASSERT_MSG(false, MSG)
+#define CMSL_UNREACHABLE(MSG) assert(false && (MSG))

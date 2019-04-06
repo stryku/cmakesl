@@ -377,7 +377,7 @@ namespace cmsl
             return std::make_unique<block_node>(std::move(nodes));
         }
 
-        boost::optional<param_declaration> parser2::get_param_declaration()
+        std::optional<param_declaration> parser2::get_param_declaration()
         {
             auto t = type();
 
@@ -429,7 +429,7 @@ namespace cmsl
             return true;
         }
 
-        boost::optional<std::vector<param_declaration>> parser2::param_declarations()
+        std::optional<std::vector<param_declaration>> parser2::param_declarations()
         {
             std::vector<param_declaration> params;
 
@@ -445,7 +445,7 @@ namespace cmsl
                     // Unexpected end of tokens
                     // Todo: proper token
                     m_errors_reporter.raise_unexpected_end_of_file(lexer::token::token{});
-                    return boost::none;
+                    return {};
                 }
 
                 if (current_is(token_type_t::close_paren))
@@ -512,7 +512,7 @@ namespace cmsl
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization));
         }
 
-        boost::optional<type_representation> parser2::type()
+        std::optional<type_representation> parser2::type()
         {
             type_parser ty_parser{ m_errors_reporter, current_iterator(), end_iterator() };
             auto parsing_result = ty_parser.type();
@@ -520,7 +520,7 @@ namespace cmsl
             return std::move(parsing_result.ty);
         }
 
-        boost::optional<parser2::token_t> parser2::eat_function_call_name()
+        std::optional<parser2::token_t> parser2::eat_function_call_name()
         {
             if(!current_is_name_of_function_call())
             {
@@ -1072,7 +1072,7 @@ namespace cmsl
                 return std::move(operator_expr);
         }
 
-        boost::optional<parser2::function_call_values> parser2::get_function_call_values()
+        std::optional<parser2::function_call_values> parser2::get_function_call_values()
         {
             function_call_values vals;
 
@@ -1088,7 +1088,7 @@ namespace cmsl
             return std::move(vals);
         }
 
-        boost::optional<std::vector<std::unique_ptr<ast_node>>> parser2::comma_separated_expression_list(token_type_t valid_end_of_list_token)
+        std::optional<std::vector<std::unique_ptr<ast_node>>> parser2::comma_separated_expression_list(token_type_t valid_end_of_list_token)
         {
             std::vector<std::unique_ptr<ast_node>> exprs;
 
@@ -1122,7 +1122,7 @@ namespace cmsl
             return std::move(exprs);
         }
 
-        boost::optional<std::vector<std::unique_ptr<ast_node>>> parser2::parameter_list()
+        std::optional<std::vector<std::unique_ptr<ast_node>>> parser2::parameter_list()
         {
             eat(token_type_t::open_paren);
 

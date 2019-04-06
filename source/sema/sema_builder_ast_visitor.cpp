@@ -211,7 +211,7 @@ namespace cmsl
             if(lookup_result.empty())
             {
                 // Todo: lhs's type doesn't support such operator
-                raise_error(op, lhs->type().name().to_string() + " doesn't support operator " + op.str().to_string());
+                raise_error(op, lhs->type().name().to_string() + " doesn't support operator " + std::string{ op.str() });
                 return;
             }
 
@@ -249,7 +249,7 @@ namespace cmsl
             if(!member_info)
             {
                 // Todo: type does not have such member.
-                raise_error(member_name, lhs_type.name().to_string() + " does not have member " + member_name.str().to_string());
+                raise_error(member_name, lhs_type.name().to_string() + " does not have member " + std::string{ member_name.str() });
                 return;
             }
 
@@ -440,7 +440,7 @@ namespace cmsl
             if(!type)
             {
                 // Todo: identifier not found
-                raise_error(id_token, id_token.str().to_string() + " identifier not found");
+                raise_error(id_token, std::string{ id_token.str() } + " identifier not found");
                 return;
             }
 
@@ -696,7 +696,7 @@ namespace cmsl
             return std::move(v.m_result_node);
         }
 
-        boost::optional<sema_builder_ast_visitor::param_expressions_t> sema_builder_ast_visitor::get_function_call_params(const ast::call_node::params_t& passed_params)
+        std::optional<sema_builder_ast_visitor::param_expressions_t> sema_builder_ast_visitor::get_function_call_params(const ast::call_node::params_t& passed_params)
         {
 //                const auto& param_declarations = signature.params;
 
@@ -743,7 +743,7 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
             return ids_ctx_guard{ m_ids_context };
         }
 
-        boost::optional<sema_builder_ast_visitor::function_declaration> sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node,
+        std::optional<sema_builder_ast_visitor::function_declaration> sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node,
                                                                                       sema_context& ctx)
         {
             const auto return_type_reference = node.get_return_type_reference();
@@ -785,7 +785,7 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
             };
         }
 
-        boost::optional<sema_builder_ast_visitor::class_members> sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node,
+        std::optional<sema_builder_ast_visitor::class_members> sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node,
                                                                                       sema_context& class_context)
         {
             class_members members;

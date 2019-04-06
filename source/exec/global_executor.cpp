@@ -63,7 +63,7 @@ namespace cmsl::exec
     const sema::sema_function *
     global_executor::handle_add_subdirectory(cmsl::string_view name, const std::vector<std::unique_ptr<sema::expression_node>>& params)
     {
-        directory_guard dg{ m_cmake_facade, name.to_string() };
+        directory_guard dg{ m_cmake_facade, std::string{ name } };
 
         auto path = m_cmake_facade.current_directory() + "/CMakeLists.cmsl";
         std::ifstream file{ path };

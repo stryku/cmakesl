@@ -2,6 +2,8 @@
 
 #include "lexer/token/token.hpp"
 
+#include <algorithm>
+
 namespace cmsl
 {
     namespace sema

@@ -43,7 +43,7 @@ namespace cmsl
             auto err = errors::error{
                 m_call_token.source().path(),
                 m_call_token.source().line(m_call_token.src_range().begin.line),
-                '\'' + m_call_token.str().to_string() + "\' function not found",
+                '\'' + std::string{m_call_token.str() } + "\' function not found",
                 errors::error_type::error,
                 m_call_token.src_range()
             };
@@ -62,7 +62,7 @@ namespace cmsl
                 auto err = errors::error{
                         m_call_token.source().path(),
                         m_call_token.source().line(m_call_token.src_range().begin.line),
-                        '\'' + m_call_token.str().to_string() + "\' function not found",
+                        '\'' + std::string{m_call_token.str() } + "\' function not found",
                         errors::error_type::error,
                         m_call_token.src_range()
                 };

@@ -2,7 +2,7 @@
 
 #include "ast/type_representation.hpp"
 
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace cmsl
 {
@@ -12,7 +12,7 @@ namespace cmsl
         struct parameter_declaration
         {
             const type* param_type;
-            boost::optional<lexer::token::token> name;
+            std::optional<lexer::token::token> name;
         };
 
         struct param_declaration

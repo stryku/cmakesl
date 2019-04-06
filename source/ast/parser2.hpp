@@ -38,7 +38,7 @@ namespace cmsl
             std::unique_ptr<ast_node> get_if_else_node();
             std::unique_ptr<ast_node> get_while_node();
             std::unique_ptr<ast_node> get_return_node();
-            boost::optional<type_representation> type();
+            std::optional<type_representation> type();
             std::unique_ptr<block_node> block();
 
         private:
@@ -48,7 +48,7 @@ namespace cmsl
                 std::vector<std::unique_ptr<ast_node>> params;
             };
 
-            boost::optional<token_t> eat_function_call_name();
+            std::optional<token_t> eat_function_call_name();
 
             bool current_is_class_member_access() const;
             bool current_is_function_call() const;
@@ -85,13 +85,13 @@ namespace cmsl
             std::unique_ptr<ast_node> fundamental_value();
             std::unique_ptr<ast_node> function_call();
 
-            boost::optional<std::vector<std::unique_ptr<ast_node>>> comma_separated_expression_list(token_type_t valid_end_of_list_token);
-            boost::optional<std::vector<std::unique_ptr<ast_node>>> parameter_list();
-            boost::optional<function_call_values> get_function_call_values();
+            std::optional<std::vector<std::unique_ptr<ast_node>>> comma_separated_expression_list(token_type_t valid_end_of_list_token);
+            std::optional<std::vector<std::unique_ptr<ast_node>>> parameter_list();
+            std::optional<function_call_values> get_function_call_values();
 
             bool prepare_for_next_parameter_declaration();
-            boost::optional<param_declaration> get_param_declaration();
-            boost::optional<std::vector<param_declaration>> param_declarations();
+            std::optional<param_declaration> get_param_declaration();
+            std::optional<std::vector<param_declaration>> param_declarations();
 
             std::unique_ptr<conditional_node> get_conditional_node();
 

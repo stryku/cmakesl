@@ -2,9 +2,8 @@
 #include "errors/error.hpp"
 #include "lexer/lexer.hpp"
 
-#include <boost/assert.hpp>
-
 #include <cctype>
+#include <cassert>
 
 namespace cmsl
 {

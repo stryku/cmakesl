@@ -2,7 +2,7 @@
 
 #include "lexer/token/token.hpp"
 
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace cmsl
 {
@@ -30,7 +30,7 @@ namespace cmsl
 
             token_type_t peek(size_t n = 1u) const;
             token_type_t peek_from(token_it it, size_t n = 1u) const;
-            boost::optional<token_t> eat(boost::optional<token_type_t> type = {});
+            std::optional<token_t> eat(std::optional<token_type_t> type = {});
 
             const token_t &current() const;
             token_type_t curr_type() const;
