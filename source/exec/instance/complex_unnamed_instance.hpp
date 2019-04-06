@@ -11,10 +11,8 @@ namespace cmsl
         class sema_type;
     }
 
-    namespace exec
+    namespace exec::inst
     {
-        namespace inst
-        {
             class complex_unnamed_instance : public instance
             {
             public:
@@ -44,6 +42,5 @@ namespace cmsl
                 const sema::sema_type* m_sema_type{ nullptr }; // Todo: reference instead of pointer
                 instance_members_t m_members;
             };
-        }
     }
 }

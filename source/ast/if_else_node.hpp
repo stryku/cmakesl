@@ -5,10 +5,8 @@
 #include <memory>
 #include <vector>
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         class conditional_node;
         class block_node;
 
@@ -29,5 +27,4 @@ namespace cmsl
             ifs_t m_ifs;
             std::unique_ptr<block_node> m_else;
         };
-    }
 }

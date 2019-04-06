@@ -6,12 +6,9 @@
 
 #include <sstream>
 
-namespace cmsl
+// Todo: change to lexer::test
+namespace cmsl::test::lexer
 {
-    namespace test
-    {
-        namespace lexer
-        {
             using lexer_t = cmsl::lexer::lexer;
             using token_type_t = cmsl::lexer::token::token_type;
 
@@ -294,6 +291,4 @@ namespace cmsl
                     INSTANTIATE_TEST_CASE_P(Lexer, PollutedKeyword, values);
                 }
             }
-        }
-    }
 }

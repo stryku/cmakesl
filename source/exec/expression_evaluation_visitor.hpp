@@ -13,10 +13,8 @@
 #include "common/assert.hpp"
 #include "cmake_facade.hpp"
 
-namespace cmsl
+namespace cmsl::exec
 {
-    namespace exec
-    {
         class expression_evaluation_visitor : public sema::empty_sema_node_visitor
         {
         public:
@@ -244,5 +242,4 @@ namespace cmsl
         private:
             expression_evaluation_context& m_ctx;
         };
-    }
 }

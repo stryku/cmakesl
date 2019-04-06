@@ -3,10 +3,8 @@
 #include "common/assert.hpp"
 #include "exec/instance/instance_reference.hpp"
 
-namespace cmsl
+namespace cmsl::exec
 {
-    namespace exec
-    {
         void execution_context::add_variable(cmsl::string_view name, std::unique_ptr<instance_t> inst)
         {
             current_scope().add_variable(name, std::move(inst));
@@ -63,5 +61,4 @@ namespace cmsl
         {
             return get_variable("this");
         }
-    }
 }

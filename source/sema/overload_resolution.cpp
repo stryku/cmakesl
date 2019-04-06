@@ -7,10 +7,8 @@
 #include "overload_resolution.hpp"
 
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         // Todo: While choosing a function, diagnostic for all possible funciton should be collected.
         // Then, if there is an unambiguous function, return it. If not, provide a meaningful error.
 
@@ -190,5 +188,4 @@ namespace cmsl
                 m_errs.nofify_error(err);
             }
         }
-    }
 }

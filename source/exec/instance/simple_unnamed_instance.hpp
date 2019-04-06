@@ -2,12 +2,8 @@
 
 #include "exec/instance/instance.hpp"
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             // Todo: consider rename to builtin_unnamed_instance
             class simple_unnamed_instance : public instance
             {
@@ -39,6 +35,4 @@ namespace cmsl
                 const sema::sema_type* m_sema_type{nullptr}; // Todo: change to a reference
                 instance_value_t m_data;
             };
-        }
-    }
 }

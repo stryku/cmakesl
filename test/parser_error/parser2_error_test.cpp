@@ -9,12 +9,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::ast::test
 {
-    namespace ast
-    {
-        namespace test
-        {
             using token_t = cmsl::lexer::token::token;
             using token_type_t = cmsl::lexer::token::token_type;
             using tokens_container_t = cmsl::lexer::token::token_container_t;
@@ -446,6 +442,4 @@ namespace cmsl
 
                 INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, InitializerList, values);
             }
-        }
-    }
 }

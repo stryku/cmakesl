@@ -4,12 +4,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::sema::test
 {
-    namespace sema
-    {
-        namespace test
-        {
             class expression_node_mock : public expression_node
             {
             public:
@@ -17,6 +13,4 @@ namespace cmsl
                 MOCK_CONST_METHOD0(produces_temporary_value, bool());
                 MOCK_CONST_METHOD1(visit, void(sema_node_visitor&));
             };
-        }
-    }
 }

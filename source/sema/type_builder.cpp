@@ -4,10 +4,8 @@
 #include "sema/user_sema_function.hpp"
 #include "sema/builtin_sema_function.hpp"
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         type_builder::type_builder(sema_type_factory &type_factory,
                                    sema_function_factory &function_factory,
                                    sema_context_factory &context_factory,
@@ -63,5 +61,4 @@ namespace cmsl
         {
             return m_type_ctx;
         }
-    }
 }

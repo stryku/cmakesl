@@ -3,12 +3,8 @@
 #include "exec/execution_context.hpp"
 #include "lexer/token/token.hpp"
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             instance_reference::instance_reference(cmsl::string_view name, execution_context &ctx)
                 : instance_reference{ *ctx.get_variable(name) }
             {}
@@ -61,6 +57,4 @@ namespace cmsl
             {
                 return m_instance.get_sema_type();
             }
-        }
-    }
 }

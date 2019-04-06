@@ -4,12 +4,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::errors::test
 {
-    namespace errors
-    {
-        namespace test
-        {
             struct errors_observer_mock
             {
                 errors_observer_mock();
@@ -18,6 +14,4 @@ namespace cmsl
                 MOCK_METHOD1(notify_error, void(
                         const error&));
             };
-        }
-    }
 }

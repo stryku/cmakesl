@@ -4,12 +4,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::sema::test
 {
-    namespace sema
-    {
-        namespace test
-        {
             class identifiers_context_mock : public identifiers_context
             {
             public:
@@ -18,6 +14,4 @@ namespace cmsl
                 MOCK_METHOD0(enter_ctx, void());
                 MOCK_METHOD0(leave_ctx, void());
             };
-        }
-    }
 }

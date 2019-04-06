@@ -1,19 +1,17 @@
 #pragma once
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
+    // Todo: is this needed?
+    enum class ast_node_type
     {
-        enum class ast_node_type
-        {
-            infix,
-            declaration,
-            ret,
-            function,
-            block,
-            class_type,
-            if_else,
-            while_
-        };
-    }
+        infix,
+        declaration,
+        ret,
+        function,
+        block,
+        class_type,
+        if_else,
+        while_
+    };
 }

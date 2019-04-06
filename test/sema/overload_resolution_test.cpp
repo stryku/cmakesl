@@ -12,12 +12,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::sema::test
 {
-    namespace sema
-    {
-        namespace test
-        {
             using ::testing::StrictMock;
             using ::testing::Return;
             using ::testing::ReturnRef;
@@ -297,6 +293,4 @@ namespace cmsl
                 EXPECT_THAT(chosen, NotNull());
                 EXPECT_THAT(chosen, Eq(&good_function));
             }
-        }
-    }
 }

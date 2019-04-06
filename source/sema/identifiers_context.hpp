@@ -4,10 +4,8 @@
 
 #include <algorithm>
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         class sema_type;
 
         // Todo: exists only for test purpose. Consider removing it and using shadow mocking.
@@ -76,5 +74,4 @@ namespace cmsl
         private:
             std::vector<id_map_t> m_contextes;
         };
-    }
 }

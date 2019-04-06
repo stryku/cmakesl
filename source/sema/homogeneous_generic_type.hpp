@@ -2,10 +2,8 @@
 
 #include "sema/sema_type.hpp"
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         class homogeneous_generic_type : public sema_type
         {
         public:
@@ -18,5 +16,4 @@ namespace cmsl
         private:
             const sema_type& m_value_type;
         };
-    }
 }

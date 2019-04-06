@@ -1,9 +1,7 @@
 #include "lexer/source_location_manipulator.hpp"
 
-namespace cmsl
+namespace cmsl::lexer
 {
-    namespace lexer
-    {
         source_location_manipulator::source_location_manipulator(cmsl::string_view source)
             : m_source{ source }
         {}
@@ -63,5 +61,4 @@ namespace cmsl
                 ++m_source_loc.column;
             }
         }
-    }
 }

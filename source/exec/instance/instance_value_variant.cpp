@@ -4,12 +4,8 @@
 #include "common/assert.hpp"
 
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             instance_value_variant::instance_value_variant(instance_value_variant && other)
             {
                 move_from(std::move(other));
@@ -461,7 +457,4 @@ CMSL_UNREACHABLE("Unknown alternative")
             void instance_value_variant::set_executable(executable_value value){
                 reassign(std::move(value), which_t::executable);
             }
-        }
-    }
 }
-

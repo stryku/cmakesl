@@ -2,10 +2,8 @@
 
 #include <algorithm>
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         type_kind type_kind_from_string(cmsl::string_view str)
         {
             const auto map = {
@@ -29,5 +27,4 @@ namespace cmsl
 
             return type_kind::k_user;
         }
-    }
 }

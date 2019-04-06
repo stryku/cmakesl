@@ -1,10 +1,8 @@
 #include "ast/return_node.hpp"
 #include "ast/ast_node_visitor.hpp"
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         return_node::return_node(std::unique_ptr<ast_node> expr)
             : ast_node(ast_node_type::ret)
             , m_expression{ std::move(expr) }
@@ -19,5 +17,4 @@ namespace cmsl
         {
             visitor.visit(*this);
         }
-    }
 }

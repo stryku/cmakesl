@@ -2,17 +2,11 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::exec::test
 {
-    namespace exec
-    {
-        namespace test
-        {
             class identifiers_context_mock : public identifiers_context
             {
             public:
                 MOCK_METHOD1(lookup_identifier, inst::instance*(cmsl::string_view));
             };
-        }
-    }
 }

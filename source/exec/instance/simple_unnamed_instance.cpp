@@ -4,13 +4,8 @@
 #include "exec/instance/instance_value.hpp"
 #include "sema/sema_type.hpp"
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
-
             simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type)
                     : m_sema_type{ &type }
                     , m_data{ get_init_data() }
@@ -106,6 +101,4 @@ namespace cmsl
             {
                 return *m_sema_type;
             }
-        }
-    }
 }

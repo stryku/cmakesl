@@ -1,12 +1,8 @@
 #include "test/exec/smoke_test_fixture.hpp"
 #include "sema/sema_type.hpp"
 
-namespace cmsl
+namespace cmsl::exec::test
 {
-    namespace exec
-    {
-        namespace test
-        {
             using ::testing::Eq;
             using VersionTypeSmokeTest = ExecutionSmokeTest;
 
@@ -176,6 +172,4 @@ namespace cmsl
                 const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
-        }
-    }
 }

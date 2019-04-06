@@ -8,10 +8,8 @@
 
 #include <tuple>
 
-namespace cmsl
+namespace cmsl::exec
 {
-    namespace exec
-    {
         namespace details
         {
             using alternatives_tuple_t = std::tuple<bool,
@@ -99,5 +97,4 @@ namespace cmsl
                 return instance.get_value_cref().get_executable_cref();
             }
         };
-    }
 }

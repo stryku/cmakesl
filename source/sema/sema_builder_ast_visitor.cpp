@@ -1,6 +1,5 @@
 #include "sema/sema_builder_ast_visitor.hpp"
 
-#include "ast/type_operator_support_check.hpp"
 #include "ast/while_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/if_else_node.hpp"
@@ -21,7 +20,6 @@
 
 #include "sema/sema_nodes.hpp"
 #include "sema/identifiers_context.hpp"
-#include "sema/sema_function_builder.hpp"
 #include "sema/user_sema_function.hpp"
 #include "sema/factories.hpp"
 #include "sema/sema_context.hpp"
@@ -35,10 +33,8 @@
 #include "sema_builder_ast_visitor.hpp"
 
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         sema_builder_ast_visitor::ids_ctx_guard::ids_ctx_guard(identifiers_context& ids_context)
                 : m_ids_ctx{ ids_context }
         {
@@ -197,8 +193,6 @@ namespace cmsl
 
         void sema_builder_ast_visitor::visit(const ast::binary_operator_node& node)
         {
-            ast::type_operator_support_check check;
-
             auto lhs = visit_child_expr(node.get_lhs());
             if(!lhs)
             {
@@ -932,5 +926,4 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
 
             m_result_node = std::make_unique<initializer_list_node>(*type, std::move(expression_values));
         }
-    }
 }

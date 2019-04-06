@@ -2,34 +2,31 @@
 
 #include "ast/ast_node_type.hpp"
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
+    class ast_node_visitor;
+
+    class ast_node
     {
-        class ast_node_visitor;
+    public:
+        ast_node()
+        {}
 
-        class ast_node
+        ast_node(ast_node_type type)
+            : m_type{ type }
+        {}
+
+        virtual ~ast_node()
+        {}
+
+        ast_node_type get_type() const
         {
-        public:
-            ast_node()
-            {}
+            return m_type;
+        }
 
-            ast_node(ast_node_type type)
-                : m_type{ type }
-            {}
+        virtual void visit(ast_node_visitor& visitor) const = 0;
 
-            virtual ~ast_node()
-            {}
-
-            ast_node_type get_type() const
-            {
-                return m_type;
-            }
-
-            virtual void visit(ast_node_visitor& visitor) const = 0;
-
-        private:
-            ast_node_type m_type;
-        };
-    }
+    private:
+        ast_node_type m_type;
+    };
 }

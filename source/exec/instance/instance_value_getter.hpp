@@ -3,12 +3,9 @@
 #include "exec/instance/instance_value.hpp"
 #include "exec/instance/instance.hpp"
 
-namespace cmsl
+// Todo: is it needed?
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             class instance_value_getter
             {
             public:
@@ -17,6 +14,4 @@ namespace cmsl
                     return i.get_value_cref().get_int();
                 }
             };
-        }
-    }
 }

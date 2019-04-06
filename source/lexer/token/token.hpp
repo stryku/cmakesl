@@ -7,12 +7,8 @@
 
 #include <vector>
 
-namespace cmsl
+namespace cmsl::lexer::token
 {
-    namespace lexer
-    {
-        namespace token
-        {
             class token
             {
             public:
@@ -49,8 +45,6 @@ namespace cmsl
             };
 
             using token_container_t = std::vector<token>;
-        }
-    }
 }
 
 namespace std

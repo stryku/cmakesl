@@ -7,10 +7,8 @@
 #include <vector>
 #include <ast/type_representation.hpp>
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         class sema_context_interface;
         class sema_context;
         class user_sema_function;
@@ -88,6 +86,5 @@ namespace cmsl
             sema_function_factory& m_function_factory;
             sema_context_factory& m_context_factory;
         };
-    }
 }
 

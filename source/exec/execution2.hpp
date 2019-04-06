@@ -15,10 +15,10 @@
 
 #include "cmake_facade.hpp"
 
-namespace cmsl
+// Todo: create cpp
+namespace cmsl::exec
 {
-    namespace exec
-    {
+    // Todo: rename
         class execution2 : public identifiers_context, public function_caller2
         {
         public:
@@ -190,5 +190,4 @@ namespace cmsl
             std::unique_ptr<inst::instance> m_function_return_value;
             std::stack<callstack_frame> m_callstack;
         };
-    }
 }

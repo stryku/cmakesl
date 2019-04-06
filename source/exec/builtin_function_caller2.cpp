@@ -22,10 +22,8 @@ case sema::builtin_function_kind::function: \
     result = function(params); \
 } break
 
-namespace cmsl
+namespace cmsl::exec
 {
-    namespace exec
-    {
         template <auto... Alternatives, typename Params>
         decltype(auto) get_params(Params&& params)
         {
@@ -1543,5 +1541,4 @@ namespace cmsl
             target.link_to(m_cmake_facade, library);
             return m_instances.create2_void();
         }
-    }
 }

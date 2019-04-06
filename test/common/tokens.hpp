@@ -2,12 +2,8 @@
 
 #include "lexer/token/token.hpp"
 
-namespace cmsl
+namespace cmsl::test::common
 {
-    namespace test
-    {
-        namespace common
-        {
             using token_t = lexer::token::token;
 
             token_t token_undef();
@@ -68,6 +64,4 @@ namespace cmsl
             token_t token_kw_list();
 
             token_t token_from_larger_source(cmsl::string_view source, lexer::token::token_type type, unsigned begin, unsigned end);
-        }
-    }
 }

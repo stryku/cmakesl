@@ -4,10 +4,8 @@
 #include "ast/type_representation.hpp"
 #include "ast/ast_node_visitor.hpp" // todo: to cpp
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         class variable_declaration_node : public ast_node
         {
         public:
@@ -42,5 +40,4 @@ namespace cmsl
             lexer::token::token m_name;
             std::unique_ptr<ast_node> m_initialization;
         };
-    }
 }

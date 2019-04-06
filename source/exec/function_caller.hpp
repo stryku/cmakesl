@@ -23,6 +23,7 @@ namespace cmsl
             class instances_holder_interface;
         }
 
+        // Todo: remove
         class function_caller
         {
         public:

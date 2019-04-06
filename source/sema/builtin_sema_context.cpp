@@ -9,11 +9,8 @@
 #include "builtin_sema_context.hpp"
 
 
-namespace cmsl
+namespace cmsl::sema
 {
-
-    namespace sema
-    {
         builtin_sema_context::builtin_sema_context(sema_type_factory &type_factory,
                                                    sema_function_factory &function_factory,
                                                    sema_context_factory &context_factory)
@@ -916,5 +913,4 @@ namespace cmsl
 
             add_type_member_functions(project_manipulator, functions);
         }
-    }
 }

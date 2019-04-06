@@ -5,12 +5,8 @@
 #include <algorithm>
 #include <tuple>
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             version_value::version_value(int_t major, int_t minor, int_t patch, int_t tweak)
                 : m_major{ major }
                 , m_minor{ minor }
@@ -81,6 +77,4 @@ namespace cmsl
             {
                 return m_tweak;
             }
-        }
-    }
 }

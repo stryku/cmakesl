@@ -23,12 +23,9 @@ namespace cmsl
         class errors_observer;
     }
 
-    namespace lexer
+    namespace lexer::token
     {
-        namespace token
-        {
             class token;
-        }
     }
 
     namespace sema

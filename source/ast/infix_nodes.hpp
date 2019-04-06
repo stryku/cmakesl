@@ -5,10 +5,8 @@
 
 #include <memory>
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         class binary_operator_node : public ast_node
         {
         public:
@@ -255,5 +253,4 @@ namespace cmsl
             token_t m_end_token;
             std::vector<std::unique_ptr<ast_node>> m_values;
         };
-    }
 }

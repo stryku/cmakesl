@@ -17,10 +17,8 @@ namespace cmsl
         class sema_type;
     }
 
-    namespace exec
+    namespace exec::inst
     {
-        namespace inst
-        {
             class instance;
 
             // Interface of a class that handles lifetime of 'rvalue' instances created during full expression execution
@@ -37,6 +35,5 @@ namespace cmsl
                 virtual inst::instance *create2_void() = 0;
 
             };
-        }
     }
 }

@@ -4,10 +4,8 @@
 
 #include "sema/function_signature.hpp"
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         struct member_info;
         class sema_context;
         class sema_context_interface;
@@ -64,5 +62,4 @@ namespace cmsl
             ast::type_representation m_name;
             std::vector<member_info> m_members;
         };
-    }
 }

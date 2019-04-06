@@ -10,12 +10,8 @@
 #include <string>
 #include <vector>
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             class instance;
 
             class instance_value_variant
@@ -166,6 +162,4 @@ namespace cmsl
             private:
                 which_t m_which{ which_t::bool_ };
             };
-        }
-    }
 }

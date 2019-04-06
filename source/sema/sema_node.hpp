@@ -1,9 +1,7 @@
 #pragma once
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         class sema_node_visitor;
 
         class sema_node
@@ -13,5 +11,4 @@ namespace cmsl
 
             virtual void visit(sema_node_visitor& visitor) const = 0;
         };
-    }
 }

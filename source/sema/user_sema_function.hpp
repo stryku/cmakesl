@@ -2,10 +2,8 @@
 
 #include "sema/sema_function.hpp"
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         class block_node;
         class sema_function_builder;
         class sema_context_interface;
@@ -54,5 +52,4 @@ namespace cmsl
             // It will be set by a function builder. It needs to be set after creation because it can refer to itself in case of a recursion.
             block_node* m_body;
         };
-    }
 }

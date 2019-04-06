@@ -32,10 +32,8 @@ namespace
     }
 }
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         user_sema_function&
         sema_function_factory::create_user(const sema_context_interface &ctx, const sema_type &return_type, function_signature s)
         {
@@ -375,5 +373,4 @@ namespace cmsl
 
             return found;
         }
-    }
 }

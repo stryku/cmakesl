@@ -4,10 +4,8 @@
 
 #include "sema/sema_builder_ast_visitor.hpp"
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         sema_builder::sema_builder(sema_context& ctx,
                                    errors::errors_observer& errs,
                                    identifiers_context& ids_context,
@@ -37,5 +35,4 @@ namespace cmsl
             ast_tree.visit(visitor);
             return std::move(visitor.m_result_node);
         }
-    }
 }

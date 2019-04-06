@@ -1,9 +1,7 @@
 #pragma once
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         class variable_declaration_node;
         class bool_value_node;
         class int_value_node;
@@ -90,5 +88,4 @@ namespace cmsl
             virtual void visit(const initializer_list_node& node) override {}
             virtual void visit(const add_subdirectory_node& node) override {}
         };
-    }
 }

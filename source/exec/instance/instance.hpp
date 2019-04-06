@@ -8,12 +8,9 @@
 
 namespace cmsl
 {
-    namespace lexer
+    namespace lexer::token
     {
-        namespace token
-        {
             class token;
-        }
     }
 
     namespace sema
@@ -22,10 +19,8 @@ namespace cmsl
         class sema_type;
     }
 
-    namespace exec
+    namespace exec::inst
     {
-        namespace inst
-        {
             class instance
             {
             public:
@@ -47,6 +42,5 @@ namespace cmsl
                 virtual sema::single_scope_function_lookup_result_t get_sema_function(lexer::token::token name) const = 0;
                 virtual const sema::sema_type& get_sema_type() const = 0;
             };
-        }
     }
 }

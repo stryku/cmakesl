@@ -3,12 +3,8 @@
 
 #include <ostream>
 
-namespace cmsl
+namespace cmsl::lexer::token
 {
-    namespace lexer
-    {
-        namespace token
-        {
             token::token()
                 : token{ token_type_t::undef }
             {}
@@ -67,7 +63,4 @@ namespace cmsl
             {
                 return m_source;
             }
-
-        }
-    }
 }

@@ -6,12 +6,8 @@
 
 using namespace testing;
 
-namespace cmsl
+namespace cmsl::test::source_location
 {
-    namespace test
-    {
-        namespace source_location
-        {
             using source_location_manipulator_t = cmsl::lexer::source_location_manipulator;
 
             TEST(SourceLocationManipulator, InitialState__1_Line__1_Column__0_Absolute)
@@ -164,6 +160,4 @@ namespace cmsl
                 );
                 INSTANTIATE_TEST_CASE_P(SourceLocationManipulator, SourceSizeMinusOneOrMoreIncrements, values);
             }
-        }
-    }
 }

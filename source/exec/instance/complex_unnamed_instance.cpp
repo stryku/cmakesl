@@ -6,12 +6,8 @@
 #include "complex_unnamed_instance.hpp"
 
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             complex_unnamed_instance::complex_unnamed_instance(const sema::sema_type &type)
                 : m_sema_type{ &type }
                 , m_members{ get_init_data() }
@@ -124,6 +120,4 @@ namespace cmsl
                 return members;
             }
 
-        }
-    }
 }

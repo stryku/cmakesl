@@ -9,12 +9,8 @@
 
 using namespace testing;
 
-namespace cmsl
+namespace cmsl::test::lexer_error
 {
-    namespace test
-    {
-        namespace lexer_error
-        {
             using lexer_t = cmsl::lexer::lexer;
             using token_type_t = cmsl::lexer::token::token_type;
 
@@ -53,6 +49,4 @@ namespace cmsl
                 );
                 INSTANTIATE_TEST_CASE_P(LexerErrorTest, StringNotEndedBeforeEOF, values);
             }
-        }
-    }
 }

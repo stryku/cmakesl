@@ -4,10 +4,8 @@
 
 #include <stack>
 
-namespace cmsl
+namespace cmsl::exec
 {
-    namespace exec
-    {
         class execution_context
         {
         private:
@@ -31,5 +29,4 @@ namespace cmsl
         private:
             std::stack<scope_context> m_scopes;
         };
-    }
 }

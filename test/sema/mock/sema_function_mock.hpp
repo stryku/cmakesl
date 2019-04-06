@@ -4,12 +4,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::sema::test
 {
-    namespace sema
-    {
-        namespace test
-        {
             class sema_function_mock : public sema_function
             {
             public:
@@ -18,6 +14,4 @@ namespace cmsl
                 MOCK_CONST_METHOD0(return_type, const sema_type&());
                 MOCK_CONST_METHOD0(context, const sema_context_interface&());
             };
-        }
-    }
 }

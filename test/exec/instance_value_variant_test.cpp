@@ -2,14 +2,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::exec::inst::test
 {
-    namespace exec
-    {
-        namespace inst
-        {
-            namespace test
-            {
                 using ::testing::Eq;
                 using ::testing::DoubleNear;
 
@@ -107,7 +101,4 @@ namespace cmsl
                     ASSERT_THAT(variant.which(), Eq(which_t::version));
                     EXPECT_THAT(variant.get_version_cref(), Eq(test_version));
                 }
-            }
-        }
-    }
 }

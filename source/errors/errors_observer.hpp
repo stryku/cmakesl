@@ -1,9 +1,7 @@
 #pragma once
 
-namespace cmsl
+namespace cmsl::errors
 {
-    namespace errors
-    {
         struct error;
 
         class errors_observer
@@ -11,5 +9,4 @@ namespace cmsl
         public:
             void nofify_error(const error& error);
         };
-    }
 }

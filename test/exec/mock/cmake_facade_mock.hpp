@@ -4,12 +4,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::exec::test
 {
-    namespace exec
-    {
-        namespace test
-        {
             class cmake_facade_mock : public facade::cmake_facade
             {
             public:
@@ -28,6 +24,4 @@ namespace cmsl
                 MOCK_METHOD1(go_into_subdirectory, void(const std::string&));
                 MOCK_METHOD0(go_directory_up, void());
             };
-        }
-    }
 }
