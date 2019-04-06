@@ -33,11 +33,6 @@ namespace cmsl
                 explicit instances_holder(const sema::sema_context_interface& sema_ctx);
                 explicit instances_holder(context_provider& e);
 
-                inst::instance* create(instance_value_t value) override;
-                inst::instance* create(const ast::type& type, instance_members_t members) override;
-                inst::instance* create(const ast::type& t) override;
-                inst::instance* create_void() override;
-
                 void store(std::unique_ptr<instance> i) override;
 
                 std::unique_ptr<instance> gather_ownership(inst::instance* instance_ptr) override;
@@ -47,9 +42,6 @@ namespace cmsl
                 inst::instance *create2(const sema::sema_type& type) override;
                 inst::instance *create2(const sema::sema_type& type, instance_value_t value) override;
                 inst::instance *create2_void() override;
-
-            private:
-                contexted_instance_factory get_factory();
 
             private:
                 const sema::sema_context_interface* m_sema_ctx; // Todo: change to a reference.

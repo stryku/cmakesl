@@ -1,6 +1,7 @@
 #include "instance_reference.hpp"
 
 #include "exec/execution_context.hpp"
+#include "lexer/token/token.hpp"
 
 namespace cmsl
 {
@@ -49,26 +50,6 @@ namespace cmsl
             const instance *instance_reference::get_cmember(cmsl::string_view name) const
             {
                 return m_instance.get_cmember(name);
-            }
-
-            bool instance_reference::has_function(cmsl::string_view name) const
-            {
-                return m_instance.has_function(name);
-            }
-
-            const ast::function* instance_reference::get_function(cmsl::string_view name) const
-            {
-                return m_instance.get_function(name);
-            }
-
-            const ast::type &instance_reference::get_type() const
-            {
-                return m_instance.get_type();
-            }
-
-            bool instance_reference::is_ctor(cmsl::string_view name) const
-            {
-                return get_type().get_name() == name;
             }
 
             sema::single_scope_function_lookup_result_t instance_reference::get_sema_function(lexer::token::token name) const

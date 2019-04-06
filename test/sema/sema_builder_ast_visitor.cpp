@@ -8,12 +8,13 @@
 #include "ast/if_else_node.hpp"
 #include "ast/translation_unit_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/block_node.hpp"
+#include "ast/user_function_node.hpp"
 
 #include "errors/errors_observer.hpp"
 
 #include "sema/factories.hpp"
 
-#include "test/ast/mock/ast_context_mock.hpp"
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"
@@ -301,7 +302,6 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 StrictMock<sema_function_mock> function_mock;
-                const ast::function::params_declaration_t param_declarations;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto fun_name_token = token_identifier("foo");
@@ -406,7 +406,6 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 StrictMock<sema_function_mock> function_mock;
-                const ast::function::params_declaration_t param_declarations;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto fun_name_token = token_identifier("add_subdirectory");
@@ -461,7 +460,6 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 StrictMock<sema_function_mock> function_mock;
-                const ast::function::params_declaration_t param_declarations;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 // It's crucial that fun name token has same text as valid_type's name.
@@ -504,7 +502,6 @@ namespace cmsl
                 StrictMock<sema_context_mock> ctx;
                 StrictMock<identifiers_context_mock> ids_ctx;
                 StrictMock<sema_function_mock> function_mock;
-                const ast::function::params_declaration_t param_declarations;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 const auto lhs_id_token = token_identifier("foo");

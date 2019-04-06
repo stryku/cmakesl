@@ -2,8 +2,6 @@
 
 #include "lexer/token/token.hpp"
 
-#include "ast/type.hpp"
-
 namespace cmsl
 {
     namespace sema
@@ -15,7 +13,6 @@ namespace cmsl
         {
         protected:
             using token_t = lexer::token::token;
-            using id_map_t = std::unordered_map<token_t, const ast::type*>;
 
         public:
             virtual ~identifiers_context() = default;

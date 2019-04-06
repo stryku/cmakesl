@@ -28,36 +28,6 @@ namespace cmsl
         {
             class instance;
 
-            class instance_factory
-            {
-            public:
-                std::unique_ptr<instance> create(instance_value_t value, const ast::ast_context &ast_ctx) const;
-                //std::unique_ptr<instance> create(instance_members_t value) const;
-                std::unique_ptr<instance> create(cmsl::string_view name, execution_context &exec_ctx) const;
-                std::unique_ptr<instance> create(cmsl::string_view name, instance_value_t value, execution_context &exec_ctx) const;
-                std::unique_ptr<instance> create(const ast::type& type, instance_members_t members) const;
-                std::unique_ptr<instance> create(const ast::type& type) const;
-            };
-
-            class contexted_instance_factory
-            {
-            public:
-                explicit contexted_instance_factory(const ast::ast_context &ast_ctx, execution_context &exec_ctx);
-
-                std::unique_ptr<instance> create(instance_value_t value) const;
-                //std::unique_ptr<instance> create(instance_members_t value) const;
-                std::unique_ptr<instance> create(cmsl::string_view name) const;
-                std::unique_ptr<instance> create(cmsl::string_view name, instance_value_t value) const;
-                std::unique_ptr<instance> create(const ast::type& type, instance_members_t members) const;
-                std::unique_ptr<instance> create(const ast::type& type) const;
-
-            private:
-                const ast::ast_context &m_ast_ctx;
-                execution_context &m_exec_ctx;
-            };
-
-            //////////////////////////////////////
-
             class instance_factory2
             {
             public:

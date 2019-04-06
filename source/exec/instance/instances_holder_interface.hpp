@@ -27,10 +27,6 @@ namespace cmsl
             class instances_holder_interface
             {
             public:
-                virtual inst::instance *create(instance_value_t value) = 0;
-                virtual inst::instance *create(const ast::type &type, instance_members_t members) = 0;
-                virtual inst::instance *create(const ast::type &t) = 0;
-                virtual inst::instance *create_void() = 0;
                 virtual void store(std::unique_ptr<instance> i) = 0; // Todo: consider renaming to e.g. take_ownership
                 virtual std::unique_ptr<instance> gather_ownership(inst::instance *instance_ptr) = 0;
 

@@ -1,6 +1,5 @@
 #include "exec/instance/complex_unnamed_instance.hpp"
 
-#include "ast/class_type.hpp"
 #include "common/assert.hpp"
 #include "exec/instance/instance_factory.hpp"
 #include "sema/sema_type.hpp"
@@ -13,24 +12,6 @@ namespace cmsl
     {
         namespace inst
         {
-            complex_unnamed_instance::complex_unnamed_instance(const ast::type &type)
-                    : m_kind{ type.is_builtin() ? kind::builtin : kind::user }
-                    , m_type{ &type }
-                    , m_members{ get_init_data() }
-            {}
-
-            complex_unnamed_instance::complex_unnamed_instance(kind k, const ast::type &type)
-                    : m_kind{ k }
-                    , m_type{ &type }
-                    , m_members{ get_init_data() }
-            {}
-
-            complex_unnamed_instance::complex_unnamed_instance(const ast::type &type, instance_members_t members)
-                    : m_kind{ kind::user }
-                    , m_type{ &type }
-                    , m_members{ get_init_data(std::move(members)) }
-            {}
-
             complex_unnamed_instance::complex_unnamed_instance(const sema::sema_type &type)
                 : m_sema_type{ &type }
                 , m_members{ get_init_data() }
@@ -43,7 +24,7 @@ namespace cmsl
 
             instance_members_t complex_unnamed_instance::get_init_data() const
             {
-                return m_sema_type ? create_init_members_sema() : create_init_members();
+                return create_init_members_sema();
             }
 
             instance_members_t complex_unnamed_instance::get_init_data(instance_members_t members) const
@@ -98,9 +79,7 @@ namespace cmsl
 
             std::unique_ptr<instance> complex_unnamed_instance::copy() const
             {
-                return m_sema_type
-                       ? std::make_unique<complex_unnamed_instance>(*m_sema_type, copy_members())
-                       : std::make_unique<complex_unnamed_instance>(*m_type, copy_members());
+                return std::make_unique<complex_unnamed_instance>(*m_sema_type, copy_members());
             }
 
             instance_members_t complex_unnamed_instance::copy_members() const
@@ -116,46 +95,6 @@ namespace cmsl
                                });
 
                 return std::move(m);
-            }
-
-            instance_members_t complex_unnamed_instance::create_init_members() const
-            {
-                instance_members_t members;
-
-                const auto& class_type = dynamic_cast<const ast::class_type&>(*m_type);
-                const auto& members_decl = class_type.get_members_decl();
-
-                std::transform(std::cbegin(members_decl), std::cend(members_decl),
-                               std::inserter(members, std::end(members)),
-                               [this](const auto& member_decl)
-                               {
-                                   const auto& member_type = *member_decl.ty;
-
-                                   auto member_inst = instance_factory{}.create(*member_decl.ty);
-                                   return std::make_pair(member_decl.name, std::move(member_inst));
-                               });
-
-                return members;
-            }
-
-            bool complex_unnamed_instance::has_function(cmsl::string_view name) const
-            {
-                return m_type->has_function(name);
-            }
-
-            const ast::function* complex_unnamed_instance::get_function(cmsl::string_view name) const
-            {
-                return m_type->get_function(name);
-            }
-
-            const ast::type& complex_unnamed_instance::get_type() const
-            {
-                return *m_type;
-            }
-
-            bool complex_unnamed_instance::is_ctor(cmsl::string_view name) const
-            {
-                return get_type().get_name() == name;
             }
 
             sema::single_scope_function_lookup_result_t complex_unnamed_instance::get_sema_function(lexer::token::token name) const

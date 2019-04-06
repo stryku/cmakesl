@@ -7,6 +7,7 @@
 #include "sema/sema_builder.hpp"
 #include "exec/compiled_source.hpp"
 #include "sema/sema_node.hpp"
+#include "ast/ast_node.hpp"
 
 namespace cmsl::exec
 {

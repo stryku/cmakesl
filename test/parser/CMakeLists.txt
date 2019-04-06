@@ -1,6 +1,5 @@
 set(CMAKESL_TEST_SOURCES 
     main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/parser_test.cpp
         parser2_test.cpp)
 
 
