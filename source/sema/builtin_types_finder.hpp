@@ -61,6 +61,11 @@ namespace cmsl
                 return find<token_type_t::kw_executable>("executable");
             }
 
+            const sema_type& find_reference_for(const sema_type& t) const
+            {
+                return *m_ctx.find_reference_for(t);
+            }
+
         private:
             template<unsigned N>
             lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N]) const

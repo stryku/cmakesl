@@ -116,5 +116,18 @@ namespace cmsl
             const auto found = std::find_if(std::cbegin(m_types), std::cend(m_types), pred);
             return found != std::cend(m_types) ? *found : nullptr;
         }
+
+        const sema_type *sema_context::find_reference_for(const sema_type& type) const
+        {
+            for(const auto& t : m_types)
+            {
+                if(t->is_reference() && t->referenced_type() == type)
+                {
+                    return t;
+                }
+            }
+
+            return m_parent ? m_parent->find_reference_for(type) : nullptr;
+        }
     }
 }

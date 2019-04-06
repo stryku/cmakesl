@@ -114,6 +114,7 @@ namespace cmsl
             const auto& int_type = types_finder.find_int();
             const auto& bool_type = types_finder.find_bool();
             const auto& string_type = types_finder.find_string();
+            const auto& bool_reference_type = types_finder.find_reference_for(bool_type);
 
             const auto functions = {
                 builtin_function_info{ // bool()
@@ -134,7 +135,7 @@ namespace cmsl
                         builtin_function_kind::bool_ctor_int
                 },
                 builtin_function_info{ // operator=(bool)
-                        bool_type,
+                        bool_reference_type,
                         function_signature{ make_token(token_type_t::equal, "="),
                                             { parameter_declaration{bool_type, make_id_token("") } } },
                         builtin_function_kind::bool_operator_equal
@@ -180,6 +181,7 @@ namespace cmsl
         {
             const auto types_finder = builtin_types_finder{ *this };
             const auto& int_type = types_finder.find_int();
+            const auto& int_reference_type = types_finder.find_reference_for(int_type);
             const auto& bool_type = types_finder.find_bool();
             const auto& double_type = types_finder.find_double();
             const auto& string_type = types_finder.find_string();
@@ -243,26 +245,26 @@ namespace cmsl
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_equal
                     },
-                    builtin_function_info{ // operator+=(int)
-                            int_type,
+                    builtin_function_info{ // int& operator+=(int)
+                            int_reference_type,
                             function_signature{ make_token(token_type_t::plusequal, "+="),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_plus_equal
                     },
-                    builtin_function_info{ // operator-=(int)
-                            int_type,
+                    builtin_function_info{ // int& operator-=(int)
+                            int_reference_type,
                             function_signature{ make_token(token_type_t::minusequal, "-="),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_minus_equal
                     },
-                    builtin_function_info{ // operator*=(int)
-                            int_type,
+                    builtin_function_info{ // int& operator*=(int)
+                            int_reference_type,
                             function_signature{ make_token(token_type_t::starequal, "*="),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_star_equal
                     },
-                    builtin_function_info{ // operator/=(int)
-                            int_type,
+                    builtin_function_info{ // int& operator/=(int)
+                            int_reference_type,
                             function_signature{ make_token(token_type_t::slashequal, "/="),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::int_operator_slash_equal
@@ -317,6 +319,7 @@ namespace cmsl
             const auto& int_type = types_finder.find_int();
             const auto& bool_type = types_finder.find_bool();
             const auto& double_type = types_finder.find_double();
+            const auto& double_reference_type = types_finder.find_reference_for(double_type);
             const auto& string_type = types_finder.find_string();
 
             const auto functions = {
@@ -361,32 +364,32 @@ namespace cmsl
                                                 { parameter_declaration{double_type, make_id_token("") } } },
                             builtin_function_kind::double_operator_slash
                     },
-                    builtin_function_info{ // operator=(double)
-                            double_type,
+                    builtin_function_info{ // double& operator=(double)
+                            double_reference_type,
                             function_signature{ make_token(token_type_t::equal, "="),
                                                 { parameter_declaration{double_type, make_id_token("") } } },
                             builtin_function_kind::double_operator_equal
                     },
-                    builtin_function_info{ // operator+=(double)
-                            double_type,
+                    builtin_function_info{ // double&operator+=(double)
+                            double_reference_type,
                             function_signature{ make_token(token_type_t::plusequal, "+="),
                                                 { parameter_declaration{double_type, make_id_token("") } } },
                             builtin_function_kind::double_operator_plus_equal
                     },
-                    builtin_function_info{ // operator-=(double)
-                            double_type,
+                    builtin_function_info{ // double&operator-=(double)
+                            double_reference_type,
                             function_signature{ make_token(token_type_t::minusequal, "-="),
                                                 { parameter_declaration{double_type, make_id_token("") } } },
                             builtin_function_kind::double_operator_minus_equal
                     },
-                    builtin_function_info{ // operator*=(double)
-                            double_type,
+                    builtin_function_info{ // double&operator*=(double)
+                            double_reference_type,
                             function_signature{ make_token(token_type_t::starequal, "*="),
                                                 { parameter_declaration{double_type, make_id_token("") } } },
                             builtin_function_kind::double_operator_star_equal
                     },
-                    builtin_function_info{ // operator/=(double)
-                            double_type,
+                    builtin_function_info{ // double& operator/=(double)
+                            double_reference_type,
                             function_signature{ make_token(token_type_t::slashequal, "/="),
                                                 { parameter_declaration{double_type, make_id_token("") } } },
                             builtin_function_kind::double_operator_slash_equal
@@ -441,6 +444,7 @@ namespace cmsl
             const auto& bool_type = types_finder.find_bool();
             const auto& double_type = types_finder.find_double();
             const auto& string_type = types_finder.find_string();
+            const auto& string_reference_type = types_finder.find_reference_for(string_type);
             const auto& void_type = types_finder.find_string();
 
 
@@ -516,7 +520,7 @@ namespace cmsl
                             builtin_function_kind::string_operator_plus
                     },
                     builtin_function_info{ // string& operator+=(string)
-                            string_type, // Todo: reference
+                            string_reference_type,
                             function_signature{ make_id_token("+="),
                                                 { parameter_declaration{string_type, make_id_token("") } } },
                             builtin_function_kind::string_operator_plus_equal
@@ -527,20 +531,20 @@ namespace cmsl
                             builtin_function_kind::string_clear
                     },
                     builtin_function_info{ // string& insert(int position, string str)
-                            string_type, // Todo: reference
+                            string_reference_type,
                             function_signature{ make_id_token("insert"),
                                                 { parameter_declaration{int_type, make_id_token("") },
                                                   parameter_declaration{string_type, make_id_token("") }} },
                             builtin_function_kind::string_insert_pos_str
                     },
                     builtin_function_info{ // string& erase(int position)
-                            string_type, // Todo: reference
+                            string_reference_type,
                             function_signature{ make_id_token("erase"),
                                                 { parameter_declaration{int_type, make_id_token("") } } },
                             builtin_function_kind::string_erase_pos
                     },
                     builtin_function_info{ // string& erase(int position, int count)
-                            string_type, // Todo: reference
+                            string_reference_type,
                             function_signature{ make_id_token("erase"),
                                                 { parameter_declaration{int_type, make_id_token("") },
                                                   parameter_declaration{int_type, make_id_token("") } } },
@@ -559,7 +563,7 @@ namespace cmsl
                             builtin_function_kind::string_ends_with
                     },
                     builtin_function_info{ // string& replace(int pos, int count, string str)
-                            string_type, // Todo: reference
+                            string_reference_type,
                             function_signature{ make_id_token("replace"),
                                                 { parameter_declaration{int_type, make_id_token("") },
                                                   parameter_declaration{int_type, make_id_token("") },
