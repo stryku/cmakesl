@@ -1,5 +1,4 @@
 #include "exec/instance/instance_value_variant.hpp"
-#include "exec/instance/generic_instance_value.hpp"
 #include "exec/instance/instance.hpp"
 #include "instance_value_variant.hpp"
 #include "common/assert.hpp"
@@ -65,10 +64,6 @@ namespace cmsl
                     case which_t::executable:
                     {
                         reassign(std::move(moved.m_value.m_executable), which_t::executable);
-                    }break;
-                    case which_t::generic:
-                    {
-                        reassign(std::move(moved.m_value.m_generic), which_t::generic);
                     }break;
                 }
             }
@@ -142,11 +137,6 @@ namespace cmsl
                 assign(std::move(val), which_t::executable);
             }
 
-            instance_value_variant::instance_value_variant(generic_instance_value val)
-            {
-                assign(std::move(val), which_t::generic);
-            }
-
             instance_value_variant::~instance_value_variant()
             {
                 destruct();
@@ -202,21 +192,6 @@ namespace cmsl
                 reassign(std::move(value), which_t::string);
             }
 
-            const generic_instance_value& instance_value_variant::get_generic_cref() const
-            {
-                return m_value.m_generic;
-            }
-
-            generic_instance_value& instance_value_variant::get_generic_ref()
-            {
-                return m_value.m_generic;
-            }
-
-            void instance_value_variant::set_generic(generic_instance_value value)
-            {
-                reassign(std::move(value), which_t::generic);
-            }
-
             template <typename T>
             void instance_value_variant::reassign(T&& val, which_t w)
             {
@@ -264,10 +239,6 @@ namespace cmsl
                     case which_t::executable:
                     {
                         assign(other.m_executable, w);
-                    }break;
-                    case which_t::generic:
-                    {
-                        assign(other.m_generic, w);
                     }break;
                 }
             }
@@ -324,11 +295,6 @@ namespace cmsl
                 construct(m_value.m_executable, std::move(value));
             }
 
-            void instance_value_variant::construct(generic_instance_value value)
-            {
-                construct(m_value.m_generic, std::move(value));
-            }
-
             template <typename Value>
             void instance_value_variant::construct(Value& destination, Value&& value)
             {
@@ -365,10 +331,6 @@ namespace cmsl
                     {
                         call_dtor(m_value.m_executable);
                     } break;
-                    case which_t::generic:
-                    {
-                        call_dtor(m_value.m_generic);
-                    } break;
                 }
             }
 
@@ -392,7 +354,6 @@ switch (m_which) \
     case which_t::string: return get_string_cref() op rhs.get_string_cref(); \
     case which_t::version: return get_version_cref() op rhs.get_version_cref(); \
     case which_t::list: return get_list_cref() op rhs.get_list_cref(); \
-    case which_t::generic: return get_generic_cref() op rhs.get_generic_cref(); \
     case which_t::project: break; \
     case which_t::library: break; \
     case which_t::executable: break; \

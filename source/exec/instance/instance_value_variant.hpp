@@ -1,7 +1,6 @@
 #pragma once
 
 #include "exec/instance/int_alias.hpp"
-#include "exec/instance/generic_instance_value.hpp"
 #include "exec/instance/version_value.hpp"
 #include "exec/instance/list_value.hpp"
 #include "exec/instance/instance_value_alternative.hpp"
@@ -29,7 +28,6 @@ namespace cmsl
                     value(int_t val) : m_int{ val } {}
                     value(double val) : m_double{ val } {}
                     value(std::string val) : m_string{ std::move(val) } {}
-                    value(generic_instance_value val) : m_generic{ std::move(val) } {}
                     value(version_value val) : m_version{ std::move(val) } {}
                     value(list_value val) : m_list{ std::move(val) } {}
                     value(project_value val) : m_project{ std::move(val) } {}
@@ -46,7 +44,6 @@ namespace cmsl
                     project_value m_project;
                     library_value m_library;
                     executable_value m_executable;
-                    generic_instance_value m_generic;
                 } m_value;
 
             public:
@@ -77,7 +74,6 @@ namespace cmsl
                 instance_value_variant(library_value val);
                 instance_value_variant(executable_value val);
 
-                instance_value_variant(generic_instance_value val);
                 ~instance_value_variant();
 
                 which_t which() const;
@@ -115,10 +111,6 @@ namespace cmsl
                 executable_value& get_executable_ref();
                 void set_executable(executable_value value);
 
-                const generic_instance_value& get_generic_cref() const;
-                generic_instance_value& get_generic_ref();
-                void set_generic(generic_instance_value value);
-
                 template <typename Visitor>
                 auto visit(Visitor&& visitor)
                 {
@@ -133,7 +125,6 @@ namespace cmsl
                         case which_t::project: return visitor(get_project_cref());
                         case which_t::library: return visitor(get_library_cref());
                         case which_t::executable: return visitor(get_executable_cref());
-                        case which_t::generic: return visitor(get_generic_cref());
                     }
                 }
 
@@ -165,7 +156,6 @@ namespace cmsl
                 void construct(project_value value);
                 void construct(library_value value);
                 void construct(executable_value value);
-                void construct(generic_instance_value value);
 
                 template <typename T>
                 void call_dtor(T& val);

@@ -13,36 +13,6 @@ namespace cmsl
 {
     namespace ast
     {
-        class ast_context;
-        class type;
-
-        class user_function_node : public function
-        {
-        public:
-            user_function_node(ast_context& ctx,
-                               const type& return_type,
-                               cmsl::string_view name,
-                               std::vector<parameter_declaration> params,
-                               std::unique_ptr<block_node> body);
-
-            cmsl::string_view get_name() const override;
-            const block_node& get_body() const;
-            const type& get_return_type() const;
-
-            const ast_context& get_ast_context() const;
-
-            const std::vector<parameter_declaration>& get_params_declarations() const override;
-
-            const type& get_type() const override;
-
-        private:
-            ast_context& m_ast_context;
-            const type& m_return_type;
-            cmsl::string_view m_name;
-            std::vector<parameter_declaration> m_params;
-            std::unique_ptr<block_node> m_body;
-        };
-
         class user_function_node2 : public ast_node
         {
         public:

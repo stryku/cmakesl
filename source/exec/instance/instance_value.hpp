@@ -1,7 +1,6 @@
 #pragma once
 
 #include "exec/instance/int_alias.hpp"
-#include "exec/instance/generic_instance_value.hpp"
 #include "exec/instance/instance_value_variant.hpp"
 
 namespace cmsl
@@ -19,13 +18,6 @@ namespace cmsl
 
                 generic
             };
-
-
-            using instance_value_old_t = boost::variant<bool,
-                                                    int_t,
-                                                    double,
-                                                    std::string,
-                                                    generic_instance_value>;
 
             using instance_value_t = instance_value_variant;
 

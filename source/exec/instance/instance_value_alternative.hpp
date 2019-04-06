@@ -16,8 +16,7 @@ namespace cmsl
                 list,
                 project,
                 library,
-                executable,
-                generic
+                executable
             };
         }
     }
