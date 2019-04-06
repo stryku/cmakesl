@@ -18,7 +18,7 @@ namespace cmsl
         struct function_signature
         {
             lexer::token::token name;
-            std::vector<parameter_declaration> params;
+            std::vector<parameter_declaration> params{};
         };
     }
 }
