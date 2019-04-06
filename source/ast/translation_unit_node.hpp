@@ -8,10 +8,8 @@
 
 #include <algorithm>
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         class translation_unit_node : public ast_node
         {
         public:
@@ -43,5 +41,4 @@ namespace cmsl
         private:
             nodes_t m_nodes;
         };
-    }
 }

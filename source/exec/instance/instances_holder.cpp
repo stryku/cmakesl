@@ -5,12 +5,8 @@
 
 #include "common/assert.hpp"
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             instances_holder::instances_holder(const sema::sema_context_interface& sema_ctx)
                 : m_sema_ctx{ &sema_ctx }
             {}
@@ -79,6 +75,4 @@ namespace cmsl
                 m_instances.emplace_back(std::move(instance));
                 return ptr;
             }
-        }
-    }
 }

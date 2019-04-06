@@ -2,10 +2,8 @@
 
 #include "sema/sema_context.hpp"
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         class builtin_types_finder
         {
         private:
@@ -91,5 +89,4 @@ namespace cmsl
         private:
             const sema_context_interface& m_ctx;
         };
-    }
 }

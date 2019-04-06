@@ -2,10 +2,8 @@
 
 #include "common/algorithm.hpp"
 
-namespace cmsl
+namespace cmsl::exec
 {
-    namespace exec
-    {
         scope_context::scope_context(scope_context* parent)
             : m_parent{ parent }
             , m_class_instance{ nullptr }
@@ -59,5 +57,4 @@ namespace cmsl
         {
             return get_variable(name) != nullptr;
         }
-    }
 }

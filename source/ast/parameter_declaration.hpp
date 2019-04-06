@@ -4,10 +4,8 @@
 
 #include <optional>
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         class type;
         struct parameter_declaration
         {
@@ -20,5 +18,4 @@ namespace cmsl
             type_representation ty;
             lexer::token::token name;
         };
-    }
 }

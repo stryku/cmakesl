@@ -2,12 +2,8 @@
 #include "common/enum_class_utils.hpp"
 
 
-namespace cmsl
+namespace cmsl::test::common
 {
-    namespace test
-    {
-        namespace common
-        {
             using token_type_t = lexer::token::token_type;
             using token_t = lexer::token::token;
 
@@ -180,6 +176,4 @@ namespace cmsl
 
                 return token_t{ type, source_range, cmsl::source_view{ source } };
             }
-        }
-    }
 }

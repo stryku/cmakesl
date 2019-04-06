@@ -2,10 +2,8 @@
 
 #include "lexer/token/token.hpp"
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         class type_representation
         {
         public:
@@ -120,5 +118,4 @@ namespace cmsl
             // 'template parameters' of generic types.
             std::vector<type_representation> m_nested_types;
         };
-    }
 }

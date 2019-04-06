@@ -2,10 +2,8 @@
 
 #include "exec/instance/instance.hpp"
 
-namespace cmsl
+namespace cmsl::exec
 {
-    namespace exec
-    {
         class execution_context;
 
         namespace inst
@@ -30,5 +28,4 @@ namespace cmsl
                 instance& m_instance;
             };
         }
-    }
 }

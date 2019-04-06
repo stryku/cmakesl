@@ -2,12 +2,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::exec::test
 {
-    namespace exec
-    {
-        namespace test
-        {
             using ::testing::Eq;
             using IntTypeSmokeTest = ExecutionSmokeTest;
 
@@ -222,6 +218,4 @@ namespace cmsl
                 const auto result = m_executor.execute(source);
                 EXPECT_THAT(result, Eq(1));
             }
-        }
-    }
 }

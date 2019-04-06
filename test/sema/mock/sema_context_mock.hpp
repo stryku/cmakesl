@@ -4,12 +4,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::sema::test
 {
-    namespace sema
-    {
-        namespace test
-        {
             class sema_context_mock : public sema_context_interface
             {
             public:
@@ -23,6 +19,4 @@ namespace cmsl
                 MOCK_CONST_METHOD1(find_function_in_this_scope, single_scope_function_lookup_result_t(const lexer::token::token&));
                 MOCK_CONST_METHOD0(type, context_type());
             };
-        }
-    }
 }

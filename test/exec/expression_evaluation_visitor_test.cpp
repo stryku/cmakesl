@@ -15,12 +15,8 @@
 #include <gmock/gmock.h>
 #include "exec/instance/int_alias.hpp"
 
-namespace cmsl
+namespace cmsl::exec::test
 {
-    namespace exec
-    {
-        namespace test
-        {
             using ::testing::_;
             using ::testing::ByRef;
             using ::testing::ByMove;
@@ -372,6 +368,4 @@ namespace cmsl
 
                 EXPECT_THAT(visitor.result, Eq(&result_instance));
             }
-        }
-    }
 }

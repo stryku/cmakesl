@@ -6,10 +6,8 @@ namespace
     cmsl::errors::test::errors_observer_mock* errors_observer_mock_ptr;
 }
 
-namespace cmsl
+namespace cmsl::errors
 {
-    namespace errors
-    {
         namespace test
         {
             errors_observer_mock::errors_observer_mock()
@@ -28,5 +26,4 @@ namespace cmsl
         {
             errors_observer_mock_ptr->notify_error(error);
         }
-    }
 }

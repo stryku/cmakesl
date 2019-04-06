@@ -6,12 +6,9 @@
 
 namespace cmsl
 {
-    namespace exec
+    namespace exec::inst
     {
-        namespace inst
-        {
             class instance;
-        }
     }
 
     namespace sema

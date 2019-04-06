@@ -5,10 +5,8 @@
 #include <cctype>
 #include <cassert>
 
-namespace cmsl
+namespace cmsl::lexer
 {
-    namespace lexer
-    {
         lexer::lexer(errors::errors_observer& err_observer, source_t source)
             : m_err_observer{ err_observer }
             , m_source{ source }
@@ -355,5 +353,4 @@ namespace cmsl
 
             return tokens;
         }
-    }
 }

@@ -2,11 +2,10 @@
 
 #include "common/string.hpp"
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         // Todo: Move to sema namespace
+        // Todo: is it needed?
         enum class type_kind
         {
             k_void,
@@ -22,5 +21,4 @@ namespace cmsl
         };
 
         type_kind type_kind_from_string(cmsl::string_view str);
-    }
 }

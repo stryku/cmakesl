@@ -3,10 +3,8 @@
 #include "common/source_location.hpp"
 #include <string>
 
-namespace cmsl
+namespace cmsl::errors
 {
-    namespace errors
-    {
         enum class error_type
         {
             error,
@@ -22,5 +20,4 @@ namespace cmsl
             error_type type;
             source_range range;
         };
-    }
 }

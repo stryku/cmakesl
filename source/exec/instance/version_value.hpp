@@ -4,12 +4,8 @@
 
 #include <string>
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             class version_value
             {
             public:
@@ -36,6 +32,4 @@ namespace cmsl
                 int_t m_patch{ 0u };
                 int_t m_tweak{ 0u };
             };
-        }
-    }
 }

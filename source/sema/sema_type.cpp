@@ -4,10 +4,8 @@
 
 #include <algorithm>
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         sema_type::sema_type(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members)
             : m_ctx{ ctx }
             , m_name{ std::move(name) }
@@ -88,5 +86,4 @@ namespace cmsl
         {
             return *m_referenced_type;
         }
-    }
 }

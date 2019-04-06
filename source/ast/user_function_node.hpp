@@ -9,10 +9,8 @@
 
 #include <memory>
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         class user_function_node2 : public ast_node
         {
         public:
@@ -59,5 +57,4 @@ namespace cmsl
             params_t m_params;
             std::unique_ptr<block_node> m_body;
         };
-    }
 }

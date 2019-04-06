@@ -5,12 +5,8 @@
 #include <memory>
 #include <deque>
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             class instance;
 
             class list_value
@@ -96,6 +92,4 @@ namespace cmsl
             private:
                 container_t m_list;
             };
-        }
-    }
 }

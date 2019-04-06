@@ -6,12 +6,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             class instance;
 
             namespace test
@@ -28,6 +24,4 @@ namespace cmsl
                     MOCK_METHOD0(create2_void, instance*());
                 };
             }
-        }
-    }
 }

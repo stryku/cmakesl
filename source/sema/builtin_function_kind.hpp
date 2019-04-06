@@ -1,9 +1,7 @@
 #pragma once
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         enum class builtin_function_kind
         {
             // Stand-alone functions:
@@ -160,5 +158,4 @@ namespace cmsl
             executable_name,
             executable_link_to
         };
-    }
 }

@@ -3,9 +3,7 @@ set(EXEC_SOURCES
         execution_context.cpp
     execution_context.hpp
         function_caller.hpp
-    fundamental_instance.cpp
-    fundamental_instance.hpp
-    scope_context.cpp
+        scope_context.cpp
     scope_context.hpp
 
         instance/instance.hpp

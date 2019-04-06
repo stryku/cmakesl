@@ -3,14 +3,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::exec::inst::test
 {
-    namespace exec
-    {
-        namespace inst
-        {
-            namespace test
-            {
                 class instance_mock : public instance
                 {
                 private:
@@ -26,7 +20,4 @@ namespace cmsl
                     MOCK_CONST_METHOD1(get_sema_function, sema::single_scope_function_lookup_result_t(lexer::token::token));
                     MOCK_CONST_METHOD0(get_sema_type, const sema::sema_type&());
                 };
-            }
-        }
-    }
 }

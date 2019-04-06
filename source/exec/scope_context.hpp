@@ -5,10 +5,8 @@
 
 #include <unordered_map>
 
-namespace cmsl
+namespace cmsl::exec
 {
-    namespace exec
-    {
         class scope_context
         {
         private:
@@ -32,5 +30,4 @@ namespace cmsl
             scope_context* m_parent;
             instance_t* m_class_instance;
         };
-    }
 }

@@ -2,13 +2,7 @@
 
 #include <cstdint>
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             using int_t = std::int64_t;
-        }
-    }
 }

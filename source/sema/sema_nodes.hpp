@@ -15,10 +15,8 @@ void visit(sema_node_visitor& visitor) const override \
     visitor.visit(*this); \
 }
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         class expression_node : public sema_node
         {
         public:
@@ -656,5 +654,4 @@ namespace cmsl
             const sema_type& m_type;
             std::vector<std::unique_ptr<expression_node>> m_values;
         };
-    }
 }

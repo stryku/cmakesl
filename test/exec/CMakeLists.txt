@@ -2,13 +2,10 @@ set(TESTS_NAME exec_test)
 
 set(SOURCES 
     main.cpp
-        test_context_provider.hpp
         mock/instance_mock.hpp
-    mock/infix_expression_mock.hpp
         mock/function_caller_mock.hpp
-        mock/infix_expression_visitor_mock.hpp
         mock/instances_holder_mock.hpp
-        fake/fake_function_caller.hpp mock/cmake_facade_mock.hpp
+        mock/cmake_facade_mock.hpp
 
         expression_evaluation_visitor_test.cpp mock/identifiers_context_mock.hpp instance_value_variant_test.cpp bool_type_smoke_test.cpp int_type_smoke_test.cpp double_type_smoke_test.cpp string_type_smoke_tests.cpp version_type_smoke_tests.cpp list_type_smoke_test.cpp builtin_function_caller2_test.cpp reference_smoke_tests.cpp
         smoke_test_fixture.hpp)

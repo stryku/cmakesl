@@ -4,10 +4,8 @@
 
 #include <memory>
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         class block_node;
 
         class conditional_node : public ast_node
@@ -25,5 +23,4 @@ namespace cmsl
             std::unique_ptr<ast_node> m_condition;
             std::unique_ptr<block_node> m_block;
         };
-    }
 }

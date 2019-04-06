@@ -11,10 +11,8 @@ namespace cmsl
         class cmake_facade;
     }
 
-    namespace exec
+    namespace exec::inst
     {
-        namespace inst
-        {
             class list_value;
 
             class project_value
@@ -33,6 +31,5 @@ namespace cmsl
             private:
                 std::string m_name;
             };
-        }
     }
 }

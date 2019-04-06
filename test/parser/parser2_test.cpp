@@ -18,13 +18,9 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::ast::test
 {
-    namespace ast
-    {
         // Todo: Consider adding semicolon at the end of all test tokens
-        namespace test
-        {
             using token_t = cmsl::lexer::token::token;
             using token_type_t = cmsl::lexer::token::token_type;
             using tokens_container_t = cmsl::lexer::token::token_container_t;
@@ -1511,6 +1507,4 @@ namespace cmsl
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
             }
-        }
-    }
 }

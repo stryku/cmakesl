@@ -3,10 +3,8 @@
 #include "lexer/token/token.hpp"
 #include <vector>
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         class sema_type;
 
         struct parameter_declaration
@@ -20,5 +18,4 @@ namespace cmsl
             lexer::token::token name;
             std::vector<parameter_declaration> params{};
         };
-    }
 }

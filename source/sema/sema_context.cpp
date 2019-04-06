@@ -6,10 +6,8 @@
 
 #include <algorithm>
 
-namespace cmsl
+namespace cmsl::sema
 {
-    namespace sema
-    {
         sema_context::sema_context(const sema_context_interface* parent, context_type context_type)
             : m_parent{ parent }
             , m_context_type{ context_type }
@@ -130,5 +128,4 @@ namespace cmsl
 
             return m_parent ? m_parent->find_reference_for(type) : nullptr;
         }
-    }
 }

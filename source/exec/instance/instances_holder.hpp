@@ -7,11 +7,6 @@
 
 namespace cmsl
 {
-    namespace ast
-    {
-        class type;
-    }
-
     namespace sema
     {
         class sema_context_interface;
@@ -24,7 +19,6 @@ namespace cmsl
         namespace inst
         {
             class instance;
-            class contexted_instance_factory;
 
             // class used to handle lifetime of 'rvalue' instances created during full expression execution
             class instances_holder : public instances_holder_interface

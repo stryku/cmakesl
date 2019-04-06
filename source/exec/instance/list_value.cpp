@@ -6,12 +6,8 @@
 
 #include <algorithm>
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             list_value &list_value::operator=(list_value &&) = default;
             list_value::list_value(list_value &&) = default;
 
@@ -358,6 +354,4 @@ namespace cmsl
 
                 return found == cend() ? -1 : std::distance(cbegin(), found);
             }
-        }
-    }
 }

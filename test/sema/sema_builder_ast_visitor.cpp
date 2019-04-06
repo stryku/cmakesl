@@ -25,12 +25,8 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl
+namespace cmsl::sema::test
 {
-    namespace sema
-    {
-        namespace test
-        {
             using ::testing::StrictMock;
             using ::testing::Return;
             using ::testing::ReturnRef;
@@ -1260,6 +1256,4 @@ namespace cmsl
                 EXPECT_THAT(&casted_node->lhs().type(), Eq(&lhs_and_rhs_type));
                 EXPECT_THAT(&casted_node->rhs().type(), Eq(&lhs_and_rhs_type));
             }
-        }
-    }
 }

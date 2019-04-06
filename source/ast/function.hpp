@@ -4,12 +4,8 @@
 #include "ast/ast_node.hpp"
 #include "ast/parameter_declaration.hpp"
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
-        class ast_context;
-
         class function : public ast_node
         {
         public:
@@ -28,5 +24,4 @@ namespace cmsl
             // Todo: fixme
             void visit(ast_node_visitor& visitor) const override {};
         };
-    }
 }

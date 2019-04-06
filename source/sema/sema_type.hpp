@@ -10,11 +10,8 @@
 #include <utility>
 #include <vector>
 
-namespace cmsl
+namespace cmsl::sema
 {
-
-    namespace sema
-    {
         class sema_context_interface;
         class sema_function;
         class sema_type_builder;
@@ -64,5 +61,4 @@ namespace cmsl
 
             const sema_type* m_referenced_type{ nullptr };
         };
-    }
 }

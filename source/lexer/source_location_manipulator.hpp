@@ -3,10 +3,8 @@
 #include "common/source_location.hpp"
 #include "common/string.hpp"
 
-namespace cmsl
+namespace cmsl::lexer
 {
-    namespace lexer
-    {
         class source_location_manipulator
         {
         public:
@@ -29,5 +27,4 @@ namespace cmsl
             const cmsl::string_view m_source;
             source_location m_source_loc;
         };
-    }
 }

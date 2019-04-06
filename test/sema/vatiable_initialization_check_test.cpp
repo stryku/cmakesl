@@ -10,7 +10,6 @@
 
 namespace cmsl::sema::test
 {
-
     using ::testing::StrictMock;
     using ::testing::Return;
     using ::testing::ReturnRef;

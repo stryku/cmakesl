@@ -6,12 +6,8 @@
 #include "project_value.hpp"
 
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             project_value::project_value(const std::string& name)
                  : m_name{ name }
             {}
@@ -49,6 +45,4 @@ namespace cmsl
 
                 return collected_sources;
             }
-        }
-    }
 }

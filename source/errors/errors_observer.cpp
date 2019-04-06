@@ -16,10 +16,8 @@ namespace
     }
 }
 
-namespace cmsl
+namespace cmsl::errors
 {
-    namespace errors
-    {
         void errors_observer::nofify_error(const error& error)
         {
             std::cout << error.source_path << ':'
@@ -29,5 +27,4 @@ namespace cmsl
             << error.message << '\n'
             << error.line_snippet << '\n';
         }
-    }
 }

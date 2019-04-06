@@ -7,12 +7,8 @@
 #include <gmock/gmock.h>
 #include <sema/builtin_function_kind.hpp>
 
-namespace cmsl
+namespace cmsl::exec::test
 {
-    namespace exec
-    {
-        namespace test
-        {
             using testing::StrictMock;
             using testing::Return;
             using testing::ReturnRef;
@@ -114,6 +110,4 @@ namespace cmsl
 
                 EXPECT_THAT(result.get(), Eq(return_instance_ptr));
             }
-        }
-    }
 }

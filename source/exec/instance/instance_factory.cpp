@@ -7,12 +7,8 @@
 #include "sema/sema_context.hpp"
 #include "sema/builtin_types_finder.hpp"
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             std::unique_ptr<instance> instance_factory2::create(instance_value_t value, const sema::sema_context_interface &ctx) const
             {
                 const auto type_getter = [&value, &ctx]() -> const sema::sema_type&
@@ -79,6 +75,4 @@ namespace cmsl
             {
                 return std::make_unique<simple_unnamed_instance>(type, std::move(value));
             }
-        }
-    }
 }

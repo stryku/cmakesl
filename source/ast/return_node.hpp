@@ -1,14 +1,11 @@
 #pragma once
 
 #include "ast/ast_node.hpp"
-#include "ast/infix_node.hpp"
 
 #include <memory>
 
-namespace cmsl
+namespace cmsl::ast
 {
-    namespace ast
-    {
         class return_node : public ast_node
         {
         public:
@@ -21,5 +18,4 @@ namespace cmsl
         private:
             std::unique_ptr<ast_node> m_expression;
         };
-    }
 }

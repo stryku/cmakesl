@@ -1,11 +1,7 @@
 #pragma once
 
-namespace cmsl
+namespace cmsl::exec::inst
 {
-    namespace exec
-    {
-        namespace inst
-        {
             enum class instance_value_alternative
             {
                 bool_,
@@ -18,6 +14,4 @@ namespace cmsl
                 library,
                 executable
             };
-        }
-    }
 }

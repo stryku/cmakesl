@@ -5,29 +5,21 @@ set(AST_SOURCES
         conditional_node.cpp
     conditional_node.hpp
     ast_node_type.hpp
-    ast_node.cpp
-    ast_node.hpp
+        ast_node.hpp
         user_function_node.hpp
     function.hpp
-    builtin_function.hpp
-    if_else_node.cpp
+        if_else_node.cpp
     if_else_node.hpp
-        infix_node.cpp
-    infix_node.hpp
-    parameter_declaration.hpp
+        parameter_declaration.hpp
         parser2.cpp
     parser2.hpp
     return_node.cpp
     return_node.hpp
-        type_node.hpp
         type_kind.cpp
     type_kind.hpp
-    type_operator_support_check.cpp
-    type_operator_support_check.hpp
-    while_node.cpp
+        while_node.cpp
     while_node.hpp
-        builtin_function_kind.hpp
-    variable_declaration_node.hpp
+        variable_declaration_node.hpp
         type_representation.hpp
         infix_nodes.hpp translation_unit_node.hpp ast_node_visitor.hpp parser_utils.cpp parser_utils.hpp type_parser.cpp type_parser.hpp parse_errors_observer.hpp type_parsing_result.hpp)
 
