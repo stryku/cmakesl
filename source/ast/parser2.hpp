@@ -45,7 +45,9 @@ namespace cmsl
             struct function_call_values
             {
                 token_t name;
+                token_t open_paren;
                 std::vector<std::unique_ptr<ast_node>> params;
+                token_t close_paren;
             };
 
             std::optional<token_t> eat_function_call_name();
@@ -64,12 +66,26 @@ namespace cmsl
             std::unique_ptr<ast_node> function_call();
 
             std::optional<std::vector<std::unique_ptr<ast_node>>> comma_separated_expression_list(token_type_t valid_end_of_list_token);
-            std::optional<std::vector<std::unique_ptr<ast_node>>> parameter_list();
+
+            struct call_param_list_values
+            {
+                token_t open_paren;
+                std::vector<std::unique_ptr<ast_node>> params;
+                token_t close_paren;
+            };
+            std::optional<call_param_list_values> parameter_list();
             std::optional<function_call_values> get_function_call_values();
 
             bool prepare_for_next_parameter_declaration();
             std::optional<param_declaration> get_param_declaration();
-            std::optional<std::vector<param_declaration>> param_declarations();
+
+            struct param_list_values
+            {
+                token_t open_paren;
+                std::vector<param_declaration> params;
+                token_t close_paren;
+            };
+            std::optional<param_list_values> param_declarations();
 
             std::unique_ptr<conditional_node> get_conditional_node();
 

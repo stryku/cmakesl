@@ -48,6 +48,8 @@ namespace cmsl::sema::test
             const sema_context valid_context;
             const sema_type valid_type{ valid_context, ast::type_representation{ token_identifier("foo") }, {} };
 
+    const auto tmp_token = token_identifier("");
+
             class SemaBuilderAstVisitorTest : public ::testing::Test
             {
             protected:
@@ -211,7 +213,7 @@ namespace cmsl::sema::test
                 const auto type_ref = ast::type_representation{ token_identifier() };
                 const auto name_token = token_identifier("foo");
 
-                ast::variable_declaration_node variable_node(type_ref, name_token, nullptr);
+                ast::variable_declaration_node variable_node(type_ref, name_token, std::nullopt, tmp_token);
 
                 EXPECT_CALL(ids_ctx, register_identifier(name_token, &valid_type));
 
@@ -244,7 +246,10 @@ namespace cmsl::sema::test
                 const auto initialization_token = token_integer("42");
                 auto initializaton_node = std::make_unique<ast::int_value_node>(initialization_token);
 
-                ast::variable_declaration_node variable_node(type_representation, name_token, std::move(initializaton_node));
+                ast::variable_declaration_node variable_node(type_representation,
+                                                             name_token,
+                                                             ast::variable_declaration_node::initialization_values{tmp_token, std::move(initializaton_node) },
+                                                             tmp_token);
 
                 EXPECT_CALL(ctx, find_type(_))
                         .WillRepeatedly(Return(&valid_type));
@@ -276,7 +281,7 @@ namespace cmsl::sema::test
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 auto expr_node = std::make_unique<ast::int_value_node>( token_integer("42") );
-                ast::return_node ret_node(std::move(expr_node));
+                ast::return_node ret_node(tmp_token, std::move(expr_node), tmp_token);
 
                 EXPECT_CALL(ctx, find_type(_))
                 .WillOnce(Return(&valid_type));
@@ -303,7 +308,7 @@ namespace cmsl::sema::test
                 const auto fun_name_token = token_identifier("foo");
                 function_signature signature;
                 signature.name = fun_name_token;
-                const ast::function_call_node node{fun_name_token, {}};
+                const ast::function_call_node node{fun_name_token, tmp_token, {}, tmp_token};
 
                 const auto lookup_result = function_lookup_result_t{ { &function_mock } };
                 EXPECT_CALL(ctx, find_function(fun_name_token))
@@ -380,7 +385,7 @@ namespace cmsl::sema::test
                 ast::function_call_node::params_t ast_params;
                 ast_params.emplace_back(std::move(param1_ast_node));
                 ast_params.emplace_back(std::move(param2_ast_node));
-                const ast::function_call_node node{fun_name_token, std::move(ast_params)};
+                const ast::function_call_node node{fun_name_token, tmp_token, std::move(ast_params), tmp_token};
 
                 visitor.visit(node);
 
@@ -415,7 +420,7 @@ namespace cmsl::sema::test
 
                 ast::function_call_node::params_t ast_params;
                 ast_params.emplace_back(std::move(param1_ast_node));
-                const ast::function_call_node node{fun_name_token, std::move(ast_params)};
+                const ast::function_call_node node{fun_name_token, tmp_token, std::move(ast_params), tmp_token};
 
                 const auto lookup_result = function_lookup_result_t{ { &function_mock } };
 
@@ -463,7 +468,7 @@ namespace cmsl::sema::test
                 const auto fun_name_token = token_identifier("foo");
                 function_signature signature;
                 signature.name = fun_name_token;
-                const ast::function_call_node node{fun_name_token, {}};
+                const ast::function_call_node node{fun_name_token, tmp_token, {}, tmp_token};
 
                 const auto lookup_result = function_lookup_result_t{ { &function_mock } };
                 EXPECT_CALL(ctx, find_function(fun_name_token))
@@ -507,7 +512,7 @@ namespace cmsl::sema::test
                 const auto fun_name_token = token_identifier("bar");
                 function_signature signature;
                 signature.name = fun_name_token;
-                const ast::member_function_call_node node{ std::move(lhs_ast_node), fun_name_token, {} };
+                const ast::member_function_call_node node{ std::move(lhs_ast_node), tmp_token, fun_name_token, tmp_token, {}, tmp_token };
 
                 EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
                         .WillOnce(Return(&lhs_type));
@@ -561,7 +566,7 @@ namespace cmsl::sema::test
                 signature.name = fun_name_token;
                 signature.params .emplace_back(parameter_declaration{valid_type, param1_id_token});
                 signature.params .emplace_back(parameter_declaration{valid_type, param2_id_token});
-                const ast::member_function_call_node node{ std::move(lhs_ast_node), fun_name_token, std::move(ast_params) };
+                const ast::member_function_call_node node{ std::move(lhs_ast_node), tmp_token, fun_name_token, tmp_token, std::move(ast_params), tmp_token };
 
                 EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
                         .WillRepeatedly(Return(&lhs_type));
@@ -604,7 +609,7 @@ namespace cmsl::sema::test
                 StrictMock<identifiers_context_mock> ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                ast::block_node block{ {} };
+                ast::block_node block{ tmp_token, {}, tmp_token };
 
                 EXPECT_CALL(ids_ctx, enter_ctx());
                 EXPECT_CALL(ids_ctx, leave_ctx());
@@ -630,8 +635,8 @@ namespace cmsl::sema::test
                 auto return_type_token = token_identifier("foo");
                 auto return_type_reference = ast::type_representation{ return_type_token };
                 auto name_token = token_identifier("bar");
-                auto block = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                ast::user_function_node2 node{ return_type_reference, name_token, {}, std::move(block) };
+                auto block = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                ast::user_function_node2 node{ return_type_reference, name_token, tmp_token, {}, tmp_token, std::move(block) };
 
                 EXPECT_CALL(ctx, find_type(return_type_reference))
                         .WillOnce(Return(&valid_type));
@@ -672,8 +677,8 @@ namespace cmsl::sema::test
                 ast::user_function_node2::params_t params;
                 params.emplace_back(ast::param_declaration{param_type_reference, param_name_token});
 
-                auto block = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                ast::user_function_node2 node{ return_type_reference, name_token, std::move(params), std::move(block) };
+                auto block = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                ast::user_function_node2 node{ return_type_reference, name_token, tmp_token, std::move(params), tmp_token, std::move(block) };
 
 
                 EXPECT_CALL(ctx, find_type(return_type_reference))
@@ -711,7 +716,7 @@ namespace cmsl::sema::test
 
                 auto class_name_token = token_identifier("foo");
 
-                ast::class_node2 node{class_name_token, {}};
+                ast::class_node2 node{tmp_token, class_name_token, tmp_token, {}, tmp_token, tmp_token};
 
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
@@ -749,11 +754,11 @@ namespace cmsl::sema::test
                 const auto member_type_token = token_kw_int();
                 const auto member_type_reference = ast::type_representation{ member_type_token };
 
-                auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, nullptr);
+                auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, std::nullopt, tmp_token);
                 ast::class_node2::nodes_t nodes;
                 nodes.emplace_back(std::move(member_declaration));
 
-                ast::class_node2 node{class_name_token, std::move(nodes)};
+                ast::class_node2 node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
 
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
@@ -796,14 +801,16 @@ namespace cmsl::sema::test
                 const auto function_return_type_token = token_kw_int();
                 const auto function_return_type_reference = ast::type_representation{ function_return_type_token };
                 const auto function_name_token = token_identifier("bar");
-                auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto function_body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
                 auto function = std::make_unique<ast::user_function_node2>(function_return_type_reference,
                                                                            function_name_token,
+                                                                           tmp_token,
                                                                            ast::user_function_node2::params_t{},
+                                                                           tmp_token,
                                                                            std::move(function_body));
                 ast::class_node2::nodes_t nodes;
                 nodes.emplace_back(std::move(function));
-                ast::class_node2 node{ class_name_token, std::move(nodes)};
+                ast::class_node2 node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
 
                 // Class type lookup
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
@@ -849,21 +856,23 @@ namespace cmsl::sema::test
                 const auto member_name_token = token_identifier("baz");
                 const auto member_type_token = token_kw_int();
                 const auto member_type_reference = ast::type_representation{ member_type_token };
-                auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, nullptr);
+                auto member_declaration = std::make_unique<ast::variable_declaration_node>(member_type_reference, member_name_token, std::nullopt, tmp_token);
 
                 const auto function_return_type_token = token_kw_int();
                 const auto function_return_type_reference = ast::type_representation{ function_return_type_token };
                 const auto function_name_token = token_identifier("bar");
-                auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto function_body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
                 auto function = std::make_unique<ast::user_function_node2>(function_return_type_reference,
                                                                            function_name_token,
+                                                                           tmp_token,
                                                                            ast::user_function_node2::params_t{},
+                                                                           tmp_token,
                                                                            std::move(function_body));
 
                 ast::class_node2::nodes_t nodes;
                 nodes.emplace_back(std::move(member_declaration));
                 nodes.emplace_back(std::move(function));
-                ast::class_node2 node{ class_name_token, std::move(nodes)};
+                ast::class_node2 node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
 
                 // Class type lookup.
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
@@ -909,10 +918,10 @@ namespace cmsl::sema::test
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
-                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+                auto body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(tmp_token, std::move(condition_ast_node), tmp_token, std::move(body));
 
-                ast::while_node node(std::move(conditional_ast_node));
+                ast::while_node node(tmp_token, std::move(conditional_ast_node));
 
                 EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
                         .WillOnce(Return(&valid_type));
@@ -939,13 +948,16 @@ namespace cmsl::sema::test
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
-                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+                auto body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(tmp_token,
+                                                                                    std::move(condition_ast_node),
+                                                                                    tmp_token,
+                                                                                    std::move(body));
 
                 ast::if_else_node::ifs_t ifs;
-                ifs.emplace_back(std::move(conditional_ast_node));
+                ifs.emplace_back(ast::if_else_node::if_values{std::nullopt, tmp_token, std::move(conditional_ast_node) });
 
-                ast::if_else_node node(std::move(ifs), nullptr);
+                ast::if_else_node node(std::move(ifs), std::nullopt);
 
                 EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
                         .WillOnce(Return(&valid_type));
@@ -977,15 +989,19 @@ namespace cmsl::sema::test
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
-                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+                auto body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(tmp_token, std::move(condition_ast_node), tmp_token, std::move(body));
 
                 ast::if_else_node::ifs_t ifs;
-                ifs.emplace_back(std::move(conditional_ast_node));
+                ifs.emplace_back(ast::if_else_node::if_values{std::nullopt, tmp_token, std::move(conditional_ast_node) });
 
-                auto else_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto else_body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                ast::if_else_node::last_else_value else_value{
+                    tmp_token,
+                    std::move(else_body)
+                };
 
-                ast::if_else_node node(std::move(ifs), std::move(else_body));
+                ast::if_else_node node(std::move(ifs), std::move(else_value));
 
                 EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
                         .WillOnce(Return(&valid_type));
@@ -1017,19 +1033,19 @@ namespace cmsl::sema::test
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
-                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+                auto body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(tmp_token, std::move(condition_ast_node), tmp_token, std::move(body));
 
                 const auto condition_identifier_token_2 = token_identifier("bar");
                 auto condition_ast_node_2 = std::make_unique<ast::id_node>(condition_identifier_token_2);
-                auto body_2 = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                auto conditional_ast_node_2 = std::make_unique<ast::conditional_node>(std::move(condition_ast_node_2), std::move(body_2));
+                auto body_2 = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                auto conditional_ast_node_2 = std::make_unique<ast::conditional_node>(tmp_token, std::move(condition_ast_node_2), tmp_token, std::move(body_2));
 
                 ast::if_else_node::ifs_t ifs;
-                ifs.emplace_back(std::move(conditional_ast_node));
-                ifs.emplace_back(std::move(conditional_ast_node_2));
+                ifs.emplace_back(ast::if_else_node::if_values{std::nullopt, tmp_token, std::move(conditional_ast_node) });
+                ifs.emplace_back(ast::if_else_node::if_values{tmp_token, tmp_token, std::move(conditional_ast_node_2) });
 
-                ast::if_else_node node(std::move(ifs), nullptr);
+                ast::if_else_node node(std::move(ifs), std::nullopt);
 
                 EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
                         .WillOnce(Return(&valid_type));
@@ -1064,21 +1080,25 @@ namespace cmsl::sema::test
 
                 const auto condition_identifier_token = token_identifier("foo");
                 auto condition_ast_node = std::make_unique<ast::id_node>(condition_identifier_token);
-                auto body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                auto conditional_ast_node = std::make_unique<ast::conditional_node>(std::move(condition_ast_node), std::move(body));
+                auto body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                auto conditional_ast_node = std::make_unique<ast::conditional_node>(tmp_token, std::move(condition_ast_node), tmp_token, std::move(body));
 
                 const auto condition_identifier_token_2 = token_identifier("bar");
                 auto condition_ast_node_2 = std::make_unique<ast::id_node>(condition_identifier_token_2);
-                auto body_2 = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                auto conditional_ast_node_2 = std::make_unique<ast::conditional_node>(std::move(condition_ast_node_2), std::move(body_2));
+                auto body_2 = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                auto conditional_ast_node_2 = std::make_unique<ast::conditional_node>(tmp_token, std::move(condition_ast_node_2), tmp_token, std::move(body_2));
 
                 ast::if_else_node::ifs_t ifs;
-                ifs.emplace_back(std::move(conditional_ast_node));
-                ifs.emplace_back(std::move(conditional_ast_node_2));
+                ifs.emplace_back(ast::if_else_node::if_values{std::nullopt, tmp_token, std::move(conditional_ast_node) });
+                ifs.emplace_back(ast::if_else_node::if_values{tmp_token, tmp_token, std::move(conditional_ast_node_2) });
 
-                auto else_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
+                auto else_body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                ast::if_else_node::last_else_value else_value{
+                        tmp_token,
+                        std::move(else_body)
+                };
 
-                ast::if_else_node node(std::move(ifs), std::move(else_body));
+                ast::if_else_node node(std::move(ifs), std::move(else_value));
 
                 EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
                         .WillOnce(Return(&valid_type));
@@ -1121,7 +1141,7 @@ namespace cmsl::sema::test
                 const auto lhs_type_name_token = token_identifier("baz");
                 sema_type lhs_type{ ctx, ast::type_representation{ lhs_type_name_token }, std::move(members)};
 
-                ast::class_member_access_node node{ std::move(lhs_node), member_name_token };
+                ast::class_member_access_node node{ std::move(lhs_node), tmp_token,  member_name_token };
 
                 EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
                         .WillOnce(Return(&lhs_type));
@@ -1147,16 +1167,26 @@ namespace cmsl::sema::test
                 const auto variable_name_token = token_identifier("foo");
                 const auto variable_type_token = token_kw_int();
                 const auto variable_type_reference = ast::type_representation{ variable_type_token };
-                auto variable_declaration_ast_node = std::make_unique<ast::variable_declaration_node>(variable_type_reference, variable_name_token, nullptr);
+                auto variable_declaration_ast_node = std::make_unique<ast::variable_declaration_node>(variable_type_reference, variable_name_token, std::nullopt, tmp_token);
 
                 const auto function_return_type_token = token_kw_double();
                 const auto function_return_type_reference = ast::type_representation{ function_return_type_token };
                 const auto function_name_token = token_identifier("bar");
-                auto function_body = std::make_unique<ast::block_node>(ast::block_node::expressions_t{});
-                auto function_ast_node = std::make_unique<ast::user_function_node2>(function_return_type_reference, function_name_token, ast::user_function_node2::params_t{}, std::move(function_body));
+                auto function_body = std::make_unique<ast::block_node>(tmp_token, ast::block_node::expressions_t{}, tmp_token);
+                auto function_ast_node = std::make_unique<ast::user_function_node2>(function_return_type_reference,
+                                                                                    function_name_token,
+                                                                                    tmp_token,
+                                                                                    ast::user_function_node2::params_t{},
+                                                                                    tmp_token,
+                                                                                    std::move(function_body));
 
                 const auto class_name_token = token_identifier("baz");
-                auto class_ast_node = std::make_unique<ast::class_node2>(class_name_token, ast::class_node2::nodes_t{});
+                auto class_ast_node = std::make_unique<ast::class_node2>(tmp_token,
+                                                                         class_name_token,
+                                                                         tmp_token,
+                                                                         ast::class_node2::nodes_t{},
+                                                                         tmp_token,
+                                                                         tmp_token);
 
                 ast::translation_unit_node::nodes_t nodes;
                 nodes.emplace_back(std::move(variable_declaration_ast_node));

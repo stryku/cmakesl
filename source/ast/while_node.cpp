@@ -1,12 +1,14 @@
 #include "ast/while_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/ast_node_visitor.hpp"
+#include "while_node.hpp"
+
 
 namespace cmsl::ast
 {
 
-        while_node::while_node(std::unique_ptr<conditional_node> node)
-            : ast_node{ ast_node_type::while_ }
+        while_node::while_node(token_t while_kw, std::unique_ptr<conditional_node> node)
+            : m_while_kw{ while_kw }
             , m_node{ std::move(node) }
         {}
 
@@ -22,4 +24,9 @@ namespace cmsl::ast
         {
             visitor.visit(*this);
         }
+
+    ast_node::token_t while_node::while_kw() const
+    {
+        return m_while_kw;
+    }
 }

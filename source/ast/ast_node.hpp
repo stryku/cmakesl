@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast/ast_node_type.hpp"
+#include "lexer/token/token.hpp"
 
 namespace cmsl::ast
 {
@@ -9,6 +10,8 @@ namespace cmsl::ast
     class ast_node
     {
     public:
+        using token_t = lexer::token::token;
+
         ast_node()
         {}
 
