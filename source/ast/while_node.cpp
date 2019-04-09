@@ -29,4 +29,14 @@ namespace cmsl::ast
     {
         return m_while_kw;
     }
+
+    source_location while_node::begin_location() const
+    {
+        return m_while_kw.src_range().begin;
+    }
+
+    source_location while_node::end_location() const
+    {
+        return m_node->end_location();
+    }
 }

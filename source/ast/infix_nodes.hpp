@@ -37,6 +37,16 @@ namespace cmsl::ast
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_lhs->begin_location();
+            }
+
+            source_location end_location() const override
+            {
+                return m_rhs->end_location();
+            }
+
         private:
             std::unique_ptr<ast_node> m_lhs;
             token_t m_operator;
@@ -71,6 +81,16 @@ namespace cmsl::ast
             void visit(ast_node_visitor &visitor) const override
             {
                 visitor.visit(*this);
+            }
+
+            source_location begin_location() const override
+            {
+                return m_lhs->begin_location();
+            }
+
+            source_location end_location() const override
+            {
+                return m_member_name.src_range().end;
             }
 
         private:
@@ -133,6 +153,16 @@ namespace cmsl::ast
             {
                 visitor.visit(*this);
             }
+
+            source_location begin_location() const override
+            {
+                return get_name().src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return close_paren().src_range().end;
+            }
         };
 
         class member_function_call_node : public call_node
@@ -165,6 +195,16 @@ namespace cmsl::ast
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_lhs->begin_location();
+            }
+
+            source_location end_location() const override
+            {
+                return close_paren().src_range().end;
+            }
+
         private:
             std::unique_ptr<ast_node> m_lhs;
             token_t m_dot;
@@ -180,6 +220,16 @@ namespace cmsl::ast
             token_t get_token() const
             {
                 return m_token;
+            }
+
+            source_location begin_location() const override
+            {
+                return m_token.src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return m_token.src_range().end;
             }
 
         protected:
@@ -255,6 +305,16 @@ namespace cmsl::ast
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_identifer.src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return m_identifer.src_range().end;
+            }
+
         private:
             lexer::token::token m_identifer;
         };
@@ -288,6 +348,16 @@ namespace cmsl::ast
             void visit(ast_node_visitor &visitor) const override
             {
                 visitor.visit(*this);
+            }
+
+            source_location begin_location() const override
+            {
+                return m_open_brace.src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return m_close_brace.src_range().end;
             }
 
         private:

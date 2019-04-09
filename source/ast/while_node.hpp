@@ -20,6 +20,8 @@ namespace cmsl::ast
             const conditional_node& get_node() const;
 
             void visit(ast_node_visitor &visitor) const override;
+            source_location begin_location() const override;
+            source_location end_location() const override;
 
         private:
             token_t m_while_kw;

@@ -76,6 +76,16 @@ namespace cmsl::ast
             visitor.visit(*this);
         }
 
+        source_location begin_location() const override
+        {
+            return m_class_kw.src_range().begin;
+        }
+
+        source_location end_location() const override
+        {
+            return m_semicolon.src_range().end;
+        }
+
     private:
         token_t m_class_kw;
         token_t m_name;

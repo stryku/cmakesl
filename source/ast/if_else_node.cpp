@@ -40,5 +40,15 @@ namespace cmsl::ast
 
             return std::nullopt;
     }
+
+    source_location if_else_node::begin_location() const
+    {
+        return m_ifs.front().if_kw.src_range().begin;
+    }
+
+    source_location if_else_node::end_location() const
+    {
+        return m_else ? m_else->body->end_location() : m_ifs.back().conditional->end_location();
+    }
 }
 

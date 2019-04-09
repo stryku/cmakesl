@@ -44,4 +44,14 @@ namespace cmsl::ast
     {
         visitor.visit(*this);
     }
+
+    source_location conditional_node::begin_location() const
+    {
+        return m_open_paren.src_range().begin;
+    }
+
+    source_location conditional_node::end_location() const
+    {
+        return m_block->end_location();
+    }
 }

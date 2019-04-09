@@ -42,4 +42,14 @@ namespace cmsl::ast
     {
         return m_close_brace;
     }
+
+    source_location block_node::begin_location() const
+    {
+        return m_open_brace.src_range().begin;
+    }
+
+    source_location block_node::end_location() const
+    {
+        return m_close_brace.src_range().end;
+    }
 }

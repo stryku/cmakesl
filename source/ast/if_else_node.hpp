@@ -40,6 +40,8 @@ namespace cmsl::ast
             const block_node* get_else_body() const;
 
             void visit(ast_node_visitor &visitor) const override;
+            source_location begin_location() const override;
+            source_location end_location() const override;
 
         private:
             ifs_t m_ifs;

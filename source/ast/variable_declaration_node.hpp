@@ -62,6 +62,16 @@ namespace cmsl::ast
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_ty.tokens().front().src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return m_semicolon.src_range().end;
+            }
+
         private:
             type_representation m_ty;
             lexer::token::token m_name;
