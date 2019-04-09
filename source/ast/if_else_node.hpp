@@ -10,21 +10,39 @@ namespace cmsl::ast
         class conditional_node;
         class block_node;
 
+
         class if_else_node : public ast_node
         {
         public:
-            using ifs_t = std::vector<std::unique_ptr<conditional_node>>;
+            struct if_values
+            {
+                std::optional<token_t> else_kw;
+                token_t if_kw;
+                std::unique_ptr<conditional_node> conditional;
+            };
 
-            explicit if_else_node(ifs_t m_ifs, std::unique_ptr<block_node> m_else);
+            struct last_else_value
+            {
+                token_t else_kw;
+                std::unique_ptr<block_node> body;
+            };
+
+
+            using ifs_t = std::vector<if_values>;
+
+            explicit if_else_node(ifs_t m_ifs, std::optional<last_else_value> else_);
             ~if_else_node();
 
+            // Todo: remove get_
             const ifs_t& get_ifs() const;
-            const block_node* get_else() const;
+
+            std::optional<token_t> else_kw() const;
+            const block_node* get_else_body() const;
 
             void visit(ast_node_visitor &visitor) const override;
 
         private:
             ifs_t m_ifs;
-            std::unique_ptr<block_node> m_else;
+            std::optional<last_else_value> m_else;
         };
 }

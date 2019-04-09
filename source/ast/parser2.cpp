@@ -69,8 +69,8 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto parameters = param_declarations();
-            if (!parameters)
+            auto param_values = param_declarations();
+            if(!param_values)
             {
                 return nullptr;
             }
@@ -84,24 +84,28 @@ namespace cmsl::ast
             // Let's pretend that ctors return something.
             return std::make_unique<user_function_node2>(type_representation{ class_name },
                                                         *type_name,
-                                                        std::move(*parameters),
+                                                        param_values->open_paren,
+                                                        std::move(param_values->params),
+                                                        param_values->close_paren,
                                                         std::move(block_expr));
         }
 
         std::unique_ptr<ast_node> parser2::class_()
         {
-            if (!eat(token_type_t::kw_class))
+            const auto class_kw = eat(token_type_t::kw_class);
+            if (!class_kw)
             {
                 return nullptr;
             }
 
-            auto name = eat(token_type_t::identifier);
+            const auto name = eat(token_type_t::identifier);
             if (!name)
             {
                 return nullptr;
             }
 
-            if (!eat(token_type_t::open_brace))
+            const auto open_brace = eat(token_type_t::open_brace);
+            if (!open_brace)
             {
                 return nullptr;
             }
@@ -142,17 +146,24 @@ namespace cmsl::ast
                 }
             }
 
-            if (!eat(token_type_t::close_brace))
+            const auto close_brace =eat(token_type_t::close_brace);
+            if (!close_brace)
             {
                 return nullptr;
             }
 
-            if (!eat(token_type_t::semicolon))
+            const auto semicolon = eat(token_type_t::semicolon);
+            if (!semicolon)
             {
                 return nullptr;
             }
 
-            return std::make_unique<class_node2>(*name, std::move(class_nodes));
+            return std::make_unique<class_node2>(*class_kw,
+                                                 *name,
+                                                 *open_brace,
+                                                 std::move(class_nodes),
+                                                 *close_brace,
+                                                 *semicolon);
         }
 
         std::unique_ptr<ast_node> parser2::function()
@@ -169,8 +180,8 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto parameters = param_declarations();
-            if (!parameters)
+            auto param_values = param_declarations();
+            if (!param_values)
             {
                 return nullptr;
             }
@@ -182,12 +193,18 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            return std::make_unique<user_function_node2>(*ty, *name, std::move(*parameters), std::move(block_node));
+            return std::make_unique<user_function_node2>(*ty,
+                                                         *name,
+                                                         param_values->open_paren,
+                                                         std::move(param_values->params),
+                                                         param_values->close_paren,
+                                                         std::move(block_node));
         }
 
         std::unique_ptr<ast_node> parser2::get_return_node()
         {
-            if (!eat(token_type_t::kw_return))
+            const auto return_kw =eat(token_type_t::kw_return);
+            if (!return_kw)
             {
                 return nullptr;
             }
@@ -198,12 +215,15 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            if(!eat(token_type_t::semicolon))
+            const auto semicolon =eat(token_type_t::semicolon);
+            if(!semicolon)
             {
                 return nullptr;
             }
 
-            return std::make_unique<return_node>(std::move(e));
+            return std::make_unique<return_node>(*return_kw,
+                                                 std::move(e),
+                                                 *semicolon);
         }
 
         bool parser2::declaration_starts() const
@@ -222,7 +242,8 @@ namespace cmsl::ast
 
         std::unique_ptr<conditional_node> parser2::get_conditional_node()
         {
-            if(!eat(token_type_t::open_paren))
+            const auto open_paren =eat(token_type_t::open_paren);
+            if(!open_paren)
             {
                 return nullptr;
             }
@@ -233,7 +254,8 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            if(!eat(token_type_t::close_paren))
+            const auto close_paren =eat(token_type_t::close_paren);
+            if(!close_paren)
             {
                 return nullptr;
             }
@@ -245,7 +267,10 @@ namespace cmsl::ast
             }
 
 
-            return std::make_unique<conditional_node>(std::move(condition), std::move(b));
+            return std::make_unique<conditional_node>(*open_paren,
+                                                      std::move(condition),
+                                                      *close_paren,
+                                                      std::move(b));
         }
 
         std::unique_ptr<ast_node> parser2::get_if_else_node()
@@ -257,11 +282,13 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            std::vector<std::unique_ptr<conditional_node>> ifs;
+            std::vector<if_else_node::if_values> ifs;
 
+            std::optional<token_t> else_kw;
             while(current_is(token_type_t::kw_if))
             {
-                if(!eat(token_type_t::kw_if))
+                const auto if_kw = eat(token_type_t::kw_if);
+                if(!if_kw)
                 {
                     return nullptr;
                 }
@@ -272,36 +299,43 @@ namespace cmsl::ast
                     return nullptr;
                 }
 
-                ifs.emplace_back(std::move(if_node));
+                auto if_values = if_else_node::if_values{
+                    else_kw,
+                    *if_kw,
+                    std::move(if_node)
+                };
+                ifs.emplace_back(std::move(if_values));
 
                 if(current_is(token_type_t::kw_else))
                 {
                     const auto next_type = peek();
                     if(next_type == token_type_t::kw_if)
                     {
-                        eat(token_type_t::kw_else);
+                        else_kw = eat(token_type_t::kw_else);
                     }
                 }
             }
 
-            std::unique_ptr<block_node> else_block;
+            std::optional<if_else_node::last_else_value> last_else;
             if(current_is(token_type_t::kw_else))
             {
-                eat(token_type_t::kw_else);
-                else_block = block();
+                else_kw = eat(token_type_t::kw_else);
+                auto else_block = block();
 
                 if(!else_block)
                 {
                     return nullptr;
                 }
+                last_else = if_else_node::last_else_value{ *else_kw, std::move(else_block) };
             }
 
-            return std::make_unique<if_else_node>(std::move(ifs), std::move(else_block));
+            return std::make_unique<if_else_node>(std::move(ifs), std::move(last_else));
         }
 
         std::unique_ptr<ast_node> parser2::get_while_node()
         {
-            if(!eat(token_type_t::kw_while))
+            const auto while_kw =eat(token_type_t::kw_while);
+            if(!while_kw)
             {
                 return nullptr;
             }
@@ -312,12 +346,13 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            return std::make_unique<while_node>(std::move(conditional_node));
+            return std::make_unique<while_node>(*while_kw, std::move(conditional_node));
         }
 
         std::unique_ptr<block_node> parser2::block()
         {
-            if (!eat(token_type_t::open_brace))
+            const auto open_brace =eat(token_type_t::open_brace);
+            if (!open_brace)
             {
                 return nullptr;
             }
@@ -365,12 +400,13 @@ namespace cmsl::ast
                 nodes.emplace_back(std::move(node));
             }
 
-            if (!eat(token_type_t::close_brace))
+            const auto close_brace =eat(token_type_t::close_brace);
+            if (!close_brace)
             {
                 return nullptr;
             }
 
-            return std::make_unique<block_node>(std::move(nodes));
+            return std::make_unique<block_node>(*open_brace, std::move(nodes), *close_brace);
         }
 
         std::optional<param_declaration> parser2::get_param_declaration()
@@ -425,11 +461,12 @@ namespace cmsl::ast
             return true;
         }
 
-        std::optional<std::vector<param_declaration>> parser2::param_declarations()
+        std::optional<parser2::param_list_values> parser2::param_declarations()
         {
             std::vector<param_declaration> params;
 
-            if (!eat(token_type_t::open_paren))
+            const auto open_paren = eat(token_type_t::open_paren);
+            if (!open_paren)
             {
                 return {};
             }
@@ -462,12 +499,13 @@ namespace cmsl::ast
                 }
             }
 
-            if(!eat(token_type_t::close_paren))
+            const auto close_paren = eat(token_type_t::close_paren);
+            if(!close_paren)
             {
                 return {};
             }
 
-            return params;
+            return param_list_values{*open_paren, std::move(params), *close_paren};
         }
 
         std::unique_ptr<ast_node> parser2::variable_declaration()
@@ -484,24 +522,29 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            std::unique_ptr<ast_node> initialization;
-
+            std::optional<variable_declaration_node::initialization_values> initialization_vals;
             if(current_is(token_type_t::equal))
             {
-                eat(); // equal
-                initialization = expr();
+                const auto equal_kw = eat(); // equal
+                auto initialization = expr();
                 if(!initialization)
                 {
                     return nullptr;
                 }
+
+                initialization_vals = variable_declaration_node::initialization_values{
+                    *equal_kw,
+                    std::move(initialization)
+                };
             }
 
-            if(!eat(token_type_t::semicolon))
+            const auto semicolon =eat(token_type_t::semicolon);
+            if(!semicolon)
             {
                 return nullptr;
             }
 
-            return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization));
+            return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization_vals), *semicolon);
         }
 
         std::optional<type_representation> parser2::type()
@@ -585,12 +628,13 @@ namespace cmsl::ast
                 while(!is_at_end() &&
                         is_current_same_precedence_operator())
                 {
-                    eat(); // dot
+                    const auto dot = eat(); // dot
                     auto lhs = std::move(f);
                     if(current_is_class_member_access())
                     {
                         const auto member_name = eat();
                         f = std::make_unique<class_member_access_node>(std::move(lhs),
+                                                                       *dot,
                                                                        *member_name);
                     }
                     else // class member function call
@@ -602,8 +646,11 @@ namespace cmsl::ast
                         }
 
                         f = std::make_unique<member_function_call_node>(std::move(lhs),
+                                                                        *dot,
                                                                         vals->name,
-                                                                        std::move(vals->params));
+                                                                        vals->open_paren,
+                                                                        std::move(vals->params),
+                                                                        vals->close_paren);
                     }
                 }
 
@@ -732,11 +779,12 @@ namespace cmsl::ast
 
                 if(current_is(token_type_t::dot))
                 {
-                    eat(token_type_t::dot);
+                    const auto dot = eat(token_type_t::dot);
                     if(current_is_class_member_access())
                     {
                         const auto member_name = eat();
                         return std::make_unique<class_member_access_node>(std::move(operator_expr),
+                                                                          *dot,
                                                                           *member_name);
                     }
                     else // class member function call
@@ -749,8 +797,11 @@ namespace cmsl::ast
                         }
 
                         return std::make_unique<member_function_call_node>(std::move(operator_expr),
+                                                                           *dot,
                                                                            vals->name,
-                                                                           std::move(vals->params));
+                                                                           vals->open_paren,
+                                                                           std::move(vals->params),
+                                                                           vals->close_paren);
                     }
                 }
 
@@ -761,16 +812,21 @@ namespace cmsl::ast
         {
             function_call_values vals;
 
-            vals.name = *eat_function_call_name();
+            const auto name = *eat_function_call_name();
             auto params = parameter_list();
             if(!params)
             {
                 return {};
             }
 
-            vals.params = std::move(*params);
+            std::move(*params);
 
-            return std::move(vals);
+            return function_call_values{
+                name,
+                params->open_paren,
+                std::move(params->params),
+                params->close_paren
+            };
         }
 
         std::optional<std::vector<std::unique_ptr<ast_node>>> parser2::comma_separated_expression_list(token_type_t valid_end_of_list_token)
@@ -806,9 +862,13 @@ namespace cmsl::ast
             return std::move(exprs);
         }
 
-        std::optional<std::vector<std::unique_ptr<ast_node>>> parser2::parameter_list()
+        std::optional<parser2::call_param_list_values> parser2::parameter_list()
         {
-            eat(token_type_t::open_paren);
+            const auto open_paren = eat(token_type_t::open_paren);
+            if(!open_paren)
+            {
+                return {};
+            }
 
             auto params = comma_separated_expression_list(token_type_t::close_paren);
             if(!params)
@@ -816,13 +876,17 @@ namespace cmsl::ast
                 return {};
             }
 
-            if(!eat(token_type_t::close_paren))
+            const auto close_paren =eat(token_type_t::close_paren);
+            if(!close_paren)
             {
                 return {};
             }
 
-
-            return std::move(params);
+            return call_param_list_values{
+                *open_paren,
+                std::move(*params),
+                *close_paren
+            };
         }
 
         std::unique_ptr<ast_node> parser2::function_call()
@@ -833,7 +897,10 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            return std::make_unique<function_call_node>(vals->name, std::move(vals->params));
+            return std::make_unique<function_call_node>(vals->name,
+                                                        vals->open_paren,
+                                                        std::move(vals->params),
+                                                        vals->close_paren);
         }
 
         bool parser2::function_declaration_starts() const
@@ -853,8 +920,8 @@ namespace cmsl::ast
 
         std::unique_ptr<ast_node> parser2::initializer_list()
         {
-            auto begin = eat(token_type_t::open_brace);
-            if(!begin)
+            auto open_brace = eat(token_type_t::open_brace);
+            if(!open_brace)
             {
                 return nullptr;
             }
@@ -865,13 +932,13 @@ namespace cmsl::ast
                 return {};
             }
 
-            auto end =eat(token_type_t::close_brace);
-            if(!end)
+            auto close_brace =eat(token_type_t::close_brace);
+            if(!close_brace)
             {
                 return nullptr;
             }
 
-            return std::make_unique<initializer_list_node>(*begin, *end, std::move(*values));
+            return std::make_unique<initializer_list_node>(*open_brace, std::move(*values), *close_brace);
         }
 
 }

@@ -12,7 +12,10 @@ namespace cmsl::ast
     public:
         using expressions_t = std::vector<std::unique_ptr<ast_node>>;
 
-        block_node(expressions_t expressions);
+        block_node(token_t open_brace, expressions_t expressions, token_t close_brace);
+
+        token_t open_brace() const;
+        token_t close_brace() const;
 
         // Todo: rename to get_nodes
         std::vector<const ast_node*> get_expressions() const;
@@ -20,6 +23,8 @@ namespace cmsl::ast
         void visit(ast_node_visitor& visitor) const override;
 
     private:
+        token_t m_open_brace;
         expressions_t m_expressions;
+        token_t m_close_brace;
     };
 }

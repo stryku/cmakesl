@@ -158,9 +158,9 @@ namespace cmsl::sema
         {
             std::vector<std::unique_ptr<conditional_node>> ifs;
 
-            for(const auto& cond_node : node.get_ifs())
+            for(const auto& if_ : node.get_ifs())
             {
-                auto cond = visit_child_node<conditional_node>(*cond_node);
+                auto cond = visit_child_node<conditional_node>(*if_.conditional);
                 if(!cond)
                 {
                     return;
@@ -171,7 +171,7 @@ namespace cmsl::sema
 
             std::unique_ptr<block_node> else_body;
 
-            if(auto else_node = node.get_else())
+            if(auto else_node = node.get_else_body())
             {
                 auto ig = ids_guard();
 
@@ -838,7 +838,7 @@ namespace cmsl::sema
         {
             if(node.values().empty())
             {
-                raise_error(node.begin_end().first, "initializer lsit must contain values");
+                raise_error(node.open_brace(), "initializer lsit must contain values");
                 return;
             }
 
@@ -856,7 +856,7 @@ namespace cmsl::sema
                 const auto& expr_type = expression->type();
                 if(value_type && *value_type != expr_type)
                 {
-                    raise_error(node.begin_end().first, "all values of initializer list must have the same type");
+                    raise_error(node.open_brace(), "all values of initializer list must have the same type");
                     return;
                 }
 
@@ -887,7 +887,7 @@ namespace cmsl::sema
             if(!type)
             {
                 // Should be impossible to get here.
-                raise_error(node.begin_end().first, "could not create initalizer_list type");
+                raise_error(node.open_brace(), "could not create initalizer_list type");
                 return;
             }
 
