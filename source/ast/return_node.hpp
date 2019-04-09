@@ -19,6 +19,9 @@ namespace cmsl::ast
 
             void visit(ast_node_visitor &visitor) const override;
 
+            source_location begin_location() const override;
+            source_location end_location() const override;
+
         private:
             token_t m_return_kw;
             std::unique_ptr<ast_node> m_expression;

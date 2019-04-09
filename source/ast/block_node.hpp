@@ -21,6 +21,8 @@ namespace cmsl::ast
         std::vector<const ast_node*> get_expressions() const;
 
         void visit(ast_node_visitor& visitor) const override;
+        source_location begin_location() const override;
+        source_location end_location() const override;
 
     private:
         token_t m_open_brace;

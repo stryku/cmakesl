@@ -36,7 +36,17 @@ namespace cmsl::ast
             void visit(ast_node_visitor& visitor) const override
             {
                 visitor.visit(*this);
-            };
+            }
+
+            source_location begin_location() const override
+            {
+                return (!m_nodes.empty()) ? m_nodes.front()->begin_location() : source_location{};
+            }
+
+            source_location end_location() const override
+            {
+                return (!m_nodes.empty()) ? m_nodes.front()->end_location() : source_location{};
+            }
 
         private:
             nodes_t m_nodes;

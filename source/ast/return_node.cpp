@@ -30,4 +30,14 @@ namespace cmsl::ast
     {
         return m_semicolon;
     }
+
+    source_location return_node::begin_location() const
+    {
+            return m_return_kw.src_range().begin;
+    }
+
+    source_location return_node::end_location() const
+    {
+        return m_semicolon.src_range().end;
+    }
 }

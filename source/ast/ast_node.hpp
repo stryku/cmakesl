@@ -3,33 +3,40 @@
 #include "ast/ast_node_type.hpp"
 #include "lexer/token/token.hpp"
 
-namespace cmsl::ast
+namespace cmsl
 {
-    class ast_node_visitor;
-
-    class ast_node
+    struct source_location;
+    
+    namespace ast
     {
-    public:
-        using token_t = lexer::token::token;
+        class ast_node_visitor;
 
-        ast_node()
-        {}
-
-        ast_node(ast_node_type type)
-            : m_type{ type }
-        {}
-
-        virtual ~ast_node()
-        {}
-
-        ast_node_type get_type() const
+        class ast_node
         {
-            return m_type;
-        }
+        public:
+            using token_t = lexer::token::token;
 
-        virtual void visit(ast_node_visitor& visitor) const = 0;
+            ast_node()
+            {}
 
-    private:
-        ast_node_type m_type;
-    };
+            ast_node(ast_node_type type)
+                    : m_type{type}
+            {}
+
+            virtual ~ast_node()
+            {}
+
+            ast_node_type get_type() const
+            {
+                return m_type;
+            }
+
+            virtual void visit(ast_node_visitor &visitor) const = 0;
+            virtual source_location begin_location() const = 0;
+            virtual source_location end_location() const = 0;
+
+        private:
+            ast_node_type m_type;
+        };
+    }
 }

@@ -65,6 +65,16 @@ namespace cmsl::ast
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_return_type.tokens().front().src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return m_body->end_location();
+            }
+
         private:
             type_representation m_return_type;
             token_t m_name;
