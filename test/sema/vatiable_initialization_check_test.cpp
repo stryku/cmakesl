@@ -1,15 +1,16 @@
-
 #include "sema/sema_nodes.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/variable_initialization_checker.hpp"
 
 #include "test/common/tokens.hpp"
+#include "test/ast/mock/ast_node_mock.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"
 
 #include <gmock/gmock.h>
 
 namespace cmsl::sema::test
 {
+    using ::testing::NiceMock;
     using ::testing::StrictMock;
     using ::testing::Return;
     using ::testing::ReturnRef;
@@ -26,9 +27,19 @@ namespace cmsl::sema::test
 
     using check_result_t = variable_initialization_checker::check_result;
 
-    TEST(VariableInitializationCheck, NonReferenceInitializedFromNonReference_ReturnsCanInitialize)
+class VariableInitializationCheck : public ::testing::Test
+{
+public:
+    auto init_expression_mock()
     {
-        StrictMock<expression_node_mock> init_expression;
+        static auto ast_node = NiceMock<ast::test::ast_node_mock>{};
+        return StrictMock<expression_node_mock>{ ast_node };
+    }
+};
+
+    TEST_F(VariableInitializationCheck, NonReferenceInitializedFromNonReference_ReturnsCanInitialize)
+    {
+        auto init_expression = init_expression_mock();
 
         EXPECT_CALL(init_expression, type())
                 .WillOnce(ReturnRef(valid_type));
@@ -39,9 +50,9 @@ namespace cmsl::sema::test
         EXPECT_THAT(result, Eq(check_result_t::can_init));
     }
 
-    TEST(VariableInitializationCheck, NonReferenceInitializedFromReference_ReturnsCanInitialize)
+    TEST_F(VariableInitializationCheck, NonReferenceInitializedFromReference_ReturnsCanInitialize)
     {
-        StrictMock<expression_node_mock> init_expression;
+        auto init_expression = init_expression_mock();
 
         sema_type expression_type{ sema_type_reference{ valid_type } };
 
@@ -54,9 +65,9 @@ namespace cmsl::sema::test
         EXPECT_THAT(result, Eq(check_result_t::can_init));
     }
 
-    TEST(VariableInitializationCheck, ReferenceInitializedFromReference_ReturnsCanInitialize)
+    TEST_F(VariableInitializationCheck, ReferenceInitializedFromReference_ReturnsCanInitialize)
     {
-        StrictMock<expression_node_mock> init_expression;
+        auto init_expression = init_expression_mock();
 
         sema_type variable_type{ sema_type_reference{ valid_type } };
         sema_type expression_type{ sema_type_reference{ valid_type } };
@@ -70,9 +81,9 @@ namespace cmsl::sema::test
         EXPECT_THAT(result, Eq(check_result_t::can_init));
     }
 
-    TEST(VariableInitializationCheck, ReferenceInitializedFromNonReferenceNonTemporaryValue_ReturnsCanInitialize)
+    TEST_F(VariableInitializationCheck, ReferenceInitializedFromNonReferenceNonTemporaryValue_ReturnsCanInitialize)
     {
-        StrictMock<expression_node_mock> init_expression;
+        auto init_expression = init_expression_mock();
 
         sema_type variable_type{ sema_type_reference{ valid_type } };
 
@@ -88,9 +99,9 @@ namespace cmsl::sema::test
         EXPECT_THAT(result, Eq(check_result_t::can_init));
     }
 
-    TEST(VariableInitializationCheck, ReferenceInitializedFromNonReferenceTemporaryValue_ReturnsReferenceInitFromTemporaryValue)
+    TEST_F(VariableInitializationCheck, ReferenceInitializedFromNonReferenceTemporaryValue_ReturnsReferenceInitFromTemporaryValue)
     {
-        StrictMock<expression_node_mock> init_expression;
+        auto init_expression = init_expression_mock();
 
         sema_type variable_type{ sema_type_reference{ valid_type } };
 
@@ -106,9 +117,9 @@ namespace cmsl::sema::test
         EXPECT_THAT(result, Eq(check_result_t::reference_init_from_temporary_value));
     }
 
-    TEST(VariableInitializationCheck, NonReferenceFromNonReferenceOfDifferentType_ReturnsDifferentTypes)
+    TEST_F(VariableInitializationCheck, NonReferenceFromNonReferenceOfDifferentType_ReturnsDifferentTypes)
     {
-        StrictMock<expression_node_mock> init_expression;
+        auto init_expression = init_expression_mock();
 
         EXPECT_CALL(init_expression, type())
                 .WillRepeatedly(ReturnRef(different_type));
@@ -119,9 +130,9 @@ namespace cmsl::sema::test
         EXPECT_THAT(result, Eq(check_result_t::different_types));
     }
 
-    TEST(VariableInitializationCheck, NonReferenceFromReferenceOfDifferentType_ReturnsDifferentTypes)
+    TEST_F(VariableInitializationCheck, NonReferenceFromReferenceOfDifferentType_ReturnsDifferentTypes)
     {
-        StrictMock<expression_node_mock> init_expression;
+        auto init_expression = init_expression_mock();
 
         sema_type expression_type{ sema_type_reference{ different_type } };
 
@@ -134,9 +145,9 @@ namespace cmsl::sema::test
         EXPECT_THAT(result, Eq(check_result_t::different_types));
     }
 
-    TEST(VariableInitializationCheck, ReferenceFromReferenceOfDifferentType_ReturnsDifferentTypes)
+    TEST_F(VariableInitializationCheck, ReferenceFromReferenceOfDifferentType_ReturnsDifferentTypes)
     {
-        StrictMock<expression_node_mock> init_expression;
+        auto init_expression = init_expression_mock();
 
         sema_type variable_type{ sema_type_reference{ valid_type } };
         sema_type expression_type{ sema_type_reference{ different_type } };
@@ -150,9 +161,9 @@ namespace cmsl::sema::test
         EXPECT_THAT(result, Eq(check_result_t::different_types));
     }
 
-    TEST(VariableInitializationCheck, ReferenceFromNonReferenceOfDifferentType_ReturnsDifferentTypes)
+    TEST_F(VariableInitializationCheck, ReferenceFromNonReferenceOfDifferentType_ReturnsDifferentTypes)
     {
-        StrictMock<expression_node_mock> init_expression;
+        auto init_expression = init_expression_mock();
 
         sema_type variable_type{ sema_type_reference{ valid_type } };
 

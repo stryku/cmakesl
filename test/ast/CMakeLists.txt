@@ -1,6 +1,6 @@
 set(AST_TEST_SOURCES 
     main.cpp
-
+    mock/ast_node_mock.hpp
         )
 
 

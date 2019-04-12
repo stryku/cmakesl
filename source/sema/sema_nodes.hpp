@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ast/ast_node.hpp"
+
 #include "lexer/token/token.hpp"
 
 #include "sema/sema_node.hpp"
@@ -20,6 +22,8 @@ namespace cmsl::sema
         class expression_node : public sema_node
         {
         public:
+            using sema_node::sema_node;
+
             virtual const sema_type& type() const = 0;
             virtual bool produces_temporary_value() const = 0;
         };
@@ -28,8 +32,9 @@ namespace cmsl::sema
         class value_node : public expression_node
         {
         public:
-            explicit value_node(const sema_type& t, T val)
-                : m_type{ t }
+            explicit value_node(const ast::ast_node& ast_node, const sema_type& t, T val)
+                : expression_node{ ast_node }
+                , m_type{ t }
                 , m_value{ val }
             {}
 
@@ -56,8 +61,8 @@ namespace cmsl::sema
         class bool_value_node : public value_node<bool>
         {
         public:
-            explicit bool_value_node(const sema_type& t, bool val)
-                : value_node{ t, val }
+            explicit bool_value_node(const ast::ast_node& ast_node, const sema_type& t, bool val)
+                : value_node{ ast_node, t, val }
             {}
 
             VISIT_METHOD
@@ -67,8 +72,8 @@ namespace cmsl::sema
         class int_value_node : public value_node<std::int64_t>
         {
         public:
-            explicit int_value_node(const sema_type& t, std::int64_t val)
-                    : value_node{ t, val }
+            explicit int_value_node(const ast::ast_node& ast_node, const sema_type& t, std::int64_t val)
+                    : value_node{ ast_node, t, val }
             {}
 
             VISIT_METHOD
@@ -77,8 +82,8 @@ namespace cmsl::sema
         class double_value_node : public value_node<double>
         {
         public:
-            explicit double_value_node(const sema_type& t, double val)
-                    : value_node{ t, val }
+            explicit double_value_node(const ast::ast_node& ast_node, const sema_type& t, double val)
+                    : value_node{ast_node,  t, val }
             {}
 
             VISIT_METHOD
@@ -87,8 +92,8 @@ namespace cmsl::sema
         class string_value_node : public value_node<cmsl::string_view>
         {
         public:
-            explicit string_value_node(const sema_type& t, cmsl::string_view val)
-                    : value_node{ t, val }
+            explicit string_value_node(const ast::ast_node& ast_node, const sema_type& t, cmsl::string_view val)
+                    : value_node{ ast_node, t, val }
             {}
 
             VISIT_METHOD
@@ -97,8 +102,9 @@ namespace cmsl::sema
         class id_node : public expression_node
         {
         public:
-            explicit id_node(const sema_type& t, lexer::token::token id)
-                : m_type{ t }
+            explicit id_node(const ast::ast_node& ast_node, const sema_type& t, lexer::token::token id)
+                : expression_node{ ast_node }
+                , m_type{ t }
                 , m_id{ id }
             {}
 
@@ -129,8 +135,9 @@ namespace cmsl::sema
         class return_node : public expression_node
         {
         public:
-            explicit return_node(std::unique_ptr<expression_node> expr)
-                : m_expr{ std::move(expr) }
+            explicit return_node(const ast::ast_node& ast_node, std::unique_ptr<expression_node> expr)
+                : expression_node{ ast_node }
+                , m_expr{ std::move(expr) }
             {}
 
             const sema_type& type() const override
@@ -157,12 +164,14 @@ namespace cmsl::sema
         class binary_operator_node : public expression_node
         {
         public:
-            explicit binary_operator_node(std::unique_ptr<expression_node> lhs,
+            explicit binary_operator_node(const ast::ast_node& ast_node,
+                                          std::unique_ptr<expression_node> lhs,
                                           lexer::token::token op,
                                           const sema_function& operator_function,
                                           std::unique_ptr<expression_node> rhs,
                                           const sema_type& result_type)
-                : m_lhs{ std::move(lhs) }
+                : expression_node{ ast_node }
+                , m_lhs{ std::move(lhs) }
                 , m_operator{ op }
                 , m_operator_function{ operator_function }
                 , m_rhs{ std::move(rhs) }
@@ -212,8 +221,9 @@ namespace cmsl::sema
         class variable_declaration_node : public sema_node
         {
         public:
-            explicit variable_declaration_node(const sema_type& type, lexer::token::token name, std::unique_ptr<expression_node> initialization)
-                    : m_type{ type }
+            explicit variable_declaration_node(const ast::ast_node& ast_node, const sema_type& type, lexer::token::token name, std::unique_ptr<expression_node> initialization)
+                    : sema_node{ ast_node }
+                    , m_type{ type }
                     , m_name{ name }
                     , m_initialization{ std::move(initialization) }
             {}
@@ -246,8 +256,9 @@ namespace cmsl::sema
         public:
             using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
-            explicit call_node(const sema_function& function, param_expressions_t params)
-                    : m_function{ function }
+            explicit call_node(const ast::ast_node& ast_node, const sema_function& function, param_expressions_t params)
+                    : expression_node{ ast_node }
+                    , m_function{ function }
                     , m_params{ std::move(params) }
             {}
 
@@ -284,8 +295,8 @@ namespace cmsl::sema
         class function_call_node : public call_node
         {
         public:
-            explicit function_call_node(const sema_function& function, param_expressions_t params)
-                : call_node{ function, std::move(params) }
+            explicit function_call_node(const ast::ast_node& ast_node, const sema_function& function, param_expressions_t params)
+                : call_node{ast_node, function, std::move(params) }
             {}
 
             VISIT_METHOD
@@ -294,8 +305,8 @@ namespace cmsl::sema
         class member_function_call_node : public call_node
         {
         public:
-            explicit member_function_call_node(std::unique_ptr<expression_node> lhs, const sema_function& function, param_expressions_t params)
-                : call_node{ function, std::move(params) }
+            explicit member_function_call_node(const ast::ast_node& ast_node, std::unique_ptr<expression_node> lhs, const sema_function& function, param_expressions_t params)
+                : call_node{ast_node, function, std::move(params) }
                 , m_lhs{ std::move(lhs) }
             {}
 
@@ -313,8 +324,8 @@ namespace cmsl::sema
         class implicit_member_function_call_node : public call_node
         {
         public:
-            explicit implicit_member_function_call_node(const sema_function& function, param_expressions_t params)
-                    : call_node{ function, std::move(params) }
+            explicit implicit_member_function_call_node(const ast::ast_node& ast_node, const sema_function& function, param_expressions_t params)
+                    : call_node{ast_node, function, std::move(params) }
             {}
 
             VISIT_METHOD
@@ -323,8 +334,8 @@ namespace cmsl::sema
         class constructor_call_node : public call_node
         {
         public:
-            explicit constructor_call_node(const sema_type& class_type, const sema_function& function, param_expressions_t params)
-                : call_node{ function, std::move(params) }
+            explicit constructor_call_node(const ast::ast_node& ast_node, const sema_type& class_type, const sema_function& function, param_expressions_t params)
+                : call_node{ast_node, function, std::move(params) }
                 , m_class_type{ class_type }
             {}
 
@@ -342,8 +353,8 @@ namespace cmsl::sema
         class add_subdirectory_node : public call_node
         {
         public:
-            explicit add_subdirectory_node(std::unique_ptr<string_value_node> directory_name, const sema_function& function, param_expressions_t params)
-                    : call_node{ function, std::move(params) }
+            explicit add_subdirectory_node(const ast::ast_node& ast_node, std::unique_ptr<string_value_node> directory_name, const sema_function& function, param_expressions_t params)
+                    : call_node{ast_node, function, std::move(params) }
                     , m_directory_name{ std::move(directory_name) }
             {}
 
@@ -364,8 +375,9 @@ namespace cmsl::sema
             using nodes_t = std::vector<std::unique_ptr<sema_node>>;
 
         public:
-            explicit block_node(nodes_t nodes)
-                : m_nodes{ std::move(nodes) }
+            explicit block_node(const ast::ast_node& ast_node, nodes_t nodes)
+                : sema_node{ ast_node }
+                , m_nodes{ std::move(nodes) }
             {}
 
             const nodes_t& nodes() const
@@ -382,8 +394,9 @@ namespace cmsl::sema
         class function_node : public sema_node
         {
         public:
-            explicit function_node(const sema_function& function, std::unique_ptr<block_node> body)
-                : m_function{ function }
+            explicit function_node(const ast::ast_node& ast_node, const sema_function& function, std::unique_ptr<block_node> body)
+                : sema_node{ ast_node }
+                , m_function{ function }
                 , m_body{ std::move(body) }
             {}
 
@@ -416,8 +429,9 @@ namespace cmsl::sema
             using functions_t = std::vector<std::unique_ptr<function_node>>;
 
         public:
-            explicit class_node(lexer::token::token name, members_t members, functions_t functions)
-                : m_name{ name }
+            explicit class_node(const ast::ast_node& ast_node, lexer::token::token name, members_t members, functions_t functions)
+                : sema_node{ ast_node }
+                , m_name{ name }
                 , m_members{ std::move(members) }
                 , m_functions{ std::move(functions) }
             {}
@@ -443,8 +457,9 @@ namespace cmsl::sema
         class conditional_node : public sema_node
         {
         public:
-            explicit conditional_node(std::unique_ptr<expression_node> condition, std::unique_ptr<block_node> body)
-                : m_condition{ std::move(condition)}
+            explicit conditional_node(const ast::ast_node& ast_node, std::unique_ptr<expression_node> condition, std::unique_ptr<block_node> body)
+                : sema_node{ ast_node }
+                , m_condition{ std::move(condition)}
                 , m_body{ std::move(body)}
             {}
 
@@ -468,8 +483,9 @@ namespace cmsl::sema
         class while_node : public sema_node
         {
         public:
-            explicit while_node(std::unique_ptr<conditional_node> condition)
-                : m_conditional{ std::move(condition)}
+            explicit while_node(const ast::ast_node& ast_node, std::unique_ptr<conditional_node> condition)
+                : sema_node{ ast_node }
+                , m_conditional{ std::move(condition)}
             {}
 
             const conditional_node& condition() const
@@ -488,8 +504,9 @@ namespace cmsl::sema
         public:
             using ifs_t = std::vector<std::unique_ptr<conditional_node>>;
 
-            explicit if_else_node(ifs_t ifs, std::unique_ptr<block_node> else_node)
-                : m_ifs{ std::move(ifs) }
+            explicit if_else_node(const ast::ast_node& ast_node, ifs_t ifs, std::unique_ptr<block_node> else_node)
+                : sema_node{ ast_node }
+                , m_ifs{ std::move(ifs) }
                 , m_else{ std::move(else_node) }
             {}
 
@@ -513,8 +530,9 @@ namespace cmsl::sema
         class class_member_access_node : public expression_node
         {
         public:
-            explicit class_member_access_node(std::unique_ptr<expression_node> lhs, member_info member_info)
-                : m_lhs{ std::move(lhs) }
+            explicit class_member_access_node(const ast::ast_node& ast_node, std::unique_ptr<expression_node> lhs, member_info member_info)
+                : expression_node{ ast_node }
+                , m_lhs{ std::move(lhs) }
                 , m_member_info{ member_info }
             {}
 
@@ -550,8 +568,9 @@ namespace cmsl::sema
         public:
             using nodes_t = std::vector<std::unique_ptr<sema_node>>;
 
-            explicit translation_unit_node(nodes_t nodes)
-                : m_nodes{std::move(nodes)}
+            explicit translation_unit_node(const ast::ast_node& ast_node, nodes_t nodes)
+                : sema_node{ ast_node }
+                , m_nodes{std::move(nodes)}
             {}
 
             const nodes_t& nodes() const
@@ -568,8 +587,9 @@ namespace cmsl::sema
         class cast_to_reference_node : public expression_node
         {
         public:
-            explicit cast_to_reference_node(const sema_type& t, std::unique_ptr<expression_node> expr)
-                    : m_type{ t }
+            explicit cast_to_reference_node(const ast::ast_node& ast_node, const sema_type& t, std::unique_ptr<expression_node> expr)
+                    : expression_node{ ast_node }
+                    , m_type{ t }
                     , m_expr{ std::move(expr) }
             {}
 
@@ -598,8 +618,9 @@ namespace cmsl::sema
         class cast_to_value_node : public expression_node
         {
         public:
-            explicit cast_to_value_node(const sema_type& t, std::unique_ptr<expression_node> expr)
-                    : m_type{ t }
+            explicit cast_to_value_node(const ast::ast_node& ast_node, const sema_type& t, std::unique_ptr<expression_node> expr)
+                    : expression_node{ ast_node }
+                    , m_type{ t }
                     , m_expr{ std::move(expr) }
             {}
 
@@ -628,8 +649,9 @@ namespace cmsl::sema
         class initializer_list_node : public expression_node
         {
         public:
-            explicit initializer_list_node(const sema_type& t, std::vector<std::unique_ptr<expression_node>> values)
-                : m_type{ t }
+            explicit initializer_list_node(const ast::ast_node& ast_node, const sema_type& t, std::vector<std::unique_ptr<expression_node>> values)
+                : expression_node{ ast_node }
+                , m_type{ t }
                 , m_values{ std::move(values) }
             {}
 
