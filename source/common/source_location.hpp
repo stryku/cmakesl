@@ -14,6 +14,16 @@ namespace cmsl
         {
             return absolute < rhs.absolute;
         }
+
+        bool operator==(const source_location& rhs) const
+        {
+            return absolute == rhs.absolute;
+        }
+
+        bool operator<=(const source_location& rhs) const
+        {
+            return *this < rhs || *this == rhs;
+        }
     };
 
     struct source_range
