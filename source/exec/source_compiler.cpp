@@ -30,7 +30,6 @@ namespace cmsl::exec
         ast::parser2 parser{ m_errors_observer, source, tokens };
         auto ast_tree = parser.translation_unit();
 
-
         auto global_context = std::make_unique<sema::builtin_sema_context>(m_type_factory,
                                                                            m_function_factory,
                                                                            m_context_factory);

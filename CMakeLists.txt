@@ -10,6 +10,7 @@ set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 
 include_directories(facade)
 add_subdirectory(source)
+add_subdirectory(tools)
 
 if(CMAKESL_WITH_TESTS)
     enable_testing()
