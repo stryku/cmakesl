@@ -20,7 +20,7 @@ namespace cmsl
     {
         class add_subdirectory_semantic_handler;
         class identifiers_context;
-        class sema_context;
+        class sema_context_interface;
         class sema_node;
         class sema_type_factory;
         class sema_function_factory;
@@ -29,7 +29,7 @@ namespace cmsl
         class sema_builder
         {
         public:
-            explicit sema_builder(sema_context& ctx,
+            explicit sema_builder(sema_context_interface & ctx,
                                   errors::errors_observer& errs,
                                   identifiers_context& ids_context,
                                   sema_type_factory& type_factory,
@@ -40,7 +40,7 @@ namespace cmsl
             std::unique_ptr<sema_node> build(const ast::ast_node& ast_tree);
 
         private:
-            sema_context& m_ctx;
+            sema_context_interface& m_ctx;
             errors::errors_observer& m_errs;
             identifiers_context& m_ids_context;
             sema_type_factory &m_type_factory;
