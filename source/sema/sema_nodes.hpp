@@ -415,6 +415,11 @@ namespace cmsl::sema
                 return m_function.return_type();
             }
 
+            const block_node& body() const
+            {
+                return *m_body;
+            }
+
             VISIT_METHOD
 
         private:

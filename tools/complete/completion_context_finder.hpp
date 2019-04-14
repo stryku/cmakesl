@@ -17,6 +17,8 @@ namespace cmsl::tools
         void visit(const sema::function_node& node) override;
         void visit(const sema::block_node& node) override;
 
+        completion_context_t result() const;
+
     private:
         bool is_inside(const sema::sema_node& node) const;
         bool is_before(const sema::sema_node& node) const;

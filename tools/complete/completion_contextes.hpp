@@ -18,6 +18,9 @@ namespace cmsl
             unsigned place;
         };
 
-        using completion_context_t = std::variant<standalone_expression_context>;
+        struct could_not_find_context{};
+
+        using completion_context_t = std::variant<could_not_find_context,
+                                                  standalone_expression_context>;
     }
 }

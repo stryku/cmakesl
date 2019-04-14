@@ -61,3 +61,9 @@ void cmsl_destroy_parsed_source(cmsl_parsed_source* parsed_source)
     delete parsed_source;
 }
 
+
+cmsl_complete_results* cmsl_complete_at(const cmsl_parsed_source* parsed_source, unsigned absolute_position)
+{
+
+}
+
