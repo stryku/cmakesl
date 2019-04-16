@@ -461,7 +461,7 @@ namespace cmsl::sema
                 nodes.emplace_back(std::move(visited_node));
             }
 
-            m_result_node = std::make_unique<translation_unit_node>(node, std::move(nodes));
+            m_result_node = std::make_unique<translation_unit_node>(node, m_ctx, std::move(nodes));
         }
 
         void sema_builder_ast_visitor::visit(const ast::user_function_node2& node)

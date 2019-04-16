@@ -62,6 +62,8 @@ namespace cmsl::tools
 
             ++place;
         }
+
+        m_result = standalone_expression_context{ node, place };
     }
 
     completion_context_t completion_context_finder::result() const

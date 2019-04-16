@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <unordered_set>
 
 namespace cmsl
 {
@@ -15,7 +15,7 @@ namespace cmsl
         class type_names_collector
         {
         public:
-            std::vector<std::string> collect(const sema::sema_node& start_node) const;
+            std::unordered_set<std::string> collect(const sema::sema_node& start_node) const;
         };
     }
 }
