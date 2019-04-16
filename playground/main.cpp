@@ -5,7 +5,8 @@
 int main()
 {
     const auto source = "class hello_complete_world {};"
-                        "int main() {  }";
+                        "int main() {  }"
+                        "class not_counted {};";
 
     auto parsed_source = cmsl_parse_source(source);
     if(!parsed_source)

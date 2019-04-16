@@ -36,12 +36,14 @@ cmsl_parsed_source* cmsl_parse_source(const char* source)
     cmsl::ast::parser2 parser{ parsed_source->context.errors_observer, source_view, tokens };
     auto ast_tree = parser.translation_unit();
 
-    parsed_source->global_context = std::make_unique<cmsl::sema::builtin_sema_context>(parsed_source->context.type_factory,
+    parsed_source->builtin_context = std::make_unique<cmsl::sema::builtin_sema_context>(parsed_source->context.type_factory,
                                                                                        parsed_source->context.function_factory,
                                                                                        parsed_source->context.context_factory);
 
+    auto& global_context = parsed_source->context.context_factory.create(parsed_source->builtin_context.get());
+
     cmsl::sema::identifiers_context_impl ids_ctx;
-    cmsl::sema::sema_builder sema_builder{ *parsed_source->global_context,
+    cmsl::sema::sema_builder sema_builder{ global_context,
                                            parsed_source->context.errors_observer,
                                            ids_ctx,
                                            parsed_source->context.type_factory,
