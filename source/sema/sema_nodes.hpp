@@ -232,7 +232,10 @@ namespace cmsl::sema
                     , m_name{ name }
                     , m_initialization{ std::move(initialization) }
             {
-                initialization->set_parent(*this, passkey{});
+                if(initialization)
+                {
+                    initialization->set_parent(*this, passkey{});
+                }
             }
 
             const sema_type& type() const

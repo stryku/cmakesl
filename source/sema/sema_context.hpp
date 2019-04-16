@@ -50,7 +50,6 @@ namespace cmsl
             virtual function_lookup_result_t find_function(const lexer::token::token& name) const = 0;
             virtual single_scope_function_lookup_result_t find_function_in_this_scope(const lexer::token::token& name) const = 0;
             virtual context_type type() const = 0;
-
             virtual std::vector<std::reference_wrapper<const sema_type>> types() const = 0;
         };
 
