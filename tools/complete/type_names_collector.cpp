@@ -5,9 +5,9 @@
 
 namespace cmsl::tools
 {
-    std::vector<std::string> type_names_collector::collect(const sema::sema_node &start_node) const
+    std::unordered_set<std::string> type_names_collector::collect(const sema::sema_node &start_node) const
     {
-        std::vector<std::string> type_names;
+        std::unordered_set<std::string> type_names;
 
         auto current_node = &start_node;
         auto last_node = current_node;
@@ -25,7 +25,7 @@ namespace cmsl::tools
         {
             if(!ty.get().is_reference())
             {
-                type_names.emplace_back(ty.get().name().to_string());
+                type_names.emplace(ty.get().name().to_string());
             }
         }
 
@@ -38,7 +38,7 @@ namespace cmsl::tools
 
             if(const auto class_ = dynamic_cast<const sema::class_node*>(top_level_node.get()))
             {
-                type_names.emplace_back(class_->name().str());
+                type_names.emplace(class_->name().str());
             }
         }
 
