@@ -1,8 +1,9 @@
 #include "completion_contextes_visitor.hpp"
 #include "completer.hpp"
+#include "cmsl_complete.hpp"
+#include "type_names_collector.hpp"
 
 #include "sema/sema_nodes.hpp"
-#include "cmsl_complete.hpp"
 
 #include <cstring>
 
@@ -18,6 +19,9 @@ namespace cmsl::tools
         if(const auto block = dynamic_cast<const sema::block_node*>(&ctx.node.get()))
         {
             add_standalone_expression_keywords();
+
+            const auto type_names = type_names_collector{}.collect(*block);
+            add_results(type_names);
         }
     }
 
@@ -28,11 +32,7 @@ namespace cmsl::tools
                 "for",
                 "while"
         };
-
-        for(const auto& keyword : keywords)
-        {
-            m_intermediate_results.emplace_back(keyword);
-        }
+        add_results(keywords);
     }
 
     void completion_contextes_visitor::finalize()
@@ -50,6 +50,15 @@ namespace cmsl::tools
             const auto& str = m_intermediate_results[i];
             m_results.results[i] = new char[str.size() + 1];
             std::strcpy(m_results.results[i], str.c_str());
+        }
+    }
+
+    template<typename Collection>
+    void completion_contextes_visitor::add_results(Collection &&results)
+    {
+        for(const auto& keyword : results)
+        {
+            m_intermediate_results.emplace_back(keyword);
         }
     }
 }
