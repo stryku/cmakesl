@@ -18,5 +18,6 @@ namespace cmsl::sema::test
                 MOCK_CONST_METHOD1(find_function, function_lookup_result_t(const lexer::token::token&));
                 MOCK_CONST_METHOD1(find_function_in_this_scope, single_scope_function_lookup_result_t(const lexer::token::token&));
                 MOCK_CONST_METHOD0(type, context_type());
+                MOCK_CONST_METHOD0(types, std::vector<std::reference_wrapper<const sema_type>>());
             };
 }
