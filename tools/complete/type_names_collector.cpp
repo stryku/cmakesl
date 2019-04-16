@@ -5,7 +5,7 @@
 
 namespace cmsl::tools
 {
-    std::unordered_set<std::string> type_names_collector::collect(const sema::sema_node &start_node) const
+    std::unordered_set<std::string> type_names_collector::collect(const sema::sema_context_interface& builtin_context, const sema::sema_node &start_node) const
     {
         std::unordered_set<std::string> type_names;
 
@@ -19,16 +19,6 @@ namespace cmsl::tools
 
         const auto translation_unit = dynamic_cast<const sema::translation_unit_node*>(current_node);
 
-        const auto builtin_types = translation_unit->context().types();
-
-        for(const auto& ty : builtin_types)
-        {
-            if(!ty.get().is_reference())
-            {
-                type_names.emplace(ty.get().name().to_string());
-            }
-        }
-
         for(const auto& top_level_node : translation_unit->nodes())
         {
             if(top_level_node.get() == last_node)
@@ -39,6 +29,15 @@ namespace cmsl::tools
             if(const auto class_ = dynamic_cast<const sema::class_node*>(top_level_node.get()))
             {
                 type_names.emplace(class_->name().str());
+            }
+        }
+
+        const auto builtin_types = builtin_context.types();
+        for(const auto& ty : builtin_types)
+        {
+            if(!ty.get().is_reference())
+            {
+                type_names.emplace(ty.get().name().to_string());
             }
         }
 

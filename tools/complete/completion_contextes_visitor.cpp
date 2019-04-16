@@ -4,6 +4,7 @@
 #include "type_names_collector.hpp"
 
 #include "sema/sema_nodes.hpp"
+#include "cmsl_parsed_source.hpp"
 
 #include <cstring>
 
@@ -20,7 +21,7 @@ namespace cmsl::tools
         {
             add_standalone_expression_keywords();
 
-            const auto type_names = type_names_collector{}.collect(*block);
+            const auto type_names = type_names_collector{}.collect(*m_parsed_source.builtin_context, *block);
             add_results(type_names);
         }
     }
