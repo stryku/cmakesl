@@ -24,7 +24,7 @@ namespace cmsl::tools
 
         auto results = new cmsl_complete_results;
         auto visitor = completion_contextes_visitor{m_parsed_source, *results};
-        std::visit(found_context, visitor);
+        std::visit(visitor, found_context);
         visitor.finalize();
 
         return results;
