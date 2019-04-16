@@ -138,7 +138,9 @@ namespace cmsl::sema
             explicit return_node(const ast::ast_node& ast_node, std::unique_ptr<expression_node> expr)
                 : expression_node{ ast_node }
                 , m_expr{ std::move(expr) }
-            {}
+            {
+                m_expr->set_parent(*this, passkey{});
+            }
 
             const sema_type& type() const override
             {
@@ -176,7 +178,10 @@ namespace cmsl::sema
                 , m_operator_function{ operator_function }
                 , m_rhs{ std::move(rhs) }
                 , m_type{ result_type }
-            {}
+            {
+                m_lhs->set_parent(*this, passkey{});
+                m_rhs->set_parent(*this, passkey{});
+            }
 
             const expression_node& lhs() const
             {
@@ -226,7 +231,9 @@ namespace cmsl::sema
                     , m_type{ type }
                     , m_name{ name }
                     , m_initialization{ std::move(initialization) }
-            {}
+            {
+                initialization->set_parent(*this, passkey{});
+            }
 
             const sema_type& type() const
             {
@@ -260,7 +267,12 @@ namespace cmsl::sema
                     : expression_node{ ast_node }
                     , m_function{ function }
                     , m_params{ std::move(params) }
-            {}
+            {
+                for(auto& param : m_params)
+                {
+                    param->set_parent(*this, passkey{});
+                }
+            }
 
             const sema_type& type() const override
             {
@@ -308,7 +320,9 @@ namespace cmsl::sema
             explicit member_function_call_node(const ast::ast_node& ast_node, std::unique_ptr<expression_node> lhs, const sema_function& function, param_expressions_t params)
                 : call_node{ast_node, function, std::move(params) }
                 , m_lhs{ std::move(lhs) }
-            {}
+            {
+                m_lhs->set_parent(*this, passkey{});
+            }
 
             const expression_node& lhs() const
             {
@@ -356,7 +370,9 @@ namespace cmsl::sema
             explicit add_subdirectory_node(const ast::ast_node& ast_node, std::unique_ptr<string_value_node> directory_name, const sema_function& function, param_expressions_t params)
                     : call_node{ast_node, function, std::move(params) }
                     , m_directory_name{ std::move(directory_name) }
-            {}
+            {
+                m_directory_name->set_parent(*this, passkey{});
+            }
 
             const string_value_node& dir_name() const
             {
@@ -378,7 +394,12 @@ namespace cmsl::sema
             explicit block_node(const ast::ast_node& ast_node, nodes_t nodes)
                 : sema_node{ ast_node }
                 , m_nodes{ std::move(nodes) }
-            {}
+            {
+                for(auto& node : m_nodes)
+                {
+                    node -> set_parent(*this, passkey{});
+                }
+            }
 
             const nodes_t& nodes() const
             {
@@ -398,7 +419,9 @@ namespace cmsl::sema
                 : sema_node{ ast_node }
                 , m_function{ function }
                 , m_body{ std::move(body) }
-            {}
+            {
+                m_body->set_parent(*this, passkey{});
+            }
 
             const function_signature& signature() const
             {
@@ -439,7 +462,16 @@ namespace cmsl::sema
                 , m_name{ name }
                 , m_members{ std::move(members) }
                 , m_functions{ std::move(functions) }
-            {}
+            {
+                for(auto& member : m_members)
+                {
+                    member->set_parent(*this, passkey{});
+                }
+                for(auto& function : m_functions)
+                {
+                    function->set_parent(*this, passkey{});
+                }
+            }
 
             lexer::token::token name() const
             {
@@ -466,7 +498,10 @@ namespace cmsl::sema
                 : sema_node{ ast_node }
                 , m_condition{ std::move(condition)}
                 , m_body{ std::move(body)}
-            {}
+            {
+                m_condition->set_parent(*this, passkey{});
+                m_body->set_parent(*this, passkey{});
+            }
 
             const expression_node& get_condition() const
             {
@@ -491,7 +526,9 @@ namespace cmsl::sema
             explicit while_node(const ast::ast_node& ast_node, std::unique_ptr<conditional_node> condition)
                 : sema_node{ ast_node }
                 , m_conditional{ std::move(condition)}
-            {}
+            {
+                m_conditional->set_parent(*this, passkey{});
+            }
 
             const conditional_node& condition() const
             {
@@ -513,7 +550,17 @@ namespace cmsl::sema
                 : sema_node{ ast_node }
                 , m_ifs{ std::move(ifs) }
                 , m_else{ std::move(else_node) }
-            {}
+            {
+                for(auto& if_ : m_ifs)
+                {
+                    if_->set_parent(*this, passkey{});
+                }
+
+                if(m_else)
+                {
+                    m_else->set_parent(*this, passkey{});
+                }
+            }
 
             const ifs_t& ifs() const
             {
@@ -539,7 +586,9 @@ namespace cmsl::sema
                 : expression_node{ ast_node }
                 , m_lhs{ std::move(lhs) }
                 , m_member_info{ member_info }
-            {}
+            {
+                m_lhs->set_parent(*this, passkey{});
+            }
 
             const expression_node& lhs() const
             {
@@ -576,7 +625,12 @@ namespace cmsl::sema
             explicit translation_unit_node(const ast::ast_node& ast_node, nodes_t nodes)
                 : sema_node{ ast_node }
                 , m_nodes{std::move(nodes)}
-            {}
+            {
+                for(auto& node : m_nodes)
+                {
+                    node->set_parent(*this, passkey{});
+                }
+            }
 
             const nodes_t& nodes() const
             {
@@ -596,7 +650,9 @@ namespace cmsl::sema
                     : expression_node{ ast_node }
                     , m_type{ t }
                     , m_expr{ std::move(expr) }
-            {}
+            {
+                m_expr->set_parent(*this, passkey{});
+            }
 
             const sema_type& type() const override
             {
@@ -627,7 +683,9 @@ namespace cmsl::sema
                     : expression_node{ ast_node }
                     , m_type{ t }
                     , m_expr{ std::move(expr) }
-            {}
+            {
+                m_expr->set_parent(*this, passkey{});
+            }
 
             const sema_type& type() const override
             {
@@ -658,7 +716,12 @@ namespace cmsl::sema
                 : expression_node{ ast_node }
                 , m_type{ t }
                 , m_values{ std::move(values) }
-            {}
+            {
+                for(auto& value : m_values)
+                {
+                    value->set_parent(*this, passkey{});
+                }
+            }
 
             const sema_type& type() const override
             {

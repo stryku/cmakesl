@@ -24,4 +24,14 @@ namespace cmsl::sema
     {
         return m_ast_node;
     }
+
+    void sema_node::set_parent(const sema_node &node, passkey)
+    {
+        m_parent = &node;
+    }
+
+    const sema_node *sema_node::parent() const
+    {
+        return m_parent;
+    }
 }
