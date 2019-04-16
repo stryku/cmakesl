@@ -23,6 +23,9 @@ namespace cmsl::tools
     private:
         void add_standalone_expression_keywords();
 
+        template <typename Collection>
+        void add_results(Collection&& results);
+
     private:
         const cmsl_parsed_source& m_parsed_source;
         cmsl_complete_results& m_results;

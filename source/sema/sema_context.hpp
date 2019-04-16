@@ -3,6 +3,7 @@
 #include "sema/sema_type.hpp"
 #include "sema/function_lookup_result.hpp"
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -49,6 +50,8 @@ namespace cmsl
             virtual function_lookup_result_t find_function(const lexer::token::token& name) const = 0;
             virtual single_scope_function_lookup_result_t find_function_in_this_scope(const lexer::token::token& name) const = 0;
             virtual context_type type() const = 0;
+
+            virtual std::vector<std::reference_wrapper<const sema_type>> types() const = 0;
         };
 
         class sema_context : public sema_context_interface
@@ -64,7 +67,8 @@ namespace cmsl
             const sema_type* find_type_in_this_scope(const ast::type_representation& name) const override;
             function_lookup_result_t find_function(const lexer::token::token& name) const override;
             single_scope_function_lookup_result_t find_function_in_this_scope(const lexer::token::token& name) const override;
-            virtual context_type type() const override;
+            context_type type() const override;
+            std::vector<std::reference_wrapper<const sema_type>> types() const override;
 
         private:
             template <typename Predicate>
