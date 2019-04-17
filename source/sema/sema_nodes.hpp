@@ -486,6 +486,11 @@ namespace cmsl::sema
                 return m_members;
             }
 
+            const functions_t& functions() const
+            {
+                return m_functions;
+            }
+
             VISIT_METHOD
 
         private:

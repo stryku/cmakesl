@@ -2,6 +2,7 @@
 #include "completer.hpp"
 #include "cmsl_complete.hpp"
 #include "type_names_collector.hpp"
+#include "identifier_names_collector.hpp"
 
 #include "sema/sema_nodes.hpp"
 #include "cmsl_parsed_source.hpp"
@@ -23,6 +24,9 @@ namespace cmsl::tools
 
             const auto type_names = type_names_collector{}.collect(*m_parsed_source.builtin_context, *block);
             add_results(type_names);
+
+            const auto identifiers = identifier_names_collector{}.collect(*block);
+            add_results(identifiers);
         }
     }
 
@@ -55,11 +59,11 @@ namespace cmsl::tools
     }
 
     template<typename Collection>
-    void completion_contextes_visitor::add_results(Collection &&results)
+    void completion_contextes_visitor::add_results(Collection &&collection)
     {
-        for(const auto& keyword : results)
+        for(const auto& entry : collection)
         {
-            m_intermediate_results.emplace_back(keyword);
+            m_intermediate_results.emplace_back(entry);
         }
     }
 }

@@ -11,6 +11,11 @@ namespace cmsl::tools
 
         auto current_node = &start_node;
         auto last_node = current_node;
+
+        // Currently, namespaces are not supported, so classes can be defined only in a global scope.
+        // To find all classes, just find the root, which is the translation unit node, iterate over its node,
+        // and if a given node is class, collect its name.
+
         while(current_node->parent())
         {
             last_node = current_node;
