@@ -4,7 +4,7 @@
 
 int main()
 {
-    const auto source = "class hello_complete_world {}; int foo() {} int bar;  int main(int param_1, list<string> param_2) {  } int baz() {} class not_counted {};";
+    const auto source = "class hello_complete_world {}; int foo() {} int bar;  int main(int param_1, list<string> param_2) {  } int baz() {} class last_class {  };";
 
     auto parsed_source = cmsl_parse_source(source);
     if(!parsed_source)
@@ -14,7 +14,8 @@ int main()
 
     const auto main_body_pos = 100u;
     const auto before_main_declaration_pos = 53u;
-    const auto results = cmsl_complete_at(parsed_source, main_body_pos);
+    const auto last_class_body_pos = 135u;
+    const auto results = cmsl_complete_at(parsed_source, last_class_body_pos);
     if(!results)
     {
         return 2;
