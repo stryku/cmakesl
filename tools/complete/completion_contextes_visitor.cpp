@@ -30,6 +30,14 @@ namespace cmsl::tools
         }
     }
 
+    void completion_contextes_visitor::operator()(const top_level_declaration_context &ctx)
+    {
+        add_top_level_declaration_keywords();
+
+        const auto type_names = type_names_collector{}.collect(*m_parsed_source.builtin_context, ctx.node);
+        add_results(type_names);
+    }
+
     void completion_contextes_visitor::add_standalone_expression_keywords()
     {
         const auto keywords = {
@@ -37,6 +45,16 @@ namespace cmsl::tools
                 "for",
                 "while"
         };
+
+        add_results(keywords);
+    }
+
+    void completion_contextes_visitor::add_top_level_declaration_keywords()
+    {
+        const auto keywords = {
+            "class"
+        };
+
         add_results(keywords);
     }
 
