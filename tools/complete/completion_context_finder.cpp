@@ -83,4 +83,20 @@ namespace cmsl::tools
     {
         return m_result;
     }
+
+    void completion_context_finder::visit(const sema::class_node &node)
+    {
+        // For now we only care about naive implementation, so just check whether we try to complete inside any member function. If not, return class member declaration context.
+
+        for(const auto& sub_node : node.functions())
+        {
+            if(is_inside(*sub_node))
+            {
+                sub_node->visit(*this);
+                return;
+            }
+        }
+
+        m_result = class_member_declaration_context{ node };
+    }
 }

@@ -38,6 +38,16 @@ namespace cmsl::tools
         add_results(type_names);
     }
 
+    void completion_contextes_visitor::operator()(const class_member_declaration_context &ctx)
+    {
+        // In class context it's either a member declaration or a function declaration. Both start with a type, so type collecting is enough.
+
+        m_intermediate_results.emplace_back(ctx.node.get().name().str());
+
+        const auto type_names = type_names_collector{}.collect(*m_parsed_source.builtin_context, ctx.node);
+        add_results(type_names);
+    }
+
     void completion_contextes_visitor::add_standalone_expression_keywords()
     {
         const auto keywords = {

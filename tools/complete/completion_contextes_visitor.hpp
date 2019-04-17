@@ -18,6 +18,7 @@ namespace cmsl::tools
         void operator()(const could_not_find_context&) {}
         void operator()(const standalone_expression_context& ctx);
         void operator()(const top_level_declaration_context& ctx);
+        void operator()(const class_member_declaration_context& ctx);
 
         void finalize();
 
