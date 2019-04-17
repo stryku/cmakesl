@@ -6,7 +6,7 @@ set(COMPLETE_SOURCES
         completer.hpp
         completion_context_finder.cpp
         completion_context_finder.hpp
-        completion_contextes_visitor.cpp completion_contextes_visitor.hpp type_names_collector.cpp type_names_collector.hpp)
+        completion_contextes_visitor.cpp completion_contextes_visitor.hpp type_names_collector.cpp type_names_collector.hpp identifier_names_collector.cpp identifier_names_collector.hpp)
 
 add_library(cmsl_complete ${COMPLETE_SOURCES})
 target_include_directories(cmsl_complete PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_FACADE_DIR})
