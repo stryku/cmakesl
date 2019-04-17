@@ -10,13 +10,26 @@ namespace cmsl::tools
 
     void completion_context_finder::visit(const sema::translation_unit_node &node)
     {
+        unsigned place{ 0u };
+
         for(const auto& sub_node : node.nodes())
         {
+            if(is_pos_before_node_begin(*sub_node))
+            {
+                m_result = top_level_declaration_context{ node, place };
+                return;
+            }
+
             if(is_inside(*sub_node))
             {
                 sub_node->visit(*this);
+                return;
             }
+
+            ++place;
         }
+
+        m_result = top_level_declaration_context{ node, place };
     }
 
     bool completion_context_finder::is_inside(const sema::sema_node &node) const
@@ -31,7 +44,7 @@ namespace cmsl::tools
 
     bool completion_context_finder::is_pos_before_node_begin(const sema::sema_node &node) const
     {
-        return m_pos < node.end_location();
+        return m_pos < node.begin_location();
     }
 
     void completion_context_finder::visit(const sema::function_node &node)
@@ -45,7 +58,7 @@ namespace cmsl::tools
 
         for(const auto& sub_node : node.nodes())
         {
-            if(!is_pos_before_node_begin(*sub_node))
+            if(is_pos_before_node_begin(*sub_node))
             {
                 // Now, we know that sub_node begins after pos that we want to find.
                 // That means that the pos is between two nodes.

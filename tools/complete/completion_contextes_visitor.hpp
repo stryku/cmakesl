@@ -17,11 +17,13 @@ namespace cmsl::tools
 
         void operator()(const could_not_find_context&) {}
         void operator()(const standalone_expression_context& ctx);
+        void operator()(const top_level_declaration_context& ctx);
 
         void finalize();
 
     private:
         void add_standalone_expression_keywords();
+        void add_top_level_declaration_keywords();
 
         template <typename Collection>
         void add_results(Collection&& results);
