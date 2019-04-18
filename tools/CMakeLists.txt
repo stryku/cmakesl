@@ -6,7 +6,11 @@ set(CMSL_TOOLS_SOURCES
         completer.hpp
         completion_context_finder.cpp
         completion_context_finder.hpp
-        completion_contextes_visitor.cpp completion_contextes_visitor.hpp type_names_collector.cpp type_names_collector.hpp identifier_names_collector.cpp identifier_names_collector.hpp)
+        completion_contextes_visitor.cpp completion_contextes_visitor.hpp type_names_collector.cpp type_names_collector.hpp identifier_names_collector.cpp identifier_names_collector.hpp
+        cmsl_parse_source.hpp
+        cmsl_parse_source.cpp
+
+)
 
 add_library(cmsl_tools ${CMSL_TOOLS_SOURCES})
 target_include_directories(cmsl_tools PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_FACADE_DIR})
