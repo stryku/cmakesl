@@ -10,6 +10,9 @@ set(CMSL_TOOLS_SOURCES
         cmsl_parse_source.hpp
         cmsl_parse_source.cpp
 
+        cmsl_index.hpp
+        cmsl_index.cpp
+
 )
 
 add_library(cmsl_tools ${CMSL_TOOLS_SOURCES})

@@ -16,5 +16,6 @@ void cmsl_destroy_complete_results(cmsl_complete_results* complete_results)
     }
 
     delete [] complete_results->results;
+    delete complete_results;
 }
 
