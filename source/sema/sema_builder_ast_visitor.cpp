@@ -696,7 +696,7 @@ namespace cmsl::sema
                 params.emplace_back(std::move(param));
             }
 
-            return params;
+            return std::move(params);
         }
 
 
@@ -777,7 +777,7 @@ namespace cmsl::sema
                 }
             }
 
-            return members;
+            return std::move(members);
         }
 
         template<unsigned N>
