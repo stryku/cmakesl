@@ -44,7 +44,7 @@ namespace cmsl::tools
 
     bool completion_context_finder::is_pos_before_node_begin(const sema::sema_node &node) const
     {
-        return m_pos < node.begin_location();
+        return m_pos <= node.begin_location();
     }
 
     void completion_context_finder::visit(const sema::function_node &node)

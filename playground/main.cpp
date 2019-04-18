@@ -12,10 +12,10 @@ int main()
         return 1;
     }
 
+    const auto before_main_declaration_pos = 54u;
     const auto main_body_pos = 100u;
-    const auto before_main_declaration_pos = 53u;
     const auto last_class_body_pos = 135u;
-    const auto results = cmsl_complete_at(parsed_source, last_class_body_pos);
+    const auto results = cmsl_complete_at(parsed_source, before_main_declaration_pos);
     if(!results)
     {
         return 2;
