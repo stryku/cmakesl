@@ -24,7 +24,8 @@ namespace cmsl
         {
         public:
             explicit compiled_source(std::unique_ptr<ast::ast_node> ast_tree,
-                                     std::unique_ptr<sema::sema_context_interface> global_context,
+                                     std::unique_ptr<sema::sema_context_interface> builtin_context,
+                                     const sema::sema_context_interface& global_context,
                                      std::unique_ptr<sema::sema_node> sema_tree,
                                      source_view source);
             ~compiled_source();
@@ -34,7 +35,8 @@ namespace cmsl
 
         private:
             std::unique_ptr<ast::ast_node> m_ast_tree;
-            std::unique_ptr<sema::sema_context_interface> m_global_context;
+            std::unique_ptr<sema::sema_context_interface> m_builtin_context;
+            const sema::sema_context_interface& m_global_context;
             std::unique_ptr<sema::sema_node> m_sema_tree;
             source_view m_source;
         };

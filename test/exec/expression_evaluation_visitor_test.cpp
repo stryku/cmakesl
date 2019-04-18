@@ -3,6 +3,7 @@
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
 
+#include "test/ast/mock/ast_node_mock.hpp"
 #include "test/common/tokens.hpp"
 #include "test/exec/mock/function_caller_mock.hpp"
 #include "test/exec/mock/identifiers_context_mock.hpp"
@@ -22,7 +23,8 @@ namespace cmsl::exec::test
             using ::testing::ByMove;
             using ::testing::Return;
             using ::testing::Eq;
-            using ::testing::StrictMock;
+    using ::testing::StrictMock;
+    using ::testing::NiceMock;
             using ::testing::Matcher;
 
             using namespace cmsl::test::common;
@@ -33,6 +35,11 @@ namespace cmsl::exec::test
             class ExpressionEvaluationVisitorTest : public ::testing::Test
             {
             protected:
+                auto fake_ast_node()
+                {
+                    return NiceMock<ast::test::ast_node_mock>{};
+                }
+
                 StrictMock<identifiers_context_mock> m_ids_ctx;
                 StrictMock<function_caller2_mock> m_caller;
                 StrictMock<inst::test::instances_holder_mock> m_instances;
@@ -57,7 +64,8 @@ namespace cmsl::exec::test
                 expression_evaluation_visitor visitor{ m_ctx };
 
                 // Todo: consider testing false too.
-                sema::bool_value_node true_node{valid_type, true};
+                auto ast_node = fake_ast_node();
+                sema::bool_value_node true_node{ast_node, valid_type, true};
                 inst::instance_value_t value{true};
 
                 EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
@@ -74,8 +82,9 @@ namespace cmsl::exec::test
                 expression_evaluation_visitor visitor{ m_ctx };
 
                 // Todo: use int alias instead of std::int64_t
+                auto ast_node = fake_ast_node();
                 const auto test_value = std::int64_t{42};
-                sema::int_value_node node{valid_type, test_value };
+                sema::int_value_node node{ast_node, valid_type, test_value };
                 inst::instance_value_t value{test_value};
 
                 EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
@@ -91,8 +100,9 @@ namespace cmsl::exec::test
                 StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
+                auto ast_node = fake_ast_node();
                 const auto test_value = 42.42;
-                sema::double_value_node node{valid_type, test_value };
+                sema::double_value_node node{ast_node, valid_type, test_value };
                 inst::instance_value_t value{test_value};
 
                 EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
@@ -108,8 +118,9 @@ namespace cmsl::exec::test
                 StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
+                auto ast_node = fake_ast_node();
                 const auto test_value = std::string{"42"};
-                sema::string_value_node node{valid_type, test_value };
+                sema::string_value_node node{ast_node, valid_type, test_value };
                 inst::instance_value_t value{test_value};
 
                 EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
@@ -125,8 +136,9 @@ namespace cmsl::exec::test
                 StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
+                auto ast_node = fake_ast_node();
                 const auto id_token = token_identifier("foo");
-                sema::id_node node{valid_type, id_token };
+                sema::id_node node{ast_node, valid_type, id_token };
 
                 EXPECT_CALL(m_ids_ctx, lookup_identifier(id_token.str()))
                         .WillOnce(Return(&instance_mock));
@@ -141,17 +153,19 @@ namespace cmsl::exec::test
                 StrictMock<inst::test::instance_mock> lhs_instance;
                 StrictMock<inst::test::instance_mock> rhs_instance;
                 StrictMock<sema::test::sema_function_mock> function;
+                auto ast_node = fake_ast_node();
                 auto result_instance = std::make_unique<StrictMock<inst::test::instance_mock>>();
                 auto result_instance_ptr = result_instance.get();
 
                 const auto operator_token = token_plus();
 
                 const auto lhs_expression_token = token_identifier("foo");
-                auto lhs_expression = std::make_unique<sema::id_node>(valid_type, lhs_expression_token);
+                auto lhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type, lhs_expression_token);
                 const auto rhs_expression_token = token_identifier("bar");
-                auto rhs_expression = std::make_unique<sema::id_node>(valid_type, rhs_expression_token);
+                auto rhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type, rhs_expression_token);
 
-                sema::binary_operator_node node{ std::move(lhs_expression),
+                sema::binary_operator_node node{ ast_node,
+                                                 std::move(lhs_expression),
                                                  operator_token,
                                                  function,
                                                  std::move(rhs_expression),
@@ -185,18 +199,19 @@ namespace cmsl::exec::test
                 StrictMock<sema::test::sema_function_mock> function;
                 StrictMock<inst::test::instance_mock> param_instance_0;
                 StrictMock<inst::test::instance_mock> param_instance_1;
+                auto ast_node = fake_ast_node();
                 auto result_instance = std::make_unique<StrictMock<inst::test::instance_mock>>();
                 auto result_instance_ptr = result_instance.get();
 
                 const auto param_expression_0_token = token_identifier("foo");
-                auto param_expression_0 = std::make_unique<sema::id_node>(valid_type, param_expression_0_token);
+                auto param_expression_0 = std::make_unique<sema::id_node>(ast_node, valid_type, param_expression_0_token);
                 const auto param_expression_1_token = token_identifier("bar");
-                auto param_expression_1 = std::make_unique<sema::id_node>(valid_type, param_expression_1_token);
+                auto param_expression_1 = std::make_unique<sema::id_node>(ast_node, valid_type, param_expression_1_token);
 
                 sema::function_call_node::param_expressions_t param_expressions;
                 param_expressions.emplace_back(std::move(param_expression_0));
                 param_expressions.emplace_back(std::move(param_expression_1));
-                sema::function_call_node node{function, std::move(param_expressions)};
+                sema::function_call_node node{ast_node, function, std::move(param_expressions)};
 
                 EXPECT_CALL(m_ids_ctx, lookup_identifier(param_expression_0_token.str()))
                         .WillOnce(Return(&param_instance_0));
@@ -227,22 +242,24 @@ namespace cmsl::exec::test
                 StrictMock<inst::test::instance_mock> param_instance_0;
                 StrictMock<inst::test::instance_mock> param_instance_1;
                 StrictMock<sema::test::sema_function_mock> function;
+                auto ast_node = fake_ast_node();
                 auto result_instance = std::make_unique<StrictMock<inst::test::instance_mock>>();
                 auto result_instance_ptr = result_instance.get();
 
                 const auto lhs_expression_token = token_identifier("foo");
-                auto lhs_expression = std::make_unique<sema::id_node>(valid_type, lhs_expression_token);
+                auto lhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type, lhs_expression_token);
 
                 const auto param_expression_0_token = token_identifier("bar");
-                auto param_expression_0 = std::make_unique<sema::id_node>(valid_type, param_expression_0_token);
+                auto param_expression_0 = std::make_unique<sema::id_node>(ast_node, valid_type, param_expression_0_token);
                 const auto param_expression_1_token = token_identifier("baz");
-                auto param_expression_1 = std::make_unique<sema::id_node>(valid_type, param_expression_1_token);
+                auto param_expression_1 = std::make_unique<sema::id_node>(ast_node, valid_type, param_expression_1_token);
 
                 sema::function_call_node::param_expressions_t param_expressions;
                 param_expressions.emplace_back(std::move(param_expression_0));
                 param_expressions.emplace_back(std::move(param_expression_1));
 
-                sema::member_function_call_node node{ std::move(lhs_expression),
+                sema::member_function_call_node node{ ast_node,
+                                                      std::move(lhs_expression),
                                                       function,
                                                       std::move(param_expressions)};
 
@@ -279,22 +296,24 @@ namespace cmsl::exec::test
                 StrictMock<inst::test::instance_mock> param_instance_0;
                 StrictMock<inst::test::instance_mock> param_instance_1;
                 StrictMock<sema::test::sema_function_mock> function;
+                auto ast_node = fake_ast_node();
                 auto result_instance = std::make_unique<StrictMock<inst::test::instance_mock>>();
                 auto result_instance_ptr = result_instance.get();
 
                 const auto lhs_expression_token = token_identifier("this");
-                auto lhs_expression = std::make_unique<sema::id_node>(valid_type, lhs_expression_token);
+                auto lhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type, lhs_expression_token);
 
                 const auto param_expression_0_token = token_identifier("bar");
-                auto param_expression_0 = std::make_unique<sema::id_node>(valid_type, param_expression_0_token);
+                auto param_expression_0 = std::make_unique<sema::id_node>(ast_node, valid_type, param_expression_0_token);
                 const auto param_expression_1_token = token_identifier("baz");
-                auto param_expression_1 = std::make_unique<sema::id_node>(valid_type, param_expression_1_token);
+                auto param_expression_1 = std::make_unique<sema::id_node>(ast_node, valid_type, param_expression_1_token);
 
                 sema::function_call_node::param_expressions_t param_expressions;
                 param_expressions.emplace_back(std::move(param_expression_0));
                 param_expressions.emplace_back(std::move(param_expression_1));
 
-                sema::member_function_call_node node{ std::move(lhs_expression),
+                sema::member_function_call_node node{ ast_node,
+                                                      std::move(lhs_expression),
                                                       function,
                                                       std::move(param_expressions)};
 
@@ -329,14 +348,16 @@ namespace cmsl::exec::test
             {
                 StrictMock<inst::test::instance_mock> lhs_instance;
                 StrictMock<inst::test::instance_mock> member_instance;
+                auto ast_node = fake_ast_node();
 
                 const auto lhs_expression_token = token_identifier("foo");
-                auto lhs_expression = std::make_unique<sema::id_node>(valid_type, lhs_expression_token);
+                auto lhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type, lhs_expression_token);
 
                 const auto member_name_token = token_identifier("bar");
                 sema::member_info member{ member_name_token, valid_type};
 
-                sema::class_member_access_node node{ std::move(lhs_expression),
+                sema::class_member_access_node node{ ast_node,
+                                                     std::move(lhs_expression),
                                                      std::move(member)};
 
                 EXPECT_CALL(m_ids_ctx, lookup_identifier(lhs_expression_token.str()))
@@ -354,11 +375,12 @@ namespace cmsl::exec::test
             TEST_F(ExpressionEvaluationVisitorTest, Visit_Return_EvaluatesExpressionAndStoresResult)
             {
                 StrictMock<inst::test::instance_mock> result_instance;
+                auto ast_node = fake_ast_node();
 
                 const auto expression_token = token_identifier("foo");
-                auto expression = std::make_unique<sema::id_node>(valid_type, expression_token);
+                auto expression = std::make_unique<sema::id_node>(ast_node, valid_type, expression_token);
 
-                sema::return_node node{ std::move(expression)};
+                sema::return_node node{ ast_node, std::move(expression)};
 
                 EXPECT_CALL(m_ids_ctx, lookup_identifier(expression_token.str()))
                         .WillOnce(Return(&result_instance));
