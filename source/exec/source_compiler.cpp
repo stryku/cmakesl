@@ -8,6 +8,7 @@
 #include "exec/compiled_source.hpp"
 #include "sema/sema_node.hpp"
 #include "ast/ast_node.hpp"
+#include "sema/factories.hpp"
 
 namespace cmsl::exec
 {
@@ -30,13 +31,14 @@ namespace cmsl::exec
         ast::parser2 parser{ m_errors_observer, source, tokens };
         auto ast_tree = parser.translation_unit();
 
+        auto builtin_context = std::make_unique<sema::builtin_sema_context>(m_type_factory,
+                                                                            m_function_factory,
+                                                                            m_context_factory);
 
-        auto global_context = std::make_unique<sema::builtin_sema_context>(m_type_factory,
-                                                                           m_function_factory,
-                                                                           m_context_factory);
+        auto& global_context = m_context_factory.create(builtin_context.get());
 
         sema::identifiers_context_impl ids_ctx;
-        sema::sema_builder sema_builder{ *global_context,
+        sema::sema_builder sema_builder{ global_context,
                                          m_errors_observer,
                                          ids_ctx,
                                          m_type_factory,
@@ -45,7 +47,8 @@ namespace cmsl::exec
                                          m_add_subdirectory_handler};
         auto sema_tree = sema_builder.build(*ast_tree);
         return std::make_unique<compiled_source>( std::move(ast_tree),
-                                                  std::move(global_context),
+                                                  std::move(builtin_context),
+                                                  global_context,
                                                   std::move(sema_tree),
                                                   source);
     }

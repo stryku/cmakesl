@@ -5,6 +5,7 @@
 #include "sema/sema_nodes.hpp"
 #include "sema/sema_context.hpp"
 
+#include "test/ast/mock/ast_node_mock.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
 #include "test/common/tokens.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"
@@ -14,7 +15,8 @@
 
 namespace cmsl::sema::test
 {
-            using ::testing::StrictMock;
+    using ::testing::NiceMock;
+    using ::testing::StrictMock;
             using ::testing::Return;
             using ::testing::ReturnRef;
             using ::testing::IsNull;
@@ -36,9 +38,19 @@ namespace cmsl::sema::test
             const sema_type valid_type{ valid_context, ast::type_representation{ token_identifier("foo") }, {} };
 
 
+            class OverloarResolutionTest : public ::testing::Test
+            {
+            public:
+                auto expression_mock()
+                {
+                    static auto ast_node = NiceMock<ast::test::ast_node_mock>{};
+                    return std::make_unique<StrictMock<expression_node_mock>>(ast_node);
+                }
+            };
+
             // Todo: Consider moving common parts to a fixture.
 
-            TEST(OverloarResolutionTest, EmptyFunctionLookupResult_RaiseErrorAndReturnNull)
+            TEST_F(OverloarResolutionTest, EmptyFunctionLookupResult_RaiseErrorAndReturnNull)
             {
                 errs_t errs;
                 const auto call_token = token_identifier("foo");
@@ -52,7 +64,7 @@ namespace cmsl::sema::test
                 EXPECT_THAT(chosen, IsNull());
             }
 
-            TEST(OverloarResolutionTest, ParamsCountDoesntMatch_RaiseErrorAndReturnNull)
+            TEST_F(OverloarResolutionTest, ParamsCountDoesntMatch_RaiseErrorAndReturnNull)
             {
                 errs_t errs;
                 const auto call_token = token_identifier("foo");
@@ -79,12 +91,12 @@ namespace cmsl::sema::test
                 EXPECT_THAT(chosen, IsNull());
             }
 
-            TEST(OverloarResolutionTest, ParamTypesDontMatch_RaiseErrorAndReturnNull)
+            TEST_F(OverloarResolutionTest, ParamTypesDontMatch_RaiseErrorAndReturnNull)
             {
                 errs_t errs;
                 const auto call_token = token_identifier("foo");
                 StrictMock<sema_function_mock> function;
-                auto param_expression = std::make_unique<StrictMock<expression_node_mock>>();
+                auto param_expression = expression_mock();
                 auto param_expression_ptr = param_expression.get();
                 const sema_type param_type{ valid_context, ast::type_representation{ token_identifier("param_type") }, {} };
                 std::vector<std::unique_ptr<expression_node>> param_expressions;
@@ -113,12 +125,12 @@ namespace cmsl::sema::test
                 EXPECT_THAT(chosen, IsNull());
             }
 
-            TEST(OverloarResolutionTest, TriesInitializeReferenceWithTemporaryValue_RaiseErrorAndReturnNull)
+            TEST_F(OverloarResolutionTest, TriesInitializeReferenceWithTemporaryValue_RaiseErrorAndReturnNull)
             {
                 errs_t errs;
                 const auto call_token = token_identifier("foo");
                 StrictMock<sema_function_mock> function;
-                auto param_expression = std::make_unique<StrictMock<expression_node_mock>>();
+                auto param_expression = expression_mock();
                 auto param_expression_ptr = param_expression.get();
                 std::vector<std::unique_ptr<expression_node>> param_expressions;
                 param_expressions.emplace_back(std::move(param_expression));
@@ -150,12 +162,12 @@ namespace cmsl::sema::test
                 EXPECT_THAT(chosen, IsNull());
             }
 
-            TEST(OverloarResolutionTest, ParamsMatch_ReturnFunction)
+            TEST_F(OverloarResolutionTest, ParamsMatch_ReturnFunction)
             {
                 errs_t errs;
                 const auto call_token = token_identifier("foo");
                 StrictMock<sema_function_mock> function;
-                auto param_expression = std::make_unique<StrictMock<expression_node_mock>>();
+                auto param_expression = expression_mock();
                 auto param_expression_ptr = param_expression.get();
                 std::vector<std::unique_ptr<expression_node>> param_expressions;
                 param_expressions.emplace_back(std::move(param_expression));
@@ -182,13 +194,13 @@ namespace cmsl::sema::test
                 EXPECT_THAT(chosen, Eq(&function));
             }
 
-            TEST(OverloarResolutionTest, GoodFunctionInUpperScopeHidByBadOne_RaiseErrorAndReturnNull)
+            TEST_F(OverloarResolutionTest, GoodFunctionInUpperScopeHidByBadOne_RaiseErrorAndReturnNull)
             {
                 errs_t errs;
                 const auto call_token = token_identifier("foo");
                 StrictMock<sema_function_mock> good_function;
                 StrictMock<sema_function_mock> bad_function;
-                auto param_expression = std::make_unique<StrictMock<expression_node_mock>>();
+                auto param_expression = expression_mock();
                 auto param_expression_ptr = param_expression.get();
                 std::vector<std::unique_ptr<expression_node>> param_expressions;
                 param_expressions.emplace_back(std::move(param_expression));
@@ -219,12 +231,12 @@ namespace cmsl::sema::test
                 EXPECT_THAT(chosen, IsNull());
             }
 
-            TEST(OverloarResolutionTest, GoodFunctionInUpperScope_ReturnFunction)
+            TEST_F(OverloarResolutionTest, GoodFunctionInUpperScope_ReturnFunction)
             {
                 errs_t errs;
                 const auto call_token = token_identifier("foo");
                 StrictMock<sema_function_mock> function;
-                auto param_expression = std::make_unique<StrictMock<expression_node_mock>>();
+                auto param_expression = expression_mock();
                 auto param_expression_ptr = param_expression.get();
                 std::vector<std::unique_ptr<expression_node>> param_expressions;
                 param_expressions.emplace_back(std::move(param_expression));
@@ -252,13 +264,13 @@ namespace cmsl::sema::test
                 EXPECT_THAT(chosen, Eq(&function));
             }
 
-            TEST(OverloarResolutionTest, GoodOveloadedFunction_ReturnFunction)
+            TEST_F(OverloarResolutionTest, GoodOveloadedFunction_ReturnFunction)
             {
                 errs_t errs;
                 const auto call_token = token_identifier("foo");
                 StrictMock<sema_function_mock> good_function;
                 StrictMock<sema_function_mock> bad_function;
-                auto param_expression = std::make_unique<StrictMock<expression_node_mock>>();
+                auto param_expression = expression_mock();
                 auto param_expression_ptr = param_expression.get();
                 std::vector<std::unique_ptr<expression_node>> param_expressions;
                 param_expressions.emplace_back(std::move(param_expression));

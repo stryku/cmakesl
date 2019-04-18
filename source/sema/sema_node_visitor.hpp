@@ -2,6 +2,7 @@
 
 namespace cmsl::sema
 {
+    class sema_node;
         class variable_declaration_node;
         class bool_value_node;
         class int_value_node;

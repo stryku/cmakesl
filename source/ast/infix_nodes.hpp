@@ -10,12 +10,13 @@ namespace cmsl::ast
         class binary_operator_node : public ast_node
         {
         public:
-            explicit binary_operator_node(std::unique_ptr<ast_node> lhs, lexer::token::token op,  std::unique_ptr<ast_node> rhs)
+            explicit binary_operator_node(std::unique_ptr<ast_node> lhs, token_t op,  std::unique_ptr<ast_node> rhs)
                 : m_lhs{ std::move(lhs)}
                 , m_operator{ op }
                 , m_rhs{ std::move(rhs)}
             {}
 
+            // Todo: remove get_
             const ast_node& get_lhs() const
             {
                 return *m_lhs;
@@ -36,20 +37,32 @@ namespace cmsl::ast
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_lhs->begin_location();
+            }
+
+            source_location end_location() const override
+            {
+                return m_rhs->end_location();
+            }
+
         private:
             std::unique_ptr<ast_node> m_lhs;
-            lexer::token::token m_operator;
+            token_t m_operator;
             std::unique_ptr<ast_node> m_rhs;
         };
 
         class class_member_access_node : public ast_node
         {
         public:
-            explicit class_member_access_node(std::unique_ptr<ast_node> lhs, lexer::token::token member_name)
+            explicit class_member_access_node(std::unique_ptr<ast_node> lhs, token_t dot, token_t member_name)
                 : m_lhs{ std::move(lhs) }
+                , m_dot{ dot }
                 , m_member_name{ member_name }
             {}
 
+            // Todo: remove get_
             const ast_node& get_lhs() const
             {
                 return *m_lhs;
@@ -60,14 +73,30 @@ namespace cmsl::ast
                 return m_member_name;
             }
 
+            token_t  dot() const
+            {
+                return m_dot;
+            }
+
             void visit(ast_node_visitor &visitor) const override
             {
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_lhs->begin_location();
+            }
+
+            source_location end_location() const override
+            {
+                return m_member_name.src_range().end;
+            }
+
         private:
             std::unique_ptr<ast_node> m_lhs;
-            lexer::token::token m_member_name;
+            token_t m_dot;
+            token_t m_member_name;
         };
 
         class call_node : public ast_node
@@ -75,14 +104,27 @@ namespace cmsl::ast
         public:
             using params_t = std::vector<std::unique_ptr<ast_node>>;
 
-            explicit call_node(lexer::token::token name, params_t parameter_nodes)
+            explicit call_node(token_t name, token_t open_paren, params_t parameter_nodes, token_t close_paren)
                 : m_name{ std::move(name) }
+                , m_open_paren{ open_paren }
                 , m_parameter_nodes{ std::move(parameter_nodes) }
+                , m_close_paren{ close_paren }
             {}
 
-            lexer::token::token get_name() const
+            // Todo: remove get_
+            token_t get_name() const
             {
                 return m_name;
+            }
+
+            token_t open_paren() const
+            {
+                return m_open_paren;
+            }
+
+            token_t close_paren() const
+            {
+                return m_close_paren;
             }
 
             const params_t& get_param_nodes() const
@@ -91,34 +133,61 @@ namespace cmsl::ast
             }
 
         private:
-            lexer::token::token m_name;
+            token_t m_name;
+            token_t m_open_paren;
             params_t m_parameter_nodes;
+            token_t m_close_paren;
         };
 
         class function_call_node : public call_node
         {
         public:
-            explicit function_call_node(lexer::token::token name, params_t params)
-                : call_node{ name, std::move(params) }
+            explicit function_call_node(token_t name,
+                                        token_t open_paren,
+                                        params_t params,
+                                        token_t close_paren)
+                : call_node{ name, open_paren,  std::move(params), close_paren }
             {}
 
             void visit(ast_node_visitor &visitor) const override
             {
                 visitor.visit(*this);
+            }
+
+            source_location begin_location() const override
+            {
+                return get_name().src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return close_paren().src_range().end;
             }
         };
 
         class member_function_call_node : public call_node
         {
         public:
-            explicit member_function_call_node(std::unique_ptr<ast_node> lhs, lexer::token::token name, params_t params)
-                : call_node{ name, std::move(params) }
+            explicit member_function_call_node(std::unique_ptr<ast_node> lhs,
+                                               token_t dot,
+                                               token_t name,
+                                               token_t open_paren,
+                                               params_t params,
+                                               token_t close_paren)
+                : call_node{ name, open_paren, std::move(params), close_paren }
                 , m_lhs{ std::move(lhs) }
+                , m_dot{ dot }
             {}
 
+            //todo: remove get_
             const ast_node& get_lhs() const
             {
                 return *m_lhs;
+            }
+
+            token_t dot() const
+            {
+                return m_dot;
             }
 
             void visit(ast_node_visitor &visitor) const override
@@ -126,30 +195,51 @@ namespace cmsl::ast
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_lhs->begin_location();
+            }
+
+            source_location end_location() const override
+            {
+                return close_paren().src_range().end;
+            }
+
         private:
             std::unique_ptr<ast_node> m_lhs;
+            token_t m_dot;
         };
 
         class fundamental_value_node : public ast_node
         {
         public:
-            explicit fundamental_value_node(lexer::token::token token)
+            explicit fundamental_value_node(token_t token)
                 : m_token{ token }
             {}
 
-            lexer::token::token get_token() const
+            token_t get_token() const
             {
                 return m_token;
             }
 
+            source_location begin_location() const override
+            {
+                return m_token.src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return m_token.src_range().end;
+            }
+
         protected:
-            const lexer::token::token m_token;
+            const token_t m_token;
         };
 
         class bool_value_node : public fundamental_value_node
         {
         public:
-            explicit bool_value_node(lexer::token::token token)
+            explicit bool_value_node(token_t token)
                 : fundamental_value_node{token}
             {}
 
@@ -162,7 +252,7 @@ namespace cmsl::ast
         class int_value_node : public fundamental_value_node
         {
         public:
-            explicit int_value_node(lexer::token::token token)
+            explicit int_value_node(token_t token)
                     : fundamental_value_node{token}
             {}
 
@@ -175,7 +265,7 @@ namespace cmsl::ast
         class double_value_node : public fundamental_value_node
         {
         public:
-            explicit double_value_node(lexer::token::token token)
+            explicit double_value_node(token_t token)
                 : fundamental_value_node{token}
             {}
 
@@ -188,7 +278,7 @@ namespace cmsl::ast
         class string_value_node : public fundamental_value_node
         {
         public:
-            explicit string_value_node(lexer::token::token token)
+            explicit string_value_node(token_t token)
                 : fundamental_value_node{token}
             {}
 
@@ -201,11 +291,11 @@ namespace cmsl::ast
         class id_node : public ast_node
         {
         public:
-            explicit id_node(lexer::token::token identifer)
+            explicit id_node(token_t identifer)
                     : m_identifer{ identifer }
             {}
 
-            lexer::token::token get_identifier() const
+            token_t get_identifier() const
             {
                 return m_identifer;
             }
@@ -215,21 +305,28 @@ namespace cmsl::ast
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_identifer.src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return m_identifer.src_range().end;
+            }
+
         private:
             lexer::token::token m_identifer;
         };
 
         class initializer_list_node : public ast_node
         {
-        private:
-            using token_t = lexer::token::token;
-
         public:
-            explicit initializer_list_node(token_t begin_token,
-                                           token_t end_token,
-                                           std::vector<std::unique_ptr<ast_node>> values)
-                    : m_begin_token{ begin_token }
-                    , m_end_token{ end_token }
+            explicit initializer_list_node(token_t open_brace,
+                                           std::vector<std::unique_ptr<ast_node>> values,
+                                           token_t close_brace)
+                    : m_open_brace{ open_brace }
+                    , m_close_brace{ close_brace }
                     , m_values{ std::move(values) }
             {}
 
@@ -238,9 +335,14 @@ namespace cmsl::ast
                 return m_values;
             }
 
-            std::pair<token_t, token_t> begin_end() const
+            token_t open_brace() const
             {
-                return { m_begin_token, m_end_token };
+                return m_open_brace;
+            }
+
+            token_t close_brace() const
+            {
+                return m_close_brace;
             }
 
             void visit(ast_node_visitor &visitor) const override
@@ -248,9 +350,19 @@ namespace cmsl::ast
                 visitor.visit(*this);
             }
 
+            source_location begin_location() const override
+            {
+                return m_open_brace.src_range().begin;
+            }
+
+            source_location end_location() const override
+            {
+                return m_close_brace.src_range().end;
+            }
+
         private:
-            token_t m_begin_token;
-            token_t m_end_token;
+            token_t m_open_brace;
             std::vector<std::unique_ptr<ast_node>> m_values;
+            token_t m_close_brace;
         };
 }

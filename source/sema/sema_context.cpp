@@ -128,4 +128,19 @@ namespace cmsl::sema
 
             return m_parent ? m_parent->find_reference_for(type) : nullptr;
         }
+
+    std::vector<std::reference_wrapper<const sema_type>> sema_context::types() const
+    {
+        std::vector<std::reference_wrapper<const sema_type>> result;
+        result.reserve(m_types.size());
+
+        std::transform(std::cbegin(m_types), std::cend(m_types),
+                std::back_inserter(result),
+                [](const auto ty)
+                       {
+                           return std::ref(*ty);
+                       });
+
+        return result;
+    }
 }
