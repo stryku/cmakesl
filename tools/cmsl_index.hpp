@@ -11,7 +11,7 @@ extern "C"
 
     struct cmsl_index_entry
     {
-        unsigned start_pos;
+        unsigned begin_pos;
         unsigned end_pos;
         cmsl_index_entry_type type;
         char* source_path;

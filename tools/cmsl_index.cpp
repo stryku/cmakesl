@@ -9,6 +9,24 @@
 
 namespace cmsl
 {
+    cmsl_index_entry make_entry(const lexer::token::token& token, cmsl_index_entry_type type, string_view path, unsigned position)
+    {
+        cmsl_index_entry entry{};
+
+        entry.begin_pos = token.src_range().begin.absolute;
+        entry.end_pos = token.src_range().end.absolute;
+
+        entry.type = type;
+
+        entry.source_path = new char[path.size() + 1u];
+        std::strcpy(entry.source_path, path.data());
+
+        entry.position = position;
+
+        return entry;
+    }
+
+
 class indexer : public sema::sema_node_visitor
 {
 public:
@@ -20,15 +38,16 @@ public:
         }
     }
 
-    virtual void visit(const sema::variable_declaration_node& node) override
+    void visit(const sema::variable_declaration_node& node) override
     {
         const auto& ast_node = node.ast_node();
         const auto variable_decl = dynamic_cast<const ast::variable_declaration_node*>(&ast_node);
 
-        cmsl_index_entry type_entry;
-        add_entry_data(type_entry, variable_decl->get_type_representation(), node.type());
-        type_entry.start_pos = variable_decl->get_type_representation().tokens().front().src_range().begin.absolute;
-        type_entry.end_pos = variable_decl->get_type_representation().tokens().back().src_range().end.absolute;
+        const auto type_entry = make_entry(variable_decl->get_type_representation().primary_name(),
+                                           cmsl_index_entry_type::type,
+                                           node.type().name().primary_name().source().path(),
+                                           node.type().name().primary_name().src_range().begin.absolute);
+
         m_intermediate_entries.emplace_back(type_entry);
 
         // todo add variable name to context
@@ -37,19 +56,6 @@ public:
         {
             node.initialization()->visit(*this);
         }
-    }
-
-private:
-    void add_entry_data(cmsl_index_entry& entry, const ast::type_representation& type_representation, const sema::sema_type& type)
-    {
-        entry.position = type.name().tokens().front().src_range().begin.absolute;
-        add_entry_path(entry, type.name().tokens().front().source().path());
-    }
-
-    void add_entry_path(cmsl_index_entry& entry, cmsl::string_view path)
-    {
-        entry.source_path = new char[path.size() + 1u];
-        std::strcpy(entry.source_path, path.data());
     }
 
 private:
