@@ -1,46 +1,30 @@
 #include "cmsl_index.hpp"
 
+#include "ast/user_function_node.hpp"
+#include "ast/variable_declaration_node.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_node_visitor.hpp"
 #include "sema/sema_nodes.hpp"
 #include "cmsl_parsed_source.hpp"
 
 #include <vector>
-#include <ast/variable_declaration_node.hpp>
 #include <cstring>
 
 namespace cmsl::tools
 {
-    cmsl_index_entry make_entry(const lexer::token::token& entry_token,
-                                cmsl_index_entry_type type,
-                                string_view destination_path,
-                                unsigned destination_position)
-    {
-        cmsl_index_entry entry{};
-
-        entry.begin_pos = entry_token.src_range().begin.absolute;
-        entry.end_pos = entry_token.src_range().end.absolute;
-
-        entry.type = type;
-
-        entry.source_path = new char[destination_path.size() + 1u];
-        std::strcpy(entry.source_path, destination_path.data());
-
-        entry.position = destination_position;
-
-        return entry;
-    }
-
-
 class indexer : public sema::sema_node_visitor
 {
 public:
     void visit(const sema::translation_unit_node& node) override
     {
+        m_identifiers_context.enter_ctx();
+
         for(const auto& sub_node : node.nodes())
         {
             sub_node->visit(*this);
         }
+
+        m_identifiers_context.leave_ctx();
     }
 
     void visit(const sema::variable_declaration_node& node) override
@@ -61,7 +45,6 @@ public:
             node.initialization()->visit(*this);
         }
     }
-
 
     void visit(const sema::bool_value_node& node) override {}
     void visit(const sema::int_value_node& node) override {}
@@ -127,17 +110,19 @@ public:
         m_identifiers_context.leave_ctx();
     }
 
-
     void visit(const sema::function_node& node) override
     {
         m_identifiers_context.enter_ctx();
+        const auto function_node = dynamic_cast<const ast::user_function_node2*>(&node.ast_node());
 
-        for(const auto& param_declaration : node.signature().params)
+        add_type_entry(function_node->get_return_type_reference(), node.return_type());
+
+        const auto& ast_param_declarations = function_node->get_param_declarations();
+        const auto& params = node.signature().params;
+        for(auto i = 0u; i < params.size(); ++i)
         {
-            add_entry(param_declaration.name,
-                      cmsl_index_entry_type::parameter_declaration_identifier,
-                      param_declaration.ty.name().primary_name().source().path(),
-                      param_declaration.ty.name().primary_name().src_range().begin.absolute);
+            add_type_entry(ast_param_declarations[i].ty, params[i].ty);
+            m_identifiers_context.register_identifier(params[i].name, &params[i].ty  );
         }
 
         node.body().visit(*this);
@@ -243,6 +228,14 @@ private:
         }
     }
 
+    void add_type_entry(const ast::type_representation& type_representation, const sema::sema_type& type)
+    {
+        add_entry(type_representation.primary_name(),
+                  cmsl_index_entry_type::type,
+                  type.name().primary_name().source().path(),
+                  type.name().primary_name().src_range().begin.absolute);
+    }
+
     void add_entry(const lexer::token::token& entry_token,
                    cmsl_index_entry_type type,
                    string_view destination_path,
@@ -250,6 +243,26 @@ private:
     {
         const auto entry = make_entry(entry_token, type, destination_path, destination_position);
         m_intermediate_entries.emplace_back(entry);
+    }
+
+    cmsl_index_entry make_entry(const lexer::token::token& entry_token,
+                                cmsl_index_entry_type type,
+                                string_view destination_path,
+                                unsigned destination_position)
+    {
+        cmsl_index_entry entry{};
+
+        entry.begin_pos = entry_token.src_range().begin.absolute;
+        entry.end_pos = entry_token.src_range().end.absolute;
+
+        entry.type = type;
+
+        entry.source_path = new char[destination_path.size() + 1u];
+        std::strcpy(entry.source_path, destination_path.data());
+
+        entry.position = destination_position;
+
+        return entry;
     }
 
 private:
