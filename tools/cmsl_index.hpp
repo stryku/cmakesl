@@ -6,6 +6,10 @@ extern "C"
     enum cmsl_index_entry_type
     {
         type,
+        identifier,
+        parameter_declaration_identifier,
+        class_member_identifier,
+        operator_function,
         function_call_name
     };
 
