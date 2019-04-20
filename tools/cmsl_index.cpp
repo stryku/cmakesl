@@ -1,5 +1,6 @@
 #include "cmsl_index.hpp"
 
+#include "sema/identifiers_context.hpp"
 #include "sema/sema_node_visitor.hpp"
 #include "sema/sema_nodes.hpp"
 
@@ -50,7 +51,7 @@ public:
 
         m_intermediate_entries.emplace_back(type_entry);
 
-        // todo add variable name to context
+        m_identifiers_context.register_identifier(variable_decl->get_name(), &node.type());
 
         if(node.initialization())
         {
@@ -60,6 +61,7 @@ public:
 
 private:
     std::vector<cmsl_index_entry> m_intermediate_entries;
+    sema::identifiers_context_impl m_identifiers_context;
 };
 }
 

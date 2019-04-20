@@ -32,6 +32,7 @@ namespace cmsl::sema
             using id_map_t = std::unordered_map<token_t, const sema_type*>;
 
         public:
+            // Todo: accept type reference, not pointer
             void register_identifier(token_t declaration_token, const sema_type* ty) override
             {
                 // Todo: handle empty
