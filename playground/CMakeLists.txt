@@ -3,6 +3,6 @@ project(playground)
 include_directories(${CMAKESL_SOURCES_DIR})
 
 add_executable(playground main.cpp)
-target_link_libraries(playground cmsl_tools exec lexer ast errors)
+target_link_libraries(playground cmsl_tools lexer ast errors)
 target_include_directories(playground PRIVATE ${CMAKESL_DIR}/tools)
 
