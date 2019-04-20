@@ -1,4 +1,5 @@
 #include "../tools/cmsl_complete.hpp"
+#include "../tools/cmsl_index.hpp"
 
 #include <iostream>
 
@@ -26,8 +27,18 @@ int main()
         std::cout << results->results[i] << '\n';
     }
 
+    const auto index_entries = cmsl_index(parsed_source);
+    for(auto i = 0; i < index_entries->num_entries; ++i)
+    {
+        const auto& entry = index_entries->entries[i];
+        std::cout << entry.begin_pos << ", " << entry.end_pos << ", " << entry.type << ", " << entry.position << '\n';
+    }
+
+    cmsl_destroy_index_entries(index_entries);
     cmsl_destroy_complete_results(results);
     cmsl_destroy_parsed_source(parsed_source);
+
+
 
     return 0;
 }
