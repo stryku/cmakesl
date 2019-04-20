@@ -3,12 +3,13 @@
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_node_visitor.hpp"
 #include "sema/sema_nodes.hpp"
+#include "cmsl_parsed_source.hpp"
 
 #include <vector>
 #include <ast/variable_declaration_node.hpp>
 #include <cstring>
 
-namespace cmsl
+namespace cmsl::tools
 {
     cmsl_index_entry make_entry(const lexer::token::token& entry_token,
                                 cmsl_index_entry_type type,
@@ -134,7 +135,7 @@ public:
         for(const auto& param_declaration : node.signature().params)
         {
             add_entry(param_declaration.name,
-                      cmsl_index_entry_type::parameter_declaration,
+                      cmsl_index_entry_type::parameter_declaration_identifier,
                       param_declaration.ty.name().primary_name().source().path(),
                       param_declaration.ty.name().primary_name().src_range().begin.absolute);
         }
@@ -221,6 +222,11 @@ public:
         // Todo: this could point to main function of added subdirectory.
     }
 
+    const std::vector<cmsl_index_entry>& result() const
+    {
+        return m_intermediate_entries;
+    }
+
 private:
     void visit_call_node(const sema::call_node& node)
     {
@@ -253,9 +259,24 @@ private:
 }
 
 
-struct cmsl_index_entries* cmsl_index(const struct cmsl_parsed_source* parsed_source, unsigned absolute_position)
+struct cmsl_index_entries* cmsl_index(const struct cmsl_parsed_source* parsed_source)
 {
+    cmsl::tools::indexer indexer;
+    parsed_source->sema_tree->visit(indexer);
+    const auto& result = indexer.result();
 
+    auto index_entries = new cmsl_index_entries;
+
+    index_entries->num_entries = result.size();
+
+    index_entries->entries = new cmsl_index_entry[result.size()];
+
+    for(auto i = 0u ; i < result.size(); ++i)
+    {
+        index_entries->entries[i] = result[i];
+    }
+
+    return index_entries;
 }
 
 void cmsl_index(struct cmsl_index_entries* index_entries)
