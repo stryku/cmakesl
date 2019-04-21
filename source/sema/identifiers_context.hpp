@@ -32,33 +32,36 @@ namespace cmsl::sema
             using id_map_t = std::unordered_map<token_t, const sema_type*>;
 
         public:
-            void register_identifier(token_t name, const sema_type* ty) override
+            // Todo: accept type reference, not pointer
+            void register_identifier(token_t declaration_token, const sema_type* ty) override
             {
                 // Todo: handle empty
                 auto& ctx = m_contextes.back();
-                ctx[name] = ty;
+                ctx[declaration_token] = ty;
             }
 
             const sema_type* type_of(cmsl::string_view name) const override
             {
-                const auto pred = [name](const auto& id_pair)
+                const auto found = find(name);
+                if(!found)
                 {
-                    return id_pair.first.str() == name;
-                };
-
-                // Iterate contextes 'from top to down'.
-                for(auto ctx_it = std::crbegin(m_contextes); ctx_it != std::crend(m_contextes); ++ctx_it)
-                {
-                    const auto& ids = *ctx_it;
-                    const auto found = std::find_if(std::cbegin(ids), std::cend(ids), pred);
-
-                    if(found != std::cend(ids))
-                    {
-                        return found->second;
-                    }
+                    return nullptr;
                 }
 
-                return nullptr;
+                const auto& found_pair = *found;
+                return found_pair->second;
+            }
+
+            std::optional<token_t> declaration_token_of(cmsl::string_view name) const
+            {
+                const auto found = find(name);
+                if(!found)
+                {
+                    return {};
+                }
+
+                const auto& found_pair = *found;
+                return found_pair->first;
             }
 
             void enter_ctx() override
@@ -70,6 +73,29 @@ namespace cmsl::sema
             {
                 m_contextes.pop_back();
             }
+
+        private:
+             std::optional<id_map_t::const_iterator> find(cmsl::string_view name) const
+             {
+                 const auto pred = [name](const auto& id_pair)
+                 {
+                     return id_pair.first.str() == name;
+                 };
+
+                 // Iterate contextes 'from top to down'.
+                 for(auto ctx_it = std::crbegin(m_contextes); ctx_it != std::crend(m_contextes); ++ctx_it)
+                 {
+                     const auto& ids = *ctx_it;
+                     const auto found = std::find_if(std::cbegin(ids), std::cend(ids), pred);
+
+                     if(found != std::cend(ids))
+                     {
+                         return found;
+                     }
+                 }
+
+                 return {};
+             }
 
         private:
             std::vector<id_map_t> m_contextes;

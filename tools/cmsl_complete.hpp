@@ -1,12 +1,9 @@
 #pragma once
 
+#include "cmsl_parse_source.hpp"
+
 extern "C"
 {
-    struct cmsl_parsed_source;
-
-    cmsl_parsed_source* cmsl_parse_source(const char* source);
-    void cmsl_destroy_parsed_source(cmsl_parsed_source* parsed_source);
-
     struct cmsl_complete_results
     {
         char ** results{ nullptr };
