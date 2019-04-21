@@ -6,9 +6,9 @@ namespace cmsl
 {
     struct source_location
     {
-        size_t line{ 1u };
-        size_t column{ 1u };
-        size_t absolute{ 0u };
+        unsigned line{ 1u };
+        unsigned column{ 1u };
+        unsigned absolute{ 0u };
 
         bool operator<(const source_location& rhs) const
         {

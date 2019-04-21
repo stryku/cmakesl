@@ -1,4 +1,4 @@
-#include "cmsl_complete.hpp"
+#include "cmsl_parse_source.hpp"
 #include "cmsl_parsed_source.hpp"
 
 #include "lexer/lexer.hpp"
@@ -9,7 +9,6 @@
 #include "sema/builtin_sema_context.hpp"
 #include "sema/add_subdirectory_semantic_handler.hpp"
 #include "sema/sema_function.hpp"
-#include "completer.hpp"
 
 namespace cmsl::sema::details
 {
@@ -37,8 +36,8 @@ cmsl_parsed_source* cmsl_parse_source(const char* source)
     auto ast_tree = parser.translation_unit();
 
     parsed_source->builtin_context = std::make_unique<cmsl::sema::builtin_sema_context>(parsed_source->context.type_factory,
-                                                                                       parsed_source->context.function_factory,
-                                                                                       parsed_source->context.context_factory);
+                                                                                        parsed_source->context.function_factory,
+                                                                                        parsed_source->context.context_factory);
 
     auto& global_context = parsed_source->context.context_factory.create(parsed_source->builtin_context.get());
 
@@ -63,20 +62,3 @@ void cmsl_destroy_parsed_source(cmsl_parsed_source* parsed_source)
 {
     delete parsed_source;
 }
-
-
-cmsl_complete_results* cmsl_complete_at(const cmsl_parsed_source* parsed_source, unsigned absolute_position)
-{
-    return cmsl::tools::completer{ *parsed_source, absolute_position }.complete();
-}
-
-void cmsl_destroy_complete_results(cmsl_complete_results* complete_results)
-{
-    for(auto i = 0u; i < complete_results->num_results; ++i)
-    {
-        delete [] complete_results->results[i];
-    }
-
-    delete [] complete_results->results;
-}
-
