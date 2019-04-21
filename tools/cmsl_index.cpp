@@ -292,7 +292,7 @@ struct cmsl_index_entries* cmsl_index(const struct cmsl_parsed_source* parsed_so
     return index_entries;
 }
 
-void cmsl_index(struct cmsl_index_entries* index_entries)
+void cmsl_destroy_index_entries(struct cmsl_index_entries* index_entries)
 {
     for(auto i = 0u; i < index_entries->num_entries; ++i )
     {
