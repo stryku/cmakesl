@@ -11,11 +11,12 @@ set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 include_directories(facade)
 add_subdirectory(source)
 add_subdirectory(tools)
+add_subdirectory(examples)
 
 if(CMAKESL_WITH_TESTS)
     enable_testing()
     # Todo: move to external/CMakeLists.txt
-    add_subdirectory(external/googletest)
+    add_subdirectory( external/googletest)
     add_subdirectory(test)
 endif()
 
