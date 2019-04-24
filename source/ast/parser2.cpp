@@ -285,14 +285,8 @@ namespace cmsl::ast
             std::vector<if_else_node::if_values> ifs;
 
             std::optional<token_t> else_kw;
-            while(current_is(token_type_t::kw_if))
+            while(const auto if_kw = try_eat(token_type_t::kw_if))
             {
-                const auto if_kw = eat(token_type_t::kw_if);
-                if(!if_kw)
-                {
-                    return nullptr;
-                }
-
                 auto if_node = get_conditional_node();
                 if(!if_node)
                 {
@@ -317,16 +311,15 @@ namespace cmsl::ast
             }
 
             std::optional<if_else_node::last_else_value> last_else;
-            if(current_is(token_type_t::kw_else))
+            if(const auto last_else_kw = try_eat(token_type_t::kw_else))
             {
-                else_kw = eat(token_type_t::kw_else);
                 auto else_block = block();
-
                 if(!else_block)
                 {
                     return nullptr;
                 }
-                last_else = if_else_node::last_else_value{ *else_kw, std::move(else_block) };
+
+                last_else = if_else_node::last_else_value{ *last_else_kw, std::move(else_block) };
             }
 
             return std::make_unique<if_else_node>(std::move(ifs), std::move(last_else));
@@ -523,9 +516,8 @@ namespace cmsl::ast
             }
 
             std::optional<variable_declaration_node::initialization_values> initialization_vals;
-            if(current_is(token_type_t::equal))
+            if( const auto equal = try_eat(token_type_t::equal))
             {
-                const auto equal_kw = eat(); // equal
                 auto initialization = expr();
                 if(!initialization)
                 {
@@ -533,7 +525,7 @@ namespace cmsl::ast
                 }
 
                 initialization_vals = variable_declaration_node::initialization_values{
-                    *equal_kw,
+                    *equal,
                     std::move(initialization)
                 };
             }
@@ -752,16 +744,14 @@ namespace cmsl::ast
             {
                 return fundamental_value();
             }
-            else if(current_is(token_type_t::open_paren))
+            else if(try_eat(token_type_t::open_paren))
             {
-                eat(token_type_t::open_paren);
                 auto e = expr();
                 eat(token_type_t::close_paren);
                 return std::move(e);
             }
-            else if(current_is(token_type_t::identifier))
+            else if(const auto id = try_eat(token_type_t::identifier))
             {
-                const auto id = eat(token_type_t::identifier);
                 return id ? std::make_unique<id_node>(*id) : nullptr;
             }
             else if(current_is(token_type_t::open_brace))
@@ -777,9 +767,8 @@ namespace cmsl::ast
         {
                 auto operator_expr = parse_operator();
 
-                if(current_is(token_type_t::dot))
+                if(const auto dot = try_eat(token_type_t::dot))
                 {
-                    const auto dot = eat(token_type_t::dot);
                     if(current_is_class_member_access())
                     {
                         const auto member_name = eat();
@@ -844,12 +833,8 @@ namespace cmsl::ast
 
                 exprs.emplace_back(std::move(expression));
 
-                // Todo: move to its own function
-                // Todo: Introduce try_eat(type) method to simplify such checks
-                if(current_is(token_type_t::comma))
+                if(try_eat(token_type_t::comma))
                 {
-                    eat(token_type_t::comma);
-
                     if(is_at_end() || current_is(valid_end_of_list_token))
                     {
                         const auto tok = is_at_end() ? prev() : current();
