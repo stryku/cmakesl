@@ -113,7 +113,7 @@ public:
     void visit(const sema::function_node& node) override
     {
         m_identifiers_context.enter_ctx();
-        const auto function_node = dynamic_cast<const ast::user_function_node2*>(&node.ast_node());
+        const auto function_node = dynamic_cast<const ast::user_function_node*>(&node.ast_node());
 
         add_type_entry(function_node->get_return_type_reference(), node.return_type());
 

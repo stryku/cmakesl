@@ -73,7 +73,7 @@ namespace cmsl
             void visit(const ast::id_node& node) override;
             void visit(const ast::return_node& node) override;
             void visit(const ast::translation_unit_node& node) override;
-            void visit(const ast::user_function_node2& node) override;
+            void visit(const ast::user_function_node& node) override;
             void visit(const ast::variable_declaration_node& node) override;
             void visit(const ast::while_node& node) override;
             void visit(const ast::initializer_list_node& node) override;
@@ -118,7 +118,7 @@ namespace cmsl
 
             struct function_declaration
             {
-                const ast::user_function_node2& ast_function_node;
+                const ast::user_function_node& ast_function_node;
                 user_sema_function* fun{ nullptr };
                 const ast::block_node& body_to_visit;
             };
@@ -130,7 +130,7 @@ namespace cmsl
                 std::vector<function_declaration> functions;
             };
 
-            std::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node,
+            std::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node& node,
                     sema_context& ctx);
             std::optional<class_members> collect_class_members_and_add_functions_to_ctx(const ast::class_node& node,
                     sema_context& class_context);

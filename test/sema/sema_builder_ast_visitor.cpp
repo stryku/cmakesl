@@ -97,12 +97,12 @@ namespace cmsl::sema::test
                 }
 
 
-                std::unique_ptr<ast::user_function_node2> create_user_function_node(ast::type_representation type,
+                std::unique_ptr<ast::user_function_node> create_user_function_node(ast::type_representation type,
                                                                                     token_t name,
                                                                                     std::unique_ptr<ast::block_node> body,
-                                                                                    ast::user_function_node2::params_t params = {})
+                                                                                    ast::user_function_node::params_t params = {})
                 {
-                    return std::make_unique<ast::user_function_node2>(std::move(type),
+                    return std::make_unique<ast::user_function_node>(std::move(type),
                                                                       name,
                                                                       tmp_token,
                                                                       std::move(params),
@@ -709,7 +709,7 @@ namespace cmsl::sema::test
                 auto param_type_reference = ast::type_representation{ param_type_token };
                 auto param_name_token = token_identifier("baz");
 
-                ast::user_function_node2::params_t params;
+                ast::user_function_node::params_t params;
                 params.emplace_back(ast::param_declaration{param_type_reference, param_name_token});
 
                 auto block = create_block_node_ptr();

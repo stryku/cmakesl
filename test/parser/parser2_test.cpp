@@ -166,7 +166,7 @@ namespace cmsl::ast::test
                     m_result += "}";
                 }
 
-                virtual void visit(const user_function_node2& node) override
+                virtual void visit(const user_function_node& node) override
                 {
                     m_result += "user_function{return_type:";
                     const auto ret_type_reference = node.get_return_type_reference();
@@ -1287,10 +1287,10 @@ namespace cmsl::ast::test
                 const auto function_name_token = token_identifier("foo");
                 const auto function_type_ref = type_representation{ function_type_token };
                 auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
-                auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
+                auto expected_ast = std::make_unique<user_function_node>(function_type_ref,
                                                                           function_name_token,
                                                                           tmp_token,
-                                                                          user_function_node2::params_t{},
+                                                                          user_function_node::params_t{},
                                                                           tmp_token,
                                                                           std::move(function_block_node));
 
@@ -1318,12 +1318,12 @@ namespace cmsl::ast::test
                 const auto param_name_token = token_identifier("baz");
                 const auto param_type_ref = type_representation{ param_type_token };
 
-                user_function_node2::params_t params{
+                user_function_node::params_t params{
                         param_declaration{param_type_ref, param_name_token }
                 };
 
                 auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
-                auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
+                auto expected_ast = std::make_unique<user_function_node>(function_type_ref,
                                                                           function_name_token,
                                                                           tmp_token,
                                                                           std::move(params),
@@ -1362,13 +1362,13 @@ namespace cmsl::ast::test
                 const auto param2_name_token = token_identifier("out_of_fancy_identifiers");
                 const auto param2_type_ref = type_representation{ param2_type_token };
 
-                user_function_node2::params_t params{
+                user_function_node::params_t params{
                         param_declaration{param_type_ref, param_name_token },
                         param_declaration{param2_type_ref, param2_name_token }
                 };
 
                 auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
-                auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
+                auto expected_ast = std::make_unique<user_function_node>(function_type_ref,
                                                                           function_name_token,
                                                                           tmp_token,
                                                                           std::move(params),
@@ -1464,10 +1464,10 @@ namespace cmsl::ast::test
                 const auto function_name_token = token_identifier("bar");
                 const auto function_type_ref = type_representation{ function_type_token };
                 auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
-                auto fun_node = std::make_unique<user_function_node2>(function_type_ref,
+                auto fun_node = std::make_unique<user_function_node>(function_type_ref,
                                                                       function_name_token,
                                                                       tmp_token,
-                                                                      user_function_node2::params_t{},
+                                                                      user_function_node::params_t{},
                                                                       tmp_token,
                                                                       std::move(function_block_node));
 

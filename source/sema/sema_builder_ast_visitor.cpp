@@ -466,7 +466,7 @@ namespace cmsl::sema
             m_result_node = std::make_unique<translation_unit_node>(node, m_ctx, std::move(nodes));
         }
 
-        void sema_builder_ast_visitor::visit(const ast::user_function_node2& node)
+        void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
         {
             const auto return_type_reference = node.get_return_type_reference();
             auto return_type = try_get_or_create_generic_type(m_ctx, return_type_reference);
@@ -708,7 +708,7 @@ namespace cmsl::sema
             return ids_ctx_guard{ m_ids_context };
         }
 
-        std::optional<sema_builder_ast_visitor::function_declaration> sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node,
+        std::optional<sema_builder_ast_visitor::function_declaration> sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(const ast::user_function_node& node,
                                                                                       sema_context& ctx)
         {
             const auto return_type_reference = node.get_return_type_reference();
@@ -768,7 +768,7 @@ namespace cmsl::sema
                     members.info.emplace_back(member_info{member->name(), member->type()});
                     members.declarations.emplace_back(std::move(member));
                 }
-                else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n.get()))
+                else if(auto fun_node = dynamic_cast<const ast::user_function_node*>(n.get()))
                 {
                     auto function_declaration = get_function_declaration_and_add_to_ctx(*fun_node, class_context);
                     if(!function_declaration)
