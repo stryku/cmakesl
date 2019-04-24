@@ -52,7 +52,7 @@ namespace cmsl::ast::test
                 {
                     m_result += "class{name:" + std::string{node.name().str() } + ";members:";
 
-                    for(auto n : node.get_nodes())
+                    for(const auto& n : node.nodes())
                     {
                         n->visit(*this);
                     }
