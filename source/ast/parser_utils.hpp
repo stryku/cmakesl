@@ -26,6 +26,7 @@ namespace cmsl
             token_type_t peek(size_t n = 1u) const;
             token_type_t peek_from(token_it it, size_t n = 1u) const;
             std::optional<token_t> eat(std::optional<token_type_t> type = {});
+            std::optional<token_t> try_eat(token_type_t type);
 
             const token_t &current() const;
             const token_t &prev() const;

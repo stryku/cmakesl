@@ -144,4 +144,14 @@ namespace cmsl::ast
     {
         m_current = new_current_it;
     }
+
+    std::optional<parser_utils::token_t> parser_utils::try_eat(token_type_t type)
+    {
+        if(current_is(type))
+        {
+            return eat(type);
+        }
+
+        return {};
+    }
 }
