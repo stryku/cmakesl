@@ -39,7 +39,7 @@ namespace cmsl::facade
         virtual ~cmake_facade() = default;
 
         virtual version get_cmake_version() const = 0;
-        virtual void fatal_error(const std::string& what) const = 0;
+        virtual void fatal_error(const std::string& what) const = 0; // Todo: consider removing
         virtual void register_project(const std::string& name) = 0;
 
         virtual std::string get_current_binary_dir() const = 0;

@@ -65,7 +65,7 @@ namespace cmsl::exec
     {
         directory_guard dg{ m_cmake_facade, std::string{ name } };
 
-        auto path = m_cmake_facade.current_directory() + "/CMakeLists.cmsl";
+        auto path = m_cmake_facade.current_directory() + "/CMakeLists.cmakesl";
         std::ifstream file{ path };
         if(!file.is_open())
         {
