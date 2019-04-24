@@ -38,7 +38,6 @@ public:
     void target_link_library(const std::string& target_name, const std::string& library_name) override
     {}
 
-
     std::string current_directory() const override
     {
         return m_directory_stack.top();
@@ -67,15 +66,14 @@ int main(int argc, const char* argv[])
     }
 
     const auto root_dir_path = std::string{ argv[1] };
-
-    fake_cmake_facade facade;
-    cmsl::exec::global_executor executor{ root_dir_path, facade };
-
     const auto file_path = root_dir_path + "/CMakeLists.cmsl";
 
     std::ifstream in{file_path};
     std::string source{(std::istreambuf_iterator<char>(in)),
                        std::istreambuf_iterator<char>()};
+
+    fake_cmake_facade facade;
+    cmsl::exec::global_executor executor{ root_dir_path, facade };
 
     executor.execute(source);
 }
