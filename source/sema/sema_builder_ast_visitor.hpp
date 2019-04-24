@@ -118,6 +118,7 @@ namespace cmsl
 
             struct function_declaration
             {
+                const ast::user_function_node2& ast_function_node;
                 user_sema_function* fun{ nullptr };
                 const ast::block_node& body_to_visit;
             };

@@ -128,7 +128,7 @@ namespace cmsl::sema
                 }
 
                 function_declaration.fun->set_body(*body);
-                functions.emplace_back(std::make_unique<function_node>(node, *function_declaration.fun, std::move(body)));
+                functions.emplace_back(std::make_unique<function_node>(function_declaration.ast_function_node, *function_declaration.fun, std::move(body)));
             }
 
             m_result_node = std::make_unique<class_node>(node,
@@ -742,6 +742,7 @@ namespace cmsl::sema
             ctx.add_function(function);
 
             return function_declaration{
+                    node,
                     &function,
                     node.get_body()
             };
