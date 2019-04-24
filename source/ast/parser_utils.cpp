@@ -22,8 +22,7 @@ namespace cmsl::ast
     {
         if (is_at_end())
         {
-            // Todo: proper token
-            m_err_observer.raise_unexpected_end_of_file(lexer::token::token{});
+            m_err_observer.raise_unexpected_end_of_file(get_token_for_is_at_end_error_report());
             return false;
         }
 
@@ -153,5 +152,15 @@ namespace cmsl::ast
         }
 
         return {};
+    }
+
+    parser_utils::token_t parser_utils::get_token_for_is_at_end_error_report() const
+    {
+        if(m_prev == m_end)
+        {
+            return token_t{};
+        }
+
+        return *m_prev;
     }
 }
