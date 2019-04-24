@@ -61,12 +61,12 @@ int main(int argc, const char* argv[])
 {
     if(argc < 2)
     {
-        std::cerr << "Usage: cmakesl path/to/directory/with/root/cmsl/file";
+        std::cerr << "Usage: cmakesl path/to/directory/with/root/cmakesl/file";
         return 1;
     }
 
     const auto root_dir_path = std::string{ argv[1] };
-    const auto file_path = root_dir_path + "/CMakeLists.cmsl";
+    const auto file_path = root_dir_path + "/CMakeLists.cmakesl";
 
     std::ifstream in{file_path};
     std::string source{(std::istreambuf_iterator<char>(in)),
