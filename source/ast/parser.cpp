@@ -1,4 +1,4 @@
-#include "ast/parser2.hpp"
+#include "ast/parser.hpp"
 
 #include "ast/variable_declaration_node.hpp"
 #include "ast/infix_nodes.hpp"
@@ -18,18 +18,18 @@
 #include "errors/errors_observer.hpp"
 #include "ast/type_parser.hpp"
 #include "ast/type_parsing_result.hpp"
-#include "parser2.hpp"
+#include "parser.hpp"
 
 #include <map>
 
 namespace cmsl::ast
 {
-        parser2::parser2(errors::errors_observer& err_observer, cmsl::source_view source, const token_container_t& tokens)
+        parser::parser(errors::errors_observer& err_observer, cmsl::source_view source, const token_container_t& tokens)
             : parser_utils{ m_errors_reporter, tokens.cbegin(), tokens.cend() }
             , m_errors_reporter{ err_observer, source }
         {}
 
-        std::unique_ptr<ast_node> parser2::translation_unit()
+        std::unique_ptr<ast_node> parser::translation_unit()
         {
             std::vector<std::unique_ptr<ast_node>> nodes;
 
@@ -61,7 +61,7 @@ namespace cmsl::ast
             return std::make_unique<translation_unit_node>(std::move(nodes));
         }
 
-        std::unique_ptr<ast_node> parser2::constructor(token_t class_name)
+        std::unique_ptr<ast_node> parser::constructor(token_t class_name)
         {
             auto type_name = eat(token_type_t::identifier);
             if(!type_name)
@@ -90,7 +90,7 @@ namespace cmsl::ast
                                                         std::move(block_expr));
         }
 
-        std::unique_ptr<ast_node> parser2::class_()
+        std::unique_ptr<ast_node> parser::class_()
         {
             const auto class_kw = eat(token_type_t::kw_class);
             if (!class_kw)
@@ -166,7 +166,7 @@ namespace cmsl::ast
                                                  *semicolon);
         }
 
-        std::unique_ptr<ast_node> parser2::function()
+        std::unique_ptr<ast_node> parser::function()
         {
             const auto ty = type();
             if(!ty)
@@ -201,7 +201,7 @@ namespace cmsl::ast
                                                          std::move(block_node));
         }
 
-        std::unique_ptr<ast_node> parser2::get_return_node()
+        std::unique_ptr<ast_node> parser::get_return_node()
         {
             const auto return_kw =eat(token_type_t::kw_return);
             if (!return_kw)
@@ -226,7 +226,7 @@ namespace cmsl::ast
                                                  *semicolon);
         }
 
-        bool parser2::declaration_starts() const
+        bool parser::declaration_starts() const
         {
             parse_errors_sink errs_sink;
             type_parser p{ errs_sink, current_iterator(), end_iterator() };
@@ -240,7 +240,7 @@ namespace cmsl::ast
             return type_of_token_is(parsing_result.stopped_at, token_type_t::identifier);
         }
 
-        std::unique_ptr<conditional_node> parser2::get_conditional_node()
+        std::unique_ptr<conditional_node> parser::get_conditional_node()
         {
             const auto open_paren =eat(token_type_t::open_paren);
             if(!open_paren)
@@ -273,7 +273,7 @@ namespace cmsl::ast
                                                       std::move(b));
         }
 
-        std::unique_ptr<ast_node> parser2::get_if_else_node()
+        std::unique_ptr<ast_node> parser::get_if_else_node()
         {
             if(!current_is(token_type_t::kw_if))
             {
@@ -325,7 +325,7 @@ namespace cmsl::ast
             return std::make_unique<if_else_node>(std::move(ifs), std::move(last_else));
         }
 
-        std::unique_ptr<ast_node> parser2::get_while_node()
+        std::unique_ptr<ast_node> parser::get_while_node()
         {
             const auto while_kw =eat(token_type_t::kw_while);
             if(!while_kw)
@@ -342,7 +342,7 @@ namespace cmsl::ast
             return std::make_unique<while_node>(*while_kw, std::move(conditional_node));
         }
 
-        std::unique_ptr<block_node> parser2::block()
+        std::unique_ptr<block_node> parser::block()
         {
             const auto open_brace =eat(token_type_t::open_brace);
             if (!open_brace)
@@ -402,7 +402,7 @@ namespace cmsl::ast
             return std::make_unique<block_node>(*open_brace, std::move(nodes), *close_brace);
         }
 
-        std::optional<param_declaration> parser2::get_param_declaration()
+        std::optional<param_declaration> parser::get_param_declaration()
         {
             auto t = type();
 
@@ -420,7 +420,7 @@ namespace cmsl::ast
             return param_declaration{ *t, *name };
         }
 
-        bool parser2::prepare_for_next_parameter_declaration()
+        bool parser::prepare_for_next_parameter_declaration()
         {
             if (!expect_not_at_end())
             {
@@ -454,7 +454,7 @@ namespace cmsl::ast
             return true;
         }
 
-        std::optional<parser2::param_list_values> parser2::param_declarations()
+        std::optional<parser::param_list_values> parser::param_declarations()
         {
             std::vector<param_declaration> params;
 
@@ -501,7 +501,7 @@ namespace cmsl::ast
             return param_list_values{*open_paren, std::move(params), *close_paren};
         }
 
-        std::unique_ptr<ast_node> parser2::variable_declaration()
+        std::unique_ptr<ast_node> parser::variable_declaration()
         {
             const auto ty = type();
             if(!ty)
@@ -539,7 +539,7 @@ namespace cmsl::ast
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization_vals), *semicolon);
         }
 
-        std::optional<type_representation> parser2::type()
+        std::optional<type_representation> parser::type()
         {
             type_parser ty_parser{ m_errors_reporter, current_iterator(), end_iterator() };
             auto parsing_result = ty_parser.type();
@@ -547,7 +547,7 @@ namespace cmsl::ast
             return std::move(parsing_result.ty);
         }
 
-        std::optional<parser2::token_t> parser2::eat_function_call_name()
+        std::optional<parser::token_t> parser::eat_function_call_name()
         {
             if(!current_is_name_of_function_call())
             {
@@ -565,7 +565,7 @@ namespace cmsl::ast
         }
 
 
-        std::unique_ptr<ast_node> parser2::parse_operator(unsigned precedence)
+        std::unique_ptr<ast_node> parser::parse_operator(unsigned precedence)
         {
             static const std::map<unsigned, std::vector<token_type_t>> operators{
                 { 2, { token_type_t::dot } },
@@ -677,19 +677,19 @@ namespace cmsl::ast
             }
         }
 
-        bool parser2::current_is_class_member_access() const
+        bool parser::current_is_class_member_access() const
         {
             // At this point we know that we're after the dot token. Test whether it's a member function call or just member access.
             return !current_is_function_call();
         }
 
-        bool parser2::current_is_function_call() const
+        bool parser::current_is_function_call() const
         {
             return current_is_name_of_function_call()
                    && next_is(token_type_t::open_paren);
         }
 
-        bool parser2::current_is_fundamental_value() const
+        bool parser::current_is_fundamental_value() const
         {
             switch(curr_type())
             {
@@ -705,7 +705,7 @@ namespace cmsl::ast
             }
         }
 
-        std::unique_ptr<ast_node> parser2::fundamental_value()
+        std::unique_ptr<ast_node> parser::fundamental_value()
         {
             const auto token = eat();
 
@@ -734,7 +734,7 @@ namespace cmsl::ast
             }
         }
 
-        std::unique_ptr<ast_node> parser2::factor()
+        std::unique_ptr<ast_node> parser::factor()
         {
             if (current_is_function_call())
             {
@@ -763,7 +763,7 @@ namespace cmsl::ast
             return nullptr;
         }
 
-        std::unique_ptr<ast_node> parser2::expr()
+        std::unique_ptr<ast_node> parser::expr()
         {
                 auto operator_expr = parse_operator();
 
@@ -797,7 +797,7 @@ namespace cmsl::ast
                 return std::move(operator_expr);
         }
 
-        std::optional<parser2::function_call_values> parser2::get_function_call_values()
+        std::optional<parser::function_call_values> parser::get_function_call_values()
         {
             function_call_values vals;
 
@@ -818,7 +818,7 @@ namespace cmsl::ast
             };
         }
 
-        std::optional<std::vector<std::unique_ptr<ast_node>>> parser2::comma_separated_expression_list(token_type_t valid_end_of_list_token)
+        std::optional<std::vector<std::unique_ptr<ast_node>>> parser::comma_separated_expression_list(token_type_t valid_end_of_list_token)
         {
             std::vector<std::unique_ptr<ast_node>> exprs;
 
@@ -847,7 +847,7 @@ namespace cmsl::ast
             return std::move(exprs);
         }
 
-        std::optional<parser2::call_param_list_values> parser2::parameter_list()
+        std::optional<parser::call_param_list_values> parser::parameter_list()
         {
             const auto open_paren = eat(token_type_t::open_paren);
             if(!open_paren)
@@ -874,7 +874,7 @@ namespace cmsl::ast
             };
         }
 
-        std::unique_ptr<ast_node> parser2::function_call()
+        std::unique_ptr<ast_node> parser::function_call()
         {
             auto vals = get_function_call_values();
             if(!vals)
@@ -888,7 +888,7 @@ namespace cmsl::ast
                                                         vals->close_paren);
         }
 
-        bool parser2::function_declaration_starts() const
+        bool parser::function_declaration_starts() const
         {
             parse_errors_sink errs_sink;
             type_parser p{ errs_sink, current_iterator(), end_iterator() };
@@ -903,7 +903,7 @@ namespace cmsl::ast
                 && next_to_is(parsing_result.stopped_at, token_type_t::open_paren);
         }
 
-        std::unique_ptr<ast_node> parser2::initializer_list()
+        std::unique_ptr<ast_node> parser::initializer_list()
         {
             auto open_brace = eat(token_type_t::open_brace);
             if(!open_brace)

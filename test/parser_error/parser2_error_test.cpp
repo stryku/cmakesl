@@ -1,4 +1,4 @@
-#include "ast/parser2.hpp"
+#include "ast/parser.hpp"
 #include "ast/ast_node.hpp"
 #include "ast/block_node.hpp"
 
@@ -14,7 +14,7 @@ namespace cmsl::ast::test
             using token_t = cmsl::lexer::token::token;
             using token_type_t = cmsl::lexer::token::token_type;
             using tokens_container_t = cmsl::lexer::token::token_container_t;
-            using parser_t = cmsl::ast::parser2;
+            using parser_t = cmsl::ast::parser;
 
             using ::testing::_;
             using ::testing::IsNull;
@@ -41,7 +41,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = tokens_container_t{ GetParam() };
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.factor();
 
                     EXPECT_THAT(result, IsNull());
@@ -107,7 +107,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.expr();
 
                     EXPECT_THAT(result, IsNull());
@@ -135,7 +135,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.expr();
 
                     EXPECT_THAT(result, IsNull());
@@ -169,7 +169,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.variable_declaration();
 
                     EXPECT_THAT(result, IsNull());
@@ -205,7 +205,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.get_while_node();
 
                     EXPECT_THAT(result, IsNull());
@@ -242,7 +242,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.get_if_else_node();
 
                     EXPECT_THAT(result, IsNull());
@@ -294,7 +294,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.block();
 
                     EXPECT_THAT(result, IsNull());
@@ -325,7 +325,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.function();
 
                     EXPECT_THAT(result, IsNull());
@@ -372,7 +372,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.class_();
 
                     EXPECT_THAT(result, IsNull());
@@ -416,7 +416,7 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
                     auto result = p.initializer_list();
 
                     EXPECT_THAT(result, IsNull());
