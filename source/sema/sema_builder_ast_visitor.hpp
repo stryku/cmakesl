@@ -59,7 +59,7 @@ namespace cmsl
                                               sema_function* currently_parsing_function = nullptr); // Todo: Create private ctor that trakes currently_parsing_function
 
             void visit(const ast::block_node& node) override;
-            void visit(const ast::class_node2& node) override;
+            void visit(const ast::class_node& node) override;
             void visit(const ast::conditional_node& node) override;
             void visit(const ast::if_else_node& node) override;
             void visit(const ast::binary_operator_node& node) override;
@@ -132,7 +132,7 @@ namespace cmsl
 
             std::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node,
                     sema_context& ctx);
-            std::optional<class_members> collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node,
+            std::optional<class_members> collect_class_members_and_add_functions_to_ctx(const ast::class_node& node,
                     sema_context& class_context);
 
             template<unsigned N>

@@ -48,7 +48,7 @@ namespace cmsl::ast::test
                     m_result += "}";
                 }
 
-                virtual void visit(const class_node2& node) override
+                virtual void visit(const class_node& node) override
                 {
                     m_result += "class{name:" + std::string{ node.get_name().str() } + ";members:";
 
@@ -1402,10 +1402,10 @@ namespace cmsl::ast::test
                 // class foo {};
                 const auto name_token = token_identifier("foo");
 
-                auto expected_ast = std::make_unique<class_node2>(tmp_token,
+                auto expected_ast = std::make_unique<class_node>(tmp_token,
                                                                   name_token,
                                                                   tmp_token,
-                                                                  class_node2::nodes_t{},
+                                                                  class_node::nodes_t{},
                                                                   tmp_token,
                                                                   tmp_token);
 
@@ -1430,10 +1430,10 @@ namespace cmsl::ast::test
                 const auto variable_type_ref = type_representation{ variable_type_token };
                 auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, std::nullopt, tmp_token);
 
-                class_node2::nodes_t nodes;
+                class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(variable_decl_node));
 
-                auto expected_ast = std::make_unique<class_node2>(tmp_token,
+                auto expected_ast = std::make_unique<class_node>(tmp_token,
                                                                   name_token,
                                                                   tmp_token,
                                                                   std::move(nodes),
@@ -1476,11 +1476,11 @@ namespace cmsl::ast::test
                 const auto variable_type_ref = type_representation{ variable_type_token };
                 auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, std::nullopt, tmp_token);
 
-                class_node2::nodes_t nodes;
+                class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(fun_node));
                 nodes.emplace_back(std::move(variable_decl_node));
 
-                auto expected_ast = std::make_unique<class_node2>(tmp_token,
+                auto expected_ast = std::make_unique<class_node>(tmp_token,
                                                                   name_token,
                                                                   tmp_token,
                                                                   std::move(nodes),

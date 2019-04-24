@@ -86,7 +86,7 @@ namespace cmsl::sema
             m_result_node = std::make_unique<block_node>(node, std::move(nodes));
         }
 
-        void sema_builder_ast_visitor::visit(const ast::class_node2& node)
+        void sema_builder_ast_visitor::visit(const ast::class_node& node)
         {
             const auto name = node.get_name();
             const auto class_name_representation = ast::type_representation{ name };
@@ -748,7 +748,7 @@ namespace cmsl::sema
             };
         }
 
-        std::optional<sema_builder_ast_visitor::class_members> sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node,
+        std::optional<sema_builder_ast_visitor::class_members> sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(const ast::class_node& node,
                                                                                       sema_context& class_context)
         {
             class_members members;

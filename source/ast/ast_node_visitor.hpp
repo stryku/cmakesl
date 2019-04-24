@@ -3,7 +3,7 @@
 namespace cmsl::ast
 {
     class block_node;
-    class class_node2;
+    class class_node;
     class conditional_node;
     class if_else_node;
     class binary_operator_node;
@@ -28,7 +28,7 @@ namespace cmsl::ast
         virtual ~ast_node_visitor() = default;
 
         virtual void visit(const block_node& node) = 0;
-        virtual void visit(const class_node2& node) = 0;
+        virtual void visit(const class_node& node) = 0;
         virtual void visit(const conditional_node& node) = 0;
         virtual void visit(const if_else_node& node) = 0;
         virtual void visit(const binary_operator_node& node) = 0;

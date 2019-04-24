@@ -751,7 +751,7 @@ namespace cmsl::sema::test
 
                 auto class_name_token = token_identifier("foo");
 
-                ast::class_node2 node{tmp_token, class_name_token, tmp_token, {}, tmp_token, tmp_token};
+                ast::class_node node{tmp_token, class_name_token, tmp_token, {}, tmp_token, tmp_token};
 
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
@@ -790,10 +790,10 @@ namespace cmsl::sema::test
                 const auto member_type_reference = ast::type_representation{ member_type_token };
 
                 auto member_declaration = create_variable_declaration_node(member_type_reference, member_name_token);
-                ast::class_node2::nodes_t nodes;
+                ast::class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(member_declaration));
 
-                ast::class_node2 node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
+                ast::class_node node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
 
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
@@ -840,9 +840,9 @@ namespace cmsl::sema::test
                 auto function = create_user_function_node(function_return_type_reference,
                                                                            function_name_token,
                                                                            std::move(function_body));
-                ast::class_node2::nodes_t nodes;
+                ast::class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(function));
-                ast::class_node2 node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
+                ast::class_node node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
 
                 // Class type lookup
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
@@ -898,10 +898,10 @@ namespace cmsl::sema::test
                                                                            function_name_token,
                                                                            std::move(function_body));
 
-                ast::class_node2::nodes_t nodes;
+                ast::class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(member_declaration));
                 nodes.emplace_back(std::move(function));
-                ast::class_node2 node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
+                ast::class_node node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
 
                 // Class type lookup.
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
@@ -1207,10 +1207,10 @@ namespace cmsl::sema::test
                                                                                     std::move(function_body));
 
                 const auto class_name_token = token_identifier("baz");
-                auto class_ast_node = std::make_unique<ast::class_node2>(tmp_token,
+                auto class_ast_node = std::make_unique<ast::class_node>(tmp_token,
                                                                          class_name_token,
                                                                          tmp_token,
-                                                                         ast::class_node2::nodes_t{},
+                                                                         ast::class_node::nodes_t{},
                                                                          tmp_token,
                                                                          tmp_token);
 
