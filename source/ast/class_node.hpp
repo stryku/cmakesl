@@ -53,20 +53,9 @@ namespace cmsl::ast
             return m_semicolon;
         }
 
-        // Todo: return const vector ref
-        std::vector<const ast_node*> get_nodes() const
+        const nodes_t& nodes() const
         {
-            std::vector<const ast_node*> nodes;
-
-            // Todo: lazy init and store
-            std::transform(std::begin(m_nodes), std::end(m_nodes),
-                          std::back_inserter(nodes),
-                          [](const auto& unique_node)
-                           {
-                               return unique_node.get();
-                           });
-
-            return nodes;
+            return m_nodes;
         }
 
         void visit(ast_node_visitor &visitor) const override

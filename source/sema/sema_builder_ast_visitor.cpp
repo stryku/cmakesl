@@ -753,9 +753,9 @@ namespace cmsl::sema
         {
             class_members members;
 
-            for(auto n : node.get_nodes())
+            for(const auto& n : node.nodes())
             {
-                if (auto variable_decl = dynamic_cast<const ast::variable_declaration_node *>(n))
+                if (auto variable_decl = dynamic_cast<const ast::variable_declaration_node *>(n.get()))
                 {
                     auto member = visit_child_node<variable_declaration_node>(*variable_decl);
                     if (!member)
@@ -766,7 +766,7 @@ namespace cmsl::sema
                     members.info.emplace_back(member_info{member->name(), member->type()});
                     members.declarations.emplace_back(std::move(member));
                 }
-                else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))
+                else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n.get()))
                 {
                     auto function_declaration = get_function_declaration_and_add_to_ctx(*fun_node, class_context);
                     if(!function_declaration)
