@@ -42,7 +42,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = tokens_container_t{ GetParam() };
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.factor();
+                    auto result = p.parse_factor();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -108,7 +108,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = GetParam();
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.expr();
+                    auto result = p.parse_expr();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -136,7 +136,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = GetParam();
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.expr();
+                    auto result = p.parse_expr();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -170,7 +170,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = GetParam();
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.variable_declaration();
+                    auto result = p.parse_variable_declaration();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -206,7 +206,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = GetParam();
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.get_while_node();
+                    auto result = p.parse_while_node();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -243,7 +243,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = GetParam();
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.get_if_else_node();
+                    auto result = p.parse_if_else_node();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -295,7 +295,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = GetParam();
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.block();
+                    auto result = p.parse_block();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -326,7 +326,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = GetParam();
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.function();
+                    auto result = p.parse_function();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -373,7 +373,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = GetParam();
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.class_();
+                    auto result = p.parse_class();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -417,7 +417,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = GetParam();
                     parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.initializer_list();
+                    auto result = p.parse_initializer_list();
 
                     EXPECT_THAT(result, IsNull());
                 }
