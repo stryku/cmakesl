@@ -1,7 +1,7 @@
 #include "exec/source_compiler.hpp"
 #include "common/source_view.hpp"
 #include "lexer/lexer.hpp"
-#include "ast/parser2.hpp"
+#include "ast/parser.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/builtin_sema_context.hpp"
 #include "sema/sema_builder.hpp"
@@ -28,7 +28,7 @@ namespace cmsl::exec
     {
         lexer::lexer lex{ m_errors_observer , source };
         const auto tokens = lex.lex();
-        ast::parser2 parser{ m_errors_observer, source, tokens };
+        ast::parser parser{ m_errors_observer, source, tokens };
         auto ast_tree = parser.translation_unit();
 
         auto builtin_context = std::make_unique<sema::builtin_sema_context>(m_type_factory,

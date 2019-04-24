@@ -9,8 +9,8 @@ set(AST_SOURCES
         if_else_node.cpp
     if_else_node.hpp
         parameter_declaration.hpp
-        parser2.cpp
-    parser2.hpp
+        parser.cpp
+        parser.hpp
     return_node.cpp
     return_node.hpp
         type_kind.cpp

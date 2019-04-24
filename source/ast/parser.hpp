@@ -21,10 +21,10 @@ namespace cmsl
         class type_representation;
 
         // Todo: rename methods to parse_*
-        class parser2 : public parser_utils
+        class parser : public parser_utils
         {
         public:
-            parser2(errors::errors_observer& err_observer, cmsl::source_view source, const token_container_t& tokens);
+            parser(errors::errors_observer& err_observer, cmsl::source_view source, const token_container_t& tokens);
 
             std::unique_ptr<ast_node> translation_unit();
             std::unique_ptr<ast_node> variable_declaration();

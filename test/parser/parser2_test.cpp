@@ -10,7 +10,7 @@
 #include "ast/while_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/user_function_node.hpp"
-#include "ast/parser2.hpp"
+#include "ast/parser.hpp"
 
 #include "errors/errors_observer.hpp"
 
@@ -24,7 +24,7 @@ namespace cmsl::ast::test
             using token_t = cmsl::lexer::token::token;
             using token_type_t = cmsl::lexer::token::token_type;
             using tokens_container_t = cmsl::lexer::token::token_container_t;
-            using parser_t = cmsl::ast::parser2;
+            using parser_t = cmsl::ast::parser;
 
             using namespace cmsl::test::common;
             errors::errors_observer dummy_err_observer;
