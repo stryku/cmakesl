@@ -13,8 +13,6 @@ set(AST_SOURCES
         parser.hpp
     return_node.cpp
     return_node.hpp
-        type_kind.cpp
-    type_kind.hpp
         while_node.cpp
     while_node.hpp
         variable_declaration_node.hpp
