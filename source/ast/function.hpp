@@ -10,11 +10,6 @@ namespace cmsl::ast
         {
         public:
             using params_declaration_t = std::vector<parameter_declaration>;
-
-            explicit function()
-                : ast_node{ ast_node_type::function }
-            {}
-
             virtual ~function() = default;
 
             virtual cmsl::string_view get_name() const = 0;

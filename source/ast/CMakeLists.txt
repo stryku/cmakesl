@@ -4,7 +4,6 @@ set(AST_SOURCES
         class_node.hpp
         conditional_node.cpp
     conditional_node.hpp
-    ast_node_type.hpp
         ast_node.hpp
         user_function_node.hpp
     function.hpp
