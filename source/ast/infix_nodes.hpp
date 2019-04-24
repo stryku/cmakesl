@@ -16,18 +16,17 @@ namespace cmsl::ast
                 , m_rhs{ std::move(rhs)}
             {}
 
-            // Todo: remove get_
-            const ast_node& get_lhs() const
+            const ast_node& lhs() const
             {
                 return *m_lhs;
             }
 
-            lexer::token::token get_operator() const
+            lexer::token::token operator_() const
             {
                 return m_operator;
             }
 
-            const ast_node& get_rhs() const
+            const ast_node& rhs() const
             {
                 return *m_rhs;
             }
@@ -62,13 +61,12 @@ namespace cmsl::ast
                 , m_member_name{ member_name }
             {}
 
-            // Todo: remove get_
-            const ast_node& get_lhs() const
+            const ast_node& lhs() const
             {
                 return *m_lhs;
             }
 
-            lexer::token::token get_member_name() const
+            lexer::token::token member_name() const
             {
                 return m_member_name;
             }
@@ -111,8 +109,7 @@ namespace cmsl::ast
                 , m_close_paren{ close_paren }
             {}
 
-            // Todo: remove get_
-            token_t get_name() const
+            token_t name() const
             {
                 return m_name;
             }
@@ -127,7 +124,7 @@ namespace cmsl::ast
                 return m_close_paren;
             }
 
-            const params_t& get_param_nodes() const
+            const params_t& param_nodes() const
             {
                 return m_parameter_nodes;
             }
@@ -156,7 +153,7 @@ namespace cmsl::ast
 
             source_location begin_location() const override
             {
-                return get_name().src_range().begin;
+                return name().src_range().begin;
             }
 
             source_location end_location() const override
@@ -179,8 +176,7 @@ namespace cmsl::ast
                 , m_dot{ dot }
             {}
 
-            //todo: remove get_
-            const ast_node& get_lhs() const
+            const ast_node& lhs() const
             {
                 return *m_lhs;
             }
@@ -217,7 +213,7 @@ namespace cmsl::ast
                 : m_token{ token }
             {}
 
-            token_t get_token() const
+            token_t token() const
             {
                 return m_token;
             }
