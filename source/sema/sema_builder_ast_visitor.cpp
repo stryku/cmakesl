@@ -436,7 +436,7 @@ namespace cmsl::sema
         void sema_builder_ast_visitor::visit(const ast::return_node& node)
         {
             auto v = clone();
-            node.get_expression().visit(v);
+            node.expression().visit(v);
             if(!v.m_result_node)
             {
                 return;

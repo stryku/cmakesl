@@ -11,7 +11,7 @@ namespace cmsl::ast
             , m_semicolon{ semicolon }
         {}
 
-        const ast_node& return_node::get_expression() const
+        const ast_node& return_node::expression() const
         {
             return *m_expression;
         }
