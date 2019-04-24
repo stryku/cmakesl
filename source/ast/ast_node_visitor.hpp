@@ -17,7 +17,7 @@ namespace cmsl::ast
     class id_node;
     class return_node;
     class translation_unit_node;
-    class user_function_node2;
+    class user_function_node;
     class variable_declaration_node;
     class while_node;
     class initializer_list_node;
@@ -42,7 +42,7 @@ namespace cmsl::ast
         virtual void visit(const id_node& node) = 0;
         virtual void visit(const return_node& node) = 0;
         virtual void visit(const translation_unit_node& node) = 0;
-        virtual void visit(const user_function_node2& node) = 0;
+        virtual void visit(const user_function_node& node) = 0;
         virtual void visit(const variable_declaration_node& node) = 0;
         virtual void visit(const while_node& node) = 0;
         virtual void visit(const initializer_list_node& node) = 0;

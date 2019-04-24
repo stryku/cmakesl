@@ -11,12 +11,12 @@
 
 namespace cmsl::ast
 {
-        class user_function_node2 : public ast_node
+        class user_function_node : public ast_node
         {
         public:
             using params_t = std::vector<param_declaration>;
 
-            user_function_node2(type_representation return_type,
+            user_function_node(type_representation return_type,
                                 token_t name,
                                 token_t open_paren,
                                 params_t params,

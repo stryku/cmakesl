@@ -82,7 +82,7 @@ namespace cmsl::ast
             }
 
             // Let's pretend that ctors return something.
-            return std::make_unique<user_function_node2>(type_representation{ class_name },
+            return std::make_unique<user_function_node>(type_representation{ class_name },
                                                         *type_name,
                                                         param_values->open_paren,
                                                         std::move(param_values->params),
@@ -193,7 +193,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            return std::make_unique<user_function_node2>(*ty,
+            return std::make_unique<user_function_node>(*ty,
                                                          *name,
                                                          param_values->open_paren,
                                                          std::move(param_values->params),
