@@ -10,7 +10,6 @@ namespace cmsl::ast
         class conditional_node;
         class block_node;
 
-
         class if_else_node : public ast_node
         {
         public:
@@ -27,17 +26,15 @@ namespace cmsl::ast
                 std::unique_ptr<block_node> body;
             };
 
-
             using ifs_t = std::vector<if_values>;
 
             explicit if_else_node(ifs_t m_ifs, std::optional<last_else_value> else_);
             ~if_else_node();
 
-            // Todo: remove get_
-            const ifs_t& get_ifs() const;
+            const ifs_t& ifs() const;
 
             std::optional<token_t> else_kw() const;
-            const block_node* get_else_body() const;
+            const block_node* else_body() const;
 
             void visit(ast_node_visitor &visitor) const override;
             source_location begin_location() const override;

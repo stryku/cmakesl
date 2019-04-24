@@ -159,7 +159,7 @@ namespace cmsl::sema
         {
             std::vector<std::unique_ptr<conditional_node>> ifs;
 
-            for(const auto& if_ : node.get_ifs())
+            for(const auto& if_ : node.ifs())
             {
                 auto cond = visit_child_node<conditional_node>(*if_.conditional);
                 if(!cond)
@@ -172,7 +172,7 @@ namespace cmsl::sema
 
             std::unique_ptr<block_node> else_body;
 
-            if(auto else_node = node.get_else_body())
+            if(auto else_node = node.else_body())
             {
                 auto ig = ids_guard();
 
