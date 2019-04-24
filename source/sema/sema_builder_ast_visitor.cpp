@@ -140,13 +140,13 @@ namespace cmsl::sema
         {
             auto ig = ids_guard();
 
-            auto condition = visit_child_expr(node.get_condition());
+            auto condition = visit_child_expr(node.condition());
             if(!condition)
             {
                 return;
             }
 
-            auto body = visit_child_node<block_node>(node.get_block());
+            auto body = visit_child_node<block_node>(node.body());
             if(!body)
             {
                 return;
