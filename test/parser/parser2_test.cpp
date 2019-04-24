@@ -63,9 +63,9 @@ namespace cmsl::ast::test
                 virtual void visit(const conditional_node& node) override
                 {
                     m_result += "conditional{condition:";
-                    node.get_condition().visit(*this);
+                    node.condition().visit(*this);
                     m_result += ";block:";
-                    node.get_block().visit(*this);
+                    node.body().visit(*this);
                     m_result += "}";
                 }
 
