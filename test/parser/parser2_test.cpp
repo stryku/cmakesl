@@ -152,7 +152,7 @@ namespace cmsl::ast::test
                 virtual void visit(const return_node& node) override
                 {
                     m_result += "return{";
-                    node.get_expression().visit(*this);
+                    node.expression().visit(*this);
                     m_result += "}";
                 }
 
