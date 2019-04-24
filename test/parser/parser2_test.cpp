@@ -50,7 +50,7 @@ namespace cmsl::ast::test
 
                 virtual void visit(const class_node& node) override
                 {
-                    m_result += "class{name:" + std::string{ node.get_name().str() } + ";members:";
+                    m_result += "class{name:" + std::string{node.name().str() } + ";members:";
 
                     for(auto n : node.get_nodes())
                     {
