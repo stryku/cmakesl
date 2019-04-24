@@ -43,6 +43,7 @@ namespace cmsl
             token_it current_iterator() const;
             token_it end_iterator() const;
 
+            token_t get_token_for_error_report() const;
             token_t get_token_for_is_at_end_error_report() const;
 
         private:
