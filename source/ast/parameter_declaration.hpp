@@ -6,13 +6,6 @@
 
 namespace cmsl::ast
 {
-        class type;
-        struct parameter_declaration
-        {
-            const type* param_type;
-            std::optional<lexer::token::token> name;
-        };
-
         struct param_declaration
         {
             type_representation ty;

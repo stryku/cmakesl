@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ast/function.hpp"
 #include "ast/block_node.hpp"
 #include "ast/type_representation.hpp"
 #include "ast/ast_node_visitor.hpp" // todo: to cpp
+#include "ast/parameter_declaration.hpp"
 
 #include "lexer/token/token.hpp"
 
