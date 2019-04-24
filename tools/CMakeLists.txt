@@ -24,3 +24,6 @@ if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0")
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX cmsl_tools FILES ${CMSL_TOOLS_SOURCES})
 endif()
 
+add_subdirectory(cmsl)
+
+
