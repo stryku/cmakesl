@@ -19,18 +19,9 @@ namespace cmsl::ast
                 : m_nodes{ std::move(nodes)}
             {}
 
-            std::vector<const ast_node*> get_nodes() const
+            const nodes_t& nodes() const
             {
-                std::vector<const ast_node*> result;
-
-                std::transform(std::begin(m_nodes), std::end(m_nodes),
-                               std::back_inserter(result),
-                               [](const auto& node)
-                               {
-                                   return node.get();
-                               });
-
-                return result;
+                return m_nodes;
             }
 
             void visit(ast_node_visitor& visitor) const override

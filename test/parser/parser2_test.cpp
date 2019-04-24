@@ -159,7 +159,7 @@ namespace cmsl::ast::test
                 virtual void visit(const translation_unit_node& node) override
                 {
                     m_result += "translation_unit{";
-                    for(const auto n : node.get_nodes())
+                    for(const auto& n : node.nodes())
                     {
                         n->visit(*this);
                     }

@@ -452,7 +452,7 @@ namespace cmsl::sema
             auto ig = ids_guard();
             std::vector<std::unique_ptr<sema_node>> nodes;
 
-            for(auto n : node.get_nodes())
+            for(const auto& n : node.nodes())
             {
                 auto visited_node = visit_child(*n);
                 if(!visited_node)
