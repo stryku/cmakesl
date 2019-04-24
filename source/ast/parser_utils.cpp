@@ -11,6 +11,7 @@ namespace cmsl::ast
             : m_err_observer{ err_observer }
             , m_current{ current }
             , m_end{ end }
+            , m_prev{ m_current }
     {}
 
     bool parser_utils::is_at_end() const
@@ -58,6 +59,7 @@ namespace cmsl::ast
         }
 
         const auto t = *m_current;
+        m_prev = m_current;
         ++m_current;
         return t;
     }
@@ -162,5 +164,15 @@ namespace cmsl::ast
         }
 
         return *m_prev;
+    }
+
+    parser_utils::token_t parser_utils::get_token_for_error_report() const
+    {
+        if(is_at_end())
+        {
+            return get_token_for_is_at_end_error_report();
+        }
+
+        return current();
     }
 }
