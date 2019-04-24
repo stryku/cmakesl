@@ -1,5 +1,5 @@
-#include "../tools/cmsl_complete.hpp"
-#include "../tools/cmsl_index.hpp"
+#include "lib/cmsl_complete.hpp"
+#include "lib/cmsl_index.hpp"
 
 #include <iostream>
 
