@@ -84,7 +84,7 @@ namespace cmsl::sema::test
                     return ast::member_function_call_node{ std::move(lhs), tmp_token, name, tmp_token, std::move(params), tmp_token };
                 }
 
-                std::unique_ptr<ast::block_node> create_block_node_ptr(ast::block_node::expressions_t exprs = {})
+                std::unique_ptr<ast::block_node> create_block_node_ptr(ast::block_node::nodes_t exprs = {})
                 {
                     return std::make_unique<ast::block_node>(tmp_token, std::move(exprs), tmp_token );
                 }

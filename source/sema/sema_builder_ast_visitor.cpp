@@ -72,7 +72,7 @@ namespace cmsl::sema
 
             std::vector<std::unique_ptr<sema_node>> nodes;
 
-            for(auto n : node.get_expressions())
+            for(const auto& n : node.nodes())
             {
                 auto child = visit_child(*n);
                 if(!child)

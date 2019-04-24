@@ -8,24 +8,15 @@
 
 namespace cmsl::ast
 {
-    block_node::block_node(token_t open_brace, expressions_t expressions, token_t close_brace)
+    block_node::block_node(token_t open_brace, nodes_t nodes, token_t close_brace)
         : m_open_brace{ open_brace }
-        , m_expressions{ std::move(expressions) }
+        , m_nodes{ std::move(nodes) }
         , m_close_brace{ close_brace }
     {}
 
-    std::vector<const ast_node*> block_node::get_expressions() const
+    const block_node::nodes_t& block_node::nodes() const
     {
-        std::vector<const ast_node*> result;
-
-        std::transform(std::begin(m_expressions), std::end(m_expressions),
-                       std::back_inserter(result),
-                       [](auto& expr)
-                       {
-                           return expr.get();
-                       });
-
-        return result;
+        return m_nodes;
     }
 
     void block_node::visit(ast_node_visitor &visitor) const

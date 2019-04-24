@@ -41,7 +41,7 @@ namespace cmsl::ast::test
                 virtual void visit(const block_node& node) override
                 {
                     m_result += "block{";
-                    for(auto n : node.get_expressions())
+                    for(const auto& n : node.nodes())
                     {
                         n->visit(*this);
                     }
@@ -682,7 +682,7 @@ namespace cmsl::ast::test
 
                 auto condition_expr_node = std::make_unique<id_node>(condition_token);
                 auto block = std::make_unique<block_node>(tmp_token,
-                                                          block_node::expressions_t{},
+                                                          block_node::nodes_t{},
                                                           tmp_token);
                 auto condition_node = std::make_unique<conditional_node>(tmp_token,
                                                                          std::move(condition_expr_node),
@@ -713,13 +713,13 @@ namespace cmsl::ast::test
                 const auto condition_token = token_identifier("foo");
 
                 auto condition_expr_node = std::make_unique<id_node>(condition_token);
-                auto block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto condition_node = std::make_unique<conditional_node>(tmp_token, std::move(condition_expr_node), tmp_token, std::move(block));
 
                 if_else_node::ifs_t ifs;
                 ifs.emplace_back( if_else_node::if_values{std::nullopt, tmp_token, std::move(condition_node)} );
 
-                auto else_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto else_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto else_value = if_else_node::last_else_value{ tmp_token, std::move(else_node) };
 
                 auto expected_ast = std::make_unique<if_else_node>(std::move(ifs), std::move(else_value));
@@ -747,18 +747,18 @@ namespace cmsl::ast::test
                 const auto elseif_condition_token = token_identifier("bar");
 
                 auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
-                auto if_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto if_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto if_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(if_condition_expr_node), tmp_token, std::move(if_block));
 
                 auto elseif_condition_expr_node = std::make_unique<id_node>(elseif_condition_token);
-                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto elseif_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(elseif_condition_expr_node), tmp_token, std::move(elseif_block));
 
                 if_else_node::ifs_t ifs;
                 ifs.emplace_back( if_else_node::if_values{std::nullopt, tmp_token, std::move(if_condition_node)} );
                 ifs.emplace_back( if_else_node::if_values{tmp_token, tmp_token, std::move(elseif_condition_node)} );
 
-                auto else_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto else_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto else_value = if_else_node::last_else_value{ tmp_token, std::move(else_node) };
 
                 auto expected_ast = std::make_unique<if_else_node>(std::move(ifs), std::move(else_value));
@@ -795,11 +795,11 @@ namespace cmsl::ast::test
                 const auto elseif_condition_token = token_identifier("bar");
 
                 auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
-                auto if_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token); // Todo: introduce a fixture and method to create empty block node
+                auto if_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token); // Todo: introduce a fixture and method to create empty block node
                 auto if_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(if_condition_expr_node), tmp_token, std::move(if_block));
 
                 auto elseif_condition_expr_node = std::make_unique<id_node>(elseif_condition_token);
-                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto elseif_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(elseif_condition_expr_node), tmp_token, std::move(elseif_block));
 
                 if_else_node::ifs_t ifs;
@@ -835,7 +835,7 @@ namespace cmsl::ast::test
                 const auto condition_token = token_identifier("foo");
 
                 auto condition_expr_node = std::make_unique<id_node>(condition_token);
-                auto block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto condition_node = std::make_unique<conditional_node>(tmp_token, std::move(condition_expr_node), tmp_token, std::move(block));
 
                 auto expected_ast = std::make_unique<while_node>(tmp_token, std::move(condition_node));
@@ -1079,7 +1079,7 @@ namespace cmsl::ast::test
             TEST(Parser2Test, Block_OpenBraceCloseBrace_GetBlock)
             {
                 // {}
-                auto expected_ast = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto expected_ast = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
 
                 const auto tokens = tokens_container_t{ token_open_brace(),
                                                         token_close_brace() };
@@ -1098,7 +1098,7 @@ namespace cmsl::ast::test
                 const auto variable_type_ref = type_representation{ variable_type_token };
                 auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, std::nullopt, tmp_token);
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(variable_decl_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1122,23 +1122,23 @@ namespace cmsl::ast::test
                 const auto elseif_condition_token = token_identifier("bar");
 
                 auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
-                auto if_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto if_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto if_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(if_condition_expr_node), tmp_token, std::move(if_block));
 
                 auto elseif_condition_expr_node = std::make_unique<id_node>(elseif_condition_token);
-                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto elseif_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(elseif_condition_expr_node), tmp_token, std::move(elseif_block));
 
                 if_else_node::ifs_t ifs;
                 ifs.emplace_back( if_else_node::if_values{std::nullopt, tmp_token, std::move(if_condition_node)} );
                 ifs.emplace_back( if_else_node::if_values{tmp_token, tmp_token, std::move(elseif_condition_node)} );
 
-                auto else_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto else_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto else_value = if_else_node::last_else_value{ tmp_token, std::move(else_node) };
 
                 auto if_else = std::make_unique<if_else_node>(std::move(ifs), std::move(else_value));
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(if_else));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1185,7 +1185,7 @@ namespace cmsl::ast::test
                                                                         op_token,
                                                                         std::move(rhs_node));
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(expr_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1209,12 +1209,12 @@ namespace cmsl::ast::test
                 const auto condition_token = token_identifier("foo");
 
                 auto condition_expr_node = std::make_unique<id_node>(condition_token);
-                auto block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto condition_node = std::make_unique<conditional_node>(tmp_token, std::move(condition_expr_node), tmp_token, std::move(block));
 
                 auto while_ast_node = std::make_unique<while_node>(tmp_token, std::move(condition_node));
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(while_ast_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1242,7 +1242,7 @@ namespace cmsl::ast::test
                 auto expr_node = std::make_unique<id_node>(expression_token);
                 auto return_ast_node = std::make_unique<return_node>(tmp_token, std::move(expr_node), tmp_token);
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(return_ast_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1263,8 +1263,8 @@ namespace cmsl::ast::test
             {
                 // { {} }
 
-                auto nested_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
-                block_node::expressions_t exprs;
+                auto nested_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(nested_block_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1286,7 +1286,7 @@ namespace cmsl::ast::test
                 const auto function_type_token = token_kw_double();
                 const auto function_name_token = token_identifier("foo");
                 const auto function_type_ref = type_representation{ function_type_token };
-                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
                                                                           function_name_token,
                                                                           tmp_token,
@@ -1322,7 +1322,7 @@ namespace cmsl::ast::test
                         param_declaration{param_type_ref, param_name_token }
                 };
 
-                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
                                                                           function_name_token,
                                                                           tmp_token,
@@ -1367,7 +1367,7 @@ namespace cmsl::ast::test
                         param_declaration{param2_type_ref, param2_name_token }
                 };
 
-                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
                                                                           function_name_token,
                                                                           tmp_token,
@@ -1463,7 +1463,7 @@ namespace cmsl::ast::test
                 const auto function_type_token = token_kw_double();
                 const auto function_name_token = token_identifier("bar");
                 const auto function_type_ref = type_representation{ function_type_token };
-                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto fun_node = std::make_unique<user_function_node2>(function_type_ref,
                                                                       function_name_token,
                                                                       tmp_token,
