@@ -6,7 +6,6 @@ set(AST_SOURCES
     conditional_node.hpp
         ast_node.hpp
         user_function_node.hpp
-    function.hpp
         if_else_node.cpp
     if_else_node.hpp
         parameter_declaration.hpp
