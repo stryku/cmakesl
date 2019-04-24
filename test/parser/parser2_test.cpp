@@ -88,23 +88,23 @@ namespace cmsl::ast::test
                 virtual void visit(const binary_operator_node& node) override
                 {
                     m_result += "binary_operator{lhs:";
-                    node.get_lhs().visit(*this);
-                    m_result += ";operator:" + std::string{ node.get_operator().str() } + ";rhs:";
-                    node.get_rhs().visit(*this);
+                    node.lhs().visit(*this);
+                    m_result += ";operator:" + std::string{node.operator_().str() } + ";rhs:";
+                    node.rhs().visit(*this);
                     m_result += "}";
                 }
 
                 virtual void visit(const class_member_access_node& node) override
                 {
                     m_result += "class_member_access{lhs:";
-                    node.get_lhs().visit(*this);
-                    m_result += ";member_name:" + std::string{ node.get_member_name().str() } + "}";
+                    node.lhs().visit(*this);
+                    m_result += ";member_name:" + std::string{node.member_name().str() } + "}";
                 }
 
                 virtual void visit(const function_call_node& node) override
                 {
-                    m_result += "function_call{name:" + std::string{ node.get_name().str() } + ";params:";
-                    for(const auto& param : node.get_param_nodes())
+                    m_result += "function_call{name:" + std::string{node.name().str() } + ";params:";
+                    for(const auto& param : node.param_nodes())
                     {
                         param->visit(*this);
                     }
@@ -113,11 +113,11 @@ namespace cmsl::ast::test
 
                 virtual void visit(const member_function_call_node& node) override
                 {
-                    m_result += "function_call{name:" + std::string{ node.get_name().str() } + ";params:";
+                    m_result += "function_call{name:" + std::string{node.name().str() } + ";params:";
                     m_result += "function_call{lhs:";
-                    node.get_lhs().visit(*this);
-                    m_result += ";name:" + std::string{ node.get_name().str() } + ";params:";
-                    for(const auto& param : node.get_param_nodes())
+                    node.lhs().visit(*this);
+                    m_result += ";name:" + std::string{node.name().str() } + ";params:";
+                    for(const auto& param : node.param_nodes())
                     {
                         param->visit(*this);
                     }
@@ -126,22 +126,22 @@ namespace cmsl::ast::test
 
                 virtual void visit(const bool_value_node& node) override
                 {
-                    m_result += "bool_value{" + std::string{ node.get_token().str() } + "}";
+                    m_result += "bool_value{" + std::string{node.token().str() } + "}";
                 }
 
                 virtual void visit(const int_value_node& node) override
                 {
-                    m_result += "int_value{" + std::string{ node.get_token().str() } + "}";
+                    m_result += "int_value{" + std::string{node.token().str() } + "}";
                 }
 
                 virtual void visit(const double_value_node& node) override
                 {
-                    m_result += "double_value{" + std::string{ node.get_token().str() } + "}";
+                    m_result += "double_value{" + std::string{node.token().str() } + "}";
                 }
 
                 virtual void visit(const string_value_node& node) override
                 {
-                    m_result += "string_value{" + std::string{ node.get_token().str() } + "}";
+                    m_result += "string_value{" + std::string{node.token().str() } + "}";
                 }
 
                 virtual void visit(const id_node& node) override
