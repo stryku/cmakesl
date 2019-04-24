@@ -33,8 +33,7 @@ namespace cmsl::ast
             return m_class_kw;
         }
 
-        // todo: remove get_
-        token_t get_name() const
+        token_t name() const
         {
             return m_name;
         }

@@ -88,7 +88,7 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::class_node& node)
         {
-            const auto name = node.get_name();
+            const auto name = node.name();
             const auto class_name_representation = ast::type_representation{ name };
             if(const auto found_type = m_ctx.find_type_in_this_scope(class_name_representation))
             {
