@@ -72,12 +72,12 @@ namespace cmsl::ast::test
                 virtual void visit(const if_else_node& node) override
                 {
                     m_result += "if_else{ifs:";
-                    for (const auto &if_ : node.get_ifs())
+                    for (const auto &if_ : node.ifs())
                     {
                         if_.conditional->visit(*this);
                     }
                     m_result += ";else:";
-                    auto else_node = node.get_else_body();
+                    auto else_node = node.else_body();
                     if (else_node)
                     {
                         else_node->visit(*this);
