@@ -30,7 +30,12 @@ set(EXEC_SOURCES
 
 add_library(exec ${EXEC_SOURCES})
 target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_FACADE_DIR})
-target_link_libraries(exec PRIVATE sema errors)
+target_link_libraries(exec
+    PUBLIC
+        sema
+    PRIVATE
+        errors
+)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
