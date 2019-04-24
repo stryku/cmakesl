@@ -20,26 +20,25 @@ namespace cmsl
         class block_node;
         class type_representation;
 
-        // Todo: rename methods to parse_*
         class parser : public parser_utils
         {
         public:
             parser(errors::errors_observer& err_observer, cmsl::source_view source, const token_container_t& tokens);
 
-            std::unique_ptr<ast_node> translation_unit();
-            std::unique_ptr<ast_node> variable_declaration();
-            std::unique_ptr<ast_node> function();
-            std::unique_ptr<ast_node> class_();
-            std::unique_ptr<ast_node> factor();
-            std::unique_ptr<ast_node> initializer_list();
+            std::unique_ptr<ast_node> parse_translation_unit();
+            std::unique_ptr<ast_node> parse_variable_declaration();
+            std::unique_ptr<ast_node> parse_function();
+            std::unique_ptr<ast_node> parse_class();
+            std::unique_ptr<ast_node> parse_factor();
+            std::unique_ptr<ast_node> parse_initializer_list();
 
             // expr() doesn't eat terminating semicolon. Callee has to handle that if there is a need.
-            std::unique_ptr<ast_node> expr();
-            std::unique_ptr<ast_node> get_if_else_node();
-            std::unique_ptr<ast_node> get_while_node();
-            std::unique_ptr<ast_node> get_return_node();
-            std::optional<type_representation> type();
-            std::unique_ptr<block_node> block();
+            std::unique_ptr<ast_node> parse_expr();
+            std::unique_ptr<ast_node> parse_if_else_node();
+            std::unique_ptr<ast_node> parse_while_node();
+            std::unique_ptr<ast_node> parse_return_node();
+            std::optional<type_representation> parse_type();
+            std::unique_ptr<block_node> parse_block();
 
         private:
             struct function_call_values

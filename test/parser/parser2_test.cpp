@@ -246,7 +246,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -260,7 +260,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -274,7 +274,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -288,7 +288,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -302,7 +302,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -316,7 +316,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -332,7 +332,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ lparen, id, rparen };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -353,7 +353,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ lhs_token, op_token, rhs_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -382,7 +382,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ lhs_lhs_token, lhs_op_token, lhs_rhs_token, op_token, rhs_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -411,7 +411,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ lhs_token, op_token, rhs_lhs_token, rhs_op_token, rhs_rhs_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -429,7 +429,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ fun_name_token, token_open_paren(), token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -461,7 +461,7 @@ namespace cmsl::ast::test
                                                         param3,
                                                         token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -488,7 +488,7 @@ namespace cmsl::ast::test
                                                        token_open_paren(),
                                                        token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -530,7 +530,7 @@ namespace cmsl::ast::test
                                                         param3,
                                                         token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -567,7 +567,7 @@ namespace cmsl::ast::test
                                                        token_open_paren(),
                                                        token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -617,7 +617,7 @@ namespace cmsl::ast::test
                                                        param3,
                                                        token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -637,7 +637,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{class_name_token, token_dot(), member_name_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -669,7 +669,7 @@ namespace cmsl::ast::test
                                                        token_dot(),
                                                        member_name_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -701,7 +701,7 @@ namespace cmsl::ast::test
                                                        token_open_brace(),
                                                        token_close_brace() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_if_else_node();
+                auto result_ast = parser.parse_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -734,7 +734,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace()};
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_if_else_node();
+                auto result_ast = parser.parse_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -782,7 +782,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_if_else_node();
+                auto result_ast = parser.parse_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -823,7 +823,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_if_else_node();
+                auto result_ast = parser.parse_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -847,7 +847,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_while_node();
+                auto result_ast = parser.parse_while_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -865,7 +865,7 @@ namespace cmsl::ast::test
                                                         expression_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_return_node();
+                auto result_ast = parser.parse_return_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -883,7 +883,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = tokens_container_t{ token };
                     auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result_type_reference = parser.type();
+                    auto result_type_reference = parser.parse_type();
 
                     ASSERT_TRUE(result_type_reference);
                     EXPECT_THAT(result_type_reference->tokens(), Eq(expected_reference.tokens()));
@@ -911,7 +911,7 @@ namespace cmsl::ast::test
                                                                      { value_type_representation } };
 
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, expected_type_tokens };
-                auto result_type_reference = parser.type();
+                auto result_type_reference = parser.parse_type();
 
                 ASSERT_TRUE(result_type_reference);
                 EXPECT_THAT(*result_type_reference, Eq(expected_reference));
@@ -948,7 +948,7 @@ namespace cmsl::ast::test
                                                                      { value_type_representation }};
 
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, expected_type_tokens };
-                auto result_type_reference = parser.type();
+                auto result_type_reference = parser.parse_type();
 
                 ASSERT_TRUE(result_type_reference);
                 EXPECT_THAT(*result_type_reference, Eq(expected_representation));
@@ -968,7 +968,7 @@ namespace cmsl::ast::test
                                                         name_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.variable_declaration();
+                auto result_ast = parser.parse_variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1001,7 +1001,7 @@ namespace cmsl::ast::test
                                                         name_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.variable_declaration();
+                auto result_ast = parser.parse_variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1029,7 +1029,7 @@ namespace cmsl::ast::test
                                                         int_expr_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.variable_declaration();
+                auto result_ast = parser.parse_variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1070,7 +1070,7 @@ namespace cmsl::ast::test
                                                         int_expr_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.variable_declaration();
+                auto result_ast = parser.parse_variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1084,7 +1084,7 @@ namespace cmsl::ast::test
                 const auto tokens = tokens_container_t{ token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1109,7 +1109,7 @@ namespace cmsl::ast::test
                                                         token_semicolon(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1166,7 +1166,7 @@ namespace cmsl::ast::test
 
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1197,7 +1197,7 @@ namespace cmsl::ast::test
                                                         token_semicolon(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1228,7 +1228,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1253,7 +1253,7 @@ namespace cmsl::ast::test
                                                         token_semicolon(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1274,7 +1274,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1301,7 +1301,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.function();
+                auto result_ast = parser.parse_function();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1341,7 +1341,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.function();
+                auto result_ast = parser.parse_function();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1391,7 +1391,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.function();
+                auto result_ast = parser.parse_function();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1415,7 +1415,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.class_();
+                auto result_ast = parser.parse_class();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1449,7 +1449,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.class_();
+                auto result_ast = parser.parse_class();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1505,7 +1505,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.class_();
+                auto result_ast = parser.parse_class();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1562,7 +1562,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.initializer_list();
+                auto result_ast = parser.parse_initializer_list();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));

@@ -29,7 +29,7 @@ namespace cmsl::ast
             , m_errors_reporter{ err_observer, source }
         {}
 
-        std::unique_ptr<ast_node> parser::translation_unit()
+        std::unique_ptr<ast_node> parser::parse_translation_unit()
         {
             std::vector<std::unique_ptr<ast_node>> nodes;
 
@@ -39,15 +39,15 @@ namespace cmsl::ast
 
                 if(function_declaration_starts())
                 {
-                    node = function();
+                    node = parse_function();
                 }
                 else if(current_is(token_type_t::kw_class))
                 {
-                    node = class_();
+                    node = parse_class();
                 }
                 else
                 {
-                    node = variable_declaration();
+                    node = parse_variable_declaration();
                 }
 
                 if(!node)
@@ -75,7 +75,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto block_expr = block();
+            auto block_expr = parse_block();
             if (!block_expr)
             {
                 return nullptr;
@@ -90,7 +90,7 @@ namespace cmsl::ast
                                                         std::move(block_expr));
         }
 
-        std::unique_ptr<ast_node> parser::class_()
+        std::unique_ptr<ast_node> parser::parse_class()
         {
             const auto class_kw = eat(token_type_t::kw_class);
             if (!class_kw)
@@ -126,7 +126,7 @@ namespace cmsl::ast
                 }
                 if(function_declaration_starts())
                 {
-                    auto fun = function();
+                    auto fun = parse_function();
                     if(!fun)
                     {
                         return nullptr;
@@ -136,7 +136,7 @@ namespace cmsl::ast
                 }
                 else
                 {
-                    auto member = variable_declaration();
+                    auto member = parse_variable_declaration();
                     if (!member)
                     {
                         return nullptr;
@@ -166,9 +166,9 @@ namespace cmsl::ast
                                                  *semicolon);
         }
 
-        std::unique_ptr<ast_node> parser::function()
+        std::unique_ptr<ast_node> parser::parse_function()
         {
-            const auto ty = type();
+            const auto ty = parse_type();
             if(!ty)
             {
                 return nullptr;
@@ -186,7 +186,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto block_node = block();
+            auto block_node = parse_block();
 
             if (!block_node)
             {
@@ -201,7 +201,7 @@ namespace cmsl::ast
                                                          std::move(block_node));
         }
 
-        std::unique_ptr<ast_node> parser::get_return_node()
+        std::unique_ptr<ast_node> parser::parse_return_node()
         {
             const auto return_kw =eat(token_type_t::kw_return);
             if (!return_kw)
@@ -209,7 +209,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto e = expr();
+            auto e = parse_expr();
             if (!e)
             {
                 return nullptr;
@@ -248,7 +248,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto condition = expr();
+            auto condition = parse_expr();
             if(!condition)
             {
                 return nullptr;
@@ -260,7 +260,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto b = block();
+            auto b = parse_block();
             if(!b)
             {
                 return nullptr;
@@ -273,7 +273,7 @@ namespace cmsl::ast
                                                       std::move(b));
         }
 
-        std::unique_ptr<ast_node> parser::get_if_else_node()
+        std::unique_ptr<ast_node> parser::parse_if_else_node()
         {
             if(!current_is(token_type_t::kw_if))
             {
@@ -313,7 +313,7 @@ namespace cmsl::ast
             std::optional<if_else_node::last_else_value> last_else;
             if(const auto last_else_kw = try_eat(token_type_t::kw_else))
             {
-                auto else_block = block();
+                auto else_block = parse_block();
                 if(!else_block)
                 {
                     return nullptr;
@@ -325,7 +325,7 @@ namespace cmsl::ast
             return std::make_unique<if_else_node>(std::move(ifs), std::move(last_else));
         }
 
-        std::unique_ptr<ast_node> parser::get_while_node()
+        std::unique_ptr<ast_node> parser::parse_while_node()
         {
             const auto while_kw =eat(token_type_t::kw_while);
             if(!while_kw)
@@ -342,7 +342,7 @@ namespace cmsl::ast
             return std::make_unique<while_node>(*while_kw, std::move(conditional_node));
         }
 
-        std::unique_ptr<block_node> parser::block()
+        std::unique_ptr<block_node> parser::parse_block()
         {
             const auto open_brace =eat(token_type_t::open_brace);
             if (!open_brace)
@@ -358,27 +358,27 @@ namespace cmsl::ast
 
                 if (current_is(token_type_t::kw_return))
                 {
-                    node = get_return_node();
+                    node = parse_return_node();
                 }
                 else if (declaration_starts())
                 {
-                    node = variable_declaration();
+                    node = parse_variable_declaration();
                 }
                 else if(current_is(token_type_t::kw_if))
                 {
-                    node = get_if_else_node();
+                    node = parse_if_else_node();
                 }
                 else if(current_is(token_type_t::kw_while))
                 {
-                    node = get_while_node();
+                    node = parse_while_node();
                 }
                 else if(current_is(token_type_t::open_brace))
                 {
-                    node = block();
+                    node = parse_block();
                 }
                 else
                 {
-                    node = expr();
+                    node = parse_expr();
                     if(!eat(token_type_t::semicolon))
                     {
                         return nullptr;
@@ -404,7 +404,7 @@ namespace cmsl::ast
 
         std::optional<param_declaration> parser::get_param_declaration()
         {
-            auto t = type();
+            auto t = parse_type();
 
             if (!t)
             {
@@ -501,9 +501,9 @@ namespace cmsl::ast
             return param_list_values{*open_paren, std::move(params), *close_paren};
         }
 
-        std::unique_ptr<ast_node> parser::variable_declaration()
+        std::unique_ptr<ast_node> parser::parse_variable_declaration()
         {
-            const auto ty = type();
+            const auto ty = parse_type();
             if(!ty)
             {
                 return nullptr;
@@ -518,7 +518,7 @@ namespace cmsl::ast
             std::optional<variable_declaration_node::initialization_values> initialization_vals;
             if( const auto equal = try_eat(token_type_t::equal))
             {
-                auto initialization = expr();
+                auto initialization = parse_expr();
                 if(!initialization)
                 {
                     return nullptr;
@@ -539,7 +539,7 @@ namespace cmsl::ast
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization_vals), *semicolon);
         }
 
-        std::optional<type_representation> parser::type()
+        std::optional<type_representation> parser::parse_type()
         {
             type_parser ty_parser{ m_errors_reporter, current_iterator(), end_iterator() };
             auto parsing_result = ty_parser.type();
@@ -611,7 +611,7 @@ namespace cmsl::ast
 
             if(precedence == k_min_precedence)
             {
-                auto f = factor();
+                auto f = parse_factor();
                 if(!f)
                 {
                     return nullptr;
@@ -734,7 +734,7 @@ namespace cmsl::ast
             }
         }
 
-        std::unique_ptr<ast_node> parser::factor()
+        std::unique_ptr<ast_node> parser::parse_factor()
         {
             if (current_is_function_call())
             {
@@ -746,7 +746,7 @@ namespace cmsl::ast
             }
             else if(try_eat(token_type_t::open_paren))
             {
-                auto e = expr();
+                auto e = parse_expr();
                 eat(token_type_t::close_paren);
                 return std::move(e);
             }
@@ -756,14 +756,14 @@ namespace cmsl::ast
             }
             else if(current_is(token_type_t::open_brace))
             {
-                return initializer_list();
+                return parse_initializer_list();
             }
 
             m_errors_reporter.raise_unexpected_token(current());
             return nullptr;
         }
 
-        std::unique_ptr<ast_node> parser::expr()
+        std::unique_ptr<ast_node> parser::parse_expr()
         {
                 auto operator_expr = parse_operator();
 
@@ -824,7 +824,7 @@ namespace cmsl::ast
 
             while(!is_at_end() && !current_is(valid_end_of_list_token))
             {
-                auto expression = expr();
+                auto expression = parse_expr();
                 if(!expression)
                 {
                     // Unexpected token e.g. semicolon
@@ -903,7 +903,7 @@ namespace cmsl::ast
                 && next_to_is(parsing_result.stopped_at, token_type_t::open_paren);
         }
 
-        std::unique_ptr<ast_node> parser::initializer_list()
+        std::unique_ptr<ast_node> parser::parse_initializer_list()
         {
             auto open_brace = eat(token_type_t::open_brace);
             if(!open_brace)

@@ -2,7 +2,7 @@
 #include "cmsl_parsed_source.hpp"
 
 #include "lexer/lexer.hpp"
-#include "ast/parser2.hpp"
+#include "ast/parser.hpp"
 #include "ast/ast_node.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_builder.hpp"
@@ -32,8 +32,8 @@ cmsl_parsed_source* cmsl_parse_source(const char* source)
 
     cmsl::lexer::lexer lex{ parsed_source->context.errors_observer , source_view };
     const auto tokens = lex.lex();
-    cmsl::ast::parser2 parser{ parsed_source->context.errors_observer, source_view, tokens };
-    auto ast_tree = parser.translation_unit();
+    cmsl::ast::parser parser{ parsed_source->context.errors_observer, source_view, tokens };
+    auto ast_tree = parser.parse_translation_unit();
 
     parsed_source->builtin_context = std::make_unique<cmsl::sema::builtin_sema_context>(parsed_source->context.type_factory,
                                                                                         parsed_source->context.function_factory,
