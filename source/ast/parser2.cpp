@@ -158,7 +158,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            return std::make_unique<class_node2>(*class_kw,
+            return std::make_unique<class_node>(*class_kw,
                                                  *name,
                                                  *open_brace,
                                                  std::move(class_nodes),

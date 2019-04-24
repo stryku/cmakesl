@@ -9,13 +9,12 @@
 
 namespace cmsl::ast
 {
-    // Todo: change name
-    class class_node2 : public ast_node
+    class class_node : public ast_node
     {
     public:
         using nodes_t = std::vector<std::unique_ptr<ast_node>>;
 
-        class_node2(token_t class_kw,
+        class_node(token_t class_kw,
                     token_t name,
                     token_t open_brace,
                     nodes_t nodes,
