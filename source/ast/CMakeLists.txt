@@ -18,7 +18,7 @@ set(AST_SOURCES
         variable_declaration_node.hpp
         type_representation.hpp
         infix_nodes.hpp translation_unit_node.hpp ast_node_visitor.hpp parser_utils.cpp parser_utils.hpp type_parser.cpp type_parser.hpp parse_errors_observer.hpp type_parsing_result.hpp
-        translation_unit_node.cpp)
+        translation_unit_node.cpp type_representation.cpp)
 
 add_library(ast ${AST_SOURCES})
 target_include_directories(ast PRIVATE ${CMAKESL_SOURCES_DIR})

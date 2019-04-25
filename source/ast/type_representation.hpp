@@ -11,104 +11,34 @@ namespace cmsl::ast
 
             explicit type_representation(lexer::token::token primary_name,
                                          lexer::token::token reference_token,
-                                         std::vector<type_representation> nested_types  = {})
-                    : m_tokens{ { primary_name } }
-                    , m_nested_types{ std::move(nested_types) }
-                    , m_reference_token{ reference_token }
-            {}
+                                         std::vector<type_representation> nested_types  = {});
             explicit type_representation(lexer::token::token_container_t tokens,
                                          lexer::token::token reference_token,
-                                         std::vector<type_representation> nested_types  = {})
-                    : m_tokens{ std::move(tokens) }
-                    , m_nested_types{ std::move(nested_types) }
-                    , m_reference_token{ reference_token }
-            {}
+                                         std::vector<type_representation> nested_types  = {});
 
             explicit type_representation(lexer::token::token primary_name,
                                          is_reference_tag,
-                                         std::vector<type_representation> nested_types  = {})
-                    : m_tokens{ { primary_name } }
-                    , m_nested_types{ std::move(nested_types) }
-                    , m_is_reference{ true }
-            {}
+                                         std::vector<type_representation> nested_types  = {});
             explicit type_representation(lexer::token::token_container_t tokens,
                                          is_reference_tag,
-                                         std::vector<type_representation> nested_types  = {})
-                    : m_tokens{ std::move(tokens) }
-                    , m_nested_types{ std::move(nested_types) }
-                    , m_is_reference{ true }
-            {}
+                                         std::vector<type_representation> nested_types  = {});
             explicit type_representation(lexer::token::token primary_name,
-                                         std::vector<type_representation> nested_types  = {})
-                    : m_tokens{ { primary_name } }
-                    , m_nested_types{ std::move(nested_types) }
-            {}
+                                         std::vector<type_representation> nested_types  = {});
             explicit type_representation(lexer::token::token_container_t tokens,
-                                         std::vector<type_representation> nested_types  = {})
-                    : m_tokens{ std::move(tokens) }
-                    , m_nested_types{ std::move(nested_types) }
-            {}
+                                         std::vector<type_representation> nested_types  = {});
 
-            lexer::token::token primary_name() const
-            {
-                return m_tokens.front();
-            }
+            lexer::token::token primary_name() const;
+            const std::vector<type_representation>& nested_types() const;
+            const lexer::token::token_container_t& tokens() const;
 
-            const std::vector<type_representation>& nested_types() const
-            {
-                return m_nested_types;
-            }
+            std::string to_string() const;
+            std::string to_string_without_reference() const;
 
-            const lexer::token::token_container_t& tokens() const
-            {
-                return m_tokens;
-            }
+            bool operator==(const type_representation& rhs) const;
+            bool operator!=(const type_representation& rhs) const;
 
-            std::string to_string() const
-            {
-                auto str = to_string_without_reference();
-                if(!is_reference())
-                {
-                    return str;
-                }
-
-                str += '&';
-                return str;
-            }
-
-            std::string to_string_without_reference() const
-            {
-                // Todo: create string once, store it somewhere (some strings container) and return string_view.
-                std::string result;
-
-                for(const auto& token : m_tokens)
-                {
-                    result += token.str();
-                }
-
-                return result;
-            }
-
-            bool operator==(const type_representation& rhs) const
-            {
-                // Todo: Do we need to compare nested types? Full name is already compared with to_string_without_reference() comparison
-                return this == &rhs || (to_string() == rhs.to_string() && m_nested_types == rhs.m_nested_types);
-            }
-
-            bool operator!=(const type_representation& rhs) const
-            {
-                return !(*this == rhs);
-            }
-
-            bool is_generic() const
-            {
-                return !m_nested_types.empty();
-            }
-
-            bool is_reference() const
-            {
-                return m_reference_token.has_value() || m_is_reference;
-            }
+            bool is_generic() const;
+            bool is_reference() const;
 
         private:
             lexer::token::token_container_t m_tokens;
