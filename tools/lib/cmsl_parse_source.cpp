@@ -37,7 +37,8 @@ cmsl_parsed_source* cmsl_parse_source(const char* source)
 
     parsed_source->builtin_context = std::make_unique<cmsl::sema::builtin_sema_context>(parsed_source->context.type_factory,
                                                                                         parsed_source->context.function_factory,
-                                                                                        parsed_source->context.context_factory);
+                                                                                        parsed_source->context.context_factory,
+                                                                                        parsed_source->context.errors_observer);
 
     auto& global_context = parsed_source->context.context_factory.create(parsed_source->builtin_context.get());
 

@@ -8,6 +8,8 @@
 #include "sema/builtin_types_finder.hpp"
 #include "sema/homogeneous_generic_type.hpp"
 #include "common/assert.hpp"
+#include "errors/errors_observer.hpp"
+#include "errors/error.hpp"
 
 namespace
 {
@@ -78,12 +80,14 @@ namespace cmsl::sema
                                                              const sema_context_interface& creation_context,
                                                              sema_type_factory& type_factory,
                                                              sema_function_factory& function_factory,
-                                                             sema_context_factory& context_factory)
+                                                             sema_context_factory& context_factory,
+                                                             errors::errors_observer& errors_observer)
             : m_generic_types_context{ generic_types_context }
             , m_creation_context{ creation_context }
             , m_type_factory{ type_factory }
             , m_function_factory{ function_factory }
             , m_context_factory{ context_factory }
+            , m_errors_observer{ errors_observer }
         {}
 
         const sema_type *
@@ -102,16 +106,32 @@ namespace cmsl::sema
         const sema_type *
         sema_generic_type_factory::create_list(const ast::type_representation& name)
         {
+            const auto generic_parameters_error_creator = [&name]
+            {
+                errors::error err;
+                err.message = "list<> expects one generic parameter, got " + std::to_string(name.nested_types().size());
+                err.range = source_range{ name.primary_name().src_range().begin, name.tokens().back().src_range().end };
+                err.type = errors::error_type::error;
+                const auto source = name.primary_name().source();
+                err.source_path = source.path();
+                const auto line_info = source.line(name.primary_name().src_range().begin.line);
+                err.line_start_pos = line_info.start_pos;
+                err.line_snippet = line_info.line;
+                return err;
+            };
+
             const auto& nested_types = name.nested_types();
             if(nested_types.empty())
             {
-                // Todo: Not enough parameters
+                const auto err = generic_parameters_error_creator();
+                m_errors_observer.nofify_error(err);
                 return nullptr;
             }
             constexpr auto list_generic_parameters{ 1u };
             if(nested_types.size() > list_generic_parameters)
             {
-                // Todo: Too many parameters
+                const auto err = generic_parameters_error_creator();
+                m_errors_observer.nofify_error(err);
                 return nullptr;
             }
 
@@ -345,7 +365,16 @@ namespace cmsl::sema
             {
                 if(!found)
                 {
-                    // Todo: Value type not found.
+                    errors::error err;
+                    err.message = "value type not found";
+                    err.range = source_range{ name.primary_name().src_range().begin, name.tokens().back().src_range().end };
+                    err.type = errors::error_type::error;
+                    const auto source = name.primary_name().source();
+                    err.source_path = source.path();
+                    const auto line_info = source.line(name.primary_name().src_range().begin.line);
+                    err.line_start_pos = line_info.start_pos;
+                    err.line_snippet = line_info.line;
+                    m_errors_observer.nofify_error(err);
                     return nullptr;
                 }
                 return found;

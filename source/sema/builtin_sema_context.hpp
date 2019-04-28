@@ -6,6 +6,11 @@
 
 namespace cmsl
 {
+    namespace errors
+    {
+        class errors_observer;
+    }
+
     namespace exec::inst
     {
             class instance;
@@ -24,7 +29,8 @@ namespace cmsl
         public:
             explicit builtin_sema_context(sema_type_factory &type_factory,
                                           sema_function_factory &function_factory,
-                                          sema_context_factory &context_factory);
+                                          sema_context_factory &context_factory,
+                                          errors::errors_observer& errors_observer);
 
         private:
             using token_type_t = lexer::token_type;
@@ -76,6 +82,7 @@ namespace cmsl
             sema_type_factory &m_type_factory;
             sema_function_factory &m_function_factory;
             sema_context_factory &m_context_factory;
+            errors::errors_observer& m_errors_observer;
         };
     }
 }

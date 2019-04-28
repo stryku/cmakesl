@@ -613,7 +613,8 @@ namespace cmsl::sema
                                                       search_context,
                                                       m_type_factory,
                                                       m_function_factory,
-                                                      m_context_factory };
+                                                      m_context_factory,
+                                                      m_errors_observer};
 
             return factory.create_generic(name);
         }

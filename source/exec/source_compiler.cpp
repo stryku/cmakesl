@@ -33,7 +33,8 @@ namespace cmsl::exec
 
         auto builtin_context = std::make_unique<sema::builtin_sema_context>(m_type_factory,
                                                                             m_function_factory,
-                                                                            m_context_factory);
+                                                                            m_context_factory,
+                                                                            m_errors_observer);
 
         auto& global_context = m_context_factory.create(builtin_context.get());
 
