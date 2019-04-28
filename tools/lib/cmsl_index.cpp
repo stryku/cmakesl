@@ -32,7 +32,7 @@ public:
         const auto& ast_node = node.ast_node();
         const auto variable_decl = dynamic_cast<const ast::variable_declaration_node*>(&ast_node);
 
-        add_entry(variable_decl->type_representation().primary_name(),
+        add_entry(variable_decl->type().primary_name(),
                   cmsl_index_entry_type::type,
                   node.type().name().primary_name().source().path(),
                   node.type().name().primary_name().src_range().begin.absolute);

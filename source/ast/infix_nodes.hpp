@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast/ast_node.hpp"
+#include "ast/ast_node_visitor.hpp"
 #include "lexer/token/token.hpp"
 
 #include <memory>

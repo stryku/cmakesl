@@ -185,7 +185,7 @@ namespace cmsl::ast::test
                 virtual void visit(const variable_declaration_node& node) override
                 {
                     m_result += "variable_declaration{type:";
-                    const auto ret_type_reference = node.type_representation();
+                    const auto ret_type_reference = node.type();
                     m_result += ret_type_reference.to_string() + ";name:";
                     m_result += std::string{node.name().str() } + ";initialization:";
                     if(const auto init = node.initialization())
