@@ -9,26 +9,12 @@
 #include "sema/homogeneous_generic_type.hpp"
 #include "factories.hpp"
 
-
-
-// Todo: Move to common place.
 namespace
 {
     template<unsigned N>
-    cmsl::lexer::token::token make_token(cmsl::lexer::token::token_type token_type, const char (&tok)[N])
-    {
-        // N counts also '\0'
-        const auto src_range = cmsl::source_range{
-                cmsl::source_location{ 1u, 1u, 0u },
-                cmsl::source_location{ 1u, N, N - 1u }
-        };
-        return cmsl::lexer::token::token{ token_type, src_range, cmsl::source_view{ tok } };
-    }
-
-    template<unsigned N>
     cmsl::lexer::token::token make_id_token(const char (&tok)[N])
     {
-        return make_token(cmsl::lexer::token::token_type ::identifier, tok);
+        return cmsl::lexer::token::make_token(cmsl::lexer::token::token_type ::identifier, tok);
     }
 }
 

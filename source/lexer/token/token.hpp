@@ -7,6 +7,7 @@
 
 #include <vector>
 
+// Todo: move to cmsl::lexer namespace
 namespace cmsl::lexer::token
 {
             class token
@@ -45,6 +46,17 @@ namespace cmsl::lexer::token
             };
 
             using token_container_t = std::vector<token>;
+
+    template<unsigned N>
+    lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N])
+    {
+        // N counts also '\0'
+        const auto src_range = source_range{
+                source_location{ 1u, 1u, 0u },
+                source_location{ 1u, N, N - 1u }
+        };
+        return token{ token_type, src_range, cmsl::source_view{ tok } };
+    }
 }
 
 namespace std
