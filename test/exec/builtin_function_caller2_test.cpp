@@ -37,7 +37,7 @@ namespace cmsl::exec::test
                 EXPECT_CALL(version_param_instance, get_value_cref())
                         .WillOnce(ReturnRef(version_param_value));
 
-                EXPECT_CALL(instances, create2_void())
+                EXPECT_CALL(instances, create_void())
                         .WillOnce(Return(return_instance_ptr));
 
                 EXPECT_CALL(instances, gather_ownership(return_instance_ptr))
@@ -67,7 +67,7 @@ namespace cmsl::exec::test
                 EXPECT_CALL(version_param_instance, get_value_cref())
                         .WillOnce(ReturnRef(version_param_value));
 
-                EXPECT_CALL(instances, create2_void())
+                EXPECT_CALL(instances, create_void())
                         .WillOnce(Return(return_instance_ptr));
 
                 EXPECT_CALL(instances, gather_ownership(return_instance_ptr))
@@ -99,7 +99,7 @@ namespace cmsl::exec::test
 
                 EXPECT_CALL(facade, fatal_error(_));
 
-                EXPECT_CALL(instances, create2_void())
+                EXPECT_CALL(instances, create_void())
                         .WillOnce(Return(return_instance_ptr));
 
                 EXPECT_CALL(instances, gather_ownership(return_instance_ptr))

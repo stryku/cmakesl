@@ -24,22 +24,26 @@ namespace cmsl::exec
 
             void visit(const sema::bool_value_node& node) override
             {
-                result = m_ctx.instances.create2(node.value());
+                result = m_ctx.instances
+                              .create(node.value());
             }
 
             void visit(const sema::int_value_node& node) override
             {
-                result = m_ctx.instances.create2(node.value());
+                result = m_ctx.instances
+                              .create(node.value());
             }
 
             void visit(const sema::double_value_node& node) override
             {
-                result = m_ctx.instances.create2(node.value());
+                result = m_ctx.instances
+                              .create(node.value());
             }
 
             void visit(const sema::string_value_node& node) override
             {
-                result = m_ctx.instances.create2(std::string{ node.value() });
+                result = m_ctx.instances
+                              .create(std::string{node.value()});
             }
 
             void visit(const sema::id_node& node) override
@@ -106,7 +110,8 @@ namespace cmsl::exec
             {
                 auto evaluated_params = evaluate_call_parameters(node.param_expressions());
                 const auto& function = node.function();
-                auto class_instance = m_ctx.instances.create2(node.type());
+                auto class_instance = m_ctx.instances
+                                           .create(node.type());
                 auto result_instance = m_ctx.function_caller.call_member(*class_instance,
                                                                          function,
                                                                          evaluated_params,
@@ -139,7 +144,8 @@ namespace cmsl::exec
             void visit(const sema::cast_to_reference_node& node) override
             {
                 const auto evaluated = evaluate_child(node.expression());
-                result = m_ctx.instances.create2_reference(*evaluated);
+                result = m_ctx.instances
+                              .create_reference(*evaluated);
             }
 
             void visit(const sema::cast_to_value_node& node) override
@@ -147,12 +153,14 @@ namespace cmsl::exec
                 const auto evaluated = evaluate_child(node.expression());
                 const auto& evaluated_reference_type = evaluated->get_sema_type();
                 const auto& referenced_type = evaluated_reference_type.referenced_type();
-                result = m_ctx.instances.create2(referenced_type, evaluated->get_value());
+                result = m_ctx.instances
+                              .create(referenced_type, evaluated->get_value());
             }
 
             void visit(const sema::initializer_list_node& node) override
             {
-                auto list_instance = m_ctx.instances.create2(node.type());
+                auto list_instance = m_ctx.instances
+                                          .create(node.type());
                 auto& list = list_instance->get_value_ref().get_list_ref();
 
                 for(const auto& value_expression : node.values())
