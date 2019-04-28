@@ -15,7 +15,7 @@ namespace cmsl::ast
         while_node::~while_node()
         {}
 
-        const conditional_node &while_node::get_node() const
+        const conditional_node &while_node::node() const
         {
             return *m_node;
         }
