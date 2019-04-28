@@ -169,16 +169,16 @@ namespace cmsl::ast::test
                 virtual void visit(const user_function_node& node) override
                 {
                     m_result += "user_function{return_type:";
-                    const auto ret_type_reference = node.get_return_type_reference();
+                    const auto ret_type_reference = node.return_type_representation();
                     m_result += ret_type_reference.to_string() + ";name:";
-                    m_result += std::string{ node.get_name().str() } + ";params:";
-                    for(const auto& param_declaration : node.get_param_declarations())
+                    m_result += std::string{node.name().str() } + ";params:";
+                    for(const auto& param_declaration : node.param_declarations())
                     {
                         m_result += "param_declaration{type:" + param_declaration.ty.to_string();
                         m_result += ";name:" + std::string{ param_declaration.name.str() } + "}";
                     }
                     m_result += ";body:";
-                    node.get_body().visit(*this);
+                    node.body().visit(*this);
                     m_result += "}";
                 }
 

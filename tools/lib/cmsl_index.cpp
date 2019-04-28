@@ -115,9 +115,9 @@ public:
         m_identifiers_context.enter_ctx();
         const auto function_node = dynamic_cast<const ast::user_function_node*>(&node.ast_node());
 
-        add_type_entry(function_node->get_return_type_reference(), node.return_type());
+        add_type_entry(function_node->return_type_representation(), node.return_type());
 
-        const auto& ast_param_declarations = function_node->get_param_declarations();
+        const auto& ast_param_declarations = function_node->param_declarations();
         const auto& params = node.signature().params;
         for(auto i = 0u; i < params.size(); ++i)
         {

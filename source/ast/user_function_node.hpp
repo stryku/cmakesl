@@ -28,14 +28,12 @@ namespace cmsl::ast
                     , m_body{ std::move(body) }
             {}
 
-            //todo: remove get_
-
-            type_representation get_return_type_reference() const
+            type_representation return_type_representation() const
             {
                 return m_return_type;
             }
 
-            token_t get_name() const
+            token_t name() const
             {
                 return m_name;
             }
@@ -50,12 +48,12 @@ namespace cmsl::ast
                 return m_close_paren;
             }
 
-            const params_t& get_param_declarations() const
+            const params_t& param_declarations() const
             {
                 return m_params;
             }
 
-            const block_node& get_body() const
+            const block_node& body() const
             {
                 return *m_body;
             }
