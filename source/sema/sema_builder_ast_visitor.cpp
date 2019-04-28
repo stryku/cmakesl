@@ -468,7 +468,7 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
         {
-            const auto return_type_reference = node.get_return_type_reference();
+            const auto return_type_reference = node.return_type_representation();
             auto return_type = try_get_or_create_generic_type(m_ctx, return_type_reference);
             if(!return_type)
             {
@@ -481,7 +481,7 @@ namespace cmsl::sema
             using param_decl_t = parameter_declaration;
             std::vector<param_decl_t> params;
 
-            for(const auto& param_decl : node.get_param_declarations())
+            for(const auto& param_decl : node.param_declarations())
             {
                 auto param_type = try_get_or_create_generic_type(m_ctx, param_decl.ty);
                 if(!param_type)
@@ -494,7 +494,7 @@ namespace cmsl::sema
             }
 
             function_signature signature{
-                    node.get_name(),
+                    node.name(),
                     std::move(params)
             };
             auto& function = m_function_factory.create_user( m_ctx, *return_type, std::move(signature) );
@@ -506,7 +506,7 @@ namespace cmsl::sema
             // so function body will be able to figure out function return type
             // and make casted return expression nodes as needed.
             m_currently_parsed_function = &function;
-            auto block = visit_child_node<block_node>(node.get_body());
+            auto block = visit_child_node<block_node>(node.body());
             m_currently_parsed_function = nullptr;
             if(!block)
             {
@@ -711,7 +711,7 @@ namespace cmsl::sema
         std::optional<sema_builder_ast_visitor::function_declaration> sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(const ast::user_function_node& node,
                                                                                       sema_context& ctx)
         {
-            const auto return_type_reference = node.get_return_type_reference();
+            const auto return_type_reference = node.return_type_representation();
             auto return_type = try_get_or_create_generic_type(ctx, return_type_reference);
             if(!return_type)
             {
@@ -723,7 +723,7 @@ namespace cmsl::sema
 
             std::vector<parameter_declaration> params;
 
-            for(const auto& param_decl : node.get_param_declarations())
+            for(const auto& param_decl : node.param_declarations())
             {
                 auto param_type = try_get_or_create_generic_type(ctx, param_decl.ty);
                 if(!param_type)
@@ -737,7 +737,7 @@ namespace cmsl::sema
             }
 
             function_signature signature{
-                    node.get_name(),
+                    node.name(),
                     std::move(params)
             };
             auto& function = m_function_factory.create_user( ctx, *return_type, std::move(signature) );
@@ -746,7 +746,7 @@ namespace cmsl::sema
             return function_declaration{
                     node,
                     &function,
-                    node.get_body()
+                    node.body()
             };
         }
 
