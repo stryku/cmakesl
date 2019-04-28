@@ -176,13 +176,13 @@ namespace cmsl::exec::inst
 
             void list_value::erase(int_t pos, int_t count)
             {
-                count = interpret_count(count, 1);
+                count = interpret_special_value(count, 1);
                 const auto where = place(pos);
                 const auto end = place(pos + count);
                 m_list.erase(where, end);
             }
 
-            int_t list_value::interpret_count(int_t value, int_t special_value) const
+            int_t list_value::interpret_special_value(int_t value, int_t special_value) const
             {
                 return value == k_special_value ? special_value : value;
             }
@@ -210,7 +210,7 @@ namespace cmsl::exec::inst
             int_t list_value::remove_impl(const instance& value, int_t count, IndexCalculator&& indexCalculator)
             {
                 int_t erased_counter{ 0 };
-                count = interpret_count(count, m_list.size());
+                count = interpret_special_value(count, m_list.size());
                 auto i{ 0 };
                 while(i < m_list.size() && count != 0)
                 {
@@ -318,7 +318,7 @@ namespace cmsl::exec::inst
 
             list_value list_value::sublist(int_t pos, int_t count) const
             {
-                count = interpret_count(count, m_list.size() - pos);
+                count = interpret_special_value(count, m_list.size() - pos);
                 const auto from = place(pos);
                 const auto to = place(pos + count);
                 container_t copied;
@@ -344,7 +344,7 @@ namespace cmsl::exec::inst
 
             int_t list_value::find(const instance &value, int_t pos) const
             {
-                pos = interpret_count(pos, 0);
+                pos = interpret_special_value(pos, 0);
                 const auto start = place(pos);
                 const auto found = std::find_if(start, cend(),
                         [&value](const auto& element)

@@ -24,7 +24,7 @@ namespace cmsl
             class instances_holder_interface
             {
             public:
-                virtual void store(std::unique_ptr<instance> i) = 0; // Todo: consider renaming to e.g. take_ownership
+                virtual void store(std::unique_ptr<instance> i) = 0;
                 virtual std::unique_ptr<instance> gather_ownership(inst::instance *instance_ptr) = 0;
 
                 virtual inst::instance *create(instance_value_variant value) = 0;
