@@ -38,7 +38,7 @@ public:
                   node.type().name().primary_name().src_range().begin.absolute);
 
 
-        m_identifiers_context.register_identifier(variable_decl->name(), &node.type());
+        m_identifiers_context.register_identifier(variable_decl->name(), node.type());
 
         if(node.initialization())
         {
@@ -122,7 +122,7 @@ public:
         for(auto i = 0u; i < params.size(); ++i)
         {
             add_type_entry(ast_param_declarations[i].ty, params[i].ty);
-            m_identifiers_context.register_identifier(params[i].name, &params[i].ty  );
+            m_identifiers_context.register_identifier(params[i].name, params[i].ty  );
         }
 
         node.body().visit(*this);
