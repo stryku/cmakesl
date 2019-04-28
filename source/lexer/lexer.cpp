@@ -224,8 +224,19 @@ namespace cmsl::lexer
 
             if (is_end())
             {
-                // TODO: pass proper error
-                m_err_observer.nofify_error(errors::error{});
+                const auto current_loc = m_source_loc.location();
+
+                errors::error err;
+                err.type = errors::error_type::error;
+                err.source_path = m_source.path();
+                err.range = source_range{ current_loc, current_loc };
+                err.message = "Unexpected end of source in a middle of string";
+
+                const auto line_info = m_source.line(current_loc.line);
+                err.line_snippet = line_info.line;
+                err.line_start_pos = line_info.start_pos;
+
+                m_err_observer.nofify_error(std::move(err));
                 return token_type::undef;
             }
 
