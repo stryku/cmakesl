@@ -5,7 +5,6 @@
 #include "exec/instance/instance.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/expression_evaluation_context.hpp"
-#include "exec/context_provider.hpp"
 #include "exec/execution_context.hpp"
 #include "sema/sema_context.hpp"
 #include "exec/function_caller.hpp"

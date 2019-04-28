@@ -1,7 +1,6 @@
 #include "instances_holder.hpp"
 #include "instance_factory.hpp"
 #include "exec/instance/instance.hpp"
-#include "exec/context_provider.hpp"
 
 #include "common/assert.hpp"
 

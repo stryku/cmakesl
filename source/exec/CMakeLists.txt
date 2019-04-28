@@ -1,5 +1,4 @@
 set(EXEC_SOURCES
-    context_provider.hpp
         execution_context.cpp
     execution_context.hpp
         function_caller.hpp
