@@ -28,22 +28,22 @@ namespace cmsl::exec::inst
                 return std::move(members);
             }
 
-            instance_value_t complex_unnamed_instance::get_value() const
+    instance_value_variant complex_unnamed_instance::get_value() const
             {
                 CMSL_UNREACHABLE("Getting value of a complex type");
             }
 
-            instance_value_t& complex_unnamed_instance::get_value_ref()
+    instance_value_variant& complex_unnamed_instance::get_value_ref()
             {
                 CMSL_UNREACHABLE("Getting value of a complex type");
             }
 
-            const instance_value_t &complex_unnamed_instance::get_value_cref() const
+            const instance_value_variant &complex_unnamed_instance::get_value_cref() const
             {
                 CMSL_UNREACHABLE("Getting value of a complex type");
             }
 
-            void complex_unnamed_instance::assign(instance_value_t val)
+            void complex_unnamed_instance::assign(instance_value_variant val)
             {
                 CMSL_UNREACHABLE("Assigning value to a complex type");
             }

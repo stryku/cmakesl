@@ -1,7 +1,7 @@
 #include "exec/instance/simple_unnamed_instance.hpp"
 
 #include "common/assert.hpp"
-#include "exec/instance/instance_value.hpp"
+#include "exec/instance/instance_value_variant.hpp"
 #include "sema/sema_type.hpp"
 
 namespace cmsl::exec::inst
@@ -11,12 +11,12 @@ namespace cmsl::exec::inst
                     , m_data{ get_init_data() }
             {}
 
-            simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type, instance_value_t value)
+            simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type, instance_value_variant value)
                     : m_sema_type{ &type }
                     , m_data{ std::move(value) }
             {}
 
-            instance_value_t simple_unnamed_instance::get_init_data() const
+    instance_value_variant simple_unnamed_instance::get_init_data() const
             {
                 const auto name = m_sema_type->name().primary_name().str();
                 // Todo: find better way than comparing strings.
@@ -52,27 +52,27 @@ namespace cmsl::exec::inst
                 CMSL_UNREACHABLE("Unknown type");
             }
 
-            instance_value_t simple_unnamed_instance::get_init_data(instance_value_t val) const
+    instance_value_variant simple_unnamed_instance::get_init_data(instance_value_variant val) const
             {
                 return val;
             }
 
-            instance_value_t simple_unnamed_instance::get_value() const
+    instance_value_variant simple_unnamed_instance::get_value() const
             {
                 return m_data;
             }
 
-            instance_value_t &simple_unnamed_instance::get_value_ref()
+    instance_value_variant &simple_unnamed_instance::get_value_ref()
             {
                 return m_data;
             }
 
-            const instance_value_t& simple_unnamed_instance::get_value_cref() const
+            const instance_value_variant& simple_unnamed_instance::get_value_cref() const
             {
                 return m_data;
             }
 
-            void simple_unnamed_instance::assign(instance_value_t val)
+            void simple_unnamed_instance::assign(instance_value_variant val)
             {
                 m_data = val;
             }

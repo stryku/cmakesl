@@ -9,15 +9,15 @@ namespace cmsl::exec::inst
             {
             public:
                 explicit simple_unnamed_instance(const sema::sema_type &type);
-                explicit simple_unnamed_instance(const sema::sema_type &type, instance_value_t value);
+                explicit simple_unnamed_instance(const sema::sema_type &type, instance_value_variant value);
 
 
                 virtual ~simple_unnamed_instance() = default;
 
-                instance_value_t get_value() const override;
-                instance_value_t& get_value_ref() override;
-                const instance_value_t& get_value_cref() const override;
-                void assign(instance_value_t val) override;
+                instance_value_variant get_value() const override;
+                instance_value_variant& get_value_ref() override;
+                const instance_value_variant& get_value_cref() const override;
+                void assign(instance_value_variant val) override;
                 std::unique_ptr<instance> copy() const override;
                 instance *get_member(cmsl::string_view name) override;
                 const instance *get_cmember(cmsl::string_view name) const override;
@@ -27,12 +27,12 @@ namespace cmsl::exec::inst
                 const sema::sema_type& get_sema_type() const override; // Todo: rename
 
             private:
-                instance_value_t get_init_data() const;
-                instance_value_t get_init_data(instance_value_t val) const;
+                instance_value_variant get_init_data() const;
+                instance_value_variant get_init_data(instance_value_variant val) const;
 
             private:
                 kind m_kind;
                 const sema::sema_type* m_sema_type{nullptr}; // Todo: change to a reference
-                instance_value_t m_data;
+                instance_value_variant m_data;
             };
 }
