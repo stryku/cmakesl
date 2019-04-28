@@ -100,7 +100,7 @@ namespace cmsl::exec
                 else
                 {
                     // Todo: create variable without instances holder
-                    auto variable_instance_ptr = instances.create2(node.type());
+                    auto variable_instance_ptr = instances.create(node.type());
                     created_instance = instances.gather_ownership(variable_instance_ptr);
                 }
 

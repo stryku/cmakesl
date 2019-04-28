@@ -35,7 +35,7 @@ namespace cmsl::exec::inst
                 m_instances.emplace_back(std::move(i));
             }
 
-            inst::instance *instances_holder::create2(instance_value_variant value)
+            inst::instance *instances_holder::create(instance_value_variant value)
             {
                 auto instance = instance_factory2{}.create(std::move(value), m_sema_ctx);
                 auto ptr = instance.get();
@@ -43,7 +43,7 @@ namespace cmsl::exec::inst
                 return ptr;
             }
 
-            inst::instance *instances_holder::create2_reference(inst::instance &referenced_instance)
+            inst::instance *instances_holder::create_reference(inst::instance &referenced_instance)
             {
                 auto instance = instance_factory2{}.create_reference(referenced_instance);
                 auto ptr = instance.get();
@@ -51,7 +51,7 @@ namespace cmsl::exec::inst
                 return ptr;
             }
 
-            inst::instance *instances_holder::create2(const sema::sema_type &type)
+            inst::instance *instances_holder::create(const sema::sema_type &type)
             {
                 auto instance = instance_factory2{}.create(type);
                 auto ptr = instance.get();
@@ -59,12 +59,12 @@ namespace cmsl::exec::inst
                 return ptr;
             }
 
-            inst::instance *instances_holder::create2_void()
+            inst::instance *instances_holder::create_void()
             {
-                return create2(true); // Todo: introduce void type
+                return create(true); // Todo: introduce void type
             }
 
-            inst::instance *instances_holder::create2(const sema::sema_type &type, instance_value_variant value)
+            inst::instance *instances_holder::create(const sema::sema_type &type, instance_value_variant value)
             {
                 auto instance = instance_factory2{}.create(type, std::move(value));
                 auto ptr = instance.get();

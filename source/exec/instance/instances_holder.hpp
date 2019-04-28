@@ -30,11 +30,11 @@ namespace cmsl
 
                 std::unique_ptr<instance> gather_ownership(inst::instance* instance_ptr) override;
 
-                inst::instance* create2(instance_value_variant value) override;
-                inst::instance *create2_reference(inst::instance& referenced_instance) override;
-                inst::instance *create2(const sema::sema_type& type) override;
-                inst::instance *create2(const sema::sema_type& type, instance_value_variant value) override;
-                inst::instance *create2_void() override;
+                inst::instance* create(instance_value_variant value) override;
+                inst::instance *create_reference(inst::instance &referenced_instance) override;
+                inst::instance *create(const sema::sema_type &type) override;
+                inst::instance *create(const sema::sema_type &type, instance_value_variant value) override;
+                inst::instance *create_void() override;
 
             private:
                 const sema::sema_context_interface& m_sema_ctx;

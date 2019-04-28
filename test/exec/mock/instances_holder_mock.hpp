@@ -17,11 +17,14 @@ namespace cmsl::exec::inst
                     MOCK_METHOD1(store, void(std::unique_ptr<instance>));
                     MOCK_METHOD1(gather_ownership, std::unique_ptr<instance>(inst::instance*));
 
-                    MOCK_METHOD1(create2, instance*(instance_value_variant));
-                    MOCK_METHOD1(create2_reference, instance*(instance&));
-                    MOCK_METHOD1(create2, instance*(const sema::sema_type&));
-                    MOCK_METHOD2(create2, instance*(const sema::sema_type&, instance_value_variant));
-                    MOCK_METHOD0(create2_void, instance*());
+                    MOCK_METHOD1(create, instance *(instance_value_variant));
+
+                    MOCK_METHOD1(create_reference, instance *(instance
+                            &));
+                    MOCK_METHOD1(create, instance*(const sema::sema_type&));
+                    MOCK_METHOD2(create, instance*(const sema::sema_type&, instance_value_variant));
+
+                    MOCK_METHOD0(create_void, instance*());
                 };
             }
 }
