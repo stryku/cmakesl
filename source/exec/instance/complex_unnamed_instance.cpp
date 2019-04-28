@@ -18,12 +18,12 @@ namespace cmsl::exec::inst
                     , m_members{ std::move(members) }
             {}
 
-            instance_members_t complex_unnamed_instance::get_init_data() const
+    complex_unnamed_instance::instance_members_t complex_unnamed_instance::get_init_data() const
             {
                 return create_init_members();
             }
 
-            instance_members_t complex_unnamed_instance::get_init_data(instance_members_t members) const
+    complex_unnamed_instance::instance_members_t complex_unnamed_instance::get_init_data(instance_members_t members) const
             {
                 return std::move(members);
             }
@@ -76,7 +76,7 @@ namespace cmsl::exec::inst
                 return std::make_unique<complex_unnamed_instance>(m_sema_type, copy_members());
             }
 
-            instance_members_t complex_unnamed_instance::copy_members() const
+    complex_unnamed_instance::instance_members_t complex_unnamed_instance::copy_members() const
             {
                 instance_members_t m;
 
@@ -101,7 +101,7 @@ namespace cmsl::exec::inst
                 return m_sema_type;
             }
 
-            instance_members_t complex_unnamed_instance::create_init_members() const
+    complex_unnamed_instance::instance_members_t complex_unnamed_instance::create_init_members() const
             {
                 instance_members_t members;
 
