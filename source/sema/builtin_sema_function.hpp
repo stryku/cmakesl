@@ -9,7 +9,6 @@ namespace cmsl
         enum class builtin_function_kind;
         class sema_context_interface;
 
-        // Todo: to cpp
         class builtin_sema_function : public sema_function
         {
         public:

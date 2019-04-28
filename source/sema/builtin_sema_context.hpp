@@ -70,8 +70,7 @@ namespace cmsl
             template <unsigned N>
             lexer::token make_id_token(const char(&tok)[N]);
 
-            //template <unsigned N>
-            //const sema_type& find_type_internal(const char(&tok)[N]);
+            const sema_type& get_or_create_generic_type(const ast::type_representation& type_representation);
 
         private:
             sema_type_factory &m_type_factory;
