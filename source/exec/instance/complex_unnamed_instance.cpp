@@ -9,12 +9,12 @@
 namespace cmsl::exec::inst
 {
             complex_unnamed_instance::complex_unnamed_instance(const sema::sema_type &type)
-                : m_sema_type{ &type }
+                : m_sema_type{ type }
                 , m_members{ get_init_data() }
             {}
 
             complex_unnamed_instance::complex_unnamed_instance(const sema::sema_type &type, instance_members_t members)
-                    : m_sema_type{ &type }
+                    : m_sema_type{ type }
                     , m_members{ std::move(members) }
             {}
 
@@ -73,7 +73,7 @@ namespace cmsl::exec::inst
 
             std::unique_ptr<instance> complex_unnamed_instance::copy() const
             {
-                return std::make_unique<complex_unnamed_instance>(*m_sema_type, copy_members());
+                return std::make_unique<complex_unnamed_instance>(m_sema_type, copy_members());
             }
 
             instance_members_t complex_unnamed_instance::copy_members() const
@@ -93,19 +93,19 @@ namespace cmsl::exec::inst
 
             sema::single_scope_function_lookup_result_t complex_unnamed_instance::get_sema_function(lexer::token::token name) const
             {
-                return m_sema_type->find_member_function(name);
+                return m_sema_type.find_member_function(name);
             }
 
             const sema::sema_type &complex_unnamed_instance::get_sema_type() const
             {
-                return *m_sema_type;
+                return m_sema_type;
             }
 
             instance_members_t complex_unnamed_instance::create_init_members() const
             {
                 instance_members_t members;
 
-                const auto& member_declarations = m_sema_type->members();
+                const auto& member_declarations = m_sema_type.members();
 
                 std::transform(std::cbegin(member_declarations), std::cend(member_declarations),
                                std::inserter(members, std::end(members)),
