@@ -66,9 +66,9 @@ namespace cmsl::exec::test
                 // Todo: consider testing false too.
                 auto ast_node = fake_ast_node();
                 sema::bool_value_node true_node{ast_node, valid_type, true};
-                inst::instance_value_t value{true};
+                inst::instance_value_variant value{true};
 
-                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
+                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_variant>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(true_node);
@@ -85,9 +85,9 @@ namespace cmsl::exec::test
                 auto ast_node = fake_ast_node();
                 const auto test_value = std::int64_t{42};
                 sema::int_value_node node{ast_node, valid_type, test_value };
-                inst::instance_value_t value{test_value};
+                inst::instance_value_variant value{test_value};
 
-                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
+                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_variant>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
@@ -103,9 +103,9 @@ namespace cmsl::exec::test
                 auto ast_node = fake_ast_node();
                 const auto test_value = 42.42;
                 sema::double_value_node node{ast_node, valid_type, test_value };
-                inst::instance_value_t value{test_value};
+                inst::instance_value_variant value{test_value};
 
-                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
+                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_variant>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
@@ -121,9 +121,9 @@ namespace cmsl::exec::test
                 auto ast_node = fake_ast_node();
                 const auto test_value = std::string{"42"};
                 sema::string_value_node node{ast_node, valid_type, test_value };
-                inst::instance_value_t value{test_value};
+                inst::instance_value_variant value{test_value};
 
-                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
+                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_variant>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);

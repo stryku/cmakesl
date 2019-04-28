@@ -21,10 +21,10 @@ namespace cmsl
                 explicit complex_unnamed_instance(const sema::sema_type &type);
                 explicit complex_unnamed_instance(const sema::sema_type &type, instance_members_t members);
 
-                instance_value_t get_value() const override;
-                instance_value_t& get_value_ref() override;
-                const instance_value_t& get_value_cref() const override;
-                void assign(instance_value_t val) override;
+                instance_value_variant get_value() const override;
+                instance_value_variant& get_value_ref() override;
+                const instance_value_variant& get_value_cref() const override;
+                void assign(instance_value_variant val) override;
                 std::unique_ptr<instance> copy() const override;
                 instance *get_member(cmsl::string_view name) override;
                 const instance *get_cmember(cmsl::string_view name) const override;

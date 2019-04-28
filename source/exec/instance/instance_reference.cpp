@@ -13,22 +13,22 @@ namespace cmsl::exec::inst
                 : m_instance{ referenced_instance }
             {}
 
-            instance_value_t instance_reference::get_value() const
+    instance_value_variant instance_reference::get_value() const
             {
                 return m_instance.get_value();
             }
 
-            instance_value_t& instance_reference::get_value_ref()
+    instance_value_variant& instance_reference::get_value_ref()
             {
                 return m_instance.get_value_ref();
             }
 
-            const instance_value_t& instance_reference::get_value_cref() const
+            const instance_value_variant& instance_reference::get_value_cref() const
             {
                 return m_instance.get_value_cref();
             }
 
-            void instance_reference::assign(instance_value_t val)
+            void instance_reference::assign(instance_value_variant val)
             {
                 m_instance.assign(val);
             }
