@@ -521,7 +521,7 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::variable_declaration_node& node)
         {
-            const auto& type_representation = node.type_representation();
+            const auto& type_representation = node.type();
             const auto type = try_get_or_create_generic_type(m_ctx, type_representation);
             if(!type)
             {
