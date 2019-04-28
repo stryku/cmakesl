@@ -521,7 +521,7 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::variable_declaration_node& node)
         {
-            const auto& type_representation = node.get_type_representation();
+            const auto& type_representation = node.type_representation();
             const auto type = try_get_or_create_generic_type(m_ctx, type_representation);
             if(!type)
             {
@@ -529,7 +529,7 @@ namespace cmsl::sema
             }
 
             std::unique_ptr<expression_node> initialization;
-            if(auto init_node = node.get_initialization())
+            if(auto init_node = node.initialization())
             {
                 initialization = visit_child_expr(*init_node);
                 if(!initialization)
@@ -570,8 +570,8 @@ namespace cmsl::sema
                 }
             }
 
-            m_ids_context.register_identifier(node.get_name(), type);
-            m_result_node = std::make_unique<variable_declaration_node>(node, *type, node.get_name(), std::move(initialization));
+            m_ids_context.register_identifier(node.name(), type);
+            m_result_node = std::make_unique<variable_declaration_node>(node, *type, node.name(), std::move(initialization));
         }
 
         void sema_builder_ast_visitor::visit(const ast::while_node& node)
