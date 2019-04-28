@@ -12,7 +12,7 @@ namespace cmsl::sema
                                    sema_type_factory& type_factory,
                                    sema_function_factory &function_factory,
                                    sema_context_factory& context_factory,
-                                   add_subdirectory_semantic_handler& add_subdirectory_handler)
+                                   add_subdirectory_handler& add_subdirectory_handler)
             : m_ctx{ ctx }
             , m_errs{ errs }
             , m_ids_context{ ids_context }

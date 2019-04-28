@@ -2,7 +2,7 @@
 
 #include "errors/errors_observer.hpp"
 #include "sema/factories.hpp"
-#include "sema/add_subdirectory_semantic_handler.hpp"
+#include "sema/add_subdirectory_handler.hpp"
 
 #include <memory>
 #include <vector>
@@ -18,7 +18,7 @@ namespace cmsl
     {
         class compiled_source;
 
-        class global_executor : public sema::add_subdirectory_semantic_handler
+        class global_executor : public sema::add_subdirectory_handler
         {
         public:
             explicit global_executor(const std::string& root_path, facade::cmake_facade& cmake_facade);

@@ -29,7 +29,7 @@
 #include "common/assert.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/variable_initialization_checker.hpp"
-#include "sema/add_subdirectory_semantic_handler.hpp"
+#include "sema/add_subdirectory_handler.hpp"
 #include "sema_builder_ast_visitor.hpp"
 
 
@@ -53,7 +53,7 @@ namespace cmsl::sema
                                                            sema_type_factory& type_factory,
                                                            sema_function_factory& function_factory,
                                                            sema_context_factory& context_factory,
-                                                           add_subdirectory_semantic_handler& add_subdirectory_handler,
+                                                           add_subdirectory_handler& add_subdirectory_handler,
                                                            sema_function* currently_parsing_function)
                 : m_generic_types_context{ generic_types_context }
                 , m_ctx{ ctx }
