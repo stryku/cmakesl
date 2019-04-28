@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/assert.hpp"
 #include "lexer/token.hpp"
 
 #include <algorithm>
@@ -24,7 +25,6 @@ namespace cmsl::sema
             virtual void leave_ctx() = 0;
         };
 
-        // Todo: consider renaming
         class identifiers_context_impl : public identifiers_context
         {
         private:
@@ -34,7 +34,11 @@ namespace cmsl::sema
         public:
             void register_identifier(token_t declaration_token, const sema_type& ty) override
             {
-                // Todo: handle empty
+                if(m_contextes.empty())
+                {
+                    CMSL_UNREACHABLE("Tried to register identifier without context");
+                }
+
                 auto& ctx = m_contextes.back();
                 ctx.emplace(declaration_token, ty);
             }
