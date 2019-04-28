@@ -3,7 +3,7 @@
 #include "ast/ast_node.hpp"
 #include "common/string.hpp"
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 #include <algorithm>
 

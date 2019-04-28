@@ -694,11 +694,11 @@ namespace cmsl::ast
         {
             switch(curr_type())
             {
-                case lexer::token::token_type::integer:
-                case lexer::token::token_type::double_:
-                case lexer::token::token_type::string:
-                case lexer::token::token_type::kw_true:
-                case lexer::token::token_type::kw_false:
+                case lexer::token_type::integer:
+                case lexer::token_type::double_:
+                case lexer::token_type::string:
+                case lexer::token_type::kw_true:
+                case lexer::token_type::kw_false:
                     return true;
 
                 default:
@@ -717,17 +717,17 @@ namespace cmsl::ast
 
             switch(token->get_type())
             {
-                case lexer::token::token_type::integer:
+                case lexer::token_type::integer:
                     return std::make_unique<int_value_node>(*token);
 
-                case lexer::token::token_type::double_:
+                case lexer::token_type::double_:
                     return std::make_unique<double_value_node>(*token);
 
-                case lexer::token::token_type::string:
+                case lexer::token_type::string:
                     return std::make_unique<string_value_node>(*token);
 
-                case lexer::token::token_type::kw_true:
-                case lexer::token::token_type::kw_false:
+                case lexer::token_type::kw_true:
+                case lexer::token_type::kw_false:
                     return std::make_unique<bool_value_node>(*token);
 
                 default:

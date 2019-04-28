@@ -1,14 +1,14 @@
 set(LEXER_SOURCES
-    token/token.hpp
-    token/token.cpp
-    token/token_type.hpp
+        token.hpp
+        token.cpp
+        token_type.hpp
     
     lexer.hpp
     lexer.cpp
     
     source_location_manipulator.hpp
     source_location_manipulator.cpp
-        token/token_type.cpp)
+        token_type.cpp)
 
 add_library(lexer ${LEXER_SOURCES})
 target_include_directories(lexer PRIVATE ${CMAKESL_SOURCES_DIR})

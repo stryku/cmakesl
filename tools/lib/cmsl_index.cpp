@@ -236,7 +236,7 @@ private:
                   type.name().primary_name().src_range().begin.absolute);
     }
 
-    void add_entry(const lexer::token::token& entry_token,
+    void add_entry(const lexer::token& entry_token,
                    cmsl_index_entry_type type,
                    string_view destination_path,
                    unsigned destination_position)
@@ -245,7 +245,7 @@ private:
         m_intermediate_entries.emplace_back(entry);
     }
 
-    cmsl_index_entry make_entry(const lexer::token::token& entry_token,
+    cmsl_index_entry make_entry(const lexer::token& entry_token,
                                 cmsl_index_entry_type type,
                                 string_view destination_path,
                                 unsigned destination_position)

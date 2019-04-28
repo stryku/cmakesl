@@ -92,7 +92,7 @@ namespace cmsl::exec::inst
                 return std::make_unique<simple_unnamed_instance>(m_sema_type, value());
             }
 
-            sema::single_scope_function_lookup_result_t simple_unnamed_instance::find_function(lexer::token::token name) const
+            sema::single_scope_function_lookup_result_t simple_unnamed_instance::find_function(lexer::token name) const
             {
                 return m_sema_type.find_member_function(name);
             }

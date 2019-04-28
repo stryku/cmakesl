@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 #include "sema/type_member_info.hpp"
 #include "sema/function_lookup_result.hpp"
 #include "ast/type_representation.hpp"
@@ -26,7 +26,7 @@ namespace cmsl::sema
         class sema_type
         {
         private:
-            using token_t = lexer::token::token;
+            using token_t = lexer::token;
 
         public:
             explicit sema_type(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members);

@@ -1,7 +1,7 @@
 #include "instance_reference.hpp"
 
 #include "exec/execution_context.hpp"
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 namespace cmsl::exec::inst
 {
@@ -48,7 +48,7 @@ namespace cmsl::exec::inst
                 return m_instance.find_cmember(name);
             }
 
-            sema::single_scope_function_lookup_result_t instance_reference::find_function(lexer::token::token name) const
+            sema::single_scope_function_lookup_result_t instance_reference::find_function(lexer::token name) const
             {
                 return m_instance.find_function(name);
             }

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 namespace cmsl::test::common
 {
-            using token_t = lexer::token::token;
+            using token_t = lexer::token;
 
             token_t token_undef();
             token_t token_integer(cmsl::string_view str = "");
@@ -63,5 +63,5 @@ namespace cmsl::test::common
             token_t token_kw_string();
             token_t token_kw_list();
 
-            token_t token_from_larger_source(cmsl::string_view source, lexer::token::token_type type, unsigned begin, unsigned end);
+            token_t token_from_larger_source(cmsl::string_view source, lexer::token_type type, unsigned begin, unsigned end);
 }

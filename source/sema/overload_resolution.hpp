@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 #include "sema/function_lookup_result.hpp"
 
 #include <memory>
@@ -20,7 +20,7 @@ namespace cmsl
         {
         public:
             // Todo: consider accepting source range instead of token
-            explicit overload_resolution(errors::errors_observer& errs, lexer::token::token call_token);
+            explicit overload_resolution(errors::errors_observer& errs, lexer::token call_token);
 
             const sema_function* choose(const function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
             const sema_function* choose(const single_scope_function_lookup_result_t& functions, const std::vector<std::unique_ptr<expression_node>>& call_parameters) const;
@@ -38,7 +38,7 @@ namespace cmsl
 
         private:
             errors::errors_observer& m_errs;
-            lexer::token::token m_call_token;
+            lexer::token m_call_token;
         };
     }
 }

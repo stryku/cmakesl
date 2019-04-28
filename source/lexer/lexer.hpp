@@ -2,7 +2,7 @@
 
 #include "common/string.hpp"
 #include "common/source_view.hpp"
-#include "lexer/token/token.hpp"
+#include "token.hpp"
 #include "lexer/source_location_manipulator.hpp"
 
 #include <string>
@@ -23,43 +23,42 @@ namespace cmsl
         private:
             using source_t = cmsl::source_view;
             using source_it_t = cmsl::string_view::const_iterator;
-            using token_t = token::token;
 
         public:
             lexer(errors::errors_observer& err_observer, source_t source);
 
-            std::vector<token_t> lex();
+            std::vector<token> lex();
 
         private:
             struct arithmetical_token_definition
             {
-                token_t::token_type_t single;
-                token_t::token_type_t op_equal;
-                token_t::token_type_t twice;
+                token_type single;
+                token_type op_equal;
+                token_type twice;
 
                 bool has_twice() const
                 {
-                    return twice != token_t::token_type_t::undef;
+                    return twice != token_type::undef;
                 }
             };
 
             using aritmetical_token_definition_t = std::unordered_map<char, arithmetical_token_definition>;
             aritmetical_token_definition_t create_arithmetical_token_definitions() const;
 
-            using one_char_tokens_t = std::unordered_map<char, token_t::token_type_t>;
+            using one_char_tokens_t = std::unordered_map<char, token_type>;
             one_char_tokens_t create_one_char_tokens() const;
 
-            using keyword_tokens_t = string_view_map<token_t::token_type_t>;
+            using keyword_tokens_t = string_view_map<token_type>;
             keyword_tokens_t create_keyword_tokens() const;
 
-            token_t get_next_token();
-            token_t::token_type_t get_next_token_type();
-            token_t::token_type_t get_numeric_token_type();
-            token_t::token_type_t get_identifier_or_keyword_token_type();
-            token_t::token_type_t get_equal_token_type();
-            token_t::token_type_t get_string_token_type();
-            token_t::token_type_t get_arithmetical_token_type(char operator_char);
-            token_t::token_type_t get_one_char_token_type(char c);
+            token get_next_token();
+            token_type get_next_token_type();
+            token_type get_numeric_token_type();
+            token_type get_identifier_or_keyword_token_type();
+            token_type get_equal_token_type();
+            token_type get_string_token_type();
+            token_type get_arithmetical_token_type(char operator_char);
+            token_type get_one_char_token_type(char c);
 
             void consume_integer();
             void consume_char();

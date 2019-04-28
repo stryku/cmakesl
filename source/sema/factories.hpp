@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 #include "sema/function_signature.hpp"
 
 #include <memory>

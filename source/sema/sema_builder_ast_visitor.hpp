@@ -23,7 +23,7 @@ namespace cmsl
         class errors_observer;
     }
 
-    namespace lexer::token
+    namespace lexer
     {
             class token;
     }
@@ -88,7 +88,7 @@ namespace cmsl
             std::unique_ptr<T> to_node(std::unique_ptr<sema_node> node) const;
             std::unique_ptr<expression_node> to_expression(std::unique_ptr<sema_node> node) const;
 
-            void raise_error(const lexer::token::token token, const std::string& message);
+            void raise_error(const lexer::token token, const std::string& message);
 
             sema_builder_ast_visitor clone() const;
             sema_builder_ast_visitor clone(sema_context_interface& ctx_to_visit) const;
@@ -136,7 +136,7 @@ namespace cmsl
                     sema_context& class_context);
 
             template<unsigned N>
-            lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N]);
+            lexer::token make_token(lexer::token_type token_type, const char (&tok)[N]);
 
             param_expressions_t convert_params_to_cast_nodes_if_need(const function_signature& signature, param_expressions_t params);
             std::unique_ptr<expression_node> convert_to_cast_return_node_if_need(std::unique_ptr<expression_node> expression);

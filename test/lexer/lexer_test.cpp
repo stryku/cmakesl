@@ -1,5 +1,5 @@
 #include "lexer/lexer.hpp"
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 #include "errors/errors_observer.hpp"
 
 #include <gmock/gmock.h>
@@ -10,7 +10,7 @@
 namespace cmsl::test::lexer
 {
             using lexer_t = cmsl::lexer::lexer;
-            using token_type_t = cmsl::lexer::token::token_type;
+            using token_type_t = cmsl::lexer::token_type;
 
             struct TokenTestState
             {

@@ -23,18 +23,18 @@ namespace cmsl::sema
         }
 
         template<unsigned N>
-        lexer::token::token builtin_sema_context::make_token(lexer::token::token_type token_type, const char (&tok)[N])
+        lexer::token builtin_sema_context::make_token(lexer::token_type token_type, const char (&tok)[N])
         {
             // N counts also '\0'
             const auto src_range = source_range{
                     source_location{ 1u, 1u, 0u },
                     source_location{ 1u, N, N - 1u }
             };
-            return lexer::token::token{ token_type, src_range, cmsl::source_view{ tok } };
+            return lexer::token{ token_type, src_range, cmsl::source_view{ tok } };
         }
 
         template<unsigned N>
-        lexer::token::token builtin_sema_context::make_id_token(const char (&tok)[N])
+        lexer::token builtin_sema_context::make_id_token(const char (&tok)[N])
         {
             return make_token(token_type_t::identifier, tok);
         }

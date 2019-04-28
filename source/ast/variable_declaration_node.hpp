@@ -33,7 +33,7 @@ namespace cmsl::ast
 
         private:
             type_representation m_type;
-            lexer::token::token m_name;
+            lexer::token m_name;
             std::optional<initialization_values> m_initialization;
             token_t m_semicolon;
         };

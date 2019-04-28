@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 #include "errors/errors_observer.hpp"
 #include "errors/error.hpp"
@@ -12,15 +12,15 @@ namespace cmsl::ast
     public:
         virtual ~parse_errors_observer() = default;
 
-        virtual void raise_unexpected_end_of_file(lexer::token::token token) = 0;
-        virtual void raise_expected_token(lexer::token::token token, lexer::token::token_type type) = 0;
-        virtual void raise_unexpected_token(lexer::token::token token) = 0;
-        virtual void raise_expected_keyword(lexer::token::token token, lexer::token::token_type keyword) = 0;
-        virtual void raise_expected_type(lexer::token::token token) = 0;
-        virtual void raise_expected_parameter_declaration(lexer::token::token token) = 0;
-        virtual void raise_expected_parameter(lexer::token::token token) = 0;
-        virtual void raise_expected_block(lexer::token::token token) = 0;
-        virtual void raise_expected_expression(lexer::token::token token) = 0;
+        virtual void raise_unexpected_end_of_file(lexer::token token) = 0;
+        virtual void raise_expected_token(lexer::token token, lexer::token_type type) = 0;
+        virtual void raise_unexpected_token(lexer::token token) = 0;
+        virtual void raise_expected_keyword(lexer::token token, lexer::token_type keyword) = 0;
+        virtual void raise_expected_type(lexer::token token) = 0;
+        virtual void raise_expected_parameter_declaration(lexer::token token) = 0;
+        virtual void raise_expected_parameter(lexer::token token) = 0;
+        virtual void raise_expected_block(lexer::token token) = 0;
+        virtual void raise_expected_expression(lexer::token token) = 0;
     };
 
     class parse_errors_reporter : public parse_errors_observer
@@ -32,53 +32,53 @@ namespace cmsl::ast
             , m_source{ source }
         {}
 
-        void raise_unexpected_end_of_file(lexer::token::token token) override
+        void raise_unexpected_end_of_file(lexer::token token) override
         {
             raise(token, "unexpected end of file");
         }
 
-        void raise_expected_token(lexer::token::token token, lexer::token::token_type type) override
+        void raise_expected_token(lexer::token token, lexer::token_type type) override
         {
             raise(token, "expected " + to_string(type));
         }
 
-        void raise_unexpected_token(lexer::token::token token) override
+        void raise_unexpected_token(lexer::token token) override
         {
             raise(token, "unexpected token");
         }
 
-        void raise_expected_type(lexer::token::token token) override
+        void raise_expected_type(lexer::token token) override
         {
             raise(token, "expected a type");
         }
 
-        void raise_expected_keyword(lexer::token::token token, lexer::token::token_type keyword) override
+        void raise_expected_keyword(lexer::token token, lexer::token_type keyword) override
         {
             raise(token, "expected " + to_string(keyword));
         }
 
-        void raise_expected_parameter_declaration(lexer::token::token token) override
+        void raise_expected_parameter_declaration(lexer::token token) override
         {
             raise(token, "expected a parameter declaration");
         }
 
-        void raise_expected_parameter(lexer::token::token token) override
+        void raise_expected_parameter(lexer::token token) override
         {
             raise(token, "expected a parameter");
         }
 
-        void raise_expected_block(lexer::token::token token) override
+        void raise_expected_block(lexer::token token) override
         {
             raise(token, "expected block");
         }
 
-        void raise_expected_expression(lexer::token::token token) override
+        void raise_expected_expression(lexer::token token) override
         {
             raise(token, "expected expression");
         }
 
     private:
-        void raise(lexer::token::token token, std::string message)
+        void raise(lexer::token token, std::string message)
         {
             const auto line_info = m_source.line(token.src_range().begin.line);
             auto err = errors::error{
@@ -101,14 +101,14 @@ namespace cmsl::ast
     class parse_errors_sink : public parse_errors_observer
     {
     public:
-        void raise_unexpected_end_of_file(lexer::token::token) override {}
-        void raise_expected_token(lexer::token::token, lexer::token::token_type) override {}
-        void raise_unexpected_token(lexer::token::token) override {}
-        void raise_expected_type(lexer::token::token) override {}
-        void raise_expected_keyword(lexer::token::token, lexer::token::token_type) override {}
-        void raise_expected_parameter_declaration(lexer::token::token) override {}
-        void raise_expected_parameter(lexer::token::token) override {}
-        void raise_expected_block(lexer::token::token) override {}
-        void raise_expected_expression(lexer::token::token) override{}
+        void raise_unexpected_end_of_file(lexer::token) override {}
+        void raise_expected_token(lexer::token, lexer::token_type) override {}
+        void raise_unexpected_token(lexer::token) override {}
+        void raise_expected_type(lexer::token) override {}
+        void raise_expected_keyword(lexer::token, lexer::token_type) override {}
+        void raise_expected_parameter_declaration(lexer::token) override {}
+        void raise_expected_parameter(lexer::token) override {}
+        void raise_expected_block(lexer::token) override {}
+        void raise_expected_expression(lexer::token) override{}
     };
 }

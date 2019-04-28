@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 // Todo: do we need it?
 namespace cmsl::sema
@@ -8,7 +8,7 @@ namespace cmsl::sema
         class sema_type;
         struct member_info
         {
-            lexer::token::token name;
+            lexer::token name;
             const sema_type& ty;
         };
 }

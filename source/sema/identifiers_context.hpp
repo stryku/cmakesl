@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 #include <algorithm>
 
@@ -12,7 +12,7 @@ namespace cmsl::sema
         class identifiers_context
         {
         protected:
-            using token_t = lexer::token::token;
+            using token_t = lexer::token;
 
         public:
             virtual ~identifiers_context() = default;
@@ -28,7 +28,7 @@ namespace cmsl::sema
         class identifiers_context_impl : public identifiers_context
         {
         private:
-            using token_t = lexer::token::token;
+            using token_t = lexer::token;
             using id_map_t = std::unordered_map<token_t, const sema_type*>;
 
         public:
