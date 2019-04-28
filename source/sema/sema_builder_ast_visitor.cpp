@@ -490,7 +490,7 @@ namespace cmsl::sema
                 }
 
                 params.emplace_back(param_decl_t{*param_type, param_decl.name});
-                m_ids_context.register_identifier(param_decl.name, param_type);
+                m_ids_context.register_identifier(param_decl.name, *param_type);
             }
 
             function_signature signature{
@@ -570,7 +570,7 @@ namespace cmsl::sema
                 }
             }
 
-            m_ids_context.register_identifier(node.name(), type);
+            m_ids_context.register_identifier(node.name(), *type);
             m_result_node = std::make_unique<variable_declaration_node>(node, *type, node.name(), std::move(initialization));
         }
 
@@ -743,7 +743,7 @@ namespace cmsl::sema
                 }
 
                 params.emplace_back(parameter_declaration{*param_type, param_decl.name});
-                m_ids_context.register_identifier(param_decl.name, param_type);
+                m_ids_context.register_identifier(param_decl.name, *param_type);
             }
 
             function_signature signature{

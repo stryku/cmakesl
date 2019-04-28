@@ -29,7 +29,8 @@ namespace cmsl::sema::test
 {
             using ::testing::StrictMock;
             using ::testing::Return;
-            using ::testing::ReturnRef;
+    using ::testing::ReturnRef;
+    using ::testing::Ref;
             using ::testing::IsNull;
             using ::testing::NotNull;
             using ::testing::Eq;
@@ -251,7 +252,7 @@ namespace cmsl::sema::test
 
                 auto variable_node = create_variable_declaration_node(type_ref, name_token);
 
-                EXPECT_CALL(ids_ctx, register_identifier(name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(name_token, Ref(valid_type)));
 
                 EXPECT_CALL(ctx, find_type(_))
                         .WillOnce(Return(&valid_type));
@@ -289,7 +290,7 @@ namespace cmsl::sema::test
                 EXPECT_CALL(ctx, find_type(_))
                         .WillRepeatedly(Return(&valid_type));
 
-                EXPECT_CALL(ids_ctx, register_identifier(name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(name_token, Ref(valid_type)));
 
                 visitor.visit(*variable_node);
 
@@ -727,7 +728,7 @@ namespace cmsl::sema::test
                 // Two scopes: parameters and block
                 EXPECT_CALL(ids_ctx, enter_ctx())
                         .Times(2);
-                EXPECT_CALL(ids_ctx, register_identifier(param_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(param_name_token, Ref(valid_type)));
                 EXPECT_CALL(ids_ctx, leave_ctx())
                         .Times(2);
 
@@ -807,7 +808,7 @@ namespace cmsl::sema::test
                         .Times(2); // Type and reference
 
                 EXPECT_CALL(ids_ctx, enter_ctx());
-                EXPECT_CALL(ids_ctx, register_identifier(member_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(member_name_token, Ref(valid_type)));
                 EXPECT_CALL(ids_ctx, leave_ctx());
 
                 visitor.visit(node);
@@ -920,7 +921,7 @@ namespace cmsl::sema::test
                 // There are three identifier contextes: class, function parameters and function body. Member is registered in class context.
                 EXPECT_CALL(ids_ctx, enter_ctx())
                         .Times(3);
-                EXPECT_CALL(ids_ctx, register_identifier(member_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(member_name_token, Ref(valid_type)));
                 EXPECT_CALL(ids_ctx, leave_ctx())
                         .Times(3);
 
@@ -1233,7 +1234,7 @@ namespace cmsl::sema::test
                 EXPECT_CALL(ctx, add_type(_))
                         .Times(2); // Type and reference
 
-                EXPECT_CALL(ids_ctx, register_identifier(variable_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(variable_name_token, Ref(valid_type)));
 
                 EXPECT_CALL(ids_ctx, enter_ctx())
                         .Times(4);
