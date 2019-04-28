@@ -16,7 +16,7 @@ namespace cmsl::exec
                                      sema::sema_type_factory &type_factory,
                                      sema::sema_function_factory &function_factory,
                                      sema::sema_context_factory &context_factory,
-                                     sema::add_subdirectory_semantic_handler& add_subdirectory_handler)
+                                     sema::add_subdirectory_handler& add_subdirectory_handler)
         : m_errors_observer{ errors_observer }
         , m_type_factory{ type_factory }
         , m_function_factory{ function_factory }

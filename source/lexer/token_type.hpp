@@ -10,7 +10,7 @@ namespace cmsl
         {
             undef,
             integer,
-            double_, // todo rename to double
+            double_,
             dot,
             open_brace,
             close_brace,

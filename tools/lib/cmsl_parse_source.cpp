@@ -7,12 +7,12 @@
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_builder.hpp"
 #include "sema/builtin_sema_context.hpp"
-#include "sema/add_subdirectory_semantic_handler.hpp"
+#include "sema/add_subdirectory_handler.hpp"
 #include "sema/sema_function.hpp"
 
 namespace cmsl::sema::details
 {
-    class add_subdirectory_handler : public add_subdirectory_semantic_handler
+    class add_subdir_handler : public add_subdirectory_handler
     {
     public:
         const sema_function* handle_add_subdirectory(cmsl::string_view name, const std::vector<std::unique_ptr<expression_node>>& params) override
@@ -26,7 +26,7 @@ cmsl_parsed_source* cmsl_parse_source(const char* source)
 {
     auto parsed_source = new cmsl_parsed_source;
     parsed_source->source = source;
-    parsed_source->add_subdirectory_handler = std::make_unique<cmsl::sema::details::add_subdirectory_handler>();
+    parsed_source->add_subdirectory_handler = std::make_unique<cmsl::sema::details::add_subdir_handler>();
 
     cmsl::source_view source_view{ parsed_source->source };
 
