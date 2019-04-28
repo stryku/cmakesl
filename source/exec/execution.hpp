@@ -17,7 +17,7 @@
 
 namespace cmsl::exec
 {
-        class execution : public identifiers_context, public function_caller2
+        class execution : public identifiers_context, public function_caller
         {
         public:
             explicit execution(facade::cmake_facade& cmake_facade);

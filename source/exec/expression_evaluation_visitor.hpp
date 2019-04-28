@@ -96,7 +96,7 @@ namespace cmsl::exec
             {
                 auto evaluated_params = evaluate_call_parameters(node.param_expressions());
                 const auto& function = node.function();
-                auto class_instance = m_ctx.ids_context.lookup_identifier("this"); // Todo: it probably can be done better
+                auto class_instance = m_ctx.ids_context.lookup_identifier("this"); // Todo: it probably can be done better (to not search by string)
                 auto result_instance = m_ctx.function_caller.call_member(*class_instance,
                                                                          function,
                                                                          evaluated_params,

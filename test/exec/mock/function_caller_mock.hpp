@@ -6,7 +6,7 @@
 
 namespace cmsl::exec::test
 {
-    class function_caller2_mock : public function_caller2
+    class function_caller2_mock : public function_caller
     {
     private:
         using inst_t = inst::instance;
