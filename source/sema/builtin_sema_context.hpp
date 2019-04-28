@@ -27,7 +27,7 @@ namespace cmsl
                                           sema_context_factory &context_factory);
 
         private:
-            using token_type_t = lexer::token::token_type;
+            using token_type_t = lexer::token_type;
             struct builtin_function_info
             {
                 const sema_type& return_type;
@@ -65,10 +65,10 @@ namespace cmsl
             void add_project_member_functions(type_builder& project_manipulator);
 
             template <unsigned N>
-            lexer::token::token make_token(token_type_t token_type, const char(&tok)[N]);
+            lexer::token make_token(token_type_t token_type, const char(&tok)[N]);
 
             template <unsigned N>
-            lexer::token::token make_id_token(const char(&tok)[N]);
+            lexer::token make_id_token(const char(&tok)[N]);
 
             //template <unsigned N>
             //const sema_type& find_type_internal(const char(&tok)[N]);

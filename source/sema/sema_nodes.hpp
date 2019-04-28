@@ -2,7 +2,7 @@
 
 #include "ast/ast_node.hpp"
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 #include "sema/sema_node.hpp"
 #include "sema/sema_node_visitor.hpp"
@@ -102,7 +102,7 @@ namespace cmsl::sema
         class id_node : public expression_node
         {
         public:
-            explicit id_node(const ast::ast_node& ast_node, const sema_type& t, lexer::token::token id)
+            explicit id_node(const ast::ast_node& ast_node, const sema_type& t, lexer::token id)
                 : expression_node{ ast_node }
                 , m_type{ t }
                 , m_id{ id }
@@ -119,7 +119,7 @@ namespace cmsl::sema
             }
 
             // Todo: consider renaming getters to get_*
-            lexer::token::token id() const
+            lexer::token id() const
             {
                 return m_id;
             }
@@ -128,7 +128,7 @@ namespace cmsl::sema
 
         private:
             const sema_type& m_type;
-            lexer::token::token m_id;
+            lexer::token m_id;
         };
 
         // Todo: handle return without expression
@@ -168,7 +168,7 @@ namespace cmsl::sema
         public:
             explicit binary_operator_node(const ast::ast_node& ast_node,
                                           std::unique_ptr<expression_node> lhs,
-                                          lexer::token::token op,
+                                          lexer::token op,
                                           const sema_function& operator_function,
                                           std::unique_ptr<expression_node> rhs,
                                           const sema_type& result_type)
@@ -188,7 +188,7 @@ namespace cmsl::sema
                 return *m_lhs;
             }
 
-            lexer::token::token op() const
+            lexer::token op() const
             {
                 return m_operator;
             }
@@ -217,7 +217,7 @@ namespace cmsl::sema
 
         private:
             std::unique_ptr<expression_node> m_lhs;
-            lexer::token::token m_operator; // Todo: introduce an operator struct that holds token and operator type
+            lexer::token m_operator; // Todo: introduce an operator struct that holds token and operator type
             const sema_function& m_operator_function;
             std::unique_ptr<expression_node> m_rhs;
             const sema_type& m_type;
@@ -226,7 +226,7 @@ namespace cmsl::sema
         class variable_declaration_node : public sema_node
         {
         public:
-            explicit variable_declaration_node(const ast::ast_node& ast_node, const sema_type& type, lexer::token::token name, std::unique_ptr<expression_node> initialization)
+            explicit variable_declaration_node(const ast::ast_node& ast_node, const sema_type& type, lexer::token name, std::unique_ptr<expression_node> initialization)
                     : sema_node{ ast_node }
                     , m_type{ type }
                     , m_name{ name }
@@ -243,7 +243,7 @@ namespace cmsl::sema
                 return m_type;
             }
 
-            lexer::token::token name() const
+            lexer::token name() const
             {
                 return m_name;
             }
@@ -257,7 +257,7 @@ namespace cmsl::sema
 
         private:
             const sema_type& m_type;
-            const lexer::token::token m_name;
+            const lexer::token m_name;
             std::unique_ptr<expression_node> m_initialization;
         };
 
@@ -287,7 +287,7 @@ namespace cmsl::sema
                 return m_params;
             }
 
-            lexer::token::token name() const
+            lexer::token name() const
             {
                 return m_function.signature().name;
             }
@@ -460,7 +460,7 @@ namespace cmsl::sema
             using functions_t = std::vector<std::unique_ptr<function_node>>;
 
         public:
-            explicit class_node(const ast::ast_node& ast_node, lexer::token::token name, members_t members, functions_t functions)
+            explicit class_node(const ast::ast_node& ast_node, lexer::token name, members_t members, functions_t functions)
                 : sema_node{ ast_node }
                 , m_name{ name }
                 , m_members{ std::move(members) }
@@ -476,7 +476,7 @@ namespace cmsl::sema
                 }
             }
 
-            lexer::token::token name() const
+            lexer::token name() const
             {
                 return m_name;
             }
@@ -494,7 +494,7 @@ namespace cmsl::sema
             VISIT_METHOD
 
         private:
-            lexer::token::token m_name;
+            lexer::token m_name;
             members_t m_members;
             functions_t m_functions;
         };
@@ -613,7 +613,7 @@ namespace cmsl::sema
                 return false;
             }
 
-            lexer::token::token member_name() const
+            lexer::token member_name() const
             {
                 return m_member_info.name;
             }

@@ -4,8 +4,8 @@
 
 namespace cmsl::test::common
 {
-            using token_type_t = lexer::token::token_type;
-            using token_t = lexer::token::token;
+            using token_type_t = lexer::token_type;
+            using token_t = lexer::token;
 
             namespace details
             {

@@ -27,7 +27,7 @@ namespace cmsl::exec
 
     const sema::sema_function *compiled_source::get_main() const
     {
-        const auto main_token = lexer::token::make_token(lexer::token::token_type::identifier, "main");
+        const auto main_token = lexer::make_token(lexer::token_type::identifier, "main");
         const auto lookup_result = m_global_context.find_function(main_token);
         return lookup_result.front().front(); // Todo: handle no main function
     }

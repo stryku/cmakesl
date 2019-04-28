@@ -1,5 +1,5 @@
 #include "lexer/lexer.hpp"
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 #include "errors/errors_observer.hpp"
 #include "errors_observer_mock/errors_observer_mock.hpp"
 
@@ -12,7 +12,7 @@ using namespace testing;
 namespace cmsl::test::lexer_error
 {
             using lexer_t = cmsl::lexer::lexer;
-            using token_type_t = cmsl::lexer::token::token_type;
+            using token_type_t = cmsl::lexer::token_type;
 
             TEST(LexerErrorTest, Empty_NoError)
             {

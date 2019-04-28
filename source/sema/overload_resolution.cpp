@@ -12,7 +12,7 @@ namespace cmsl::sema
         // Todo: While choosing a function, diagnostic for all possible funciton should be collected.
         // Then, if there is an unambiguous function, return it. If not, provide a meaningful error.
 
-        overload_resolution::overload_resolution(errors::errors_observer &errs, lexer::token::token call_token)
+        overload_resolution::overload_resolution(errors::errors_observer &errs, lexer::token call_token)
             : m_errs{ errs }
             , m_call_token{ call_token }
         {}

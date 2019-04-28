@@ -22,7 +22,7 @@ namespace cmsl::exec::inst
                 const instance *find_cmember(cmsl::string_view name) const override;
                 bool is_fundamental() const;
 
-                sema::single_scope_function_lookup_result_t find_function(lexer::token::token name) const override;
+                sema::single_scope_function_lookup_result_t find_function(lexer::token name) const override;
                 const sema::sema_type& type() const override;
 
             private:

@@ -11,9 +11,9 @@
 
 namespace cmsl::ast::test
 {
-            using token_t = cmsl::lexer::token::token;
-            using token_type_t = cmsl::lexer::token::token_type;
-            using tokens_container_t = cmsl::lexer::token::token_container_t;
+            using token_t = cmsl::lexer::token;
+            using token_type_t = cmsl::lexer::token_type;
+            using tokens_container_t = cmsl::lexer::token_container_t;
             using parser_t = cmsl::ast::parser;
 
             using ::testing::_;

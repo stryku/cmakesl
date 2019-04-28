@@ -2,7 +2,7 @@
 
 #include "ast/ast_node.hpp"
 #include "ast/ast_node_visitor.hpp"
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 #include <memory>
 
@@ -22,7 +22,7 @@ namespace cmsl::ast
                 return *m_lhs;
             }
 
-            lexer::token::token operator_() const
+            lexer::token operator_() const
             {
                 return m_operator;
             }
@@ -67,7 +67,7 @@ namespace cmsl::ast
                 return *m_lhs;
             }
 
-            lexer::token::token member_name() const
+            lexer::token member_name() const
             {
                 return m_member_name;
             }
@@ -313,7 +313,7 @@ namespace cmsl::ast
             }
 
         private:
-            lexer::token::token m_identifer;
+            lexer::token m_identifer;
         };
 
         class initializer_list_node : public ast_node

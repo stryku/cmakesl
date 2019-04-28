@@ -7,7 +7,7 @@ namespace cmsl::sema
         class builtin_types_finder
         {
         private:
-            using token_type_t = lexer::token::token_type;
+            using token_type_t = lexer::token_type;
 
         public:
             explicit builtin_types_finder(const sema_context_interface& ctx)
@@ -66,14 +66,14 @@ namespace cmsl::sema
 
         private:
             template<unsigned N>
-            lexer::token::token make_token(lexer::token::token_type token_type, const char (&tok)[N]) const
+            lexer::token make_token(lexer::token_type token_type, const char (&tok)[N]) const
             {
                 // N counts also '\0'
                 const auto src_range = source_range{
                         source_location{ 1u, 1u, 0u },
                         source_location{ 1u, N, N - 1u }
                 };
-                return lexer::token::token{ token_type, src_range, cmsl::source_view{ tok } };
+                return lexer::token{ token_type, src_range, cmsl::source_view{ tok } };
             }
 
             template <auto token_type, auto N>

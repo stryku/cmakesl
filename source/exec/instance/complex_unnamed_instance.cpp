@@ -91,7 +91,7 @@ namespace cmsl::exec::inst
                 return std::move(m);
             }
 
-            sema::single_scope_function_lookup_result_t complex_unnamed_instance::find_function(lexer::token::token name) const
+            sema::single_scope_function_lookup_result_t complex_unnamed_instance::find_function(lexer::token name) const
             {
                 return m_sema_type.find_member_function(name);
             }

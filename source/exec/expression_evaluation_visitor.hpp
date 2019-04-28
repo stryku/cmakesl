@@ -204,37 +204,37 @@ namespace cmsl::exec
                 return expression_evaluation_visitor{ m_ctx };
             }
 
-            std::string operator_to_str(lexer::token::token op)
+            std::string operator_to_str(lexer::token op)
             {
                 switch(op.get_type())
                 {
-                    case lexer::token::token_type::equal:
-                    case lexer::token::token_type::equalequal:
-                    case lexer::token::token_type::minus:
-                    case lexer::token::token_type::minusminus:
-                    case lexer::token::token_type::minusequal:
-                    case lexer::token::token_type::plus:
-                    case lexer::token::token_type::plusplus:
-                    case lexer::token::token_type::plusequal:
-                    case lexer::token::token_type::amp:
-                    case lexer::token::token_type::ampamp:
-                    case lexer::token::token_type::ampequal:
-                    case lexer::token::token_type::pipe:
-                    case lexer::token::token_type::pipepipe:
-                    case lexer::token::token_type::pipeequal:
-                    case lexer::token::token_type::slash:
-                    case lexer::token::token_type::slashequal:
-                    case lexer::token::token_type::star:
-                    case lexer::token::token_type::starequal:
-                    case lexer::token::token_type::percent:
-                    case lexer::token::token_type::percentequal:
-                    case lexer::token::token_type::exclaimequal:
-                    case lexer::token::token_type::xor_:
-                    case lexer::token::token_type::xorequal:
-                    case lexer::token::token_type::less:
-                    case lexer::token::token_type::lessequal:
-                    case lexer::token::token_type::greater:
-                    case lexer::token::token_type::greaterequal:
+                    case lexer::token_type::equal:
+                    case lexer::token_type::equalequal:
+                    case lexer::token_type::minus:
+                    case lexer::token_type::minusminus:
+                    case lexer::token_type::minusequal:
+                    case lexer::token_type::plus:
+                    case lexer::token_type::plusplus:
+                    case lexer::token_type::plusequal:
+                    case lexer::token_type::amp:
+                    case lexer::token_type::ampamp:
+                    case lexer::token_type::ampequal:
+                    case lexer::token_type::pipe:
+                    case lexer::token_type::pipepipe:
+                    case lexer::token_type::pipeequal:
+                    case lexer::token_type::slash:
+                    case lexer::token_type::slashequal:
+                    case lexer::token_type::star:
+                    case lexer::token_type::starequal:
+                    case lexer::token_type::percent:
+                    case lexer::token_type::percentequal:
+                    case lexer::token_type::exclaimequal:
+                    case lexer::token_type::xor_:
+                    case lexer::token_type::xorequal:
+                    case lexer::token_type::less:
+                    case lexer::token_type::lessequal:
+                    case lexer::token_type::greater:
+                    case lexer::token_type::greaterequal:
                     {
                         return std::string{ op.str() };
                     }

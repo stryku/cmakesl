@@ -12,9 +12,9 @@
 namespace
 {
     template<unsigned N>
-    cmsl::lexer::token::token make_id_token(const char (&tok)[N])
+    cmsl::lexer::token make_id_token(const char (&tok)[N])
     {
-        return cmsl::lexer::token::make_token(cmsl::lexer::token::token_type ::identifier, tok);
+        return cmsl::lexer::make_token(cmsl::lexer::token_type ::identifier, tok);
     }
 }
 

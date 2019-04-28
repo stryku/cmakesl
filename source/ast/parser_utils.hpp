@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 #include <optional>
 
@@ -13,10 +13,10 @@ namespace cmsl
         class parser_utils
         {
         protected:
-            using token_container_t = lexer::token::token_container_t;
+            using token_container_t = lexer::token_container_t;
             using token_it = token_container_t::const_iterator;
-            using token_type_t = lexer::token::token_type;
-            using token_t = lexer::token::token;
+            using token_type_t = lexer::token_type;
+            using token_t = lexer::token;
 
             explicit parser_utils(parse_errors_observer &err_observer, token_it current, token_it end);
 

@@ -17,10 +17,7 @@ namespace cmsl
 
     namespace lexer
     {
-        namespace token
-        {
-            class token;
-        }
+        class token;
     }
 
     namespace sema
@@ -47,8 +44,8 @@ namespace cmsl
             virtual const sema_type* find_referenced_type(const ast::type_representation& name) const = 0;
             virtual const sema_type* find_reference_for(const sema_type& type) const = 0;
             virtual const sema_type* find_type_in_this_scope(const ast::type_representation& name) const = 0;
-            virtual function_lookup_result_t find_function(const lexer::token::token& name) const = 0;
-            virtual single_scope_function_lookup_result_t find_function_in_this_scope(const lexer::token::token& name) const = 0;
+            virtual function_lookup_result_t find_function(const lexer::token& name) const = 0;
+            virtual single_scope_function_lookup_result_t find_function_in_this_scope(const lexer::token& name) const = 0;
             virtual context_type type() const = 0;
             virtual std::vector<std::reference_wrapper<const sema_type>> types() const = 0;
         };
@@ -64,8 +61,8 @@ namespace cmsl
             const sema_type* find_referenced_type(const ast::type_representation& name) const override;
             const sema_type* find_reference_for(const sema_type& type) const override;
             const sema_type* find_type_in_this_scope(const ast::type_representation& name) const override;
-            function_lookup_result_t find_function(const lexer::token::token& name) const override;
-            single_scope_function_lookup_result_t find_function_in_this_scope(const lexer::token::token& name) const override;
+            function_lookup_result_t find_function(const lexer::token& name) const override;
+            single_scope_function_lookup_result_t find_function_in_this_scope(const lexer::token& name) const override;
             context_type type() const override;
             std::vector<std::reference_wrapper<const sema_type>> types() const override;
 

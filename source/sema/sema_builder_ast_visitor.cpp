@@ -620,7 +620,7 @@ namespace cmsl::sema
             return std::unique_ptr<expression_node>(dynamic_cast<expression_node*>(node.release()));
         }
 
-        void sema_builder_ast_visitor::raise_error(const lexer::token::token token, const std::string& message)
+        void sema_builder_ast_visitor::raise_error(const lexer::token token, const std::string& message)
         {
             const auto line_info = token.source().line(token.src_range().begin.line);
             const auto err = errors::error{
@@ -784,14 +784,14 @@ namespace cmsl::sema
         }
 
         template<unsigned N>
-        lexer::token::token sema_builder_ast_visitor::make_token(lexer::token::token_type token_type, const char (&tok)[N])
+        lexer::token sema_builder_ast_visitor::make_token(lexer::token_type token_type, const char (&tok)[N])
         {
             // N counts also '\0'
             const auto src_range = source_range{
                     source_location{ 1u, 1u, 0u },
                     source_location{ 1u, N, N - 1u }
             };
-            return lexer::token::token{ token_type, src_range, source_view{ tok } };
+            return lexer::token{ token_type, src_range, source_view{ tok } };
         }
 
         std::unique_ptr<expression_node>
@@ -875,8 +875,8 @@ namespace cmsl::sema
             }
 
             // Todo: Introduce utility to create generic name representations
-            using token_type_t = lexer::token::token_type;
-            lexer::token::token_container_t tokens{
+            using token_type_t = lexer::token_type;
+            lexer::token_container_t tokens{
                 make_token(token_type_t::kw_list, "list"),
                 make_token(token_type_t::less, "<")
             };

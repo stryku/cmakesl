@@ -64,7 +64,7 @@ namespace cmsl::sema
             return find_type_in_this_scope_with_predicate(pred);
         }
 
-        function_lookup_result_t sema_context::find_function(const lexer::token::token& name) const
+        function_lookup_result_t sema_context::find_function(const lexer::token& name) const
         {
             function_lookup_result_t result;
 
@@ -79,7 +79,7 @@ namespace cmsl::sema
             return result;
         }
 
-        single_scope_function_lookup_result_t sema_context::find_function_in_this_scope(const lexer::token::token& name) const
+        single_scope_function_lookup_result_t sema_context::find_function_in_this_scope(const lexer::token& name) const
         {
             single_scope_function_lookup_result_t result;
 

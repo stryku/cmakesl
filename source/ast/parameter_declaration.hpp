@@ -9,6 +9,6 @@ namespace cmsl::ast
         struct param_declaration
         {
             type_representation ty;
-            lexer::token::token name;
+            lexer::token name;
         };
 }

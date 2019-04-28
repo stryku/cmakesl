@@ -21,7 +21,7 @@ namespace cmsl::exec
                 std::unique_ptr<instance> copy() const override;
                 instance* find_member(cmsl::string_view name) override;
                 const instance* find_cmember(cmsl::string_view name) const override;
-                sema::single_scope_function_lookup_result_t find_function(lexer::token::token name) const override;
+                sema::single_scope_function_lookup_result_t find_function(lexer::token name) const override;
                 const sema::sema_type& type() const override;
 
             private:
