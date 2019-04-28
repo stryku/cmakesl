@@ -20,7 +20,7 @@ namespace cmsl::exec::inst
 
             instance_members_t complex_unnamed_instance::get_init_data() const
             {
-                return create_init_members_sema();
+                return create_init_members();
             }
 
             instance_members_t complex_unnamed_instance::get_init_data(instance_members_t members) const
@@ -101,7 +101,7 @@ namespace cmsl::exec::inst
                 return *m_sema_type;
             }
 
-            instance_members_t complex_unnamed_instance::create_init_members_sema() const
+            instance_members_t complex_unnamed_instance::create_init_members() const
             {
                 instance_members_t members;
 
