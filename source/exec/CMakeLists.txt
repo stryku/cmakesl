@@ -19,7 +19,7 @@ set(EXEC_SOURCES
     instance/simple_unnamed_instance.hpp
     instance/complex_unnamed_instance.cpp
     instance/complex_unnamed_instance.hpp
-        instance/instance_value_getter.hpp execution2.hpp expression_evaluation_visitor.hpp
+        execution2.hpp expression_evaluation_visitor.hpp
         expression_evaluation_context.hpp
         identifiers_context.hpp instance/instance_value_variant.cpp instance/instance_value_variant.hpp builtin_function_caller2.cpp builtin_function_caller2.hpp instance/version_value.hpp instance/version_value.cpp instance/list_value.cpp instance/list_value.hpp instance/instance_value_alternative.hpp parameter_alternatives_getter.hpp instance/project_value.cpp instance/project_value.hpp instance/target_value.cpp instance/target_value.hpp global_executor.cpp global_executor.hpp compiled_source.cpp
         source_compiler.cpp
