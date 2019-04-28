@@ -33,49 +33,49 @@ namespace cmsl::exec
             template <>
             decltype(auto) get_param<index_t::bool_>(const inst::instance& instance)
             {
-                return instance.get_value_cref().get_bool();
+                return instance.value_cref().get_bool();
             }
 
             template <>
             decltype(auto) get_param<index_t::int_>(const inst::instance& instance)
             {
-                return instance.get_value_cref().get_int();
+                return instance.value_cref().get_int();
             }
 
             template <>
             decltype(auto) get_param<index_t::double_>(const inst::instance& instance)
             {
-                return instance.get_value_cref().get_double();
+                return instance.value_cref().get_double();
             }
 
             template <>
             decltype(auto) get_param<index_t::string>(const inst::instance& instance)
             {
-                return instance.get_value_cref().get_string_cref();
+                return instance.value_cref().get_string_cref();
             }
 
             template <>
             decltype(auto) get_param<index_t::version>(const inst::instance& instance)
             {
-                return instance.get_value_cref().get_version_cref();
+                return instance.value_cref().get_version_cref();
             }
 
             template <>
             decltype(auto) get_param<index_t::list>(const inst::instance& instance)
             {
-                return instance.get_value_cref().get_list_cref();
+                return instance.value_cref().get_list_cref();
             }
 
             template <>
             decltype(auto) get_param<index_t::library>(const inst::instance& instance)
             {
-                return instance.get_value_cref().get_library_cref();
+                return instance.value_cref().get_library_cref();
             }
 
             template <>
             decltype(auto) get_param<index_t::executable>(const inst::instance& instance)
             {
-                return instance.get_value_cref().get_executable_cref();
+                return instance.value_cref().get_executable_cref();
             }
         }
 

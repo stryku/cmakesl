@@ -28,17 +28,17 @@ namespace cmsl::exec::inst
                 return std::move(members);
             }
 
-    instance_value_variant complex_unnamed_instance::get_value() const
+    instance_value_variant complex_unnamed_instance::value() const
             {
                 CMSL_UNREACHABLE("Getting value of a complex type");
             }
 
-    instance_value_variant& complex_unnamed_instance::get_value_ref()
+    instance_value_variant& complex_unnamed_instance::value_ref()
             {
                 CMSL_UNREACHABLE("Getting value of a complex type");
             }
 
-            const instance_value_variant &complex_unnamed_instance::get_value_cref() const
+            const instance_value_variant &complex_unnamed_instance::value_cref() const
             {
                 CMSL_UNREACHABLE("Getting value of a complex type");
             }
@@ -48,7 +48,7 @@ namespace cmsl::exec::inst
                 CMSL_UNREACHABLE("Assigning value to a complex type");
             }
 
-            instance *complex_unnamed_instance::get_member(cmsl::string_view name)
+            instance *complex_unnamed_instance::find_member(cmsl::string_view name)
             {
                 auto found = m_members.find(name);
 
@@ -57,7 +57,7 @@ namespace cmsl::exec::inst
                        : nullptr;
             }
 
-            const instance *complex_unnamed_instance::get_cmember(cmsl::string_view name) const
+            const instance *complex_unnamed_instance::find_cmember(cmsl::string_view name) const
             {
                 auto found = m_members.find(name);
 
@@ -91,12 +91,12 @@ namespace cmsl::exec::inst
                 return std::move(m);
             }
 
-            sema::single_scope_function_lookup_result_t complex_unnamed_instance::get_sema_function(lexer::token::token name) const
+            sema::single_scope_function_lookup_result_t complex_unnamed_instance::find_function(lexer::token::token name) const
             {
                 return m_sema_type.find_member_function(name);
             }
 
-            const sema::sema_type &complex_unnamed_instance::get_sema_type() const
+            const sema::sema_type &complex_unnamed_instance::type() const
             {
                 return m_sema_type;
             }

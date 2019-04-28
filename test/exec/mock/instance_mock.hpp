@@ -11,13 +11,14 @@ namespace cmsl::exec::inst::test
 
                 public:
                     MOCK_CONST_METHOD0(copy, std::unique_ptr<instance>());
-                    MOCK_CONST_METHOD0(get_value, instance_value_variant());
-                    MOCK_METHOD0(get_value_ref, instance_value_variant & ());
-                    MOCK_CONST_METHOD0(get_value_cref, const instance_value_variant & ());
+
+                    MOCK_CONST_METHOD0(value, instance_value_variant());
+                    MOCK_METHOD0(value_ref, instance_value_variant & ());
+                    MOCK_CONST_METHOD0(value_cref, const instance_value_variant & ());
                     MOCK_METHOD1(assign, void(instance_value_variant));
-                    MOCK_METHOD1(get_member, instance* (cmsl::string_view));
-                    MOCK_CONST_METHOD1(get_cmember, const instance* (cmsl::string_view));
-                    MOCK_CONST_METHOD1(get_sema_function, sema::single_scope_function_lookup_result_t(lexer::token::token));
-                    MOCK_CONST_METHOD0(get_sema_type, const sema::sema_type&());
+                    MOCK_METHOD1(find_member, instance* (cmsl::string_view));
+                    MOCK_CONST_METHOD1(find_cmember, const instance* (cmsl::string_view));
+                    MOCK_CONST_METHOD1(find_function, sema::single_scope_function_lookup_result_t(lexer::token::token));
+                    MOCK_CONST_METHOD0(type, const sema::sema_type&());
                 };
 }

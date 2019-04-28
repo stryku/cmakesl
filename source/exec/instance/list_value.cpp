@@ -41,7 +41,7 @@ namespace cmsl::exec::inst
                 const auto pred = [](const auto& lhs_instance,
                                      const auto& rhs_instance)
                 {
-                    return lhs_instance->get_value_cref() == rhs_instance->get_value_cref();
+                    return lhs_instance->value_cref() == rhs_instance->value_cref();
                 };
 
                 return std::equal(std::cbegin(m_list), std::cend(m_list),
@@ -59,7 +59,7 @@ namespace cmsl::exec::inst
                 const auto pred = [](const auto& lhs_instance,
                                      const auto& rhs_instance)
                 {
-                    return lhs_instance->get_value_cref() < rhs_instance->get_value_cref();
+                    return lhs_instance->value_cref() < rhs_instance->value_cref();
                 };
 
                 return std::lexicographical_compare(cbegin(), cend(),
@@ -215,7 +215,7 @@ namespace cmsl::exec::inst
                 while(i < m_list.size() && count != 0)
                 {
                     const auto check_index = indexCalculator(i);
-                    if(m_list[check_index]->get_value_cref() != value.get_value_cref())
+                    if(m_list[check_index]->value_cref() != value.value_cref())
                     {
                         ++i;
                         continue;
@@ -253,7 +253,7 @@ namespace cmsl::exec::inst
             {
                 const auto pred = [](const auto& lhs, const auto& rhs)
                 {
-                    return lhs->get_value_cref() < rhs->get_value_cref();
+                    return lhs->value_cref() < rhs->value_cref();
                 };
 
                 std::sort(begin(), end(), pred);
@@ -268,7 +268,7 @@ namespace cmsl::exec::inst
             {
                 const auto pred = [](const auto& lhs, const auto& rhs)
                 {
-                    return lhs->get_value_cref() < rhs->get_value_cref();
+                    return lhs->value_cref() < rhs->value_cref();
                 };
                 const auto min_it = std::min_element(cbegin(), cend(), pred);
                 if(min_it == cend())
@@ -284,7 +284,7 @@ namespace cmsl::exec::inst
             {
                 const auto pred = [](const auto& lhs, const auto& rhs)
                 {
-                    return lhs->get_value_cref() < rhs->get_value_cref();
+                    return lhs->value_cref() < rhs->value_cref();
                 };
                 const auto max_it = std::max_element(cbegin(), cend(), pred);
                 if(max_it == cend())
@@ -349,7 +349,7 @@ namespace cmsl::exec::inst
                 const auto found = std::find_if(start, cend(),
                         [&value](const auto& element)
                         {
-                            return element->get_value_cref() == value.get_value_cref();
+                            return element->value_cref() == value.value_cref();
                         });
 
                 return found == cend() ? -1 : std::distance(cbegin(), found);

@@ -57,7 +57,7 @@ namespace cmsl::exec
 
         inst::instances_holder instances{ global_context };
         auto main_result = e.call(*casted, {}, instances);
-        return main_result->get_value_cref().get_int();
+        return main_result->value_cref().get_int();
     }
 
     const sema::sema_function *
