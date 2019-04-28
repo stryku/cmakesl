@@ -198,7 +198,7 @@ namespace cmsl::ast::test
                 virtual void visit(const while_node& node) override
                 {
                     m_result += "while{";
-                    node.get_node().visit(*this);
+                    node.node().visit(*this);
                     m_result += "}";
                 }
 

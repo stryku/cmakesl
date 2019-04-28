@@ -576,7 +576,7 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::while_node& node)
         {
-            auto conditional = visit_child_node<conditional_node>(node.get_node());
+            auto conditional = visit_child_node<conditional_node>(node.node());
             if(!conditional)
             {
                 return;
