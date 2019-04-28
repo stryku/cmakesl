@@ -2,7 +2,6 @@
 
 #include <sema/sema_function.hpp>
 #include "exec/instance/instance.hpp"
-#include "exec/instance/instance_members_alias.hpp"
 
 namespace cmsl
 {
@@ -15,6 +14,9 @@ namespace cmsl
     {
             class complex_unnamed_instance : public instance
             {
+            private:
+                using instance_members_t = string_view_map<std::unique_ptr<instance>>;
+
             public:
                 explicit complex_unnamed_instance(const sema::sema_type &type);
                 explicit complex_unnamed_instance(const sema::sema_type &type, instance_members_t members);
