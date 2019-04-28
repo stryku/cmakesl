@@ -35,7 +35,7 @@ namespace cmsl
                 instance_members_t get_init_data(instance_members_t m_members) const;
 
                 instance_members_t copy_members() const;
-                instance_members_t create_init_members_sema() const; // Todo: rename
+                instance_members_t create_init_members() const;
 
             private:
                 kind m_kind;
