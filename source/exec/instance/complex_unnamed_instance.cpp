@@ -30,24 +30,22 @@ namespace cmsl::exec::inst
 
             instance_value_t complex_unnamed_instance::get_value() const
             {
-                CMSL_UNREACHABLE("Getting value of complex type");
+                CMSL_UNREACHABLE("Getting value of a complex type");
             }
 
             instance_value_t& complex_unnamed_instance::get_value_ref()
             {
-                CMSL_UNREACHABLE("Getting value of complex type");
+                CMSL_UNREACHABLE("Getting value of a complex type");
             }
 
             const instance_value_t &complex_unnamed_instance::get_value_cref() const
             {
-                CMSL_UNREACHABLE("Getting value of complex type");
+                CMSL_UNREACHABLE("Getting value of a complex type");
             }
 
             void complex_unnamed_instance::assign(instance_value_t val)
             {
-                // TODO
-
-                CMSL_UNREACHABLE("Not implemented yet");
+                CMSL_UNREACHABLE("Assigning value to a complex type");
             }
 
             instance *complex_unnamed_instance::get_member(cmsl::string_view name)
