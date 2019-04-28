@@ -9,6 +9,7 @@
 #include "ast/user_function_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/translation_unit_node.hpp"
+#include "ast/block_node.hpp"
 
 
 #include "common/algorithm.hpp"
