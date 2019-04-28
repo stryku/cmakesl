@@ -363,7 +363,7 @@ namespace cmsl::exec::test
                 EXPECT_CALL(m_ids_ctx, lookup_identifier(lhs_expression_token.str()))
                         .WillOnce(Return(&lhs_instance));
 
-                EXPECT_CALL(lhs_instance, get_member(member_name_token.str()))
+                EXPECT_CALL(lhs_instance, find_member(member_name_token.str()))
                 .WillOnce(Return(&member_instance));
 
                 expression_evaluation_visitor visitor{ m_ctx };

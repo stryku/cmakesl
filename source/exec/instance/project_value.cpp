@@ -38,7 +38,7 @@ namespace cmsl::exec::inst
                 for(auto i = 0u; i < sources.size(); ++i)
                 {
                     const auto& instance = sources.at(i);
-                    const auto& source = instance.get_value_cref().get_string_cref();
+                    const auto& source = instance.value_cref().get_string_cref();
                     const auto full_source_path = cmake_facade.current_directory() + '/' + source; // Todo: Handle already absolute paths.
                     collected_sources.emplace_back(full_source_path);
                 }

@@ -230,7 +230,7 @@ namespace cmsl::exec
         inst::instance*
         builtin_function_caller2::int_operator_minus(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
             return m_instances.create(lhs - rhs);
@@ -240,7 +240,7 @@ namespace cmsl::exec
         builtin_function_caller2::int_operator_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [rhs] = get_params<alternative_t::int_>(params);
-            instance.get_value_ref() = rhs;
+            instance.value_ref() = rhs;
             return m_instances.create_reference(instance);
         }
 
@@ -248,14 +248,14 @@ namespace cmsl::exec
         builtin_function_caller2::int_ctor_bool(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [param] = get_params<alternative_t::bool_>(params);
-            instance.get_value_ref().set_int(static_cast<inst::int_t>(param));
+            instance.value_ref().set_int(static_cast<inst::int_t>(param));
             return &instance;
         }
 
         inst::instance *
         builtin_function_caller2::bool_ctor(inst::instance &instance, const builtin_function_caller2::params_t&)
         {
-            instance.get_value_ref().set_bool(false);
+            instance.value_ref().set_bool(false);
             return &instance;
         }
 
@@ -263,7 +263,7 @@ namespace cmsl::exec
         builtin_function_caller2::bool_ctor_bool(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [param] = get_params<alternative_t::bool_>(params);
-            instance.get_value_ref().set_bool(param);
+            instance.value_ref().set_bool(param);
             return &instance;
         }
 
@@ -271,7 +271,7 @@ namespace cmsl::exec
         builtin_function_caller2::bool_ctor_int(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [param] = get_params<alternative_t::int_>(params);
-            instance.get_value_ref().set_bool(static_cast<bool>(param));
+            instance.value_ref().set_bool(static_cast<bool>(param));
             return &instance;
         }
 
@@ -279,14 +279,14 @@ namespace cmsl::exec
         builtin_function_caller2::bool_operator_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [rhs] = get_params<alternative_t::bool_>(params);
-            instance.get_value_ref() = rhs;
+            instance.value_ref() = rhs;
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::int_ctor(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            instance.get_value_ref().set_int(inst::int_t{ 0 });
+            instance.value_ref().set_int(inst::int_t{ 0 });
             return &instance;
         }
 
@@ -294,14 +294,14 @@ namespace cmsl::exec
         builtin_function_caller2::int_ctor_int(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [rhs] = get_params<alternative_t::int_>(params);
-            instance.get_value_ref() = rhs;
+            instance.value_ref() = rhs;
             return &instance;
         }
 
         inst::instance *
         builtin_function_caller2::int_operator_plus(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
             return m_instances.create(lhs + rhs);
@@ -310,29 +310,29 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::int_operator_plus_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
 
-            instance.get_value_ref().set_int(lhs + rhs);
+            instance.value_ref().set_int(lhs + rhs);
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::int_operator_minus_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
 
-            instance.get_value_ref().set_int(lhs - rhs);
+            instance.value_ref().set_int(lhs - rhs);
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::int_operator_star(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
             return m_instances.create(lhs * rhs);
@@ -341,7 +341,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::int_operator_slash(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
             return m_instances.create(lhs / rhs);
@@ -350,29 +350,29 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::int_operator_star_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
 
-            instance.get_value_ref().set_int(lhs * rhs);
+            instance.value_ref().set_int(lhs * rhs);
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::int_operator_slash_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
 
-            instance.get_value_ref().set_int(lhs / rhs);
+            instance.value_ref().set_int(lhs / rhs);
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::int_operator_less(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
             return m_instances.create(lhs < rhs);
@@ -381,7 +381,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::int_operator_less_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
             return m_instances.create(lhs <= rhs);
@@ -390,7 +390,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::int_operator_greater(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
             return m_instances.create(lhs > rhs);
@@ -399,7 +399,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::int_operator_greater_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
             return m_instances.create(lhs >= rhs);
@@ -408,7 +408,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::int_operator_equal_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             const auto& [rhs] = get_params<alternative_t::int_>(params);
             return m_instances.create(lhs == rhs);
@@ -417,7 +417,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::int_to_string(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             return m_instances.create(std::to_string(lhs));
         }
@@ -425,7 +425,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::bool_operator_equal_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_bool();
             const auto& [rhs] = get_params<alternative_t::bool_>(params);
             return m_instances.create(lhs == rhs);
@@ -434,7 +434,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::bool_operator_pipe_pipe(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_bool();
             const auto& [rhs] = get_params<alternative_t::bool_>(params);
             return m_instances.create(lhs || rhs);
@@ -443,7 +443,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::bool_operator_amp_amp(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_bool();
             const auto& [rhs] = get_params<alternative_t::bool_>(params);
             return m_instances.create(lhs && rhs);
@@ -452,7 +452,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::bool_to_string(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_int();
             return m_instances.create(lhs ? std::string{"true"} : std::string{"false"});
         }
@@ -460,7 +460,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::double_ctor(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            instance.get_value_ref().set_double(0.0);
+            instance.value_ref().set_double(0.0);
             return &instance;
         }
 
@@ -468,7 +468,7 @@ namespace cmsl::exec
         builtin_function_caller2::int_ctor_double(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [param] = get_params<alternative_t::double_>(params);
-            instance.get_value_ref() = static_cast<inst::int_t>(param);
+            instance.value_ref() = static_cast<inst::int_t>(param);
             return &instance;
         }
 
@@ -476,7 +476,7 @@ namespace cmsl::exec
         builtin_function_caller2::double_ctor_double(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [param] = get_params<alternative_t::double_>(params);
-            instance.get_value_ref() = param;
+            instance.value_ref() = param;
             return &instance;
         }
 
@@ -484,14 +484,14 @@ namespace cmsl::exec
         builtin_function_caller2::double_ctor_int(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [param] = get_params<alternative_t::int_>(params);
-            instance.get_value_ref() = static_cast<double>(param);
+            instance.value_ref() = static_cast<double>(param);
             return &instance;
         }
 
         inst::instance *
         builtin_function_caller2::double_operator_plus(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
             return m_instances.create(lhs + rhs);
@@ -500,7 +500,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::double_operator_minus(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
             return m_instances.create(lhs - rhs);
@@ -509,7 +509,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::double_operator_star(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
             return m_instances.create(lhs * rhs);
@@ -518,7 +518,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::double_operator_slash(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
             return m_instances.create(lhs / rhs);
@@ -528,58 +528,58 @@ namespace cmsl::exec
         builtin_function_caller2::double_operator_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [rhs] = get_params<alternative_t::double_>(params);
-            instance.get_value_ref() = rhs;
+            instance.value_ref() = rhs;
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::double_operator_plus_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
 
-            instance.get_value_ref().set_double(lhs + rhs);
+            instance.value_ref().set_double(lhs + rhs);
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::double_operator_minus_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
 
-            instance.get_value_ref().set_double(lhs - rhs);
+            instance.value_ref().set_double(lhs - rhs);
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::double_operator_star_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
 
-            instance.get_value_ref().set_double(lhs * rhs);
+            instance.value_ref().set_double(lhs * rhs);
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::double_operator_slash_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
 
-            instance.get_value_ref().set_double(lhs / rhs);
+            instance.value_ref().set_double(lhs / rhs);
             return m_instances.create_reference(instance);
         }
 
         inst::instance *
         builtin_function_caller2::double_operator_less(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
             return m_instances.create(lhs < rhs);
@@ -588,7 +588,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::double_operator_less_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
             return m_instances.create(lhs <= rhs);
@@ -597,7 +597,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::double_operator_greater(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
             return m_instances.create(lhs > rhs);
@@ -606,7 +606,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::double_operator_greater_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto lhs = instance.get_value_cref()
+            const auto lhs = instance.value_cref()
                                      .get_double();
             const auto& [rhs] = get_params<alternative_t::double_>(params);
             return m_instances.create(lhs >= rhs);
@@ -615,14 +615,14 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_empty(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             return m_instances.create(str.empty());
         }
 
         inst::instance *
         builtin_function_caller2::string_size(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto size = static_cast<inst::int_t>(str.size());
             return m_instances.create(size);
         }
@@ -630,7 +630,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_ctor(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            instance.get_value_ref().set_string(std::string{});
+            instance.value_ref().set_string(std::string{});
             return &instance;
         }
 
@@ -638,14 +638,14 @@ namespace cmsl::exec
         builtin_function_caller2::string_ctor_string(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [param] = get_params<alternative_t::string>(params);
-            instance.get_value_ref().set_string(std::move(param));
+            instance.value_ref().set_string(std::move(param));
             return &instance;
         }
 
         inst::instance *
         builtin_function_caller2::string_operator_equal_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& lhs = instance.get_value_cref()
+            const auto& lhs = instance.value_cref()
                                      .get_string_cref();
             const auto& [rhs] = get_params<alternative_t::string>(params);
             return m_instances.create(lhs == rhs);
@@ -654,7 +654,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_operator_not_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& lhs = instance.get_value_cref()
+            const auto& lhs = instance.value_cref()
                                       .get_string_cref();
             const auto& [rhs] = get_params<alternative_t::string>(params);
             return m_instances.create(lhs != rhs);
@@ -663,7 +663,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_operator_less(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& lhs = instance.get_value_cref()
+            const auto& lhs = instance.value_cref()
                                       .get_string_cref();
             const auto& [rhs] = get_params<alternative_t::string>(params);
             return m_instances.create(lhs < rhs);
@@ -672,7 +672,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_operator_less_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& lhs = instance.get_value_cref()
+            const auto& lhs = instance.value_cref()
                                       .get_string_cref();
             const auto& [rhs] = get_params<alternative_t::string>(params);
             return m_instances.create(lhs <= rhs);
@@ -681,7 +681,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_operator_greater(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& lhs = instance.get_value_cref()
+            const auto& lhs = instance.value_cref()
                                       .get_string_cref();
             const auto& [rhs] = get_params<alternative_t::string>(params);
             return m_instances.create(lhs > rhs);
@@ -690,7 +690,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_operator_greater_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& lhs = instance.get_value_cref()
+            const auto& lhs = instance.value_cref()
                                       .get_string_cref();
             const auto& [rhs] = get_params<alternative_t::string>(params);
             return m_instances.create(lhs >= rhs);
@@ -699,7 +699,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_operator_plus(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& lhs = instance.get_value_cref()
+            const auto& lhs = instance.value_cref()
                                       .get_string_cref();
             const auto& [rhs] = get_params<alternative_t::string>(params);
             return m_instances.create(lhs + rhs);
@@ -708,7 +708,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_operator_plus_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& lhs = instance.get_value_ref()
+            auto& lhs = instance.value_ref()
                                 .get_string_ref();
             const auto& [rhs] = get_params<alternative_t::string>(params);
 
@@ -719,7 +719,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_ctor_string_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref().get_string_ref();
+            auto& str = instance.value_ref().get_string_ref();
             const auto& [value, count] = get_params<alternative_t::string, alternative_t::int_>(params);
 
             str.clear();
@@ -736,7 +736,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_clear(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref()
+            auto& str = instance.value_ref()
                                       .get_string_ref();
             str.clear();
             return m_instances.create_reference(instance);
@@ -745,7 +745,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_insert_pos_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref().get_string_ref();
+            auto& str = instance.value_ref().get_string_ref();
             const auto& [position, value] = get_params<alternative_t::int_, alternative_t::string>(params);
 
             str.insert(position, value);
@@ -756,7 +756,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_erase_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref().get_string_ref();
+            auto& str = instance.value_ref().get_string_ref();
             const auto& [position] = get_params<alternative_t::int_>(params);
             str.erase(position);
             return m_instances.create_reference(instance);
@@ -765,7 +765,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_erase_pos_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref().get_string_ref();
+            auto& str = instance.value_ref().get_string_ref();
             const auto& [position, count] = get_params<alternative_t::int_, alternative_t::int_>(params);
             str.erase(position, count);
             return m_instances.create_reference(instance);
@@ -774,7 +774,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_starts_with(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [value] = get_params<alternative_t::string>(params);
 
             // Todo: extract to common function with ends_with
@@ -799,7 +799,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_ends_with(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [value] = get_params<alternative_t::string>(params);
 
             const auto ends_with = [&str, &value = value] // Workaround for capturing variables introduced by structured bindings.
@@ -823,7 +823,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_replace_pos_count_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref().get_string_ref();
+            auto& str = instance.value_ref().get_string_ref();
             const auto& [position, count, value] = get_params<alternative_t::int_,
                                                               alternative_t::int_,
                                                               alternative_t::string>(params);
@@ -834,7 +834,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_substr_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [position] = get_params<alternative_t::int_>(params);
             return m_instances.create(str.substr(position));
         }
@@ -842,7 +842,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_substr_pos_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [position, count] = get_params<alternative_t::int_,
                                                        alternative_t::int_>(params);
             return m_instances.create(str.substr(position, count));
@@ -851,7 +851,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_resize_newsize(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref().get_string_ref();
+            auto& str = instance.value_ref().get_string_ref();
             const auto& [new_size] = get_params<alternative_t::int_>(params);
             str.resize(new_size);
             return m_instances.create_reference(instance);
@@ -860,7 +860,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_resize_newsize_fill(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref().get_string_ref();
+            auto& str = instance.value_ref().get_string_ref();
             const auto& [new_size, fill] = get_params<alternative_t::int_,
                                                       alternative_t::string>(params);
             const auto previous_size = str.length();
@@ -882,7 +882,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_find_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [value] = get_params<alternative_t::string>(params);
             const auto found_pos = str.find(value);
             const auto pos = string_pos_to_int(found_pos);
@@ -892,7 +892,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_find_str_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [value, start_pos] = get_params<alternative_t::string,
                                                       alternative_t::int_>(params);
             const auto found_pos = str.find(value, start_pos);
@@ -903,7 +903,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_find_not_of_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [value] = get_params<alternative_t::string>(params);
             const auto found_pos = str.find_first_not_of(value);
             const auto pos = string_pos_to_int(found_pos);
@@ -913,7 +913,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_find_not_of_str_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [value, start_pos] = get_params<alternative_t::string,
                                                         alternative_t::int_>(params);
             const auto found_pos = str.find_first_not_of(value, start_pos);
@@ -924,7 +924,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_find_last_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [value] = get_params<alternative_t::string>(params);
             const auto found_pos = str.rfind(value);
             const auto pos = string_pos_to_int(found_pos);
@@ -941,7 +941,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_find_last_not_of_str(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [value] = get_params<alternative_t::string>(params);
             const auto found_pos = str.find_last_not_of(value);
             const auto pos = string_pos_to_int(found_pos);
@@ -951,7 +951,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_contains(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             const auto& [value] = get_params<alternative_t::string>(params);
             const auto found_pos = str.find(value);
             const auto contains = found_pos != std::string::npos;
@@ -961,7 +961,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_lower(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref().get_string_ref();
+            auto& str = instance.value_ref().get_string_ref();
 
             for(auto& c : str)
             {
@@ -974,7 +974,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_make_lower(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             std::string result;
             result.reserve(str.length());
 
@@ -988,7 +988,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_upper(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& str = instance.get_value_ref().get_string_ref();
+            auto& str = instance.value_ref().get_string_ref();
 
             for(auto& c : str)
             {
@@ -1001,7 +1001,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::string_make_upper(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& str = instance.get_value_cref().get_string_cref();
+            const auto& str = instance.value_cref().get_string_cref();
             std::string result;
             result.reserve(str.length());
 
@@ -1016,7 +1016,7 @@ namespace cmsl::exec
         builtin_function_caller2::version_ctor_major(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [major] = get_params<alternative_t::int_>(params);
-            instance.get_value_ref().set_version(inst::version_value{ major });
+            instance.value_ref().set_version(inst::version_value{ major });
             return &instance;
         }
 
@@ -1025,7 +1025,7 @@ namespace cmsl::exec
         {
             const auto& [major, minor] = get_params<alternative_t::int_,
                                                     alternative_t::int_>(params);
-            instance.get_value_ref().set_version(inst::version_value{ major, minor });
+            instance.value_ref().set_version(inst::version_value{ major, minor });
             return &instance;
         }
 
@@ -1035,7 +1035,7 @@ namespace cmsl::exec
             const auto& [major, minor, patch] = get_params<alternative_t::int_,
                                                            alternative_t::int_,
                                                            alternative_t::int_>(params);
-            instance.get_value_ref().set_version(inst::version_value{ major, minor, patch });
+            instance.value_ref().set_version(inst::version_value{ major, minor, patch });
             return &instance;
         }
 
@@ -1046,14 +1046,14 @@ namespace cmsl::exec
                                                                   alternative_t::int_,
                                                                   alternative_t::int_,
                                                                   alternative_t::int_>(params);
-            instance.get_value_ref().set_version(inst::version_value{ major, minor, patch, tweak });
+            instance.value_ref().set_version(inst::version_value{ major, minor, patch, tweak });
             return &instance;
         }
 
         inst::instance *
         builtin_function_caller2::version_operator_equal_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             const auto& [ver2] = get_params<alternative_t::version>(params);
             return m_instances.create(ver == ver2);
         }
@@ -1061,7 +1061,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::version_operator_not_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             const auto& [ver2] = get_params<alternative_t::version>(params);
             return m_instances.create(ver != ver2);
         }
@@ -1069,7 +1069,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::version_operator_less(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             const auto& [ver2] = get_params<alternative_t::version>(params);
             return m_instances.create(ver < ver2);
         }
@@ -1077,7 +1077,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::version_operator_less_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             const auto& [ver2] = get_params<alternative_t::version>(params);
             return m_instances.create(ver <= ver2);
         }
@@ -1085,7 +1085,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::version_operator_greater(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             const auto& [ver2] = get_params<alternative_t::version>(params);
             return m_instances.create(ver > ver2);
         }
@@ -1093,7 +1093,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::version_operator_greater_equal(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             const auto& [ver2] = get_params<alternative_t::version>(params);
             return m_instances.create(ver >= ver2);
         }
@@ -1101,42 +1101,42 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::version_major(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             return m_instances.create(ver.major_());
         }
 
         inst::instance *
         builtin_function_caller2::version_minor(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             return m_instances.create(ver.minor_());
         }
 
         inst::instance *
         builtin_function_caller2::version_patch(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             return m_instances.create(ver.patch());
         }
 
         inst::instance *
         builtin_function_caller2::version_tweak(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             return m_instances.create(ver.tweak());
         }
 
         inst::instance *
         builtin_function_caller2::version_to_string(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& ver = instance.get_value_cref().get_version_cref();
+            const auto& ver = instance.value_cref().get_version_cref();
             return m_instances.create(ver.to_string());
         }
 
         inst::instance *
         builtin_function_caller2::list_ctor(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             list = inst::list_value{};
             return m_instances.create_reference(instance);
         }
@@ -1144,14 +1144,14 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_size(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& list = instance.value_cref().get_list_cref();
             return m_instances.create(static_cast<inst::int_t>(list.size()));
         }
 
         inst::instance *
         builtin_function_caller2::list_ctor_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& [value] = get_params<alternative_t::list>(params);
             list = inst::list_value{ value };
             return m_instances.create_reference(instance);
@@ -1160,7 +1160,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_ctor_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             list.push_back(params[0]->copy());
             return m_instances.create_reference(instance);
         }
@@ -1168,8 +1168,8 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_ctor_value_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
-            const auto count = params[1]->get_value_cref().get_int();
+            auto& list = instance.value_ref().get_list_ref();
+            const auto count = params[1]->value_cref().get_int();
 
             for(auto i = 0u; i < count; ++i)
             {
@@ -1182,7 +1182,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_push_back_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             list.push_back(params[0]->copy());
             return m_instances.create_void();
         }
@@ -1190,7 +1190,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_push_back_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& [list2] = get_params<alternative_t::list>(params);
             list.push_back(list2);
             return m_instances.create_void();
@@ -1199,7 +1199,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_push_front_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             list.push_front(params[0]->copy());
             return m_instances.create_void();
         }
@@ -1207,7 +1207,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_push_front_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& [list2] = get_params<alternative_t::list>(params);
             list.push_front(list2);
             return m_instances.create_void();
@@ -1216,7 +1216,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_pop_back(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             list.pop_back();
             return m_instances.create_void();
         }
@@ -1224,7 +1224,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_pop_front(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             list.pop_front();
             return m_instances.create_void();
         }
@@ -1232,7 +1232,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_at(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& [position] = get_params<alternative_t::int_>(params);
             auto& instance_at = list.at(position);
             return m_instances.create_reference(instance_at);
@@ -1241,7 +1241,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_front(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             auto& instance_at_front = list.front();
             return m_instances.create_reference(instance_at_front);
         }
@@ -1249,7 +1249,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_back(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             auto& instance_at_back = list.back();
             return m_instances.create_reference(instance_at_back);
         }
@@ -1257,7 +1257,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_insert_pos_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& [position] = get_params<alternative_t::int_>(params);
             list.insert(position, params[1]->copy());
             return m_instances.create_void();
@@ -1266,7 +1266,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_insert_pos_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& [position, list2] = get_params<alternative_t::int_, alternative_t::list>(params);
             list.insert(position, list2);
             return m_instances.create_void();
@@ -1275,7 +1275,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_erase_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& [position] = get_params<alternative_t::int_>(params);
             list.erase(position);
             return m_instances.create_void();
@@ -1284,7 +1284,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_erase_pos_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& [position, count] = get_params<alternative_t::int_, alternative_t::int_>(params);
             list.erase(position, count);
             return m_instances.create_void();
@@ -1293,7 +1293,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_remove_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& value = *params[0];
             const auto removed_count = list.remove(value);
             return m_instances.create(removed_count);
@@ -1302,9 +1302,9 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_remove_value_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& value = *params[0];
-            const auto& count = params[1]->get_value_cref().get_int();
+            const auto& count = params[1]->value_cref().get_int();
             const auto removed_count = list.remove(value, count);
             return m_instances.create(removed_count);
         }
@@ -1312,9 +1312,9 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_remove_last_value_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& value = *params[0];
-            const auto& count = params[1]->get_value_cref().get_int();
+            const auto& count = params[1]->value_cref().get_int();
             const auto removed_count = list.remove_last(value, count);
             return m_instances.create(removed_count);
         }
@@ -1322,7 +1322,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_clear(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             list.clear();
             return m_instances.create_void();
         }
@@ -1330,10 +1330,10 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_resize(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& list_type = *dynamic_cast<const sema::homogeneous_generic_type*>(&instance.get_sema_type());
+            const auto& list_type = *dynamic_cast<const sema::homogeneous_generic_type*>(&instance.type());
             const auto& value_type = list_type.value_type();
 
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             const auto& [new_size] = get_params<alternative_t::int_>(params);
 
             const auto fill_value = new_size > list.size() ? m_instances.create(value_type) : nullptr;
@@ -1344,7 +1344,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_sort(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             list.sort();
             return m_instances.create_void();
         }
@@ -1352,7 +1352,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_reverse(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             list.reverse();
             return m_instances.create_void();
         }
@@ -1360,7 +1360,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_min(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& list = instance.value_cref().get_list_cref();
             const auto min_element_index = list.min();
             return m_instances.create(min_element_index);
         }
@@ -1368,7 +1368,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_max(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& list = instance.value_cref().get_list_cref();
             const auto max_element_index = list.max();
             return m_instances.create(max_element_index);
         }
@@ -1376,16 +1376,16 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_sublist_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& list = instance.value_cref().get_list_cref();
             const auto& [position] = get_params<alternative_t::int_>(params);
             auto sublist = list.sublist(position);
-            return m_instances.create(instance.get_sema_type(), std::move(sublist));
+            return m_instances.create(instance.type(), std::move(sublist));
         }
 
         inst::instance *
         builtin_function_caller2::list_sublist_pos_count(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& list = instance.value_cref().get_list_cref();
             const auto& [position, count] = get_params<alternative_t::int_, alternative_t::int_>(params);
             auto sublist = list.sublist(position, count);
             return m_instances.create(std::move(sublist));
@@ -1394,7 +1394,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_empty(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& list = instance.value_cref().get_list_cref();
             const auto is_empty = list.empty();
             return m_instances.create(is_empty);
         }
@@ -1402,7 +1402,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_find_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& list = instance.value_cref().get_list_cref();
             const auto& value = *params[0];
             const auto found_index = list.find(value);
             return m_instances.create(found_index);
@@ -1411,9 +1411,9 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_find_value_pos(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& list = instance.get_value_cref().get_list_cref();
+            const auto& list = instance.value_cref().get_list_cref();
             const auto& value = *params[0];
-            const auto position = params[1]->get_value_cref().get_int();
+            const auto position = params[1]->value_cref().get_int();
             const auto found_index = list.find(value, position);
             return m_instances.create(found_index);
         }
@@ -1421,7 +1421,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_operator_plus_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto list_copy = instance.get_value_cref().get_list_cref();
+            auto list_copy = instance.value_cref().get_list_cref();
             auto value = params[0]->copy();
             list_copy.push_back(std::move(value));
             return m_instances.create(std::move(list_copy));
@@ -1430,7 +1430,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_operator_plus_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto list_copy = instance.get_value_cref().get_list_cref();
+            auto list_copy = instance.value_cref().get_list_cref();
             auto [list_to_append] = get_params<alternative_t::list>(params);
             list_copy.push_back(std::move(list_to_append));
             return m_instances.create(std::move(list_copy));
@@ -1439,7 +1439,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_operator_plus_equal_value(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             auto value = params[0]->copy();
             list.push_back(std::move(value));
             return m_instances.create_reference(instance);
@@ -1448,7 +1448,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::list_operator_plus_equal_list(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& list = instance.get_value_ref().get_list_ref();
+            auto& list = instance.value_ref().get_list_ref();
             auto [list_to_append] = get_params<alternative_t::list>(params);
             list.push_back(std::move(list_to_append));
             return m_instances.create_reference(instance);
@@ -1478,7 +1478,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::project_ctor_name(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& project = instance.get_value_ref().get_project_ref();
+            auto& project = instance.value_ref().get_project_ref();
             const auto& [name] = get_params<alternative_t::string>(params);
             project = inst::project_value{ name };
             m_cmake_facade.register_project(name);
@@ -1488,14 +1488,14 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::project_name(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& project = instance.get_value_cref().get_project_cref();
+            const auto& project = instance.value_cref().get_project_cref();
             return m_instances.create(project.name());
         }
 
         inst::instance *
         builtin_function_caller2::project_add_executable(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& project = instance.get_value_ref().get_project_ref();
+            auto& project = instance.value_ref().get_project_ref();
             const auto& [name, sources] = get_params<alternative_t::string, alternative_t::list>(params);
             project.add_executable(m_cmake_facade, name, sources);
             return m_instances.create(inst::executable_value{name});
@@ -1504,7 +1504,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::project_add_library(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            auto& project = instance.get_value_ref().get_project_ref();
+            auto& project = instance.value_ref().get_project_ref();
             const auto& [name, sources] = get_params<alternative_t::string, alternative_t::list>(params);
             project.add_library(m_cmake_facade, name, sources);
             return m_instances.create(inst::library_value{name});
@@ -1513,14 +1513,14 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::library_name(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& target = instance.get_value_cref().get_library_cref();
+            const auto& target = instance.value_cref().get_library_cref();
             return m_instances.create(target.name());
         }
 
         inst::instance *
         builtin_function_caller2::library_link_to(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& target = instance.get_value_cref().get_library_cref();
+            const auto& target = instance.value_cref().get_library_cref();
             const auto& [library] = get_params<alternative_t::library>(params);
             target.link_to(m_cmake_facade, library);
             return m_instances.create_void();
@@ -1529,14 +1529,14 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::executable_name(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& target = instance.get_value_cref().get_executable_cref();
+            const auto& target = instance.value_cref().get_executable_cref();
             return m_instances.create(target.name());
         }
 
         inst::instance *
         builtin_function_caller2::executable_link_to(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            const auto& target = instance.get_value_cref().get_executable_cref();
+            const auto& target = instance.value_cref().get_executable_cref();
             const auto& [library] = get_params<alternative_t::library>(params);
             target.link_to(m_cmake_facade, library);
             return m_instances.create_void();

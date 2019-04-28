@@ -21,16 +21,16 @@ namespace cmsl
                 explicit complex_unnamed_instance(const sema::sema_type &type);
                 explicit complex_unnamed_instance(const sema::sema_type &type, instance_members_t members);
 
-                instance_value_variant get_value() const override;
-                instance_value_variant& get_value_ref() override;
-                const instance_value_variant& get_value_cref() const override;
+                instance_value_variant value() const override;
+                instance_value_variant& value_ref() override;
+                const instance_value_variant& value_cref() const override;
                 void assign(instance_value_variant val) override;
                 std::unique_ptr<instance> copy() const override;
-                instance *get_member(cmsl::string_view name) override;
-                const instance *get_cmember(cmsl::string_view name) const override;
+                instance *find_member(cmsl::string_view name) override;
+                const instance *find_cmember(cmsl::string_view name) const override;
                 bool is_fundamental() const;
-                sema::single_scope_function_lookup_result_t get_sema_function(lexer::token::token name) const override;
-                const sema::sema_type& get_sema_type() const override;
+                sema::single_scope_function_lookup_result_t find_function(lexer::token::token name) const override;
+                const sema::sema_type& type() const override;
 
             private:
                 instance_members_t get_init_data() const;

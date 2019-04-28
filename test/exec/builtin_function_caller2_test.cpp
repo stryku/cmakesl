@@ -34,7 +34,7 @@ namespace cmsl::exec::test
                         .WillOnce(Return(test_cmake_version));
 
                 const auto version_param_value = inst::instance_value_variant{ inst::version_value{ 0, 1, 0, 0 } };
-                EXPECT_CALL(version_param_instance, get_value_cref())
+                EXPECT_CALL(version_param_instance, value_cref())
                         .WillOnce(ReturnRef(version_param_value));
 
                 EXPECT_CALL(instances, create_void())
@@ -64,7 +64,7 @@ namespace cmsl::exec::test
                         .WillOnce(Return(test_cmake_version));
 
                 const auto version_param_value = inst::instance_value_variant{ inst::version_value{ 1, 0, 0, 0 } };
-                EXPECT_CALL(version_param_instance, get_value_cref())
+                EXPECT_CALL(version_param_instance, value_cref())
                         .WillOnce(ReturnRef(version_param_value));
 
                 EXPECT_CALL(instances, create_void())
@@ -94,7 +94,7 @@ namespace cmsl::exec::test
                         .WillOnce(Return(test_cmake_version));
 
                 const auto version_param_value = inst::instance_value_variant{ inst::version_value{ 2, 0, 0, 0 } };
-                EXPECT_CALL(version_param_instance, get_value_cref())
+                EXPECT_CALL(version_param_instance, value_cref())
                         .WillOnce(ReturnRef(version_param_value));
 
                 EXPECT_CALL(facade, fatal_error(_));

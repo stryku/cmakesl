@@ -133,7 +133,8 @@ namespace cmsl::exec
             void visit(const sema::class_member_access_node& node) override
             {
                 auto lhs = evaluate_child(node.lhs());
-                result = lhs->get_member(node.member_name().str());
+                result = lhs->find_member(node.member_name()
+                                              .str());
             }
 
             void visit(const sema::return_node& node) override
@@ -151,17 +152,17 @@ namespace cmsl::exec
             void visit(const sema::cast_to_value_node& node) override
             {
                 const auto evaluated = evaluate_child(node.expression());
-                const auto& evaluated_reference_type = evaluated->get_sema_type();
+                const auto& evaluated_reference_type = evaluated->type();
                 const auto& referenced_type = evaluated_reference_type.referenced_type();
                 result = m_ctx.instances
-                              .create(referenced_type, evaluated->get_value());
+                              .create(referenced_type, evaluated->value());
             }
 
             void visit(const sema::initializer_list_node& node) override
             {
                 auto list_instance = m_ctx.instances
                                           .create(node.type());
-                auto& list = list_instance->get_value_ref().get_list_ref();
+                auto& list = list_instance->value_ref().get_list_ref();
 
                 for(const auto& value_expression : node.values())
                 {
