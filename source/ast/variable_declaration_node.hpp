@@ -25,14 +25,12 @@ namespace cmsl::ast
                 , m_semicolon{ semicolon }
             {}
 
-            //todo: remove get_
-
-            const type_representation& get_type_representation() const
+            const type_representation& type_representation() const
             {
                 return m_ty;
             }
 
-            token_t get_name() const
+            token_t name() const
             {
                 return m_name;
             }
@@ -52,7 +50,7 @@ namespace cmsl::ast
                 return std::nullopt;
             }
 
-            const ast_node* get_initialization() const
+            const ast_node* initialization() const
             {
                 return m_initialization ? m_initialization->initialization.get() : nullptr;
             }
@@ -73,7 +71,7 @@ namespace cmsl::ast
             }
 
         private:
-            type_representation m_ty;
+            class type_representation m_ty;
             lexer::token::token m_name;
             std::optional<initialization_values> m_initialization;
             token_t m_semicolon;
