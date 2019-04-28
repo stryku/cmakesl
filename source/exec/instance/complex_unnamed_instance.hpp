@@ -39,7 +39,7 @@ namespace cmsl
 
             private:
                 kind m_kind;
-                const sema::sema_type* m_sema_type{ nullptr }; // Todo: reference instead of pointer
+                const sema::sema_type& m_sema_type;
                 instance_members_t m_members;
             };
     }
