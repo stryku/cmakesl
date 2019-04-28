@@ -7,7 +7,6 @@
 
 #include <vector>
 
-// Todo: move to cmsl::lexer namespace
 namespace cmsl::lexer
 {
     class token
@@ -59,20 +58,15 @@ namespace cmsl::lexer
     }
 }
 
+
 namespace std
 {
-    // Todo: use c++17 hash for string_view
     template <>
     struct hash<cmsl::lexer::token>
     {
         std::size_t operator()(const cmsl::lexer::token& token) const
         {
-            std::size_t h{0};
-
-            for(const auto c : token.str())
-            {
-                h ^= (static_cast<std::size_t>(c) << 1);
-            }
+            std::size_t h = std::hash<std::string_view>{}(token.str());
 
             const auto range = token.src_range();
 
