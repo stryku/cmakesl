@@ -7,18 +7,18 @@
 namespace cmsl::exec::inst
 {
             simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type)
-                    : m_sema_type{ &type }
+                    : m_sema_type{ type }
                     , m_data{create_init_data() }
             {}
 
             simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type, instance_value_variant value)
-                    : m_sema_type{ &type }
+                    : m_sema_type{ type }
                     , m_data{ std::move(value) }
             {}
 
     instance_value_variant simple_unnamed_instance::create_init_data() const
             {
-                const auto name = m_sema_type->name().primary_name().str();
+                const auto name = m_sema_type.name().primary_name().str();
                 // Todo: find better way than comparing strings.
                 if(name == "bool")
                 {
@@ -89,16 +89,16 @@ namespace cmsl::exec::inst
 
             std::unique_ptr<instance> simple_unnamed_instance::copy() const
             {
-                return std::make_unique<simple_unnamed_instance>(*m_sema_type, value());
+                return std::make_unique<simple_unnamed_instance>(m_sema_type, value());
             }
 
             sema::single_scope_function_lookup_result_t simple_unnamed_instance::find_function(lexer::token::token name) const
             {
-                return m_sema_type->find_member_function(name);
+                return m_sema_type.find_member_function(name);
             }
 
             const sema::sema_type &simple_unnamed_instance::type() const
             {
-                return *m_sema_type;
+                return m_sema_type;
             }
 }

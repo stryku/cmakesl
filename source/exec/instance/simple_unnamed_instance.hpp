@@ -31,7 +31,7 @@ namespace cmsl::exec::inst
 
             private:
                 kind m_kind;
-                const sema::sema_type* m_sema_type{nullptr}; // Todo: change to a reference
+                const sema::sema_type& m_sema_type;
                 instance_value_variant m_data;
             };
 }
