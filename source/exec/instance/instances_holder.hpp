@@ -25,7 +25,6 @@ namespace cmsl
             {
             public:
                 explicit instances_holder(const sema::sema_context_interface& sema_ctx);
-                explicit instances_holder(context_provider& e);
 
                 void store(std::unique_ptr<instance> i) override;
 
@@ -38,8 +37,7 @@ namespace cmsl
                 inst::instance *create2_void() override;
 
             private:
-                const sema::sema_context_interface* m_sema_ctx; // Todo: change to a reference.
-                context_provider* m_ctx_provider;
+                const sema::sema_context_interface& m_sema_ctx;
                 std::vector<std::unique_ptr<inst::instance>> m_instances;
             };
         }

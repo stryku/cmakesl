@@ -8,11 +8,7 @@
 namespace cmsl::exec::inst
 {
             instances_holder::instances_holder(const sema::sema_context_interface& sema_ctx)
-                : m_sema_ctx{ &sema_ctx }
-            {}
-
-            instances_holder::instances_holder(context_provider &e)
-                : m_ctx_provider{ &e }
+                : m_sema_ctx{ sema_ctx }
             {}
 
             std::unique_ptr<instance> instances_holder::gather_ownership(inst::instance *instance_ptr)
@@ -41,7 +37,7 @@ namespace cmsl::exec::inst
 
             inst::instance *instances_holder::create2(instance_value_variant value)
             {
-                auto instance = instance_factory2{}.create(std::move(value), *m_sema_ctx);
+                auto instance = instance_factory2{}.create(std::move(value), m_sema_ctx);
                 auto ptr = instance.get();
                 m_instances.emplace_back(std::move(instance));
                 return ptr;
@@ -65,7 +61,7 @@ namespace cmsl::exec::inst
 
             inst::instance *instances_holder::create2_void()
             {
-                return create2(true); // Todo: introduce void types
+                return create2(true); // Todo: introduce void type
             }
 
             inst::instance *instances_holder::create2(const sema::sema_type &type, instance_value_variant value)
