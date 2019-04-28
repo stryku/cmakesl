@@ -2,7 +2,7 @@
 #include "exec/source_compiler.hpp"
 #include "exec/compiled_source.hpp"
 #include "sema/user_sema_function.hpp"
-#include "exec/execution2.hpp"
+#include "exec/execution.hpp"
 
 #include "cmake_facade.hpp"
 
@@ -53,7 +53,7 @@ namespace cmsl::exec
 
         const auto casted = dynamic_cast<const sema::user_sema_function*>(main_function);
 
-        execution2 e{ m_cmake_facade };
+        execution e{ m_cmake_facade };
 
         inst::instances_holder instances{ global_context };
         auto main_result = e.call(*casted, {}, instances);
