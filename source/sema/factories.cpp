@@ -7,7 +7,7 @@
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/homogeneous_generic_type.hpp"
-#include "factories.hpp"
+#include "common/assert.hpp"
 
 namespace
 {
@@ -95,7 +95,7 @@ namespace cmsl::sema
                 return create_list(name);
             }
 
-            // Todo: report error 'primary_name is not a generic type'.
+            CMSL_UNREACHABLE("Creating unknown generic type");
             return nullptr;
         }
 

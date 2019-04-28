@@ -599,13 +599,22 @@ namespace cmsl::sema
                 return nullptr;
             }
 
+            const auto proper_generic_token_types = {
+                    lexer::token_type ::kw_list
+            };
+
+            if(!contains(proper_generic_token_types, name.primary_name().get_type()))
+            {
+                raise_error(name.primary_name(), "'" + std::string{name.primary_name().str()} + "' is not a generic type.");
+                return nullptr;
+            }
+
             auto factory = sema_generic_type_factory{ m_generic_types_context,
                                                       search_context,
                                                       m_type_factory,
                                                       m_function_factory,
                                                       m_context_factory };
 
-            // Todo: Add assert.
             return factory.create_generic(name);
         }
 
