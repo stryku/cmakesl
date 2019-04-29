@@ -4,7 +4,7 @@ set(COMMON_SOURCES
     source_location.hpp
     enum_class_utils.hpp
     string.hpp
-        source_view.cpp source_view.hpp)
+        source_view.cpp source_view.hpp overloaded.hpp)
 
 add_library(common ${COMMON_SOURCES})
 
