@@ -5,7 +5,6 @@
 #include "exec/instance/instance.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/expression_evaluation_context.hpp"
-#include "exec/context_provider.hpp"
 #include "exec/execution_context.hpp"
 #include "sema/sema_context.hpp"
 #include "exec/function_caller.hpp"
@@ -24,22 +23,26 @@ namespace cmsl::exec
 
             void visit(const sema::bool_value_node& node) override
             {
-                result = m_ctx.instances.create2(node.value());
+                result = m_ctx.instances
+                              .create(node.value());
             }
 
             void visit(const sema::int_value_node& node) override
             {
-                result = m_ctx.instances.create2(node.value());
+                result = m_ctx.instances
+                              .create(node.value());
             }
 
             void visit(const sema::double_value_node& node) override
             {
-                result = m_ctx.instances.create2(node.value());
+                result = m_ctx.instances
+                              .create(node.value());
             }
 
             void visit(const sema::string_value_node& node) override
             {
-                result = m_ctx.instances.create2(std::string{ node.value() });
+                result = m_ctx.instances
+                              .create(std::string{node.value()});
             }
 
             void visit(const sema::id_node& node) override
@@ -93,7 +96,7 @@ namespace cmsl::exec
             {
                 auto evaluated_params = evaluate_call_parameters(node.param_expressions());
                 const auto& function = node.function();
-                auto class_instance = m_ctx.ids_context.lookup_identifier("this"); // Todo: it probably can be done better
+                auto class_instance = m_ctx.ids_context.lookup_identifier("this"); // Todo: it probably can be done better (to not search by string)
                 auto result_instance = m_ctx.function_caller.call_member(*class_instance,
                                                                          function,
                                                                          evaluated_params,
@@ -106,7 +109,8 @@ namespace cmsl::exec
             {
                 auto evaluated_params = evaluate_call_parameters(node.param_expressions());
                 const auto& function = node.function();
-                auto class_instance = m_ctx.instances.create2(node.type());
+                auto class_instance = m_ctx.instances
+                                           .create(node.type());
                 auto result_instance = m_ctx.function_caller.call_member(*class_instance,
                                                                          function,
                                                                          evaluated_params,
@@ -128,7 +132,8 @@ namespace cmsl::exec
             void visit(const sema::class_member_access_node& node) override
             {
                 auto lhs = evaluate_child(node.lhs());
-                result = lhs->get_member(node.member_name().str());
+                result = lhs->find_member(node.member_name()
+                                              .str());
             }
 
             void visit(const sema::return_node& node) override
@@ -139,21 +144,24 @@ namespace cmsl::exec
             void visit(const sema::cast_to_reference_node& node) override
             {
                 const auto evaluated = evaluate_child(node.expression());
-                result = m_ctx.instances.create2_reference(*evaluated);
+                result = m_ctx.instances
+                              .create_reference(*evaluated);
             }
 
             void visit(const sema::cast_to_value_node& node) override
             {
                 const auto evaluated = evaluate_child(node.expression());
-                const auto& evaluated_reference_type = evaluated->get_sema_type();
+                const auto& evaluated_reference_type = evaluated->type();
                 const auto& referenced_type = evaluated_reference_type.referenced_type();
-                result = m_ctx.instances.create2(referenced_type, evaluated->get_value());
+                result = m_ctx.instances
+                              .create(referenced_type, evaluated->value());
             }
 
             void visit(const sema::initializer_list_node& node) override
             {
-                auto list_instance = m_ctx.instances.create2(node.type());
-                auto& list = list_instance->get_value_ref().get_list_ref();
+                auto list_instance = m_ctx.instances
+                                          .create(node.type());
+                auto& list = list_instance->value_ref().get_list_ref();
 
                 for(const auto& value_expression : node.values())
                 {
@@ -196,37 +204,37 @@ namespace cmsl::exec
                 return expression_evaluation_visitor{ m_ctx };
             }
 
-            std::string operator_to_str(lexer::token::token op)
+            std::string operator_to_str(lexer::token op)
             {
                 switch(op.get_type())
                 {
-                    case lexer::token::token_type::equal:
-                    case lexer::token::token_type::equalequal:
-                    case lexer::token::token_type::minus:
-                    case lexer::token::token_type::minusminus:
-                    case lexer::token::token_type::minusequal:
-                    case lexer::token::token_type::plus:
-                    case lexer::token::token_type::plusplus:
-                    case lexer::token::token_type::plusequal:
-                    case lexer::token::token_type::amp:
-                    case lexer::token::token_type::ampamp:
-                    case lexer::token::token_type::ampequal:
-                    case lexer::token::token_type::pipe:
-                    case lexer::token::token_type::pipepipe:
-                    case lexer::token::token_type::pipeequal:
-                    case lexer::token::token_type::slash:
-                    case lexer::token::token_type::slashequal:
-                    case lexer::token::token_type::star:
-                    case lexer::token::token_type::starequal:
-                    case lexer::token::token_type::percent:
-                    case lexer::token::token_type::percentequal:
-                    case lexer::token::token_type::exclaimequal:
-                    case lexer::token::token_type::xor_:
-                    case lexer::token::token_type::xorequal:
-                    case lexer::token::token_type::less:
-                    case lexer::token::token_type::lessequal:
-                    case lexer::token::token_type::greater:
-                    case lexer::token::token_type::greaterequal:
+                    case lexer::token_type::equal:
+                    case lexer::token_type::equalequal:
+                    case lexer::token_type::minus:
+                    case lexer::token_type::minusminus:
+                    case lexer::token_type::minusequal:
+                    case lexer::token_type::plus:
+                    case lexer::token_type::plusplus:
+                    case lexer::token_type::plusequal:
+                    case lexer::token_type::amp:
+                    case lexer::token_type::ampamp:
+                    case lexer::token_type::ampequal:
+                    case lexer::token_type::pipe:
+                    case lexer::token_type::pipepipe:
+                    case lexer::token_type::pipeequal:
+                    case lexer::token_type::slash:
+                    case lexer::token_type::slashequal:
+                    case lexer::token_type::star:
+                    case lexer::token_type::starequal:
+                    case lexer::token_type::percent:
+                    case lexer::token_type::percentequal:
+                    case lexer::token_type::exclaimequal:
+                    case lexer::token_type::xor_:
+                    case lexer::token_type::xorequal:
+                    case lexer::token_type::less:
+                    case lexer::token_type::lessequal:
+                    case lexer::token_type::greater:
+                    case lexer::token_type::greaterequal:
                     {
                         return std::string{ op.str() };
                     }

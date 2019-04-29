@@ -11,8 +11,7 @@ namespace cmsl::ast
         public:
             explicit return_node(token_t return_kw, std::unique_ptr<ast_node> expr, token_t semicolon);
 
-            //todo: remove get_
-            const ast_node& get_expression() const;
+            const ast_node& expression() const;
 
             token_t return_kw() const;
             token_t semicolon() const;

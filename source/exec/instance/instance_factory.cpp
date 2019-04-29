@@ -9,7 +9,7 @@
 
 namespace cmsl::exec::inst
 {
-            std::unique_ptr<instance> instance_factory2::create(instance_value_t value, const sema::sema_context_interface &ctx) const
+            std::unique_ptr<instance> instance_factory2::create(instance_value_variant value, const sema::sema_context &ctx) const
             {
                 const auto type_getter = [&value, &ctx]() -> const sema::sema_type&
                 {
@@ -71,7 +71,7 @@ namespace cmsl::exec::inst
                 }
             }
 
-            std::unique_ptr<instance> instance_factory2::create(const sema::sema_type &type, instance_value_t value) const
+            std::unique_ptr<instance> instance_factory2::create(const sema::sema_type &type, instance_value_variant value) const
             {
                 return std::make_unique<simple_unnamed_instance>(type, std::move(value));
             }

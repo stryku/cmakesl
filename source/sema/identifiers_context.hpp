@@ -1,8 +1,10 @@
 #pragma once
 
-#include "lexer/token/token.hpp"
+#include "common/assert.hpp"
+#include "lexer/token.hpp"
 
 #include <algorithm>
+#include <functional>
 
 namespace cmsl::sema
 {
@@ -12,32 +14,33 @@ namespace cmsl::sema
         class identifiers_context
         {
         protected:
-            using token_t = lexer::token::token;
+            using token_t = lexer::token;
 
         public:
             virtual ~identifiers_context() = default;
 
-            // Todo: type, name
-            virtual void register_identifier(token_t name, const sema_type* ty) = 0;
+            virtual void register_identifier(token_t name, const sema_type& ty) = 0;
             virtual const sema_type* type_of(cmsl::string_view name) const = 0;
             virtual void enter_ctx() = 0;
             virtual void leave_ctx() = 0;
         };
 
-        // Todo: consider renaming
         class identifiers_context_impl : public identifiers_context
         {
         private:
-            using token_t = lexer::token::token;
-            using id_map_t = std::unordered_map<token_t, const sema_type*>;
+            using token_t = lexer::token;
+            using id_map_t = std::unordered_map<token_t, std::reference_wrapper<const sema_type>>;
 
         public:
-            // Todo: accept type reference, not pointer
-            void register_identifier(token_t declaration_token, const sema_type* ty) override
+            void register_identifier(token_t declaration_token, const sema_type& ty) override
             {
-                // Todo: handle empty
+                if(m_contextes.empty())
+                {
+                    CMSL_UNREACHABLE("Tried to register identifier without context");
+                }
+
                 auto& ctx = m_contextes.back();
-                ctx[declaration_token] = ty;
+                ctx.emplace(declaration_token, ty);
             }
 
             const sema_type* type_of(cmsl::string_view name) const override
@@ -49,7 +52,7 @@ namespace cmsl::sema
                 }
 
                 const auto& found_pair = *found;
-                return found_pair->second;
+                return &(found_pair->second.get());
             }
 
             std::optional<token_t> declaration_token_of(cmsl::string_view name) const

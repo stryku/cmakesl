@@ -32,7 +32,7 @@ namespace cmsl::exec
             }
             else if(m_class_instance != nullptr)
             {
-                return m_class_instance->get_member(name);
+                return m_class_instance->find_member(name);
             }
 
             return nullptr;

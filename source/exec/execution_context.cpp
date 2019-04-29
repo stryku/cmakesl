@@ -33,7 +33,6 @@ namespace cmsl::exec
 
         scope_context& execution_context::current_scope()
         {
-            // Todo: introduce CMSL_UNREACHABLE_IF(condition, message)
             if(m_scopes.empty())
             {
                 CMSL_UNREACHABLE("No scope");
@@ -45,7 +44,6 @@ namespace cmsl::exec
         {
             if(m_scopes.empty())
             {
-                // Todo: introduce CMSL_UNREACHABLE_IF(condition, message)
                 CMSL_UNREACHABLE("No scope");
             }
             return m_scopes.top();

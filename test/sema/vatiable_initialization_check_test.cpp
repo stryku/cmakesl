@@ -1,5 +1,5 @@
 #include "sema/sema_nodes.hpp"
-#include "sema/sema_context.hpp"
+#include "sema/sema_context_impl.hpp"
 #include "sema/variable_initialization_checker.hpp"
 
 #include "test/common/tokens.hpp"
@@ -21,7 +21,7 @@ namespace cmsl::sema::test
 
     using namespace cmsl::test::common;
 
-    const sema_context valid_context;
+    const sema_context_impl valid_context;
     const sema_type valid_type{ valid_context, ast::type_representation{ token_identifier("foo") }, {} };
     const sema_type different_type{ valid_context, ast::type_representation{ token_identifier("bar") }, {} };
 

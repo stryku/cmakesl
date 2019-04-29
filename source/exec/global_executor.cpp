@@ -2,13 +2,15 @@
 #include "exec/source_compiler.hpp"
 #include "exec/compiled_source.hpp"
 #include "sema/user_sema_function.hpp"
-#include "exec/execution2.hpp"
+#include "exec/execution.hpp"
 
 #include "cmake_facade.hpp"
+#include "global_executor.hpp"
 
 
 #include <fstream>
 #include <iterator>
+#include <errors/error.hpp>
 
 
 namespace cmsl::exec
@@ -45,19 +47,24 @@ namespace cmsl::exec
         m_sources.emplace_back(std::move(source));
         auto compiled = compiler.compile(src_view);
         const auto main_function = compiled->get_main();
+        if(!main_function)
+        {
+            raise_no_main_function_error(m_root_path);
+            return -1;
+        }
+
         const auto& global_context = compiled->get_global_context();
 
-        // Todo: hanlde no main
 
         m_compiled_sources.emplace_back(std::move(compiled));
 
         const auto casted = dynamic_cast<const sema::user_sema_function*>(main_function);
 
-        execution2 e{ m_cmake_facade };
+        execution e{ m_cmake_facade };
 
         inst::instances_holder instances{ global_context };
         auto main_result = e.call(*casted, {}, instances);
-        return main_result->get_value_cref().get_int();
+        return main_result->value_cref().get_int();
     }
 
     const sema::sema_function *
@@ -65,7 +72,7 @@ namespace cmsl::exec
     {
         directory_guard dg{ m_cmake_facade, std::string{ name } };
 
-        auto path = m_cmake_facade.current_directory() + "/CMakeLists.cmakesl";
+        auto path = m_cmake_facade.current_directory() + "/CMakeLists.cmsl";
         std::ifstream file{ path };
         if(!file.is_open())
         {
@@ -88,13 +95,27 @@ namespace cmsl::exec
 
         auto compiled = compiler.compile(src_view);
         const auto main_function = compiled->get_main();
-        const auto& global_context = compiled->get_global_context();
+        if(!main_function)
+        {
+            raise_no_main_function_error(path_view);
+            return nullptr;
+        }
 
-        // Todo: hanlde no main
+        const auto& global_context = compiled->get_global_context();
 
         m_compiled_sources.emplace_back(std::move(compiled));
 
         //Todo: handle not matching params.
         return main_function;
+    }
+
+    void global_executor::raise_no_main_function_error(const cmsl::string_view &path)
+    {
+        errors::error err;
+        err.source_path = path;
+        err.message = "main function not found";
+        err.type = errors::error_type::error;
+        err.range = source_range{ source_location{}, source_location{} };
+        m_errors_observer.nofify_error(err);
     }
 }

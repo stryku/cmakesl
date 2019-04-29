@@ -16,16 +16,16 @@ namespace cmsl::lexer
             , m_keyword_tokens{ create_keyword_tokens() }
         {}
 
-        std::vector<token::token> lexer::lex()
+        std::vector<token> lexer::lex()
         {
-            auto tokens = std::vector<token::token>{};
+            auto tokens = std::vector<token>{};
             const auto end = m_source.source().cend();
 
             while (!is_end())
             {
                 const auto t = get_next_token();
 
-                if (t.get_type() != token_t::token_type_t::undef)
+                if (t.get_type() != token_type::undef)
                 {
                     tokens.push_back(t);
                 }
@@ -54,21 +54,21 @@ namespace cmsl::lexer
             return m_source_loc.next_char();
         }
 
-        lexer::token_t lexer::get_next_token()
+        token lexer::get_next_token()
         {
             consume_whitespaces();
             const auto begin_loc = m_source_loc.location();
             const auto token_type = get_next_token_type();
             const auto end_loc = m_source_loc.location();
-            return token_t{ token_type, source_range{ begin_loc, end_loc }, m_source };
+            return token{ token_type, source_range{ begin_loc, end_loc }, m_source };
         }
 
-        lexer::token_t::token_type_t lexer::get_next_token_type()
+        token_type lexer::get_next_token_type()
         {
             if (is_end())
             {
                 // in such case, there are whitespaces at the end of source. No other chars
-                return token_t::token_type_t::undef;
+                return token_type::undef;
             }
 
             const auto curr = current();
@@ -86,7 +86,7 @@ namespace cmsl::lexer
                 else
                 {
                     consume_char();
-                    return token_t::token_type_t::dot;
+                    return token_type::dot;
                 }
             }
             if (curr == '=')
@@ -110,16 +110,16 @@ namespace cmsl::lexer
                 return get_identifier_or_keyword_token_type();
             }
 
-            return token_t::token_type_t::undef;
+            return token_type::undef;
         }
 
-        lexer::token_t::token_type_t lexer::get_numeric_token_type()
+        token_type lexer::get_numeric_token_type()
         {
             consume_integer();
 
             if (is_end())
             {
-                return token_t::token_type_t::integer;
+                return token_type::integer;
             }
 
             // Handle double_ e.g. 123.
@@ -127,12 +127,12 @@ namespace cmsl::lexer
             {
                 m_source_loc.consume_char();
                 consume_integer();
-                return token_t::token_type_t::double_;
+                return token_type::double_;
             }
 
             // TODO: handle hex, oct and bin
 
-            return token_t::token_type_t::integer;
+            return token_type::integer;
         }
 
         void lexer::consume_integer()
@@ -159,7 +159,7 @@ namespace cmsl::lexer
         }
 
 
-        lexer::token_t::token_type_t lexer::get_identifier_or_keyword_token_type()
+        token_type lexer::get_identifier_or_keyword_token_type()
         {
             std::string token_val;
             while (is_identifier_char(current()))
@@ -177,7 +177,7 @@ namespace cmsl::lexer
 
             return found != m_keyword_tokens.end()
                 ? found->second
-                : token_t::token_type_t::identifier;
+                : token_type::identifier;
         }
 
         bool lexer::is_identifier_char(char c) const
@@ -186,7 +186,7 @@ namespace cmsl::lexer
             return std::isalnum(c) || c == '_';
         }
 
-        lexer::token_t::token_type_t lexer::get_equal_token_type()
+        token_type lexer::get_equal_token_type()
         {
             // current == '='
             m_source_loc.consume_char();
@@ -194,14 +194,14 @@ namespace cmsl::lexer
             if (current() == '=') // ==
             {
                 consume_char();
-                return token_t::token_type_t::equalequal;
+                return token_type::equalequal;
             }
 
             // =
-            return token_t::token_type_t::equal;
+            return token_type::equal;
         }
 
-        lexer::token_t::token_type_t lexer::get_string_token_type()
+        token_type lexer::get_string_token_type()
         {
             consume_char();
 
@@ -224,18 +224,29 @@ namespace cmsl::lexer
 
             if (is_end())
             {
-                // TODO: pass proper error
-                m_err_observer.nofify_error(errors::error{});
-                return token_t::token_type_t::undef;
+                const auto current_loc = m_source_loc.location();
+
+                errors::error err;
+                err.type = errors::error_type::error;
+                err.source_path = m_source.path();
+                err.range = source_range{ current_loc, current_loc };
+                err.message = "Unexpected end of source in a middle of string";
+
+                const auto line_info = m_source.line(current_loc.line);
+                err.line_snippet = line_info.line;
+                err.line_start_pos = line_info.start_pos;
+
+                m_err_observer.nofify_error(std::move(err));
+                return token_type::undef;
             }
 
             // current() == '"', consume
             consume_char();
 
-            return token_t::token_type_t::string;
+            return token_type::string;
         }
 
-        lexer::token_t::token_type_t lexer::get_arithmetical_token_type(char operator_char)
+        token_type lexer::get_arithmetical_token_type(char operator_char)
         {
             // current() == operator_char, go to next char
             consume_char();
@@ -271,17 +282,17 @@ namespace cmsl::lexer
 
             aritmetical_token_definition_t definitions;
 
-            definitions['-'] = def_t{ token_t::token_type_t::minus, token_t::token_type_t::minusequal, token_t::token_type_t::minusminus };
-            definitions['+'] = def_t{ token_t::token_type_t::plus, token_t::token_type_t::plusequal, token_t::token_type_t::plusplus };
-            definitions['&'] = def_t{ token_t::token_type_t::amp, token_t::token_type_t::ampequal, token_t::token_type_t::ampamp };
-            definitions['|'] = def_t{ token_t::token_type_t::pipe, token_t::token_type_t::pipeequal, token_t::token_type_t::pipepipe };
-            definitions['/'] = def_t{ token_t::token_type_t::slash, token_t::token_type_t::slashequal };
-            definitions['*'] = def_t{ token_t::token_type_t::star, token_t::token_type_t::starequal };
-            definitions['%'] = def_t{ token_t::token_type_t::percent, token_t::token_type_t::percentequal };
-            definitions['!'] = def_t{ token_t::token_type_t::exclaim, token_t::token_type_t::exclaimequal };
-            definitions['^'] = def_t{ token_t::token_type_t::xor_, token_t::token_type_t::xorequal };
-            definitions['<'] = def_t{ token_t::token_type_t::less, token_t::token_type_t::lessequal };
-            definitions['>'] = def_t{ token_t::token_type_t::greater, token_t::token_type_t::greaterequal };
+            definitions['-'] = def_t{ token_type::minus, token_type::minusequal, token_type::minusminus };
+            definitions['+'] = def_t{ token_type::plus, token_type::plusequal, token_type::plusplus };
+            definitions['&'] = def_t{ token_type::amp, token_type::ampequal, token_type::ampamp };
+            definitions['|'] = def_t{ token_type::pipe, token_type::pipeequal, token_type::pipepipe };
+            definitions['/'] = def_t{ token_type::slash, token_type::slashequal };
+            definitions['*'] = def_t{ token_type::star, token_type::starequal };
+            definitions['%'] = def_t{ token_type::percent, token_type::percentequal };
+            definitions['!'] = def_t{ token_type::exclaim, token_type::exclaimequal };
+            definitions['^'] = def_t{ token_type::xor_, token_type::xorequal };
+            definitions['<'] = def_t{ token_type::less, token_type::lessequal };
+            definitions['>'] = def_t{ token_type::greater, token_type::greaterequal };
 
             return definitions;
         }
@@ -290,14 +301,14 @@ namespace cmsl::lexer
         {
             one_char_tokens_t tokens;
 
-            tokens['('] = token_t::token_type_t::open_paren;
-            tokens[')'] = token_t::token_type_t::close_paren;
-            tokens['{'] = token_t::token_type_t::open_brace;
-            tokens['}'] = token_t::token_type_t::close_brace;
-            tokens['['] = token_t::token_type_t::open_square;
-            tokens[']'] = token_t::token_type_t::close_square;
-            tokens[';'] = token_t::token_type_t::semicolon;
-            tokens[','] = token_t::token_type_t::comma;
+            tokens['('] = token_type::open_paren;
+            tokens[')'] = token_type::close_paren;
+            tokens['{'] = token_type::open_brace;
+            tokens['}'] = token_type::close_brace;
+            tokens['['] = token_type::open_square;
+            tokens[']'] = token_type::close_square;
+            tokens[';'] = token_type::semicolon;
+            tokens[','] = token_type::comma;
 
             return tokens;
         }
@@ -320,7 +331,7 @@ namespace cmsl::lexer
             return chars.find(c) != cmsl::string_view::npos;
         }
 
-        lexer::token_t::token_type_t lexer::get_one_char_token_type(char c)
+        token_type lexer::get_one_char_token_type(char c)
         {
             const auto found = m_one_char_tokens.find(c);
             assert(found != m_one_char_tokens.end());
@@ -335,21 +346,21 @@ namespace cmsl::lexer
         {
             keyword_tokens_t tokens;
 
-            tokens["int"] = token_t::token_type_t::kw_int;
-            tokens["double"] = token_t::token_type_t::kw_double;
-            tokens["return"] = token_t::token_type_t::kw_return;
-            tokens["class"] = token_t::token_type_t::kw_class;
-            tokens["if"] = token_t::token_type_t::kw_if;
-            tokens["else"] = token_t::token_type_t::kw_else;
-            tokens["while"] = token_t::token_type_t::kw_while;
-            tokens["bool"] = token_t::token_type_t::kw_bool;
-            tokens["true"] = token_t::token_type_t::kw_true;
-            tokens["false"] = token_t::token_type_t::kw_false;
-            tokens["string"] = token_t::token_type_t::kw_string;
-            tokens["library"] = token_t::token_type_t::kw_library;
-            tokens["executable"] = token_t::token_type_t::kw_executable;
-            tokens["list"] = token_t::token_type_t::kw_list;
-            tokens["version"] = token_t::token_type_t::kw_version;
+            tokens["int"] = token_type::kw_int;
+            tokens["double"] = token_type::kw_double;
+            tokens["return"] = token_type::kw_return;
+            tokens["class"] = token_type::kw_class;
+            tokens["if"] = token_type::kw_if;
+            tokens["else"] = token_type::kw_else;
+            tokens["while"] = token_type::kw_while;
+            tokens["bool"] = token_type::kw_bool;
+            tokens["true"] = token_type::kw_true;
+            tokens["false"] = token_type::kw_false;
+            tokens["string"] = token_type::kw_string;
+            tokens["library"] = token_type::kw_library;
+            tokens["executable"] = token_type::kw_executable;
+            tokens["list"] = token_type::kw_list;
+            tokens["version"] = token_type::kw_version;
 
             return tokens;
         }

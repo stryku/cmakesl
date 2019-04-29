@@ -8,6 +8,6 @@ namespace cmsl::ast
     struct type_parsing_result
     {
         std::optional<type_representation> ty;
-        lexer::token::token_container_t::const_iterator stopped_at;
+        lexer::token_container_t::const_iterator stopped_at;
     };
 }

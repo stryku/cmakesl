@@ -1,24 +1,24 @@
 #include "exec/instance/simple_unnamed_instance.hpp"
 
 #include "common/assert.hpp"
-#include "exec/instance/instance_value.hpp"
+#include "exec/instance/instance_value_variant.hpp"
 #include "sema/sema_type.hpp"
 
 namespace cmsl::exec::inst
 {
             simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type)
-                    : m_sema_type{ &type }
-                    , m_data{ get_init_data() }
+                    : m_sema_type{ type }
+                    , m_data{create_init_data() }
             {}
 
-            simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type, instance_value_t value)
-                    : m_sema_type{ &type }
+            simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type &type, instance_value_variant value)
+                    : m_sema_type{ type }
                     , m_data{ std::move(value) }
             {}
 
-            instance_value_t simple_unnamed_instance::get_init_data() const
+    instance_value_variant simple_unnamed_instance::create_init_data() const
             {
-                const auto name = m_sema_type->name().primary_name().str();
+                const auto name = m_sema_type.name().primary_name().str();
                 // Todo: find better way than comparing strings.
                 if(name == "bool")
                 {
@@ -52,53 +52,53 @@ namespace cmsl::exec::inst
                 CMSL_UNREACHABLE("Unknown type");
             }
 
-            instance_value_t simple_unnamed_instance::get_init_data(instance_value_t val) const
+    instance_value_variant simple_unnamed_instance::create_init_data(instance_value_variant val) const
             {
                 return val;
             }
 
-            instance_value_t simple_unnamed_instance::get_value() const
+    instance_value_variant simple_unnamed_instance::value() const
             {
                 return m_data;
             }
 
-            instance_value_t &simple_unnamed_instance::get_value_ref()
+    instance_value_variant &simple_unnamed_instance::value_ref()
             {
                 return m_data;
             }
 
-            const instance_value_t& simple_unnamed_instance::get_value_cref() const
+            const instance_value_variant& simple_unnamed_instance::value_cref() const
             {
                 return m_data;
             }
 
-            void simple_unnamed_instance::assign(instance_value_t val)
+            void simple_unnamed_instance::assign(instance_value_variant val)
             {
                 m_data = val;
             }
 
-            instance *simple_unnamed_instance::get_member(cmsl::string_view)
+            instance *simple_unnamed_instance::find_member(cmsl::string_view name)
             {
                 return nullptr;
             }
 
-            const instance *simple_unnamed_instance::get_cmember(cmsl::string_view name) const
+            const instance *simple_unnamed_instance::find_cmember(cmsl::string_view name) const
             {
                 return nullptr;
             }
 
             std::unique_ptr<instance> simple_unnamed_instance::copy() const
             {
-                return std::make_unique<simple_unnamed_instance>(*m_sema_type, get_value());
+                return std::make_unique<simple_unnamed_instance>(m_sema_type, value());
             }
 
-            sema::single_scope_function_lookup_result_t simple_unnamed_instance::get_sema_function(lexer::token::token name) const
+            sema::single_scope_function_lookup_result_t simple_unnamed_instance::find_function(lexer::token name) const
             {
-                return m_sema_type->find_member_function(name);
+                return m_sema_type.find_member_function(name);
             }
 
-            const sema::sema_type &simple_unnamed_instance::get_sema_type() const
+            const sema::sema_type &simple_unnamed_instance::type() const
             {
-                return *m_sema_type;
+                return m_sema_type;
             }
 }

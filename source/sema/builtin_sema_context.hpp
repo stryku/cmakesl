@@ -1,11 +1,16 @@
 #pragma once
 
-#include "sema/sema_context.hpp"
+#include "sema/sema_context_impl.hpp"
 #include "function_signature.hpp"
 #include "builtin_function_kind.hpp"
 
 namespace cmsl
 {
+    namespace errors
+    {
+        class errors_observer;
+    }
+
     namespace exec::inst
     {
             class instance;
@@ -19,15 +24,16 @@ namespace cmsl
         enum class builtin_function_kind;
         class type_builder;
 
-        class builtin_sema_context : public sema_context
+        class builtin_sema_context : public sema_context_impl
         {
         public:
             explicit builtin_sema_context(sema_type_factory &type_factory,
                                           sema_function_factory &function_factory,
-                                          sema_context_factory &context_factory);
+                                          sema_context_factory &context_factory,
+                                          errors::errors_observer& errors_observer);
 
         private:
-            using token_type_t = lexer::token::token_type;
+            using token_type_t = lexer::token_type;
             struct builtin_function_info
             {
                 const sema_type& return_type;
@@ -65,18 +71,18 @@ namespace cmsl
             void add_project_member_functions(type_builder& project_manipulator);
 
             template <unsigned N>
-            lexer::token::token make_token(token_type_t token_type, const char(&tok)[N]);
+            lexer::token make_token(token_type_t token_type, const char(&tok)[N]);
 
             template <unsigned N>
-            lexer::token::token make_id_token(const char(&tok)[N]);
+            lexer::token make_id_token(const char(&tok)[N]);
 
-            //template <unsigned N>
-            //const sema_type& find_type_internal(const char(&tok)[N]);
+            const sema_type& get_or_create_generic_type(const ast::type_representation& type_representation);
 
         private:
             sema_type_factory &m_type_factory;
             sema_function_factory &m_function_factory;
             sema_context_factory &m_context_factory;
+            errors::errors_observer& m_errors_observer;
         };
     }
 }

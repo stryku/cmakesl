@@ -13,28 +13,30 @@ namespace cmsl::sema
 {
         builtin_sema_context::builtin_sema_context(sema_type_factory &type_factory,
                                                    sema_function_factory &function_factory,
-                                                   sema_context_factory &context_factory)
+                                                   sema_context_factory &context_factory,
+                                                   errors::errors_observer& errors_observer)
             : m_type_factory{ type_factory }
             , m_function_factory{ function_factory }
-            , m_context_factory{ context_factory }
+                , m_context_factory{ context_factory }
+                , m_errors_observer{ errors_observer }
         {
             add_types();
             add_functions();
         }
 
         template<unsigned N>
-        lexer::token::token builtin_sema_context::make_token(lexer::token::token_type token_type, const char (&tok)[N])
+        lexer::token builtin_sema_context::make_token(lexer::token_type token_type, const char (&tok)[N])
         {
             // N counts also '\0'
             const auto src_range = source_range{
                     source_location{ 1u, 1u, 0u },
                     source_location{ 1u, N, N - 1u }
             };
-            return lexer::token::token{ token_type, src_range, cmsl::source_view{ tok } };
+            return lexer::token{ token_type, src_range, cmsl::source_view{ tok } };
         }
 
         template<unsigned N>
-        lexer::token::token builtin_sema_context::make_id_token(const char (&tok)[N])
+        lexer::token builtin_sema_context::make_id_token(const char (&tok)[N])
         {
             return make_token(token_type_t::identifier, tok);
         }
@@ -779,7 +781,7 @@ namespace cmsl::sema
 
         type_builder builtin_sema_context::add_project_type()
         {
-            static const auto token = make_token(token_type_t::kw_version, "project");
+            static const auto token = make_token(token_type_t::kw_project, "project");
             static const auto name_representation = ast::type_representation{ token };
             type_builder builder{ m_type_factory, m_function_factory, m_context_factory, *this, name_representation };
             builder.build_and_register_in_context();
@@ -806,12 +808,7 @@ namespace cmsl::sema
                       make_token( token_type_t::greater, ">" ) },
                     { string_type_representation }
             };
-            auto factory = sema_generic_type_factory{ *this,
-                                                      *this,
-                                                      m_type_factory,
-                                                      m_function_factory,
-                                                      m_context_factory };
-            const auto& sources_type = *factory.create_generic(sources_list_type_name_representation);
+            const auto& sources_type = get_or_create_generic_type(sources_list_type_name_representation);
 
             const auto functions = {
                     builtin_function_info{ // project(string name)
@@ -913,4 +910,21 @@ namespace cmsl::sema
 
             add_type_member_functions(project_manipulator, functions);
         }
+
+    const sema_type &
+    builtin_sema_context::get_or_create_generic_type(const ast::type_representation &type_representation)
+    {
+        if(const auto found = find_type(type_representation))
+        {
+            return *found;
+        }
+
+        auto factory = sema_generic_type_factory{ *this,
+                                                  *this,
+                                                  m_type_factory,
+                                                  m_function_factory,
+                                                  m_context_factory,
+                                                  m_errors_observer};
+        return *factory.create_generic(type_representation);
+    }
 }

@@ -3,7 +3,7 @@
 #include "errors/errors_observer.hpp"
 
 #include "sema/sema_nodes.hpp"
-#include "sema/sema_context.hpp"
+#include "sema/sema_context_impl.hpp"
 
 #include "test/ast/mock/ast_node_mock.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
@@ -21,7 +21,8 @@ namespace cmsl::sema::test
             using ::testing::ReturnRef;
             using ::testing::IsNull;
             using ::testing::NotNull;
-            using ::testing::Eq;
+    using ::testing::Eq;
+    using ::testing::AnyNumber;
             using ::testing::_;
 
             using namespace cmsl::test::common;
@@ -34,7 +35,7 @@ namespace cmsl::sema::test
             };
             using errs_t = errors_observer_and_mock;
 
-            const sema_context valid_context;
+            const sema_context_impl valid_context;
             const sema_type valid_type{ valid_context, ast::type_representation{ token_identifier("foo") }, {} };
 
 
@@ -81,9 +82,9 @@ namespace cmsl::sema::test
                         { parameter_declaration{ valid_type, param_name_token } }
                 };
                 EXPECT_CALL(function, signature())
-                        .WillOnce(ReturnRef(signature));
+                        .WillRepeatedly(ReturnRef(signature));
 
-                EXPECT_CALL(errs.mock, notify_error(_));
+                EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
 
                 overload_resolution resolution{ errs.observer, call_token };
                 const auto chosen = resolution.choose(lookup_result, {});
@@ -112,12 +113,12 @@ namespace cmsl::sema::test
                         { parameter_declaration{ valid_type, param_name_token } }
                 };
                 EXPECT_CALL(function, signature())
-                        .WillOnce(ReturnRef(signature));
+                        .WillRepeatedly(ReturnRef(signature));
 
                 EXPECT_CALL(*param_expression_ptr, type())
                         .WillRepeatedly(ReturnRef(param_type));
 
-                EXPECT_CALL(errs.mock, notify_error(_));
+                EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
 
                 overload_resolution resolution{ errs.observer, call_token };
                 const auto chosen = resolution.choose(lookup_result, param_expressions);
@@ -146,7 +147,7 @@ namespace cmsl::sema::test
                         { parameter_declaration{ function_param_type, param_name_token } }
                 };
                 EXPECT_CALL(function, signature())
-                        .WillOnce(ReturnRef(signature));
+                        .WillRepeatedly(ReturnRef(signature));
 
                 EXPECT_CALL(*param_expression_ptr, type())
                         .WillRepeatedly(ReturnRef(valid_type));
@@ -154,7 +155,7 @@ namespace cmsl::sema::test
                 EXPECT_CALL(*param_expression_ptr, produces_temporary_value())
                         .WillOnce(Return(true));
 
-                EXPECT_CALL(errs.mock, notify_error(_));
+                EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
 
                 overload_resolution resolution{ errs.observer, call_token };
                 const auto chosen = resolution.choose(lookup_result, param_expressions);
@@ -218,12 +219,12 @@ namespace cmsl::sema::test
                         { parameter_declaration{ bad_function_param_type, param_name_token } }
                 };
                 EXPECT_CALL(bad_function, signature())
-                        .WillOnce(ReturnRef(bad_function_signature));
+                        .WillRepeatedly(ReturnRef(bad_function_signature));
 
                 EXPECT_CALL(*param_expression_ptr, type())
                         .WillRepeatedly(ReturnRef(valid_type));
 
-                EXPECT_CALL(errs.mock, notify_error(_));
+                EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
 
                 overload_resolution resolution{ errs.observer, call_token };
                 const auto chosen = resolution.choose(lookup_result, param_expressions);

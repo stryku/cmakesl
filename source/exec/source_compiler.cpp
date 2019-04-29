@@ -1,7 +1,7 @@
 #include "exec/source_compiler.hpp"
 #include "common/source_view.hpp"
 #include "lexer/lexer.hpp"
-#include "ast/parser2.hpp"
+#include "ast/parser.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/builtin_sema_context.hpp"
 #include "sema/sema_builder.hpp"
@@ -16,7 +16,7 @@ namespace cmsl::exec
                                      sema::sema_type_factory &type_factory,
                                      sema::sema_function_factory &function_factory,
                                      sema::sema_context_factory &context_factory,
-                                     sema::add_subdirectory_semantic_handler& add_subdirectory_handler)
+                                     sema::add_subdirectory_handler& add_subdirectory_handler)
         : m_errors_observer{ errors_observer }
         , m_type_factory{ type_factory }
         , m_function_factory{ function_factory }
@@ -28,12 +28,13 @@ namespace cmsl::exec
     {
         lexer::lexer lex{ m_errors_observer , source };
         const auto tokens = lex.lex();
-        ast::parser2 parser{ m_errors_observer, source, tokens };
-        auto ast_tree = parser.translation_unit();
+        ast::parser parser{ m_errors_observer, source, tokens };
+        auto ast_tree = parser.parse_translation_unit();
 
         auto builtin_context = std::make_unique<sema::builtin_sema_context>(m_type_factory,
                                                                             m_function_factory,
-                                                                            m_context_factory);
+                                                                            m_context_factory,
+                                                                            m_errors_observer);
 
         auto& global_context = m_context_factory.create(builtin_context.get());
 

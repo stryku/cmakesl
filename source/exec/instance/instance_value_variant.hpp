@@ -1,6 +1,6 @@
 #pragma once
 
-#include "exec/instance/int_alias.hpp"
+#include "common/int_alias.hpp"
 #include "exec/instance/version_value.hpp"
 #include "exec/instance/list_value.hpp"
 #include "exec/instance/instance_value_alternative.hpp"

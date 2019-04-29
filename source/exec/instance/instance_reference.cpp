@@ -1,7 +1,7 @@
 #include "instance_reference.hpp"
 
 #include "exec/execution_context.hpp"
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 namespace cmsl::exec::inst
 {
@@ -13,22 +13,22 @@ namespace cmsl::exec::inst
                 : m_instance{ referenced_instance }
             {}
 
-            instance_value_t instance_reference::get_value() const
+    instance_value_variant instance_reference::value() const
             {
-                return m_instance.get_value();
+                return m_instance.value();
             }
 
-            instance_value_t& instance_reference::get_value_ref()
+    instance_value_variant& instance_reference::value_ref()
             {
-                return m_instance.get_value_ref();
+                return m_instance.value_ref();
             }
 
-            const instance_value_t& instance_reference::get_value_cref() const
+            const instance_value_variant& instance_reference::value_cref() const
             {
-                return m_instance.get_value_cref();
+                return m_instance.value_cref();
             }
 
-            void instance_reference::assign(instance_value_t val)
+            void instance_reference::assign(instance_value_variant val)
             {
                 m_instance.assign(val);
             }
@@ -38,23 +38,23 @@ namespace cmsl::exec::inst
                 return std::make_unique<instance_reference>(m_instance);
             }
 
-            instance* instance_reference::get_member(cmsl::string_view name)
+            instance* instance_reference::find_member(cmsl::string_view name)
             {
-                return m_instance.get_member(name);
+                return m_instance.find_member(name);
             }
 
-            const instance *instance_reference::get_cmember(cmsl::string_view name) const
+            const instance *instance_reference::find_cmember(cmsl::string_view name) const
             {
-                return m_instance.get_cmember(name);
+                return m_instance.find_cmember(name);
             }
 
-            sema::single_scope_function_lookup_result_t instance_reference::get_sema_function(lexer::token::token name) const
+            sema::single_scope_function_lookup_result_t instance_reference::find_function(lexer::token name) const
             {
-                return m_instance.get_sema_function(name);
+                return m_instance.find_function(name);
             }
 
-            const sema::sema_type &instance_reference::get_sema_type() const
+            const sema::sema_type &instance_reference::type() const
             {
-                return m_instance.get_sema_type();
+                return m_instance.type();
             }
 }

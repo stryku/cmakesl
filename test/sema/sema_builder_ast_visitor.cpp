@@ -29,7 +29,8 @@ namespace cmsl::sema::test
 {
             using ::testing::StrictMock;
             using ::testing::Return;
-            using ::testing::ReturnRef;
+    using ::testing::ReturnRef;
+    using ::testing::Ref;
             using ::testing::IsNull;
             using ::testing::NotNull;
             using ::testing::Eq;
@@ -45,7 +46,7 @@ namespace cmsl::sema::test
             };
             using errs_t = errors_observer_and_mock;
 
-            const sema_context valid_context;
+            const sema_context_impl valid_context;
             const sema_type valid_type{ valid_context, ast::type_representation{ token_identifier("foo") }, {} };
 
     const auto tmp_token = token_identifier("");
@@ -59,7 +60,7 @@ namespace cmsl::sema::test
                 add_subdirectory_semantic_handler_mock m_add_subdirectory_mock;
 
                 sema_builder_ast_visitor create_visitor(errs_t& errs,
-                                                        sema_context_interface& ctx,
+                                                        sema_context& ctx,
                                                         identifiers_context& ids_ctx)
                 {
                     return sema_builder_ast_visitor{
@@ -84,7 +85,7 @@ namespace cmsl::sema::test
                     return ast::member_function_call_node{ std::move(lhs), tmp_token, name, tmp_token, std::move(params), tmp_token };
                 }
 
-                std::unique_ptr<ast::block_node> create_block_node_ptr(ast::block_node::expressions_t exprs = {})
+                std::unique_ptr<ast::block_node> create_block_node_ptr(ast::block_node::nodes_t exprs = {})
                 {
                     return std::make_unique<ast::block_node>(tmp_token, std::move(exprs), tmp_token );
                 }
@@ -97,12 +98,12 @@ namespace cmsl::sema::test
                 }
 
 
-                std::unique_ptr<ast::user_function_node2> create_user_function_node(ast::type_representation type,
+                std::unique_ptr<ast::user_function_node> create_user_function_node(ast::type_representation type,
                                                                                     token_t name,
                                                                                     std::unique_ptr<ast::block_node> body,
-                                                                                    ast::user_function_node2::params_t params = {})
+                                                                                    ast::user_function_node::params_t params = {})
                 {
-                    return std::make_unique<ast::user_function_node2>(std::move(type),
+                    return std::make_unique<ast::user_function_node>(std::move(type),
                                                                       name,
                                                                       tmp_token,
                                                                       std::move(params),
@@ -128,7 +129,6 @@ namespace cmsl::sema::test
                 identifiers_context_mock ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                // Todo: use int alias
                 const auto value = true;
                 const auto token = token_kw_true();
                 ast::bool_value_node node(token);
@@ -152,8 +152,7 @@ namespace cmsl::sema::test
                 identifiers_context_mock ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                // Todo: use int alias
-                const auto value = std::int64_t{ 42 };
+                const auto value = int_t{ 42 };
                 const auto token = token_integer("42");
                 ast::int_value_node node(token);
 
@@ -176,7 +175,6 @@ namespace cmsl::sema::test
                 identifiers_context_mock ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                // Todo: use int alias
                 const auto value = double{ 4.2 };
                 const auto token = token_double("4.2");
                 ast::double_value_node node(token);
@@ -200,7 +198,6 @@ namespace cmsl::sema::test
                 identifiers_context_mock ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                // Todo: use int alias
                 const auto value = cmsl::string_view{ "\"42\"" };
                 const auto token = token_string("\"42\"");
                 ast::string_value_node node(token);
@@ -251,7 +248,7 @@ namespace cmsl::sema::test
 
                 auto variable_node = create_variable_declaration_node(type_ref, name_token);
 
-                EXPECT_CALL(ids_ctx, register_identifier(name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(name_token, Ref(valid_type)));
 
                 EXPECT_CALL(ctx, find_type(_))
                         .WillOnce(Return(&valid_type));
@@ -277,8 +274,7 @@ namespace cmsl::sema::test
                 const auto type_representation = ast::type_representation{ token_identifier() };
                 const auto name_token = token_identifier("foo");
 
-                // Todo: use int alias
-                const auto initialization_value = std::int64_t{ 42 };
+                const auto initialization_value = int_t{ 42 };
                 const auto initialization_token = token_integer("42");
                 auto initializaton_node = std::make_unique<ast::int_value_node>(initialization_token);
 
@@ -289,7 +285,7 @@ namespace cmsl::sema::test
                 EXPECT_CALL(ctx, find_type(_))
                         .WillRepeatedly(Return(&valid_type));
 
-                EXPECT_CALL(ids_ctx, register_identifier(name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(name_token, Ref(valid_type)));
 
                 visitor.visit(*variable_node);
 
@@ -353,7 +349,7 @@ namespace cmsl::sema::test
                         .WillRepeatedly(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
-                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, return_type())
                         .WillRepeatedly(ReturnRef(valid_type));
@@ -399,7 +395,7 @@ namespace cmsl::sema::test
                         .WillRepeatedly(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
-                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, signature())
                         .WillRepeatedly(ReturnRef(signature));
@@ -469,7 +465,7 @@ namespace cmsl::sema::test
                         .WillRepeatedly(ReturnRef(valid_type));
 
                 EXPECT_CALL(ctx, type())
-                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context::context_type::namespace_));
 
                 EXPECT_CALL(ctx, find_type(_))
                         .WillRepeatedly(Return(&valid_type));
@@ -489,7 +485,6 @@ namespace cmsl::sema::test
                 EXPECT_THAT(casted_node->param_expressions().size(), Eq(0u));
             }
 
-            // Todo: Do we need this? Context tests should test whether context returns ctor's function.
             TEST_F(SemaBuilderAstVisitorTest, Visit_ConstructorCallWithoutParameters_GetConstructorCallNodeWithoutParameters)
             {
                 errs_t errs;
@@ -513,7 +508,7 @@ namespace cmsl::sema::test
                         .WillRepeatedly(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
-                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, return_type())
                         .WillRepeatedly(ReturnRef(valid_type));
@@ -709,7 +704,7 @@ namespace cmsl::sema::test
                 auto param_type_reference = ast::type_representation{ param_type_token };
                 auto param_name_token = token_identifier("baz");
 
-                ast::user_function_node2::params_t params;
+                ast::user_function_node::params_t params;
                 params.emplace_back(ast::param_declaration{param_type_reference, param_name_token});
 
                 auto block = create_block_node_ptr();
@@ -727,7 +722,7 @@ namespace cmsl::sema::test
                 // Two scopes: parameters and block
                 EXPECT_CALL(ids_ctx, enter_ctx())
                         .Times(2);
-                EXPECT_CALL(ids_ctx, register_identifier(param_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(param_name_token, Ref(valid_type)));
                 EXPECT_CALL(ids_ctx, leave_ctx())
                         .Times(2);
 
@@ -751,7 +746,7 @@ namespace cmsl::sema::test
 
                 auto class_name_token = token_identifier("foo");
 
-                ast::class_node2 node{tmp_token, class_name_token, tmp_token, {}, tmp_token, tmp_token};
+                ast::class_node node{tmp_token, class_name_token, tmp_token, {}, tmp_token, tmp_token};
 
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
@@ -790,10 +785,10 @@ namespace cmsl::sema::test
                 const auto member_type_reference = ast::type_representation{ member_type_token };
 
                 auto member_declaration = create_variable_declaration_node(member_type_reference, member_name_token);
-                ast::class_node2::nodes_t nodes;
+                ast::class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(member_declaration));
 
-                ast::class_node2 node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
+                ast::class_node node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
 
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
                 EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
@@ -807,7 +802,7 @@ namespace cmsl::sema::test
                         .Times(2); // Type and reference
 
                 EXPECT_CALL(ids_ctx, enter_ctx());
-                EXPECT_CALL(ids_ctx, register_identifier(member_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(member_name_token, Ref(valid_type)));
                 EXPECT_CALL(ids_ctx, leave_ctx());
 
                 visitor.visit(node);
@@ -840,9 +835,9 @@ namespace cmsl::sema::test
                 auto function = create_user_function_node(function_return_type_reference,
                                                                            function_name_token,
                                                                            std::move(function_body));
-                ast::class_node2::nodes_t nodes;
+                ast::class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(function));
-                ast::class_node2 node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
+                ast::class_node node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
 
                 // Class type lookup
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
@@ -898,10 +893,10 @@ namespace cmsl::sema::test
                                                                            function_name_token,
                                                                            std::move(function_body));
 
-                ast::class_node2::nodes_t nodes;
+                ast::class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(member_declaration));
                 nodes.emplace_back(std::move(function));
-                ast::class_node2 node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
+                ast::class_node node{ tmp_token, class_name_token, tmp_token, std::move(nodes), tmp_token, tmp_token};
 
                 // Class type lookup.
                 const auto class_type_name_ref = ast::type_representation{ class_name_token };
@@ -920,7 +915,7 @@ namespace cmsl::sema::test
                 // There are three identifier contextes: class, function parameters and function body. Member is registered in class context.
                 EXPECT_CALL(ids_ctx, enter_ctx())
                         .Times(3);
-                EXPECT_CALL(ids_ctx, register_identifier(member_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(member_name_token, Ref(valid_type)));
                 EXPECT_CALL(ids_ctx, leave_ctx())
                         .Times(3);
 
@@ -1164,7 +1159,6 @@ namespace cmsl::sema::test
                 auto lhs_node = std::make_unique<ast::id_node>(lhs_id_token);
 
                 const auto member_name_token = token_identifier("bar");
-                // Todo: use initializer list
                 std::vector<member_info> members;
                 members.emplace_back(member_info{member_name_token, valid_type});
                 const auto lhs_type_name_token = token_identifier("baz");
@@ -1207,10 +1201,10 @@ namespace cmsl::sema::test
                                                                                     std::move(function_body));
 
                 const auto class_name_token = token_identifier("baz");
-                auto class_ast_node = std::make_unique<ast::class_node2>(tmp_token,
+                auto class_ast_node = std::make_unique<ast::class_node>(tmp_token,
                                                                          class_name_token,
                                                                          tmp_token,
-                                                                         ast::class_node2::nodes_t{},
+                                                                         ast::class_node::nodes_t{},
                                                                          tmp_token,
                                                                          tmp_token);
 
@@ -1233,7 +1227,7 @@ namespace cmsl::sema::test
                 EXPECT_CALL(ctx, add_type(_))
                         .Times(2); // Type and reference
 
-                EXPECT_CALL(ids_ctx, register_identifier(variable_name_token, &valid_type));
+                EXPECT_CALL(ids_ctx, register_identifier(variable_name_token, Ref(valid_type)));
 
                 EXPECT_CALL(ids_ctx, enter_ctx())
                         .Times(4);

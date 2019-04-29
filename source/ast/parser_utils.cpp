@@ -11,6 +11,7 @@ namespace cmsl::ast
             : m_err_observer{ err_observer }
             , m_current{ current }
             , m_end{ end }
+            , m_prev{ m_current }
     {}
 
     bool parser_utils::is_at_end() const
@@ -22,8 +23,7 @@ namespace cmsl::ast
     {
         if (is_at_end())
         {
-            // Todo: proper token
-            m_err_observer.raise_unexpected_end_of_file(lexer::token::token{});
+            m_err_observer.raise_unexpected_end_of_file(get_token_for_is_at_end_error_report());
             return false;
         }
 
@@ -59,6 +59,7 @@ namespace cmsl::ast
         }
 
         const auto t = *m_current;
+        m_prev = m_current;
         ++m_current;
         return t;
     }
@@ -143,5 +144,35 @@ namespace cmsl::ast
     void parser_utils::adjust_current_iterator(parser_utils::token_it new_current_it)
     {
         m_current = new_current_it;
+    }
+
+    std::optional<parser_utils::token_t> parser_utils::try_eat(token_type_t type)
+    {
+        if(current_is(type))
+        {
+            return eat(type);
+        }
+
+        return {};
+    }
+
+    parser_utils::token_t parser_utils::get_token_for_is_at_end_error_report() const
+    {
+        if(m_prev == m_end)
+        {
+            return token_t{};
+        }
+
+        return *m_prev;
+    }
+
+    parser_utils::token_t parser_utils::get_token_for_error_report() const
+    {
+        if(is_at_end())
+        {
+            return get_token_for_is_at_end_error_report();
+        }
+
+        return current();
     }
 }

@@ -32,13 +32,13 @@ public:
         const auto& ast_node = node.ast_node();
         const auto variable_decl = dynamic_cast<const ast::variable_declaration_node*>(&ast_node);
 
-        add_entry(variable_decl->get_type_representation().primary_name(),
+        add_entry(variable_decl->type().primary_name(),
                   cmsl_index_entry_type::type,
                   node.type().name().primary_name().source().path(),
                   node.type().name().primary_name().src_range().begin.absolute);
 
 
-        m_identifiers_context.register_identifier(variable_decl->get_name(), &node.type());
+        m_identifiers_context.register_identifier(variable_decl->name(), node.type());
 
         if(node.initialization())
         {
@@ -113,16 +113,16 @@ public:
     void visit(const sema::function_node& node) override
     {
         m_identifiers_context.enter_ctx();
-        const auto function_node = dynamic_cast<const ast::user_function_node2*>(&node.ast_node());
+        const auto function_node = dynamic_cast<const ast::user_function_node*>(&node.ast_node());
 
-        add_type_entry(function_node->get_return_type_reference(), node.return_type());
+        add_type_entry(function_node->return_type_representation(), node.return_type());
 
-        const auto& ast_param_declarations = function_node->get_param_declarations();
+        const auto& ast_param_declarations = function_node->param_declarations();
         const auto& params = node.signature().params;
         for(auto i = 0u; i < params.size(); ++i)
         {
             add_type_entry(ast_param_declarations[i].ty, params[i].ty);
-            m_identifiers_context.register_identifier(params[i].name, &params[i].ty  );
+            m_identifiers_context.register_identifier(params[i].name, params[i].ty  );
         }
 
         node.body().visit(*this);
@@ -236,7 +236,7 @@ private:
                   type.name().primary_name().src_range().begin.absolute);
     }
 
-    void add_entry(const lexer::token::token& entry_token,
+    void add_entry(const lexer::token& entry_token,
                    cmsl_index_entry_type type,
                    string_view destination_path,
                    unsigned destination_position)
@@ -245,7 +245,7 @@ private:
         m_intermediate_entries.emplace_back(entry);
     }
 
-    cmsl_index_entry make_entry(const lexer::token::token& entry_token,
+    cmsl_index_entry make_entry(const lexer::token& entry_token,
                                 cmsl_index_entry_type type,
                                 string_view destination_path,
                                 unsigned destination_position)
@@ -274,6 +274,11 @@ private:
 
 struct cmsl_index_entries* cmsl_index(const struct cmsl_parsed_source* parsed_source)
 {
+    if(!parsed_source || !parsed_source->ast_tree || !parsed_source->sema_tree)
+    {
+        return nullptr;
+    }
+
     cmsl::tools::indexer indexer;
     parsed_source->sema_tree->visit(indexer);
     const auto& result = indexer.result();

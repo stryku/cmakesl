@@ -7,40 +7,28 @@
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/homogeneous_generic_type.hpp"
-#include "factories.hpp"
+#include "common/assert.hpp"
+#include "errors/errors_observer.hpp"
+#include "errors/error.hpp"
 
-
-
-// Todo: Move to common place.
 namespace
 {
     template<unsigned N>
-    cmsl::lexer::token::token make_token(cmsl::lexer::token::token_type token_type, const char (&tok)[N])
+    cmsl::lexer::token make_id_token(const char (&tok)[N])
     {
-        // N counts also '\0'
-        const auto src_range = cmsl::source_range{
-                cmsl::source_location{ 1u, 1u, 0u },
-                cmsl::source_location{ 1u, N, N - 1u }
-        };
-        return cmsl::lexer::token::token{ token_type, src_range, cmsl::source_view{ tok } };
-    }
-
-    template<unsigned N>
-    cmsl::lexer::token::token make_id_token(const char (&tok)[N])
-    {
-        return make_token(cmsl::lexer::token::token_type ::identifier, tok);
+        return cmsl::lexer::make_token(cmsl::lexer::token_type ::identifier, tok);
     }
 }
 
 namespace cmsl::sema
 {
         user_sema_function&
-        sema_function_factory::create_user(const sema_context_interface &ctx, const sema_type &return_type, function_signature s)
+        sema_function_factory::create_user(const sema_context &ctx, const sema_type &return_type, function_signature s)
         {
             return create_impl<user_sema_function>(ctx, return_type, std::move(s));
         }
         builtin_sema_function&
-        sema_function_factory::create_builtin(const sema_context_interface &ctx, const sema_type &return_type, function_signature s, builtin_function_kind kind)
+        sema_function_factory::create_builtin(const sema_context &ctx, const sema_type &return_type, function_signature s, builtin_function_kind kind)
         {
             return create_impl<builtin_sema_function>(ctx, return_type, std::move(s), kind);
         }
@@ -48,14 +36,14 @@ namespace cmsl::sema
         sema_function_factory::~sema_function_factory()
         {}
 
-        sema_context& sema_context_factory::create(const sema_context_interface *parent)
+        sema_context_impl& sema_context_factory::create(const sema_context *parent)
         {
-            return create_impl<sema_context>(parent, sema_context_interface::context_type::namespace_);
+            return create_impl<sema_context_impl>(parent, sema_context::context_type::namespace_);
         }
 
-        sema_context &sema_context_factory::create_class(const sema_context_interface *parent)
+        sema_context_impl &sema_context_factory::create_class(const sema_context *parent)
         {
-            return create_impl<sema_context>(parent, sema_context_interface::context_type::class_);
+            return create_impl<sema_context_impl>(parent, sema_context::context_type::class_);
         }
 
         sema_context_factory::~sema_context_factory()
@@ -64,13 +52,13 @@ namespace cmsl::sema
         }
 
         const sema_type&
-        sema_type_factory::create(const sema_context_interface &ctx, ast::type_representation name, std::vector<member_info> members)
+        sema_type_factory::create(const sema_context &ctx, ast::type_representation name, std::vector<member_info> members)
         {
             return create_impl<sema_type>(ctx, name, std::move(members));
         }
 
         const sema_type &
-        sema_type_factory::create_homogeneous_generic(const sema_context_interface &ctx,
+        sema_type_factory::create_homogeneous_generic(const sema_context &ctx,
                                                       ast::type_representation name,
                                                       const sema_type &value_type)
         {
@@ -88,16 +76,18 @@ namespace cmsl::sema
 
         }
 
-        sema_generic_type_factory::sema_generic_type_factory(sema_context_interface& generic_types_context,
-                                                             const sema_context_interface& creation_context,
+        sema_generic_type_factory::sema_generic_type_factory(sema_context& generic_types_context,
+                                                             const sema_context& creation_context,
                                                              sema_type_factory& type_factory,
                                                              sema_function_factory& function_factory,
-                                                             sema_context_factory& context_factory)
+                                                             sema_context_factory& context_factory,
+                                                             errors::errors_observer& errors_observer)
             : m_generic_types_context{ generic_types_context }
             , m_creation_context{ creation_context }
             , m_type_factory{ type_factory }
             , m_function_factory{ function_factory }
             , m_context_factory{ context_factory }
+            , m_errors_observer{ errors_observer }
         {}
 
         const sema_type *
@@ -109,23 +99,39 @@ namespace cmsl::sema
                 return create_list(name);
             }
 
-            // Todo: report error 'primary_name is not a generic type'.
+            CMSL_UNREACHABLE("Creating unknown generic type");
             return nullptr;
         }
 
         const sema_type *
         sema_generic_type_factory::create_list(const ast::type_representation& name)
         {
+            const auto generic_parameters_error_creator = [&name]
+            {
+                errors::error err;
+                err.message = "list<> expects one generic parameter, got " + std::to_string(name.nested_types().size());
+                err.range = source_range{ name.primary_name().src_range().begin, name.tokens().back().src_range().end };
+                err.type = errors::error_type::error;
+                const auto source = name.primary_name().source();
+                err.source_path = source.path();
+                const auto line_info = source.line(name.primary_name().src_range().begin.line);
+                err.line_start_pos = line_info.start_pos;
+                err.line_snippet = line_info.line;
+                return err;
+            };
+
             const auto& nested_types = name.nested_types();
             if(nested_types.empty())
             {
-                // Todo: Not enough parameters
+                const auto err = generic_parameters_error_creator();
+                m_errors_observer.nofify_error(err);
                 return nullptr;
             }
             constexpr auto list_generic_parameters{ 1u };
             if(nested_types.size() > list_generic_parameters)
             {
-                // Todo: Too many parameters
+                const auto err = generic_parameters_error_creator();
+                m_errors_observer.nofify_error(err);
                 return nullptr;
             }
 
@@ -359,7 +365,16 @@ namespace cmsl::sema
             {
                 if(!found)
                 {
-                    // Todo: Value type not found.
+                    errors::error err;
+                    err.message = "value type not found";
+                    err.range = source_range{ name.primary_name().src_range().begin, name.tokens().back().src_range().end };
+                    err.type = errors::error_type::error;
+                    const auto source = name.primary_name().source();
+                    err.source_path = source.path();
+                    const auto line_info = source.line(name.primary_name().src_range().begin.line);
+                    err.line_start_pos = line_info.start_pos;
+                    err.line_snippet = line_info.line;
+                    m_errors_observer.nofify_error(err);
                     return nullptr;
                 }
                 return found;

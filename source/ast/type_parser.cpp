@@ -41,10 +41,8 @@ namespace cmsl::ast
             return {};
         }
 
-        if(is_at_end())
+        if(!expect_not_at_end())
         {
-            // Todo: pass proper token
-            m_err_observer.raise_unexpected_end_of_file(lexer::token::token{});
             return {};
         }
 
@@ -91,8 +89,7 @@ namespace cmsl::ast
     {
         if(!current_is_generic_type())
         {
-            // Todo: proper token
-            m_err_observer.raise_expected_type(lexer::token::token{});
+            m_err_observer.raise_expected_type(get_token_for_error_report());
             return {};
         }
 
@@ -129,8 +126,7 @@ namespace cmsl::ast
         }
         else
         {
-            // Todo: proper token
-            m_err_observer.raise_expected_type(lexer::token::token{});
+            m_err_observer.raise_expected_type(get_token_for_error_report());
             return {};
         }
     }
