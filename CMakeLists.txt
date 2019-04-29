@@ -18,6 +18,3 @@ if(CMAKESL_WITH_TESTS)
     add_subdirectory(external/googletest)
     add_subdirectory(test)
 endif()
-
-add_subdirectory(playground)
-
