@@ -274,6 +274,11 @@ private:
 
 struct cmsl_index_entries* cmsl_index(const struct cmsl_parsed_source* parsed_source)
 {
+    if(!parsed_source || !parsed_source->ast_tree || !parsed_source->sema_tree)
+    {
+        return nullptr;
+    }
+
     cmsl::tools::indexer indexer;
     parsed_source->sema_tree->visit(indexer);
     const auto& result = indexer.result();
