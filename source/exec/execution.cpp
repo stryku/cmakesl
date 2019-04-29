@@ -24,7 +24,7 @@ namespace cmsl::exec
             result = builtin_function_caller2{ m_cmake_facade, instances }.call(builtin_function->kind(), params);
         }
 
-        return std::move(result);
+        return result;
     }
 
     std::unique_ptr<inst::instance> execution::call_member(inst::instance& class_instance,

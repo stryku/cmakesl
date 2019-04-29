@@ -7,30 +7,30 @@ namespace cmsl::ast
                                      lexer::token reference_token,
                                      std::vector<type_representation> nested_types)
                 : m_tokens{ { primary_name } }
-                , m_nested_types{ std::move(nested_types) }
                 , m_reference_token{ reference_token }
+                , m_nested_types{ std::move(nested_types) }
         {}
         type_representation::type_representation(lexer::token_container_t tokens,
                                      lexer::token reference_token,
                                      std::vector<type_representation> nested_types)
                 : m_tokens{ std::move(tokens) }
-                , m_nested_types{ std::move(nested_types) }
                 , m_reference_token{ reference_token }
+                , m_nested_types{ std::move(nested_types) }
         {}
 
         type_representation::type_representation(lexer::token primary_name,
                                      is_reference_tag,
                                      std::vector<type_representation> nested_types)
                 : m_tokens{ { primary_name } }
-                , m_nested_types{ std::move(nested_types) }
                 , m_is_reference{ true }
+                , m_nested_types{ std::move(nested_types) }
         {}
         type_representation::type_representation(lexer::token_container_t tokens,
                                      is_reference_tag,
                                      std::vector<type_representation> nested_types)
                 : m_tokens{ std::move(tokens) }
-                , m_nested_types{ std::move(nested_types) }
                 , m_is_reference{ true }
+                , m_nested_types{ std::move(nested_types) }
         {}
         type_representation::type_representation(lexer::token primary_name,
                                      std::vector<type_representation> nested_types)

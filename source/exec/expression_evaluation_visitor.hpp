@@ -54,7 +54,6 @@ namespace cmsl::exec
             {
                 auto lhs_result = evaluate_child(node.lhs());
                 auto rhs_result = evaluate_child(node.rhs());
-                const auto operator_string = node.op().str();
                 const auto& operator_function = node.operator_function();
 
                 // Todo: use small vector.

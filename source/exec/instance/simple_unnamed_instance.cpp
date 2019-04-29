@@ -77,12 +77,12 @@ namespace cmsl::exec::inst
                 m_data = val;
             }
 
-            instance *simple_unnamed_instance::find_member(cmsl::string_view name)
+            instance *simple_unnamed_instance::find_member(cmsl::string_view)
             {
                 return nullptr;
             }
 
-            const instance *simple_unnamed_instance::find_cmember(cmsl::string_view name) const
+            const instance *simple_unnamed_instance::find_cmember(cmsl::string_view) const
             {
                 return nullptr;
             }

@@ -26,7 +26,7 @@ namespace cmsl::exec::inst
 
                 auto ret = std::move(*found);
                 m_instances.erase(found);
-                return std::move(ret);
+                return ret;
             }
 
             void instances_holder::store(std::unique_ptr<instance> i)

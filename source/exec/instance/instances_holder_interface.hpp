@@ -24,6 +24,8 @@ namespace cmsl
             class instances_holder_interface
             {
             public:
+                virtual ~instances_holder_interface() = default;
+
                 virtual void store(std::unique_ptr<instance> i) = 0;
                 virtual std::unique_ptr<instance> gather_ownership(inst::instance *instance_ptr) = 0;
 

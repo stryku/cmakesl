@@ -19,7 +19,6 @@ namespace cmsl::lexer
         std::vector<token> lexer::lex()
         {
             auto tokens = std::vector<token>{};
-            const auto end = m_source.source().cend();
 
             while (!is_end())
             {

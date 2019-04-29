@@ -59,9 +59,9 @@ namespace cmsl::sema
                 , m_ctx{ ctx }
                 , m_errors_observer{ errs }
                 , m_ids_context{ ids_context }
+                , m_type_factory{ type_factory }
                 , m_function_factory{ function_factory }
                 , m_context_factory{ context_factory }
-                , m_type_factory{ type_factory }
                 , m_add_subdirectory_handler{ add_subdirectory_handler }
                 , m_currently_parsed_function{ currently_parsing_function }
         {}
@@ -809,7 +809,7 @@ namespace cmsl::sema
         {
             if(!m_currently_parsed_function)
             {
-                return std::move(expression);
+                return expression;
             }
 
             const auto& expected_result_type = m_currently_parsed_function->return_type();
@@ -823,7 +823,7 @@ namespace cmsl::sema
         {
             if(expected_result_type == expression->type())
             {
-                return std::move(expression);
+                return expression;
             }
 
             const auto& ast_node = expression->ast_node();
@@ -847,7 +847,7 @@ namespace cmsl::sema
                 params[i] = convert_to_cast_node_if_need(declared_param_type, std::move(params[i]));
             }
 
-            return std::move(params);
+            return params;
         }
 
         void sema_builder_ast_visitor::visit(const ast::initializer_list_node &node)
