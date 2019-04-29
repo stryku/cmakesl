@@ -2,17 +2,11 @@ set(ERRORS_OBSERVER_MOCK_SOURCES
     errors_observer_mock.cpp
 )
 
-set(PROJECT_NAME errors_observer_mock)
-
-add_library(${PROJECT_NAME} STATIC ${ERRORS_OBSERVER_MOCK_SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE 
-    ${CMAKESL_SOURCES_DIR}
-    ${CMAKESL_TESTS_DIR}
-    "${gtest_SOURCE_DIR}/include" 
-    "${gmock_SOURCE_DIR}/include"
+cmsl_add_library(errors_observer_mock "${ERRORS_OBSERVER_MOCK_SOURCES}")
+target_include_directories(errors_observer_mock
+    PRIVATE
+        ${CMAKESL_SOURCES_DIR}
+        ${CMAKESL_TESTS_DIR}
+        "${gtest_SOURCE_DIR}/include"
+        "${gmock_SOURCE_DIR}/include"
 )
-
-
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX ${PROJECT_NAME} FILES ${ERRORS_OBSERVER_MOCK_SOURCES})
-endif()

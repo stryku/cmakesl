@@ -9,11 +9,14 @@ set(LEXER_SOURCES
     token_type.hpp
 )
 
-add_library(lexer ${LEXER_SOURCES})
-target_include_directories(lexer PRIVATE ${CMAKESL_SOURCES_DIR})
-target_link_libraries(lexer common)
+cmsl_add_library(lexer "${LEXER_SOURCES}")
+target_include_directories(lexer
+    PRIVATE
+        ${CMAKESL_SOURCES_DIR}
+)
 
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX lexer FILES ${LEXER_SOURCES})
-endif()
+target_link_libraries(lexer
+    PUBLIC
+        common
+)
 

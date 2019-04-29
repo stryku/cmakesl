@@ -42,17 +42,17 @@ set(EXEC_SOURCES
     instance/version_value.hpp
 )
 
-add_library(exec ${EXEC_SOURCES})
-target_include_directories(exec PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_FACADE_DIR})
+cmsl_add_library(exec "${EXEC_SOURCES}")
+
+target_include_directories(exec
+    PRIVATE
+        ${CMAKESL_SOURCES_DIR}
+        ${CMAKESL_FACADE_DIR}
+)
+
 target_link_libraries(exec
     PUBLIC
         sema
     PRIVATE
         errors
 )
-
-
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX exec FILES ${EXEC_SOURCES})
-endif()
-

@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 
-
 project(CMakeSL)
 
-add_definitions(--std=c++17)
+include(cmake/cmsl_cmake_utils.cmake)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKESL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)

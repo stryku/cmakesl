@@ -1,6 +1,4 @@
-set(TESTS_NAME exec_test)
-
-set(SOURCES
+set(CMAKESL_TEST_SOURCES
     bool_type_smoke_test.cpp
     builtin_function_caller2_test.cpp
     double_type_smoke_test.cpp
@@ -20,13 +18,22 @@ set(SOURCES
     mock/instances_holder_mock.hpp
 )
 
+set(INCLUDE_DIRS
+    ${CMAKESL_SOURCES_DIR}
+    ${CMAKESL_DIR}
+)
 
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES} )
-endif()
+set(LIBS
+    exec
+    lexer
+    ast
+    sema
+    errors_observer_mock
+    tests_common
+)
 
-
-add_executable(${TESTS_NAME} ${SOURCES} )
-target_link_libraries(${TESTS_NAME} gmock_main  exec  lexer  ast sema errors_observer_mock tests_common)
-target_include_directories(${TESTS_NAME} PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_DIR})
-add_test(NAME ${TESTS_NAME} COMMAND ${TESTS_NAME}) 
+cmsl_add_test(exec
+    "${CMAKESL_TEST_SOURCES}"
+    "${INCLUDE_DIRS}"
+    "${LIBS}"
+)

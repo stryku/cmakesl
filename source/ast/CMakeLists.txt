@@ -32,10 +32,9 @@ set(AST_SOURCES
     while_node.hpp
 )
 
-add_library(ast ${AST_SOURCES})
+add_library(ast "${AST_SOURCES}")
 target_include_directories(ast PRIVATE ${CMAKESL_SOURCES_DIR})
-target_link_libraries(ast lexer)
-
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX ast FILES ${AST_SOURCES})
-endif()
+target_link_libraries(ast
+    PUBLIC
+        lexer
+)
