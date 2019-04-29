@@ -3,7 +3,7 @@
 #include "errors/errors_observer.hpp"
 
 #include "sema/sema_nodes.hpp"
-#include "sema/sema_context.hpp"
+#include "sema/sema_context_impl.hpp"
 
 #include "test/ast/mock/ast_node_mock.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
@@ -34,7 +34,7 @@ namespace cmsl::sema::test
             };
             using errs_t = errors_observer_and_mock;
 
-            const sema_context valid_context;
+            const sema_context_impl valid_context;
             const sema_type valid_type{ valid_context, ast::type_representation{ token_identifier("foo") }, {} };
 
 

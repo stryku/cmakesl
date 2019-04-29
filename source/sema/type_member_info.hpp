@@ -2,7 +2,6 @@
 
 #include "lexer/token.hpp"
 
-// Todo: do we need it?
 namespace cmsl::sema
 {
         class sema_type;

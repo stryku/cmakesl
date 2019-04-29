@@ -51,13 +51,9 @@ namespace cmsl::sema
             const sema_type& referenced_type() const;
 
         private:
-            // Todo: is it needed?
-            friend class sema_type_builder;
-
             const sema_context& m_ctx;
             ast::type_representation m_name;
             std::vector<member_info> m_members;
-
             const sema_type* m_referenced_type{ nullptr };
         };
 }

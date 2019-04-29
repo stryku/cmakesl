@@ -5,7 +5,6 @@
 namespace cmsl::sema
 {
         class block_node;
-        class sema_function_builder;
         class sema_context;
 
         class user_sema_function : public sema_function
@@ -17,8 +16,7 @@ namespace cmsl::sema
                 , m_signature{ std::move(s) }
             {}
 
-            // Todo: It probably should be const.
-            void set_body(block_node& body)
+            void set_body(const block_node& body)
             {
                 m_body = &body;
             }
@@ -44,12 +42,11 @@ namespace cmsl::sema
             }
 
         private:
-            friend class sema_function_builder;
             // A context that this function is registered in. Can be a namespace or class context.
             const sema_context& m_ctx;
             const sema_type& m_return_type;
             function_signature m_signature;
-            // It will be set by a function builder. It needs to be set after creation because it can refer to itself in case of a recursion.
-            block_node* m_body;
+            // It will be set while building a class node. It needs to be set after creation because it can refer to itself in case of a recursion.
+            const block_node* m_body;
         };
 }
