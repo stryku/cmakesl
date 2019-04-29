@@ -4,11 +4,10 @@
 
 #include <optional>
 
-namespace cmsl::ast
+namespace cmsl::ast {
+struct param_declaration
 {
-        struct param_declaration
-        {
-            type_representation ty;
-            lexer::token name;
-        };
+  type_representation ty;
+  lexer::token name;
+};
 }

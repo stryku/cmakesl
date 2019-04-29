@@ -4,26 +4,26 @@
 
 #include <memory>
 
-namespace cmsl::ast
+namespace cmsl::ast {
+class return_node : public ast_node
 {
-        class return_node : public ast_node
-        {
-        public:
-            explicit return_node(token_t return_kw, std::unique_ptr<ast_node> expr, token_t semicolon);
+public:
+  explicit return_node(token_t return_kw, std::unique_ptr<ast_node> expr,
+                       token_t semicolon);
 
-            const ast_node& expression() const;
+  const ast_node& expression() const;
 
-            token_t return_kw() const;
-            token_t semicolon() const;
+  token_t return_kw() const;
+  token_t semicolon() const;
 
-            void visit(ast_node_visitor &visitor) const override;
+  void visit(ast_node_visitor& visitor) const override;
 
-            source_location begin_location() const override;
-            source_location end_location() const override;
+  source_location begin_location() const override;
+  source_location end_location() const override;
 
-        private:
-            token_t m_return_kw;
-            std::unique_ptr<ast_node> m_expression;
-            token_t m_semicolon;
-        };
+private:
+  token_t m_return_kw;
+  std::unique_ptr<ast_node> m_expression;
+  token_t m_semicolon;
+};
 }

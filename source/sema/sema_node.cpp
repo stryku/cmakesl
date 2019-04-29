@@ -3,35 +3,34 @@
 #include "ast/ast_node.hpp"
 #include "sema_node.hpp"
 
-
-namespace cmsl::sema
+namespace cmsl::sema {
+sema::sema_node::sema_node(const ast::ast_node& ast_node)
+  : m_ast_node{ ast_node }
 {
-    sema::sema_node::sema_node(const ast::ast_node &ast_node)
-         : m_ast_node{ ast_node }
-    {}
+}
 
-    source_location sema_node::begin_location() const
-    {
-        return m_ast_node.begin_location();
-    }
+source_location sema_node::begin_location() const
+{
+  return m_ast_node.begin_location();
+}
 
-    source_location sema_node::end_location() const
-    {
-        return m_ast_node.end_location();
-    }
+source_location sema_node::end_location() const
+{
+  return m_ast_node.end_location();
+}
 
-    const ast::ast_node &sema_node::ast_node() const
-    {
-        return m_ast_node;
-    }
+const ast::ast_node& sema_node::ast_node() const
+{
+  return m_ast_node;
+}
 
-    void sema_node::set_parent(const sema_node &node, passkey)
-    {
-        m_parent = &node;
-    }
+void sema_node::set_parent(const sema_node& node, passkey)
+{
+  m_parent = &node;
+}
 
-    const sema_node *sema_node::parent() const
-    {
-        return m_parent;
-    }
+const sema_node* sema_node::parent() const
+{
+  return m_parent;
+}
 }

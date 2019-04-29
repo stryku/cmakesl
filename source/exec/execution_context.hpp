@@ -4,29 +4,28 @@
 
 #include <stack>
 
-namespace cmsl::exec
+namespace cmsl::exec {
+class execution_context
 {
-        class execution_context
-        {
-        private:
-            using instance_t = inst::instance;
+private:
+  using instance_t = inst::instance;
 
-        public:
-            void add_variable(cmsl::string_view name, std::unique_ptr<instance_t> inst);
-            instance_t* get_variable(cmsl::string_view name);
-            instance_t* get_this();
+public:
+  void add_variable(cmsl::string_view name, std::unique_ptr<instance_t> inst);
+  instance_t* get_variable(cmsl::string_view name);
+  instance_t* get_this();
 
-            bool variable_exists(cmsl::string_view name) const;
+  bool variable_exists(cmsl::string_view name) const;
 
-            void enter_scope();
-            void enter_member_function_scope(instance_t* class_instance);
-            void leave_scope();
+  void enter_scope();
+  void enter_member_function_scope(instance_t* class_instance);
+  void leave_scope();
 
-        private:
-            scope_context& current_scope();
-            const scope_context& current_scope() const;
+private:
+  scope_context& current_scope();
+  const scope_context& current_scope() const;
 
-        private:
-            std::stack<scope_context> m_scopes;
-        };
+private:
+  std::stack<scope_context> m_scopes;
+};
 }

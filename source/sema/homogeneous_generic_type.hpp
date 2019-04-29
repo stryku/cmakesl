@@ -2,18 +2,17 @@
 
 #include "sema/sema_type.hpp"
 
-namespace cmsl::sema
+namespace cmsl::sema {
+class homogeneous_generic_type : public sema_type
 {
-        class homogeneous_generic_type : public sema_type
-        {
-        public:
-            explicit homogeneous_generic_type(const sema_context& ctx,
-                                              ast::type_representation name,
-                                              const sema_type& value_type);
+public:
+  explicit homogeneous_generic_type(const sema_context& ctx,
+                                    ast::type_representation name,
+                                    const sema_type& value_type);
 
-            const sema_type& value_type() const;
+  const sema_type& value_type() const;
 
-        private:
-            const sema_type& m_value_type;
-        };
+private:
+  const sema_type& m_value_type;
+};
 }

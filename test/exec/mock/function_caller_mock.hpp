@@ -4,15 +4,20 @@
 
 #include <gmock/gmock.h>
 
-namespace cmsl::exec::test
+namespace cmsl::exec::test {
+class function_caller2_mock : public function_caller
 {
-    class function_caller2_mock : public function_caller
-    {
-    private:
-        using inst_t = inst::instance;
+private:
+  using inst_t = inst::instance;
 
-    public:
-        MOCK_METHOD3(call, std::unique_ptr<inst_t>(const sema::sema_function&, const std::vector<inst_t*>&, inst::instances_holder_interface&));
-        MOCK_METHOD4(call_member, std::unique_ptr<inst_t>(inst_t&,const sema::sema_function&, const std::vector<inst_t*>&, inst::instances_holder_interface&));
-    };
+public:
+  MOCK_METHOD3(call,
+               std::unique_ptr<inst_t>(const sema::sema_function&,
+                                       const std::vector<inst_t*>&,
+                                       inst::instances_holder_interface&));
+  MOCK_METHOD4(call_member,
+               std::unique_ptr<inst_t>(inst_t&, const sema::sema_function&,
+                                       const std::vector<inst_t*>&,
+                                       inst::instances_holder_interface&));
+};
 }

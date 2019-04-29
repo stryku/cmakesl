@@ -2,79 +2,77 @@
 
 #include <string>
 
-namespace cmsl
+namespace cmsl {
+namespace lexer {
+enum class token_type
 {
-    namespace lexer
-    {
-        enum class token_type
-        {
-            undef,
-            integer,
-            double_,
-            dot,
-            open_brace,
-            close_brace,
-            open_square,
-            close_square,
-            open_paren,
-            close_paren,
-            identifier,
+  undef,
+  integer,
+  double_,
+  dot,
+  open_brace,
+  close_brace,
+  open_square,
+  close_square,
+  open_paren,
+  close_paren,
+  identifier,
 
-            equal,
-            equalequal,
-            minus,
-            minusminus,
-            minusequal,
-            plus,
-            plusplus,
-            plusequal,
-            amp,
-            ampamp,
+  equal,
+  equalequal,
+  minus,
+  minusminus,
+  minusequal,
+  plus,
+  plusplus,
+  plusequal,
+  amp,
+  ampamp,
 
-            ampequal,
-            pipe,
-            pipepipe,
-            pipeequal,
-            slash,
-            slashequal,
-            star,
-            starequal,
-            percent,
-            percentequal,
+  ampequal,
+  pipe,
+  pipepipe,
+  pipeequal,
+  slash,
+  slashequal,
+  star,
+  starequal,
+  percent,
+  percentequal,
 
-            exclaim,
-            exclaimequal,
-            xor_,
-            xorequal,
-            less,
-            lessequal,
-            greater,
-            greaterequal,
-            string,
-            semicolon,
+  exclaim,
+  exclaimequal,
+  xor_,
+  xorequal,
+  less,
+  lessequal,
+  greater,
+  greaterequal,
+  string,
+  semicolon,
 
-            comma,
+  comma,
 
-            kw_void,
-            kw_int,
-            kw_double,
-            kw_bool,
-            kw_true,
-            kw_false,
-            kw_string,
-            kw_version,
-            kw_list,
-            kw_library,
-            kw_executable,
-            kw_project,
+  kw_void,
+  kw_int,
+  kw_double,
+  kw_bool,
+  kw_true,
+  kw_false,
+  kw_string,
+  kw_version,
+  kw_list,
+  kw_library,
+  kw_executable,
+  kw_project,
 
-            kw_return,
-            kw_class,
-            kw_if,
-            kw_else,
-            kw_while
-        };
-    }
+  kw_return,
+  kw_class,
+  kw_if,
+  kw_else,
+  kw_while
+};
+}
 
-    std::string to_string(lexer::token_type type);
+std::string to_string(lexer::token_type type);
 }

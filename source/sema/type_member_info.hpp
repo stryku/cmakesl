@@ -2,12 +2,11 @@
 
 #include "lexer/token.hpp"
 
-namespace cmsl::sema
+namespace cmsl::sema {
+class sema_type;
+struct member_info
 {
-        class sema_type;
-        struct member_info
-        {
-            lexer::token name;
-            const sema_type& ty;
-        };
+  lexer::token name;
+  const sema_type& ty;
+};
 }
