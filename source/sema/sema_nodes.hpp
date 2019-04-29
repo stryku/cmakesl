@@ -118,7 +118,6 @@ namespace cmsl::sema
                 return false;
             }
 
-            // Todo: consider renaming getters to get_*
             lexer::token id() const
             {
                 return m_id;
@@ -131,7 +130,7 @@ namespace cmsl::sema
             lexer::token m_id;
         };
 
-        // Todo: handle return without expression
+        // Todo: handle return without expression when implementing void type.
         class return_node : public expression_node
         {
         public:
