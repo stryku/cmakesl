@@ -46,7 +46,7 @@ namespace cmsl::sema::test
             };
             using errs_t = errors_observer_and_mock;
 
-            const sema_context valid_context;
+            const sema_context_impl valid_context;
             const sema_type valid_type{ valid_context, ast::type_representation{ token_identifier("foo") }, {} };
 
     const auto tmp_token = token_identifier("");
@@ -60,7 +60,7 @@ namespace cmsl::sema::test
                 add_subdirectory_semantic_handler_mock m_add_subdirectory_mock;
 
                 sema_builder_ast_visitor create_visitor(errs_t& errs,
-                                                        sema_context_interface& ctx,
+                                                        sema_context& ctx,
                                                         identifiers_context& ids_ctx)
                 {
                     return sema_builder_ast_visitor{
@@ -354,7 +354,7 @@ namespace cmsl::sema::test
                         .WillRepeatedly(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
-                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, return_type())
                         .WillRepeatedly(ReturnRef(valid_type));
@@ -400,7 +400,7 @@ namespace cmsl::sema::test
                         .WillRepeatedly(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
-                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, signature())
                         .WillRepeatedly(ReturnRef(signature));
@@ -470,7 +470,7 @@ namespace cmsl::sema::test
                         .WillRepeatedly(ReturnRef(valid_type));
 
                 EXPECT_CALL(ctx, type())
-                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context::context_type::namespace_));
 
                 EXPECT_CALL(ctx, find_type(_))
                         .WillRepeatedly(Return(&valid_type));
@@ -514,7 +514,7 @@ namespace cmsl::sema::test
                         .WillRepeatedly(ReturnRef(ctx));
 
                 EXPECT_CALL(ctx, type())
-                        .WillRepeatedly(Return(sema_context_interface::context_type::namespace_));
+                        .WillRepeatedly(Return(sema_context::context_type::namespace_));
 
                 EXPECT_CALL(function_mock, return_type())
                         .WillRepeatedly(ReturnRef(valid_type));

@@ -105,7 +105,7 @@ namespace cmsl::exec
         return static_cast<bool>(m_function_return_value);
     }
 
-    const sema::sema_context_interface& execution::current_context() const
+    const sema::sema_context& execution::current_context() const
     {
         const auto& current_function = m_callstack.top().fun;
         return current_function.context();

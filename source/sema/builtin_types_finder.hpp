@@ -10,7 +10,7 @@ namespace cmsl::sema
             using token_type_t = lexer::token_type;
 
         public:
-            explicit builtin_types_finder(const sema_context_interface& ctx)
+            explicit builtin_types_finder(const sema_context& ctx)
                 : m_ctx{ ctx }
             {}
 
@@ -87,6 +87,6 @@ namespace cmsl::sema
 
 
         private:
-            const sema_context_interface& m_ctx;
+            const sema_context& m_ctx;
         };
 }

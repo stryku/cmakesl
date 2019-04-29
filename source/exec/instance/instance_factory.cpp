@@ -9,7 +9,7 @@
 
 namespace cmsl::exec::inst
 {
-            std::unique_ptr<instance> instance_factory2::create(instance_value_variant value, const sema::sema_context_interface &ctx) const
+            std::unique_ptr<instance> instance_factory2::create(instance_value_variant value, const sema::sema_context &ctx) const
             {
                 const auto type_getter = [&value, &ctx]() -> const sema::sema_type&
                 {

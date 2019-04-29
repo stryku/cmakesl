@@ -7,8 +7,8 @@
 namespace cmsl::exec
 {
     compiled_source::compiled_source(std::unique_ptr<ast::ast_node> ast_tree,
-                                     std::unique_ptr<sema::sema_context_interface> builtin_context,
-                                     const sema::sema_context_interface& global_context,
+                                     std::unique_ptr<sema::sema_context> builtin_context,
+                                     const sema::sema_context& global_context,
                                      std::unique_ptr<sema::sema_node> sema_tree,
                                      source_view source)
         : m_ast_tree{ std::move(ast_tree) }
@@ -20,7 +20,7 @@ namespace cmsl::exec
 
     compiled_source::~compiled_source() = default;
 
-    const sema::sema_context_interface &compiled_source::get_global_context() const
+    const sema::sema_context &compiled_source::get_global_context() const
     {
         return m_global_context;
     }

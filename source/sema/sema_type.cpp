@@ -6,7 +6,7 @@
 
 namespace cmsl::sema
 {
-        sema_type::sema_type(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members)
+        sema_type::sema_type(const sema_context& ctx, ast::type_representation name, std::vector<member_info> members)
             : m_ctx{ ctx }
             , m_name{ std::move(name) }
             , m_members{ std::move(members) }
@@ -24,7 +24,7 @@ namespace cmsl::sema
             return m_name;
         }
 
-        const sema_context_interface& sema_type::context() const
+        const sema_context& sema_type::context() const
         {
             return m_ctx;
         }

@@ -630,7 +630,7 @@ namespace cmsl::sema
         public:
             using nodes_t = std::vector<std::unique_ptr<sema_node>>;
 
-            explicit translation_unit_node(const ast::ast_node& ast_node, const sema_context_interface& ctx, nodes_t nodes)
+            explicit translation_unit_node(const ast::ast_node& ast_node, const sema_context& ctx, nodes_t nodes)
                 : sema_node{ ast_node }
                 , m_ctx{ ctx }
                 , m_nodes{std::move(nodes)}
@@ -646,7 +646,7 @@ namespace cmsl::sema
                 return m_nodes;
             }
 
-            const sema_context_interface& context() const
+            const sema_context& context() const
             {
                 return m_ctx;
             }
@@ -654,7 +654,7 @@ namespace cmsl::sema
             VISIT_METHOD
 
         private:
-            const sema_context_interface& m_ctx;
+            const sema_context& m_ctx;
             nodes_t m_nodes;
         };
 

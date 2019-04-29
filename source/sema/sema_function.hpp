@@ -5,7 +5,7 @@
 
 namespace cmsl::sema
 {
-        class sema_context_interface;
+        class sema_context;
 
         class sema_function
         {
@@ -13,6 +13,6 @@ namespace cmsl::sema
             virtual ~sema_function() = default;
             virtual const function_signature& signature() const = 0;
             virtual const sema_type& return_type() const = 0;
-            virtual const sema_context_interface& context() const = 0;
+            virtual const sema_context& context() const = 0;
         };
 }
