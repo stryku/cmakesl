@@ -1,6 +1,6 @@
-set(CMAKESL_TEST_SOURCES 
+set(CMAKESL_TEST_SOURCES
+    lexer_test.cpp
     main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/lexer_test.cpp 
 )
 
 

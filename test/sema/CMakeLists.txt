@@ -1,8 +1,14 @@
 set(CMAKESL_TEST_SOURCES
-        mock/identifiers_context_mock.hpp
     main.cpp
+    mock/add_subdirectory_semantic_handler_mock.hpp
+    mock/expression_node_mock.hpp
+    mock/identifiers_context_mock.hpp
+    mock/sema_context_mock.hpp
+    mock/sema_function_mock.hpp
+    overload_resolution_test.cpp
     sema_builder_ast_visitor.cpp
-        mock/expression_node_mock.hpp mock/sema_context_mock.hpp mock/sema_function_mock.hpp overload_resolution_test.cpp vatiable_initialization_check_test.cpp mock/add_subdirectory_semantic_handler_mock.hpp)
+    vatiable_initialization_check_test.cpp
+)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 

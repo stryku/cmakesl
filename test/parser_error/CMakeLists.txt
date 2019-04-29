@@ -1,9 +1,9 @@
 set(CMAKESL_PARSER_ERROR_TEST_SOURCES 
     main.cpp
-        parser2_error_test.cpp)
+    parser_error_test.cpp
+)
 
 set(TEST_NAME parser_error_test)
-
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${CMAKESL_PARSER_ERROR_TEST_SOURCES})

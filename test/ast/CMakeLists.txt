@@ -1,8 +1,7 @@
 set(AST_TEST_SOURCES 
     main.cpp
     mock/ast_node_mock.hpp
-        )
-
+)
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${AST_TEST_SOURCES})

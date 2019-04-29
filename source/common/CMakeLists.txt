@@ -1,11 +1,14 @@
 set(COMMON_SOURCES
     algorithm.hpp
     assert.hpp
-    source_location.hpp
     enum_class_utils.hpp
+    int_alias.hpp
+    overloaded.hpp
+    source_location.hpp
+    source_view.cpp
+    source_view.hpp
     string.hpp
-        source_view.cpp source_view.hpp overloaded.hpp
-        int_alias.hpp)
+)
 
 add_library(common ${COMMON_SOURCES})
 

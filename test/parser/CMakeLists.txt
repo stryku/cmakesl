@@ -1,6 +1,7 @@
 set(CMAKESL_TEST_SOURCES 
     main.cpp
-        parser2_test.cpp)
+    parser_test.cpp
+)
 
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
