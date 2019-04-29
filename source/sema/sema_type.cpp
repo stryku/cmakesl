@@ -61,12 +61,6 @@ namespace cmsl::sema
             return !(*this == rhs);
         }
 
-        bool sema_type::is_builtin() const
-        {
-            // Todo: handle user
-            return true;
-        }
-
         bool sema_type::is_complex() const
         {
             return m_members.size() > 0u;

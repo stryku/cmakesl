@@ -44,7 +44,6 @@ namespace cmsl::sema
             single_scope_function_lookup_result_t find_member_function(token_t name) const;
 
             bool is_complex() const;
-            bool is_builtin() const;
             bool is_reference() const;
             bool operator==(const sema_type& rhs) const;
             bool operator!=(const sema_type& rhs) const;
