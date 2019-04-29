@@ -3,11 +3,9 @@ set(CMAKESL_TEST_COMMON_SOURCES
     tokens.hpp
 )
 
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${CMAKESL_TEST_COMMON_SOURCES})
-endif()
-
-set(TEST_NAME tests_common)
-
-add_library(${TEST_NAME} STATIC ${CMAKESL_TEST_COMMON_SOURCES})
-target_include_directories(${TEST_NAME} PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_DIR})
+cmsl_add_library(tests_common "${CMAKESL_TEST_COMMON_SOURCES}")
+target_include_directories(tests_common
+    PRIVATE
+        ${CMAKESL_SOURCES_DIR}
+        ${CMAKESL_DIR}
+)

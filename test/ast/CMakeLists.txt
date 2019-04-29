@@ -3,14 +3,18 @@ set(AST_TEST_SOURCES
     mock/ast_node_mock.hpp
 )
 
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${AST_TEST_SOURCES})
-endif()
+set(INCLUDE_DIRS
+    ${CMAKESL_SOURCES_DIR}
+)
 
+set(LIBS
+    ast
+    lexer
+    errors
+)
 
-set(TEST_NAME ast_test)
-
-add_executable(${TEST_NAME} ${AST_TEST_SOURCES})
-target_link_libraries(${TEST_NAME} gmock_main ast lexer errors)
-target_include_directories(${TEST_NAME} PRIVATE ${CMAKESL_SOURCES_DIR})
-add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+cmsl_add_test(ast
+    "${AST_TEST_SOURCES}"
+    "${INCLUDE_DIRS}"
+    "${LIBS}"
+)

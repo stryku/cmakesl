@@ -10,19 +10,22 @@ set(CMAKESL_TEST_SOURCES
     vatiable_initialization_check_test.cpp
 )
 
-
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${CMAKESL_TEST_SOURCES})
-endif()
-
-
-set(TEST_NAME sema_test)
-
-add_executable(${TEST_NAME} ${CMAKESL_TEST_SOURCES})
-target_link_libraries(${TEST_NAME} gmock_main lexer ast sema errors_observer_mock tests_common)
-target_include_directories(${TEST_NAME} PRIVATE 
+set(INCLUDE_DIRS
     ${CMAKESL_SOURCES_DIR}
     ${CMAKESL_TESTS_DIR}
     ${CMAKESL_DIR}
 )
-add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+
+set(LIBS
+    lexer
+    ast
+    sema
+    errors_observer_mock
+    tests_common
+)
+
+cmsl_add_test(sema
+    "${CMAKESL_TEST_SOURCES}"
+    "${INCLUDE_DIRS}"
+    "${LIBS}"
+)
