@@ -141,7 +141,6 @@ namespace cmsl::ast::test
                     EXPECT_THAT(result, IsNull());
                 }
 
-                // Todo: change all *_token to *_tok
                 const auto id_token = token_identifier("foo");
                 const auto param_token = token_identifier("bar");
                 const auto op_token = token_open_paren();
