@@ -29,7 +29,7 @@
 #include "common/assert.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/variable_initialization_checker.hpp"
-#include "sema/add_subdirectory_semantic_handler.hpp"
+#include "sema/add_subdirectory_handler.hpp"
 #include "sema_builder_ast_visitor.hpp"
 
 
@@ -46,14 +46,14 @@ namespace cmsl::sema
             m_ids_ctx.leave_ctx();
         }
 
-        sema_builder_ast_visitor::sema_builder_ast_visitor(sema_context_interface& generic_types_context,
-                                                           sema_context_interface& ctx,
+        sema_builder_ast_visitor::sema_builder_ast_visitor(sema_context& generic_types_context,
+                                                           sema_context& ctx,
                                                            errors::errors_observer& errs,
                                                            identifiers_context& ids_context,
                                                            sema_type_factory& type_factory,
                                                            sema_function_factory& function_factory,
                                                            sema_context_factory& context_factory,
-                                                           add_subdirectory_semantic_handler& add_subdirectory_handler,
+                                                           add_subdirectory_handler& add_subdirectory_handler,
                                                            sema_function* currently_parsing_function)
                 : m_generic_types_context{ generic_types_context }
                 , m_ctx{ ctx }
@@ -72,7 +72,7 @@ namespace cmsl::sema
 
             std::vector<std::unique_ptr<sema_node>> nodes;
 
-            for(auto n : node.get_expressions())
+            for(const auto& n : node.nodes())
             {
                 auto child = visit_child(*n);
                 if(!child)
@@ -86,9 +86,9 @@ namespace cmsl::sema
             m_result_node = std::make_unique<block_node>(node, std::move(nodes));
         }
 
-        void sema_builder_ast_visitor::visit(const ast::class_node2& node)
+        void sema_builder_ast_visitor::visit(const ast::class_node& node)
         {
-            const auto name = node.get_name();
+            const auto name = node.name();
             const auto class_name_representation = ast::type_representation{ name };
             if(const auto found_type = m_ctx.find_type_in_this_scope(class_name_representation))
             {
@@ -140,13 +140,13 @@ namespace cmsl::sema
         {
             auto ig = ids_guard();
 
-            auto condition = visit_child_expr(node.get_condition());
+            auto condition = visit_child_expr(node.condition());
             if(!condition)
             {
                 return;
             }
 
-            auto body = visit_child_node<block_node>(node.get_block());
+            auto body = visit_child_node<block_node>(node.body());
             if(!body)
             {
                 return;
@@ -159,7 +159,7 @@ namespace cmsl::sema
         {
             std::vector<std::unique_ptr<conditional_node>> ifs;
 
-            for(const auto& if_ : node.get_ifs())
+            for(const auto& if_ : node.ifs())
             {
                 auto cond = visit_child_node<conditional_node>(*if_.conditional);
                 if(!cond)
@@ -172,7 +172,7 @@ namespace cmsl::sema
 
             std::unique_ptr<block_node> else_body;
 
-            if(auto else_node = node.get_else_body())
+            if(auto else_node = node.else_body())
             {
                 auto ig = ids_guard();
 
@@ -188,14 +188,14 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::binary_operator_node& node)
         {
-            auto lhs = visit_child_expr(node.get_lhs());
+            auto lhs = visit_child_expr(node.lhs());
             if(!lhs)
             {
                 return;
             }
 
             // Todo: handle operators like ++ and ++(int)
-            const auto op = node.get_operator();
+            const auto op = node.operator_();
             auto lookup_result = lhs->type().find_member_function(op);
             if(lookup_result.empty())
             {
@@ -203,7 +203,7 @@ namespace cmsl::sema
                 return;
             }
 
-            auto rhs = visit_child_expr(node.get_rhs());
+            auto rhs = visit_child_expr(node.rhs());
             if(!rhs)
             {
                 return;
@@ -217,7 +217,7 @@ namespace cmsl::sema
             }
 
             m_result_node = std::make_unique<binary_operator_node>(node,std::move(lhs),
-                                                                   node.get_operator(),
+                                                                   node.operator_(),
                                                                    *chosen_function,
                                                                    std::move(rhs),
                                                                    chosen_function->return_type());
@@ -225,14 +225,14 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::class_member_access_node& node)
         {
-            auto lhs = visit_child_expr(node.get_lhs());
+            auto lhs = visit_child_expr(node.lhs());
             if(!lhs)
             {
                 return;
             }
 
             const auto& lhs_type = lhs->type();
-            const auto member_name = node.get_member_name();
+            const auto member_name = node.member_name();
             auto member_info = lhs_type.find_member(member_name.str());
             if(!member_info)
             {
@@ -246,14 +246,15 @@ namespace cmsl::sema
         std::unique_ptr<expression_node>
         sema_builder_ast_visitor::build_function_call(const ast::function_call_node &node)
         {
-            auto params = get_function_call_params(node.get_param_nodes());
+            auto params = get_function_call_params(node.param_nodes());
             if(!params)
             {
                 return nullptr;
             }
 
-            const auto function_lookup_result = m_ctx.find_function(node.get_name());
-            overload_resolution over_resolution{ m_errors_observer, node.get_name() };
+            const auto function_lookup_result = m_ctx.find_function(node.name());
+            overload_resolution over_resolution{ m_errors_observer,
+                                                 node.name() };
             const auto chosen_function = over_resolution.choose(function_lookup_result, *params);
             if(!chosen_function)
             {
@@ -266,11 +267,11 @@ namespace cmsl::sema
 
             switch (chosen_function->context().type())
             {
-                case sema_context_interface::context_type::namespace_:
+                case sema_context::context_type::namespace_:
                 {
                     return std::make_unique<function_call_node>(node,*chosen_function, std::move(*params));
                 } break;
-                case sema_context_interface::context_type::class_:
+                case sema_context::context_type::class_:
                 {
                     const auto is_constructor = chosen_function->signature().name.str() == chosen_function->return_type().name().to_string();
                     if(is_constructor)
@@ -296,7 +297,7 @@ namespace cmsl::sema
         std::unique_ptr<expression_node>
         sema_builder_ast_visitor::build_add_subdirectory_call(const ast::function_call_node &node)
         {
-            auto params_opt = get_function_call_params(node.get_param_nodes());
+            auto params_opt = get_function_call_params(node.param_nodes());
             if(!params_opt)
             {
                 return nullptr;
@@ -305,14 +306,14 @@ namespace cmsl::sema
             auto& params = *params_opt;
             if(params.empty())
             {
-                raise_error(node.get_name(), "expected subdirectory name");
+                raise_error(node.name(), "expected subdirectory name");
                 return nullptr;
             }
 
             auto casted = dynamic_cast<string_value_node*>(params[0].get());
             if(!casted)
             {
-                raise_error(node.get_name(), "expected string literal as a subdirectory name");
+                raise_error(node.name(), "expected string literal as a subdirectory name");
                 return nullptr;
             }
 
@@ -340,7 +341,7 @@ namespace cmsl::sema
         void sema_builder_ast_visitor::visit(const ast::function_call_node& node)
         {
 
-            if(node.get_name().str() == "add_subdirectory")
+            if(node.name().str() == "add_subdirectory")
             {
                 m_result_node = build_add_subdirectory_call(node);
             }
@@ -352,21 +353,22 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::member_function_call_node& node)
         {
-            const auto name = node.get_name();
-            auto lhs = visit_child_expr(node.get_lhs());
+            const auto name = node.name();
+            auto lhs = visit_child_expr(node.lhs());
             if(!lhs)
             {
                 return;
             }
 
-            auto params = get_function_call_params(node.get_param_nodes());
+            auto params = get_function_call_params(node.param_nodes());
             if(!params)
             {
                 return;
             }
 
             const auto member_functions = lhs->type().find_member_function(name);
-            overload_resolution over_resolution{ m_errors_observer, node.get_name() };
+            overload_resolution over_resolution{ m_errors_observer,
+                                                 node.name() };
             const auto chosen_function = over_resolution.choose(member_functions, *params);
             if(!chosen_function)
             {
@@ -383,14 +385,14 @@ namespace cmsl::sema
         void sema_builder_ast_visitor::visit(const ast::bool_value_node& node)
         {
             const auto& type = builtin_types_finder{ m_ctx }.find_bool();
-            const auto value = node.get_token().str() == "true";
+            const auto value = node.token().str() == "true";
             m_result_node = std::make_unique<bool_value_node>(node, type, value);
         }
 
         void sema_builder_ast_visitor::visit(const ast::int_value_node& node)
         {
             const auto& type = builtin_types_finder{ m_ctx }.find_int();
-            const auto token = node.get_token();
+            const auto token = node.token();
             char* end;
             const auto value = std::strtol(token.str().data(), &end, 10); // todo: handle hex etc
             m_result_node = std::make_unique<int_value_node>(node, type, value);
@@ -399,7 +401,7 @@ namespace cmsl::sema
         void sema_builder_ast_visitor::visit(const ast::double_value_node& node)
         {
             const auto& type = builtin_types_finder{ m_ctx }.find_double();
-            const auto token = node.get_token();
+            const auto token = node.token();
             char* end;
             const auto value = std::strtod(token.str().data(), &end); // todo: handle hex etc
             m_result_node = std::make_unique<double_value_node>(node, type, value);
@@ -410,7 +412,7 @@ namespace cmsl::sema
             const auto& type = builtin_types_finder{ m_ctx }.find_string();
 
             // At this point node contains string value including "". We need to get rid of them.
-            const auto node_string = node.get_token().str();
+            const auto node_string = node.token().str();
             const auto string_without_quotation_marks = cmsl::string_view{ std::next(node_string.begin()),
                                                                            node_string.size() - 2u };
 
@@ -434,7 +436,7 @@ namespace cmsl::sema
         void sema_builder_ast_visitor::visit(const ast::return_node& node)
         {
             auto v = clone();
-            node.get_expression().visit(v);
+            node.expression().visit(v);
             if(!v.m_result_node)
             {
                 return;
@@ -450,7 +452,7 @@ namespace cmsl::sema
             auto ig = ids_guard();
             std::vector<std::unique_ptr<sema_node>> nodes;
 
-            for(auto n : node.get_nodes())
+            for(const auto& n : node.nodes())
             {
                 auto visited_node = visit_child(*n);
                 if(!visited_node)
@@ -464,9 +466,9 @@ namespace cmsl::sema
             m_result_node = std::make_unique<translation_unit_node>(node, m_ctx, std::move(nodes));
         }
 
-        void sema_builder_ast_visitor::visit(const ast::user_function_node2& node)
+        void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
         {
-            const auto return_type_reference = node.get_return_type_reference();
+            const auto return_type_reference = node.return_type_representation();
             auto return_type = try_get_or_create_generic_type(m_ctx, return_type_reference);
             if(!return_type)
             {
@@ -479,7 +481,7 @@ namespace cmsl::sema
             using param_decl_t = parameter_declaration;
             std::vector<param_decl_t> params;
 
-            for(const auto& param_decl : node.get_param_declarations())
+            for(const auto& param_decl : node.param_declarations())
             {
                 auto param_type = try_get_or_create_generic_type(m_ctx, param_decl.ty);
                 if(!param_type)
@@ -488,11 +490,11 @@ namespace cmsl::sema
                 }
 
                 params.emplace_back(param_decl_t{*param_type, param_decl.name});
-                m_ids_context.register_identifier(param_decl.name, param_type);
+                m_ids_context.register_identifier(param_decl.name, *param_type);
             }
 
             function_signature signature{
-                    node.get_name(),
+                    node.name(),
                     std::move(params)
             };
             auto& function = m_function_factory.create_user( m_ctx, *return_type, std::move(signature) );
@@ -504,7 +506,7 @@ namespace cmsl::sema
             // so function body will be able to figure out function return type
             // and make casted return expression nodes as needed.
             m_currently_parsed_function = &function;
-            auto block = visit_child_node<block_node>(node.get_body());
+            auto block = visit_child_node<block_node>(node.body());
             m_currently_parsed_function = nullptr;
             if(!block)
             {
@@ -519,7 +521,7 @@ namespace cmsl::sema
 
         void sema_builder_ast_visitor::visit(const ast::variable_declaration_node& node)
         {
-            const auto& type_representation = node.get_type_representation();
+            const auto& type_representation = node.type();
             const auto type = try_get_or_create_generic_type(m_ctx, type_representation);
             if(!type)
             {
@@ -527,7 +529,7 @@ namespace cmsl::sema
             }
 
             std::unique_ptr<expression_node> initialization;
-            if(auto init_node = node.get_initialization())
+            if(auto init_node = node.initialization())
             {
                 initialization = visit_child_expr(*init_node);
                 if(!initialization)
@@ -568,13 +570,13 @@ namespace cmsl::sema
                 }
             }
 
-            m_ids_context.register_identifier(node.get_name(), type);
-            m_result_node = std::make_unique<variable_declaration_node>(node, *type, node.get_name(), std::move(initialization));
+            m_ids_context.register_identifier(node.name(), *type);
+            m_result_node = std::make_unique<variable_declaration_node>(node, *type, node.name(), std::move(initialization));
         }
 
         void sema_builder_ast_visitor::visit(const ast::while_node& node)
         {
-            auto conditional = visit_child_node<conditional_node>(node.get_node());
+            auto conditional = visit_child_node<conditional_node>(node.node());
             if(!conditional)
             {
                 return;
@@ -583,7 +585,7 @@ namespace cmsl::sema
             m_result_node = std::make_unique<while_node>(node, std::move(conditional));
         }
 
-        const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(const sema_context_interface& search_context, const ast::type_representation& name)
+        const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(const sema_context& search_context, const ast::type_representation& name)
         {
             const auto found = search_context.find_type(name);
             if(found)
@@ -597,13 +599,23 @@ namespace cmsl::sema
                 return nullptr;
             }
 
+            const auto proper_generic_token_types = {
+                    lexer::token_type ::kw_list
+            };
+
+            if(!contains(proper_generic_token_types, name.primary_name().get_type()))
+            {
+                raise_error(name.primary_name(), "'" + std::string{name.primary_name().str()} + "' is not a generic type.");
+                return nullptr;
+            }
+
             auto factory = sema_generic_type_factory{ m_generic_types_context,
                                                       search_context,
                                                       m_type_factory,
                                                       m_function_factory,
-                                                      m_context_factory };
+                                                      m_context_factory,
+                                                      m_errors_observer};
 
-            // Todo: Add assert.
             return factory.create_generic(name);
         }
 
@@ -618,7 +630,7 @@ namespace cmsl::sema
             return std::unique_ptr<expression_node>(dynamic_cast<expression_node*>(node.release()));
         }
 
-        void sema_builder_ast_visitor::raise_error(const lexer::token::token token, const std::string& message)
+        void sema_builder_ast_visitor::raise_error(const lexer::token token, const std::string& message)
         {
             const auto line_info = token.source().line(token.src_range().begin.line);
             const auto err = errors::error{
@@ -637,7 +649,7 @@ namespace cmsl::sema
             return clone(m_ctx);
         }
 
-        sema_builder_ast_visitor sema_builder_ast_visitor::clone(sema_context_interface& ctx_to_visit) const
+        sema_builder_ast_visitor sema_builder_ast_visitor::clone(sema_context& ctx_to_visit) const
         {
             return sema_builder_ast_visitor{ m_generic_types_context,
                                              ctx_to_visit,
@@ -662,7 +674,7 @@ namespace cmsl::sema
         }
 
         template <typename T>
-        std::unique_ptr<T> sema_builder_ast_visitor::visit_child_node(const ast::ast_node& node, sema_context_interface& ctx_to_visit)
+        std::unique_ptr<T> sema_builder_ast_visitor::visit_child_node(const ast::ast_node& node, sema_context& ctx_to_visit)
         {
             return to_node<T>(visit_child(node, ctx_to_visit));
         }
@@ -674,7 +686,7 @@ namespace cmsl::sema
             return std::move(v.m_result_node);
         }
 
-        std::unique_ptr<sema_node> sema_builder_ast_visitor::visit_child(const ast::ast_node& node, sema_context_interface& ctx_to_visit)
+        std::unique_ptr<sema_node> sema_builder_ast_visitor::visit_child(const ast::ast_node& node, sema_context& ctx_to_visit)
         {
             auto v = clone(ctx_to_visit);
             node.visit(v);
@@ -706,10 +718,10 @@ namespace cmsl::sema
             return ids_ctx_guard{ m_ids_context };
         }
 
-        std::optional<sema_builder_ast_visitor::function_declaration> sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(const ast::user_function_node2& node,
-                                                                                      sema_context& ctx)
+        std::optional<sema_builder_ast_visitor::function_declaration> sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(const ast::user_function_node& node,
+                                                                                      sema_context_impl& ctx)
         {
-            const auto return_type_reference = node.get_return_type_reference();
+            const auto return_type_reference = node.return_type_representation();
             auto return_type = try_get_or_create_generic_type(ctx, return_type_reference);
             if(!return_type)
             {
@@ -721,7 +733,7 @@ namespace cmsl::sema
 
             std::vector<parameter_declaration> params;
 
-            for(const auto& param_decl : node.get_param_declarations())
+            for(const auto& param_decl : node.param_declarations())
             {
                 auto param_type = try_get_or_create_generic_type(ctx, param_decl.ty);
                 if(!param_type)
@@ -731,11 +743,11 @@ namespace cmsl::sema
                 }
 
                 params.emplace_back(parameter_declaration{*param_type, param_decl.name});
-                m_ids_context.register_identifier(param_decl.name, param_type);
+                m_ids_context.register_identifier(param_decl.name, *param_type);
             }
 
             function_signature signature{
-                    node.get_name(),
+                    node.name(),
                     std::move(params)
             };
             auto& function = m_function_factory.create_user( ctx, *return_type, std::move(signature) );
@@ -744,18 +756,18 @@ namespace cmsl::sema
             return function_declaration{
                     node,
                     &function,
-                    node.get_body()
+                    node.body()
             };
         }
 
-        std::optional<sema_builder_ast_visitor::class_members> sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(const ast::class_node2& node,
-                                                                                      sema_context& class_context)
+        std::optional<sema_builder_ast_visitor::class_members> sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(const ast::class_node& node,
+                                                                                      sema_context_impl& class_context)
         {
             class_members members;
 
-            for(auto n : node.get_nodes())
+            for(const auto& n : node.nodes())
             {
-                if (auto variable_decl = dynamic_cast<const ast::variable_declaration_node *>(n))
+                if (auto variable_decl = dynamic_cast<const ast::variable_declaration_node *>(n.get()))
                 {
                     auto member = visit_child_node<variable_declaration_node>(*variable_decl);
                     if (!member)
@@ -766,7 +778,7 @@ namespace cmsl::sema
                     members.info.emplace_back(member_info{member->name(), member->type()});
                     members.declarations.emplace_back(std::move(member));
                 }
-                else if(auto fun_node = dynamic_cast<const ast::user_function_node2*>(n))
+                else if(auto fun_node = dynamic_cast<const ast::user_function_node*>(n.get()))
                 {
                     auto function_declaration = get_function_declaration_and_add_to_ctx(*fun_node, class_context);
                     if(!function_declaration)
@@ -782,14 +794,14 @@ namespace cmsl::sema
         }
 
         template<unsigned N>
-        lexer::token::token sema_builder_ast_visitor::make_token(lexer::token::token_type token_type, const char (&tok)[N])
+        lexer::token sema_builder_ast_visitor::make_token(lexer::token_type token_type, const char (&tok)[N])
         {
             // N counts also '\0'
             const auto src_range = source_range{
                     source_location{ 1u, 1u, 0u },
                     source_location{ 1u, N, N - 1u }
             };
-            return lexer::token::token{ token_type, src_range, source_view{ tok } };
+            return lexer::token{ token_type, src_range, source_view{ tok } };
         }
 
         std::unique_ptr<expression_node>
@@ -873,8 +885,8 @@ namespace cmsl::sema
             }
 
             // Todo: Introduce utility to create generic name representations
-            using token_type_t = lexer::token::token_type;
-            lexer::token::token_container_t tokens{
+            using token_type_t = lexer::token_type;
+            lexer::token_container_t tokens{
                 make_token(token_type_t::kw_list, "list"),
                 make_token(token_type_t::less, "<")
             };

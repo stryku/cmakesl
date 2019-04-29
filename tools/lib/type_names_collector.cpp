@@ -5,7 +5,7 @@
 
 namespace cmsl::tools
 {
-    std::unordered_set<std::string> type_names_collector::collect(const sema::sema_context_interface& builtin_context, const sema::sema_node &start_node) const
+    std::unordered_set<std::string> type_names_collector::collect(const sema::sema_context& builtin_context, const sema::sema_node &start_node) const
     {
         std::unordered_set<std::string> type_names;
 

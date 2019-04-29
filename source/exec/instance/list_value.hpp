@@ -1,6 +1,6 @@
 #pragma once
 
-#include "exec/instance/int_alias.hpp"
+#include "common/int_alias.hpp"
 
 #include <memory>
 #include <deque>
@@ -70,7 +70,7 @@ namespace cmsl::exec::inst
                 bool empty() const;
 
                 int_t find(const instance& value, int_t pos = k_special_value) const;
-                // Todo: implement when instance factory is available here
+                // Todo: implement when instance factory is available here.
                 //list_value find_all(const instance& value, int_t pos = k_special_value);
 
             private:
@@ -78,7 +78,7 @@ namespace cmsl::exec::inst
                 void append_with_copy_to(const list_value& other, container_t& container) const;
 
                 container_t copy(const list_value& other) const;
-                int_t interpret_count(int_t value, int_t special_value) const; // Todo: rename to more generic way (it's used by count and pos)
+                int_t interpret_special_value(int_t value, int_t special_value) const;
                 container_t::const_iterator place(int_t pos) const;
 
                 template <typename IndexCalculator>

@@ -1,6 +1,6 @@
 #include "exec/expression_evaluation_visitor.hpp"
 
-#include "sema/sema_context.hpp"
+#include "sema/sema_context_impl.hpp"
 #include "sema/sema_type.hpp"
 
 #include "test/ast/mock/ast_node_mock.hpp"
@@ -14,7 +14,7 @@
 #include "test/exec/mock/cmake_facade_mock.hpp"
 
 #include <gmock/gmock.h>
-#include "exec/instance/int_alias.hpp"
+#include "common/int_alias.hpp"
 
 namespace cmsl::exec::test
 {
@@ -29,7 +29,7 @@ namespace cmsl::exec::test
 
             using namespace cmsl::test::common;
 
-            const sema::sema_context valid_context;
+            const sema::sema_context_impl valid_context;
             const sema::sema_type valid_type{ valid_context, ast::type_representation{token_identifier("foo")}, {} };
 
             class ExpressionEvaluationVisitorTest : public ::testing::Test
@@ -66,9 +66,9 @@ namespace cmsl::exec::test
                 // Todo: consider testing false too.
                 auto ast_node = fake_ast_node();
                 sema::bool_value_node true_node{ast_node, valid_type, true};
-                inst::instance_value_t value{true};
+                inst::instance_value_variant value{true};
 
-                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
+                EXPECT_CALL(m_instances, create(Matcher<inst::instance_value_variant>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(true_node);
@@ -81,13 +81,12 @@ namespace cmsl::exec::test
                 StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
-                // Todo: use int alias instead of std::int64_t
                 auto ast_node = fake_ast_node();
-                const auto test_value = std::int64_t{42};
+                const auto test_value = int_t{42};
                 sema::int_value_node node{ast_node, valid_type, test_value };
-                inst::instance_value_t value{test_value};
+                inst::instance_value_variant value{test_value};
 
-                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
+                EXPECT_CALL(m_instances, create(Matcher<inst::instance_value_variant>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
@@ -103,9 +102,9 @@ namespace cmsl::exec::test
                 auto ast_node = fake_ast_node();
                 const auto test_value = 42.42;
                 sema::double_value_node node{ast_node, valid_type, test_value };
-                inst::instance_value_t value{test_value};
+                inst::instance_value_variant value{test_value};
 
-                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
+                EXPECT_CALL(m_instances, create(Matcher<inst::instance_value_variant>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
@@ -121,9 +120,9 @@ namespace cmsl::exec::test
                 auto ast_node = fake_ast_node();
                 const auto test_value = std::string{"42"};
                 sema::string_value_node node{ast_node, valid_type, test_value };
-                inst::instance_value_t value{test_value};
+                inst::instance_value_variant value{test_value};
 
-                EXPECT_CALL(m_instances, create2(Matcher<inst::instance_value_t>(_)))
+                EXPECT_CALL(m_instances, create(Matcher<inst::instance_value_variant>(_)))
                         .WillOnce(Return(&instance_mock));
 
                 visitor.visit(node);
@@ -363,7 +362,7 @@ namespace cmsl::exec::test
                 EXPECT_CALL(m_ids_ctx, lookup_identifier(lhs_expression_token.str()))
                         .WillOnce(Return(&lhs_instance));
 
-                EXPECT_CALL(lhs_instance, get_member(member_name_token.str()))
+                EXPECT_CALL(lhs_instance, find_member(member_name_token.str()))
                 .WillOnce(Return(&member_instance));
 
                 expression_evaluation_visitor visitor{ m_ctx };

@@ -41,7 +41,7 @@ namespace cmsl::exec::inst
                 const auto pred = [](const auto& lhs_instance,
                                      const auto& rhs_instance)
                 {
-                    return lhs_instance->get_value_cref() == rhs_instance->get_value_cref();
+                    return lhs_instance->value_cref() == rhs_instance->value_cref();
                 };
 
                 return std::equal(std::cbegin(m_list), std::cend(m_list),
@@ -59,7 +59,7 @@ namespace cmsl::exec::inst
                 const auto pred = [](const auto& lhs_instance,
                                      const auto& rhs_instance)
                 {
-                    return lhs_instance->get_value_cref() < rhs_instance->get_value_cref();
+                    return lhs_instance->value_cref() < rhs_instance->value_cref();
                 };
 
                 return std::lexicographical_compare(cbegin(), cend(),
@@ -176,13 +176,13 @@ namespace cmsl::exec::inst
 
             void list_value::erase(int_t pos, int_t count)
             {
-                count = interpret_count(count, 1);
+                count = interpret_special_value(count, 1);
                 const auto where = place(pos);
                 const auto end = place(pos + count);
                 m_list.erase(where, end);
             }
 
-            int_t list_value::interpret_count(int_t value, int_t special_value) const
+            int_t list_value::interpret_special_value(int_t value, int_t special_value) const
             {
                 return value == k_special_value ? special_value : value;
             }
@@ -210,12 +210,12 @@ namespace cmsl::exec::inst
             int_t list_value::remove_impl(const instance& value, int_t count, IndexCalculator&& indexCalculator)
             {
                 int_t erased_counter{ 0 };
-                count = interpret_count(count, m_list.size());
+                count = interpret_special_value(count, m_list.size());
                 auto i{ 0 };
                 while(i < m_list.size() && count != 0)
                 {
                     const auto check_index = indexCalculator(i);
-                    if(m_list[check_index]->get_value_cref() != value.get_value_cref())
+                    if(m_list[check_index]->value_cref() != value.value_cref())
                     {
                         ++i;
                         continue;
@@ -253,7 +253,7 @@ namespace cmsl::exec::inst
             {
                 const auto pred = [](const auto& lhs, const auto& rhs)
                 {
-                    return lhs->get_value_cref() < rhs->get_value_cref();
+                    return lhs->value_cref() < rhs->value_cref();
                 };
 
                 std::sort(begin(), end(), pred);
@@ -268,7 +268,7 @@ namespace cmsl::exec::inst
             {
                 const auto pred = [](const auto& lhs, const auto& rhs)
                 {
-                    return lhs->get_value_cref() < rhs->get_value_cref();
+                    return lhs->value_cref() < rhs->value_cref();
                 };
                 const auto min_it = std::min_element(cbegin(), cend(), pred);
                 if(min_it == cend())
@@ -284,7 +284,7 @@ namespace cmsl::exec::inst
             {
                 const auto pred = [](const auto& lhs, const auto& rhs)
                 {
-                    return lhs->get_value_cref() < rhs->get_value_cref();
+                    return lhs->value_cref() < rhs->value_cref();
                 };
                 const auto max_it = std::max_element(cbegin(), cend(), pred);
                 if(max_it == cend())
@@ -318,7 +318,7 @@ namespace cmsl::exec::inst
 
             list_value list_value::sublist(int_t pos, int_t count) const
             {
-                count = interpret_count(count, m_list.size() - pos);
+                count = interpret_special_value(count, m_list.size() - pos);
                 const auto from = place(pos);
                 const auto to = place(pos + count);
                 container_t copied;
@@ -344,12 +344,12 @@ namespace cmsl::exec::inst
 
             int_t list_value::find(const instance &value, int_t pos) const
             {
-                pos = interpret_count(pos, 0);
+                pos = interpret_special_value(pos, 0);
                 const auto start = place(pos);
                 const auto found = std::find_if(start, cend(),
                         [&value](const auto& element)
                         {
-                            return element->get_value_cref() == value.get_value_cref();
+                            return element->value_cref() == value.value_cref();
                         });
 
                 return found == cend() ? -1 : std::distance(cbegin(), found);

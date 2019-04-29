@@ -13,7 +13,7 @@ namespace cmsl
 
     namespace sema
     {
-        class add_subdirectory_semantic_handler;
+        class add_subdirectory_handler;
         class sema_type_factory;
         class sema_function_factory;
         class sema_context_factory;
@@ -30,7 +30,7 @@ namespace cmsl
                                      sema::sema_type_factory& type_factory,
                                      sema::sema_function_factory& function_factory,
                                      sema::sema_context_factory& context_factory,
-                                     sema::add_subdirectory_semantic_handler& add_subdirectory_handler);
+                                     sema::add_subdirectory_handler& add_subdirectory_handler);
 
             std::unique_ptr<compiled_source> compile(source_view source);
 
@@ -39,7 +39,7 @@ namespace cmsl
             sema::sema_type_factory& m_type_factory;
             sema::sema_function_factory& m_function_factory;
             sema::sema_context_factory& m_context_factory;
-            sema::add_subdirectory_semantic_handler& m_add_subdirectory_handler;
+            sema::add_subdirectory_handler& m_add_subdirectory_handler;
         };
     }
 }

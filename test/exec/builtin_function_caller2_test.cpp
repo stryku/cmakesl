@@ -33,11 +33,11 @@ namespace cmsl::exec::test
                 EXPECT_CALL(facade, get_cmake_version())
                         .WillOnce(Return(test_cmake_version));
 
-                const auto version_param_value = inst::instance_value_t{ inst::version_value{ 0, 1, 0, 0 } };
-                EXPECT_CALL(version_param_instance, get_value_cref())
+                const auto version_param_value = inst::instance_value_variant{ inst::version_value{ 0, 1, 0, 0 } };
+                EXPECT_CALL(version_param_instance, value_cref())
                         .WillOnce(ReturnRef(version_param_value));
 
-                EXPECT_CALL(instances, create2_void())
+                EXPECT_CALL(instances, create_void())
                         .WillOnce(Return(return_instance_ptr));
 
                 EXPECT_CALL(instances, gather_ownership(return_instance_ptr))
@@ -63,11 +63,11 @@ namespace cmsl::exec::test
                 EXPECT_CALL(facade, get_cmake_version())
                         .WillOnce(Return(test_cmake_version));
 
-                const auto version_param_value = inst::instance_value_t{ inst::version_value{ 1, 0, 0, 0 } };
-                EXPECT_CALL(version_param_instance, get_value_cref())
+                const auto version_param_value = inst::instance_value_variant{ inst::version_value{ 1, 0, 0, 0 } };
+                EXPECT_CALL(version_param_instance, value_cref())
                         .WillOnce(ReturnRef(version_param_value));
 
-                EXPECT_CALL(instances, create2_void())
+                EXPECT_CALL(instances, create_void())
                         .WillOnce(Return(return_instance_ptr));
 
                 EXPECT_CALL(instances, gather_ownership(return_instance_ptr))
@@ -93,13 +93,13 @@ namespace cmsl::exec::test
                 EXPECT_CALL(facade, get_cmake_version())
                         .WillOnce(Return(test_cmake_version));
 
-                const auto version_param_value = inst::instance_value_t{ inst::version_value{ 2, 0, 0, 0 } };
-                EXPECT_CALL(version_param_instance, get_value_cref())
+                const auto version_param_value = inst::instance_value_variant{ inst::version_value{ 2, 0, 0, 0 } };
+                EXPECT_CALL(version_param_instance, value_cref())
                         .WillOnce(ReturnRef(version_param_value));
 
                 EXPECT_CALL(facade, fatal_error(_));
 
-                EXPECT_CALL(instances, create2_void())
+                EXPECT_CALL(instances, create_void())
                         .WillOnce(Return(return_instance_ptr));
 
                 EXPECT_CALL(instances, gather_ownership(return_instance_ptr))

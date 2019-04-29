@@ -1,4 +1,4 @@
-#include "ast/parser2.hpp"
+#include "ast/parser.hpp"
 #include "ast/ast_node.hpp"
 #include "ast/block_node.hpp"
 
@@ -11,10 +11,10 @@
 
 namespace cmsl::ast::test
 {
-            using token_t = cmsl::lexer::token::token;
-            using token_type_t = cmsl::lexer::token::token_type;
-            using tokens_container_t = cmsl::lexer::token::token_container_t;
-            using parser_t = cmsl::ast::parser2;
+            using token_t = cmsl::lexer::token;
+            using token_type_t = cmsl::lexer::token_type;
+            using tokens_container_t = cmsl::lexer::token_container_t;
+            using parser_t = cmsl::ast::parser;
 
             using ::testing::_;
             using ::testing::IsNull;
@@ -41,8 +41,8 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = tokens_container_t{ GetParam() };
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.factor();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_factor();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -107,8 +107,8 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.expr();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_expr();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -135,13 +135,12 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.expr();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_expr();
 
                     EXPECT_THAT(result, IsNull());
                 }
 
-                // Todo: change all *_token to *_tok
                 const auto id_token = token_identifier("foo");
                 const auto param_token = token_identifier("bar");
                 const auto op_token = token_open_paren();
@@ -169,8 +168,8 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.variable_declaration();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_variable_declaration();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -205,8 +204,8 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.get_while_node();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_while_node();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -242,8 +241,8 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.get_if_else_node();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_if_else_node();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -294,8 +293,8 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.block();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_block();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -325,8 +324,8 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.function();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_function();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -372,8 +371,8 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.class_();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_class();
 
                     EXPECT_THAT(result, IsNull());
                 }
@@ -416,8 +415,8 @@ namespace cmsl::ast::test
                     EXPECT_CALL(errs.mock, notify_error(_));
 
                     const auto tokens = GetParam();
-                    parser2 p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result = p.initializer_list();
+                    parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+                    auto result = p.parse_initializer_list();
 
                     EXPECT_THAT(result, IsNull());
                 }

@@ -16,12 +16,12 @@ namespace cmsl::ast
         if_else_node::~if_else_node()
         {}
 
-        const if_else_node::ifs_t &if_else_node::get_ifs() const
+        const if_else_node::ifs_t &if_else_node::ifs() const
         {
             return m_ifs;
         }
 
-        const block_node* if_else_node::get_else_body() const
+        const block_node* if_else_node::else_body() const
         {
             return m_else ? m_else->body.get() : nullptr;
         }

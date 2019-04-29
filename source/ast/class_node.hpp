@@ -3,19 +3,18 @@
 #include "ast/ast_node.hpp"
 #include "common/string.hpp"
 
-#include "lexer/token/token.hpp"
+#include "lexer/token.hpp"
 
 #include <algorithm>
 
 namespace cmsl::ast
 {
-    // Todo: change name
-    class class_node2 : public ast_node
+    class class_node : public ast_node
     {
     public:
         using nodes_t = std::vector<std::unique_ptr<ast_node>>;
 
-        class_node2(token_t class_kw,
+        class_node(token_t class_kw,
                     token_t name,
                     token_t open_brace,
                     nodes_t nodes,
@@ -34,8 +33,7 @@ namespace cmsl::ast
             return m_class_kw;
         }
 
-        // todo: remove get_
-        token_t get_name() const
+        token_t name() const
         {
             return m_name;
         }
@@ -55,20 +53,9 @@ namespace cmsl::ast
             return m_semicolon;
         }
 
-        // Todo: return const vector ref
-        std::vector<const ast_node*> get_nodes() const
+        const nodes_t& nodes() const
         {
-            std::vector<const ast_node*> nodes;
-
-            // Todo: lazy init and store
-            std::transform(std::begin(m_nodes), std::end(m_nodes),
-                          std::back_inserter(nodes),
-                          [](const auto& unique_node)
-                           {
-                               return unique_node.get();
-                           });
-
-            return nodes;
+            return m_nodes;
         }
 
         void visit(ast_node_visitor &visitor) const override

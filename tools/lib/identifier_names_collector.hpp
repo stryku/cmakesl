@@ -8,7 +8,7 @@ namespace cmsl
     namespace sema
     {
         class sema_node;
-        class sema_context_interface;
+        class sema_context;
     }
 
     namespace tools

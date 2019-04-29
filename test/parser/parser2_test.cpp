@@ -10,7 +10,7 @@
 #include "ast/while_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/user_function_node.hpp"
-#include "ast/parser2.hpp"
+#include "ast/parser.hpp"
 
 #include "errors/errors_observer.hpp"
 
@@ -20,11 +20,10 @@
 
 namespace cmsl::ast::test
 {
-        // Todo: Consider adding semicolon at the end of all test tokens
-            using token_t = cmsl::lexer::token::token;
-            using token_type_t = cmsl::lexer::token::token_type;
-            using tokens_container_t = cmsl::lexer::token::token_container_t;
-            using parser_t = cmsl::ast::parser2;
+            using token_t = cmsl::lexer::token;
+            using token_type_t = cmsl::lexer::token_type;
+            using tokens_container_t = cmsl::lexer::token_container_t;
+            using parser_t = cmsl::ast::parser;
 
             using namespace cmsl::test::common;
             errors::errors_observer dummy_err_observer;
@@ -41,18 +40,18 @@ namespace cmsl::ast::test
                 virtual void visit(const block_node& node) override
                 {
                     m_result += "block{";
-                    for(auto n : node.get_expressions())
+                    for(const auto& n : node.nodes())
                     {
                         n->visit(*this);
                     }
                     m_result += "}";
                 }
 
-                virtual void visit(const class_node2& node) override
+                virtual void visit(const class_node& node) override
                 {
-                    m_result += "class{name:" + std::string{ node.get_name().str() } + ";members:";
+                    m_result += "class{name:" + std::string{node.name().str() } + ";members:";
 
-                    for(auto n : node.get_nodes())
+                    for(const auto& n : node.nodes())
                     {
                         n->visit(*this);
                     }
@@ -63,21 +62,21 @@ namespace cmsl::ast::test
                 virtual void visit(const conditional_node& node) override
                 {
                     m_result += "conditional{condition:";
-                    node.get_condition().visit(*this);
+                    node.condition().visit(*this);
                     m_result += ";block:";
-                    node.get_block().visit(*this);
+                    node.body().visit(*this);
                     m_result += "}";
                 }
 
                 virtual void visit(const if_else_node& node) override
                 {
                     m_result += "if_else{ifs:";
-                    for (const auto &if_ : node.get_ifs())
+                    for (const auto &if_ : node.ifs())
                     {
                         if_.conditional->visit(*this);
                     }
                     m_result += ";else:";
-                    auto else_node = node.get_else_body();
+                    auto else_node = node.else_body();
                     if (else_node)
                     {
                         else_node->visit(*this);
@@ -88,23 +87,23 @@ namespace cmsl::ast::test
                 virtual void visit(const binary_operator_node& node) override
                 {
                     m_result += "binary_operator{lhs:";
-                    node.get_lhs().visit(*this);
-                    m_result += ";operator:" + std::string{ node.get_operator().str() } + ";rhs:";
-                    node.get_rhs().visit(*this);
+                    node.lhs().visit(*this);
+                    m_result += ";operator:" + std::string{node.operator_().str() } + ";rhs:";
+                    node.rhs().visit(*this);
                     m_result += "}";
                 }
 
                 virtual void visit(const class_member_access_node& node) override
                 {
                     m_result += "class_member_access{lhs:";
-                    node.get_lhs().visit(*this);
-                    m_result += ";member_name:" + std::string{ node.get_member_name().str() } + "}";
+                    node.lhs().visit(*this);
+                    m_result += ";member_name:" + std::string{node.member_name().str() } + "}";
                 }
 
                 virtual void visit(const function_call_node& node) override
                 {
-                    m_result += "function_call{name:" + std::string{ node.get_name().str() } + ";params:";
-                    for(const auto& param : node.get_param_nodes())
+                    m_result += "function_call{name:" + std::string{node.name().str() } + ";params:";
+                    for(const auto& param : node.param_nodes())
                     {
                         param->visit(*this);
                     }
@@ -113,11 +112,11 @@ namespace cmsl::ast::test
 
                 virtual void visit(const member_function_call_node& node) override
                 {
-                    m_result += "function_call{name:" + std::string{ node.get_name().str() } + ";params:";
+                    m_result += "function_call{name:" + std::string{node.name().str() } + ";params:";
                     m_result += "function_call{lhs:";
-                    node.get_lhs().visit(*this);
-                    m_result += ";name:" + std::string{ node.get_name().str() } + ";params:";
-                    for(const auto& param : node.get_param_nodes())
+                    node.lhs().visit(*this);
+                    m_result += ";name:" + std::string{node.name().str() } + ";params:";
+                    for(const auto& param : node.param_nodes())
                     {
                         param->visit(*this);
                     }
@@ -126,22 +125,22 @@ namespace cmsl::ast::test
 
                 virtual void visit(const bool_value_node& node) override
                 {
-                    m_result += "bool_value{" + std::string{ node.get_token().str() } + "}";
+                    m_result += "bool_value{" + std::string{node.token().str() } + "}";
                 }
 
                 virtual void visit(const int_value_node& node) override
                 {
-                    m_result += "int_value{" + std::string{ node.get_token().str() } + "}";
+                    m_result += "int_value{" + std::string{node.token().str() } + "}";
                 }
 
                 virtual void visit(const double_value_node& node) override
                 {
-                    m_result += "double_value{" + std::string{ node.get_token().str() } + "}";
+                    m_result += "double_value{" + std::string{node.token().str() } + "}";
                 }
 
                 virtual void visit(const string_value_node& node) override
                 {
-                    m_result += "string_value{" + std::string{ node.get_token().str() } + "}";
+                    m_result += "string_value{" + std::string{node.token().str() } + "}";
                 }
 
                 virtual void visit(const id_node& node) override
@@ -152,43 +151,43 @@ namespace cmsl::ast::test
                 virtual void visit(const return_node& node) override
                 {
                     m_result += "return{";
-                    node.get_expression().visit(*this);
+                    node.expression().visit(*this);
                     m_result += "}";
                 }
 
                 virtual void visit(const translation_unit_node& node) override
                 {
                     m_result += "translation_unit{";
-                    for(const auto n : node.get_nodes())
+                    for(const auto& n : node.nodes())
                     {
                         n->visit(*this);
                     }
                     m_result += "}";
                 }
 
-                virtual void visit(const user_function_node2& node) override
+                virtual void visit(const user_function_node& node) override
                 {
                     m_result += "user_function{return_type:";
-                    const auto ret_type_reference = node.get_return_type_reference();
+                    const auto ret_type_reference = node.return_type_representation();
                     m_result += ret_type_reference.to_string() + ";name:";
-                    m_result += std::string{ node.get_name().str() } + ";params:";
-                    for(const auto& param_declaration : node.get_param_declarations())
+                    m_result += std::string{node.name().str() } + ";params:";
+                    for(const auto& param_declaration : node.param_declarations())
                     {
                         m_result += "param_declaration{type:" + param_declaration.ty.to_string();
                         m_result += ";name:" + std::string{ param_declaration.name.str() } + "}";
                     }
                     m_result += ";body:";
-                    node.get_body().visit(*this);
+                    node.body().visit(*this);
                     m_result += "}";
                 }
 
                 virtual void visit(const variable_declaration_node& node) override
                 {
                     m_result += "variable_declaration{type:";
-                    const auto ret_type_reference = node.get_type_representation();
+                    const auto ret_type_reference = node.type();
                     m_result += ret_type_reference.to_string() + ";name:";
-                    m_result += std::string{ node.get_name().str() } + ";initialization:";
-                    if(const auto init = node.get_initialization())
+                    m_result += std::string{node.name().str() } + ";initialization:";
+                    if(const auto init = node.initialization())
                     {
                         init->visit(*this);
                     }
@@ -198,7 +197,7 @@ namespace cmsl::ast::test
                 virtual void visit(const while_node& node) override
                 {
                     m_result += "while{";
-                    node.get_node().visit(*this);
+                    node.node().visit(*this);
                     m_result += "}";
                 }
 
@@ -246,7 +245,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -260,7 +259,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -274,7 +273,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -288,7 +287,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -302,7 +301,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -316,7 +315,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -332,7 +331,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ lparen, id, rparen };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.factor();
+                auto result_ast = parser.parse_factor();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -353,7 +352,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ lhs_token, op_token, rhs_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -382,7 +381,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ lhs_lhs_token, lhs_op_token, lhs_rhs_token, op_token, rhs_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -411,7 +410,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ lhs_token, op_token, rhs_lhs_token, rhs_op_token, rhs_rhs_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -429,7 +428,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{ fun_name_token, token_open_paren(), token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -444,7 +443,6 @@ namespace cmsl::ast::test
                 const auto param3 = token_integer("42");
                 const auto comma = token_comma();
 
-                // Todo: initialize instead of emplaces
                 function_call_node::params_t params;
                 params.emplace_back(std::make_unique<id_node>(param1));
                 params.emplace_back(std::make_unique<string_value_node>(param2));
@@ -461,7 +459,7 @@ namespace cmsl::ast::test
                                                         param3,
                                                         token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -488,7 +486,7 @@ namespace cmsl::ast::test
                                                        token_open_paren(),
                                                        token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -506,7 +504,6 @@ namespace cmsl::ast::test
 
                 auto lhs = std::make_unique<id_node>(class_name_token);
 
-                // Todo: initialize instead of emplaces
                 function_call_node::params_t params;
                 params.emplace_back(std::make_unique<id_node>(param1));
                 params.emplace_back(std::make_unique<string_value_node>(param2));
@@ -530,7 +527,7 @@ namespace cmsl::ast::test
                                                         param3,
                                                         token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -567,7 +564,7 @@ namespace cmsl::ast::test
                                                        token_open_paren(),
                                                        token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -617,7 +614,7 @@ namespace cmsl::ast::test
                                                        param3,
                                                        token_close_paren() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -637,7 +634,7 @@ namespace cmsl::ast::test
 
                 const auto tokens = tokens_container_t{class_name_token, token_dot(), member_name_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -669,7 +666,7 @@ namespace cmsl::ast::test
                                                        token_dot(),
                                                        member_name_token };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.expr();
+                auto result_ast = parser.parse_expr();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -682,7 +679,7 @@ namespace cmsl::ast::test
 
                 auto condition_expr_node = std::make_unique<id_node>(condition_token);
                 auto block = std::make_unique<block_node>(tmp_token,
-                                                          block_node::expressions_t{},
+                                                          block_node::nodes_t{},
                                                           tmp_token);
                 auto condition_node = std::make_unique<conditional_node>(tmp_token,
                                                                          std::move(condition_expr_node),
@@ -701,7 +698,7 @@ namespace cmsl::ast::test
                                                        token_open_brace(),
                                                        token_close_brace() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_if_else_node();
+                auto result_ast = parser.parse_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -713,13 +710,13 @@ namespace cmsl::ast::test
                 const auto condition_token = token_identifier("foo");
 
                 auto condition_expr_node = std::make_unique<id_node>(condition_token);
-                auto block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto condition_node = std::make_unique<conditional_node>(tmp_token, std::move(condition_expr_node), tmp_token, std::move(block));
 
                 if_else_node::ifs_t ifs;
                 ifs.emplace_back( if_else_node::if_values{std::nullopt, tmp_token, std::move(condition_node)} );
 
-                auto else_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto else_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto else_value = if_else_node::last_else_value{ tmp_token, std::move(else_node) };
 
                 auto expected_ast = std::make_unique<if_else_node>(std::move(ifs), std::move(else_value));
@@ -734,7 +731,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace()};
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_if_else_node();
+                auto result_ast = parser.parse_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -747,18 +744,18 @@ namespace cmsl::ast::test
                 const auto elseif_condition_token = token_identifier("bar");
 
                 auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
-                auto if_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto if_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto if_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(if_condition_expr_node), tmp_token, std::move(if_block));
 
                 auto elseif_condition_expr_node = std::make_unique<id_node>(elseif_condition_token);
-                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto elseif_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(elseif_condition_expr_node), tmp_token, std::move(elseif_block));
 
                 if_else_node::ifs_t ifs;
                 ifs.emplace_back( if_else_node::if_values{std::nullopt, tmp_token, std::move(if_condition_node)} );
                 ifs.emplace_back( if_else_node::if_values{tmp_token, tmp_token, std::move(elseif_condition_node)} );
 
-                auto else_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto else_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto else_value = if_else_node::last_else_value{ tmp_token, std::move(else_node) };
 
                 auto expected_ast = std::make_unique<if_else_node>(std::move(ifs), std::move(else_value));
@@ -782,7 +779,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_if_else_node();
+                auto result_ast = parser.parse_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -795,11 +792,11 @@ namespace cmsl::ast::test
                 const auto elseif_condition_token = token_identifier("bar");
 
                 auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
-                auto if_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token); // Todo: introduce a fixture and method to create empty block node
+                auto if_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token); // Todo: introduce a fixture and method to create empty block node
                 auto if_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(if_condition_expr_node), tmp_token, std::move(if_block));
 
                 auto elseif_condition_expr_node = std::make_unique<id_node>(elseif_condition_token);
-                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto elseif_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(elseif_condition_expr_node), tmp_token, std::move(elseif_block));
 
                 if_else_node::ifs_t ifs;
@@ -823,7 +820,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{  dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_if_else_node();
+                auto result_ast = parser.parse_if_else_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -835,7 +832,7 @@ namespace cmsl::ast::test
                 const auto condition_token = token_identifier("foo");
 
                 auto condition_expr_node = std::make_unique<id_node>(condition_token);
-                auto block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto condition_node = std::make_unique<conditional_node>(tmp_token, std::move(condition_expr_node), tmp_token, std::move(block));
 
                 auto expected_ast = std::make_unique<while_node>(tmp_token, std::move(condition_node));
@@ -847,7 +844,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_while_node();
+                auto result_ast = parser.parse_while_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -865,7 +862,7 @@ namespace cmsl::ast::test
                                                         expression_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.get_return_node();
+                auto result_ast = parser.parse_return_node();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -883,7 +880,7 @@ namespace cmsl::ast::test
 
                     const auto tokens = tokens_container_t{ token };
                     auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                    auto result_type_reference = parser.type();
+                    auto result_type_reference = parser.parse_type();
 
                     ASSERT_TRUE(result_type_reference);
                     EXPECT_THAT(result_type_reference->tokens(), Eq(expected_reference.tokens()));
@@ -911,7 +908,7 @@ namespace cmsl::ast::test
                                                                      { value_type_representation } };
 
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, expected_type_tokens };
-                auto result_type_reference = parser.type();
+                auto result_type_reference = parser.parse_type();
 
                 ASSERT_TRUE(result_type_reference);
                 EXPECT_THAT(*result_type_reference, Eq(expected_reference));
@@ -948,7 +945,7 @@ namespace cmsl::ast::test
                                                                      { value_type_representation }};
 
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, expected_type_tokens };
-                auto result_type_reference = parser.type();
+                auto result_type_reference = parser.parse_type();
 
                 ASSERT_TRUE(result_type_reference);
                 EXPECT_THAT(*result_type_reference, Eq(expected_representation));
@@ -968,7 +965,7 @@ namespace cmsl::ast::test
                                                         name_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.variable_declaration();
+                auto result_ast = parser.parse_variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1001,7 +998,7 @@ namespace cmsl::ast::test
                                                         name_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.variable_declaration();
+                auto result_ast = parser.parse_variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1029,7 +1026,7 @@ namespace cmsl::ast::test
                                                         int_expr_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.variable_declaration();
+                auto result_ast = parser.parse_variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1070,7 +1067,7 @@ namespace cmsl::ast::test
                                                         int_expr_token,
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.variable_declaration();
+                auto result_ast = parser.parse_variable_declaration();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1079,12 +1076,12 @@ namespace cmsl::ast::test
             TEST(Parser2Test, Block_OpenBraceCloseBrace_GetBlock)
             {
                 // {}
-                auto expected_ast = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto expected_ast = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
 
                 const auto tokens = tokens_container_t{ token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1098,7 +1095,7 @@ namespace cmsl::ast::test
                 const auto variable_type_ref = type_representation{ variable_type_token };
                 auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, std::nullopt, tmp_token);
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(variable_decl_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1109,7 +1106,7 @@ namespace cmsl::ast::test
                                                         token_semicolon(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1122,23 +1119,23 @@ namespace cmsl::ast::test
                 const auto elseif_condition_token = token_identifier("bar");
 
                 auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
-                auto if_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto if_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto if_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(if_condition_expr_node), tmp_token, std::move(if_block));
 
                 auto elseif_condition_expr_node = std::make_unique<id_node>(elseif_condition_token);
-                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto elseif_block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto elseif_condition_node = std::make_unique<conditional_node>(tmp_token, std::move(elseif_condition_expr_node), tmp_token, std::move(elseif_block));
 
                 if_else_node::ifs_t ifs;
                 ifs.emplace_back( if_else_node::if_values{std::nullopt, tmp_token, std::move(if_condition_node)} );
                 ifs.emplace_back( if_else_node::if_values{tmp_token, tmp_token, std::move(elseif_condition_node)} );
 
-                auto else_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto else_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto else_value = if_else_node::last_else_value{ tmp_token, std::move(else_node) };
 
                 auto if_else = std::make_unique<if_else_node>(std::move(ifs), std::move(else_value));
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(if_else));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1166,7 +1163,7 @@ namespace cmsl::ast::test
 
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1185,7 +1182,7 @@ namespace cmsl::ast::test
                                                                         op_token,
                                                                         std::move(rhs_node));
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(expr_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1197,7 +1194,7 @@ namespace cmsl::ast::test
                                                         token_semicolon(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1209,12 +1206,12 @@ namespace cmsl::ast::test
                 const auto condition_token = token_identifier("foo");
 
                 auto condition_expr_node = std::make_unique<id_node>(condition_token);
-                auto block = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
+                auto block = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
                 auto condition_node = std::make_unique<conditional_node>(tmp_token, std::move(condition_expr_node), tmp_token, std::move(block));
 
                 auto while_ast_node = std::make_unique<while_node>(tmp_token, std::move(condition_node));
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(while_ast_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1228,7 +1225,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1242,7 +1239,7 @@ namespace cmsl::ast::test
                 auto expr_node = std::make_unique<id_node>(expression_token);
                 auto return_ast_node = std::make_unique<return_node>(tmp_token, std::move(expr_node), tmp_token);
 
-                block_node::expressions_t exprs;
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(return_ast_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1253,7 +1250,7 @@ namespace cmsl::ast::test
                                                         token_semicolon(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1263,8 +1260,8 @@ namespace cmsl::ast::test
             {
                 // { {} }
 
-                auto nested_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
-                block_node::expressions_t exprs;
+                auto nested_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
+                block_node::nodes_t exprs;
                 exprs.emplace_back(std::move(nested_block_node));
 
                 auto expected_ast = std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
@@ -1274,7 +1271,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.block();
+                auto result_ast = parser.parse_block();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1286,11 +1283,11 @@ namespace cmsl::ast::test
                 const auto function_type_token = token_kw_double();
                 const auto function_name_token = token_identifier("foo");
                 const auto function_type_ref = type_representation{ function_type_token };
-                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
-                auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
+                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
+                auto expected_ast = std::make_unique<user_function_node>(function_type_ref,
                                                                           function_name_token,
                                                                           tmp_token,
-                                                                          user_function_node2::params_t{},
+                                                                          user_function_node::params_t{},
                                                                           tmp_token,
                                                                           std::move(function_block_node));
 
@@ -1301,7 +1298,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.function();
+                auto result_ast = parser.parse_function();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1318,12 +1315,12 @@ namespace cmsl::ast::test
                 const auto param_name_token = token_identifier("baz");
                 const auto param_type_ref = type_representation{ param_type_token };
 
-                user_function_node2::params_t params{
+                user_function_node::params_t params{
                         param_declaration{param_type_ref, param_name_token }
                 };
 
-                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
-                auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
+                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
+                auto expected_ast = std::make_unique<user_function_node>(function_type_ref,
                                                                           function_name_token,
                                                                           tmp_token,
                                                                           std::move(params),
@@ -1341,7 +1338,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.function();
+                auto result_ast = parser.parse_function();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1362,13 +1359,13 @@ namespace cmsl::ast::test
                 const auto param2_name_token = token_identifier("out_of_fancy_identifiers");
                 const auto param2_type_ref = type_representation{ param2_type_token };
 
-                user_function_node2::params_t params{
+                user_function_node::params_t params{
                         param_declaration{param_type_ref, param_name_token },
                         param_declaration{param2_type_ref, param2_name_token }
                 };
 
-                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
-                auto expected_ast = std::make_unique<user_function_node2>(function_type_ref,
+                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
+                auto expected_ast = std::make_unique<user_function_node>(function_type_ref,
                                                                           function_name_token,
                                                                           tmp_token,
                                                                           std::move(params),
@@ -1391,7 +1388,7 @@ namespace cmsl::ast::test
                                                         token_open_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.function();
+                auto result_ast = parser.parse_function();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1402,10 +1399,10 @@ namespace cmsl::ast::test
                 // class foo {};
                 const auto name_token = token_identifier("foo");
 
-                auto expected_ast = std::make_unique<class_node2>(tmp_token,
+                auto expected_ast = std::make_unique<class_node>(tmp_token,
                                                                   name_token,
                                                                   tmp_token,
-                                                                  class_node2::nodes_t{},
+                                                                  class_node::nodes_t{},
                                                                   tmp_token,
                                                                   tmp_token);
 
@@ -1415,7 +1412,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.class_();
+                auto result_ast = parser.parse_class();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1430,10 +1427,10 @@ namespace cmsl::ast::test
                 const auto variable_type_ref = type_representation{ variable_type_token };
                 auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, std::nullopt, tmp_token);
 
-                class_node2::nodes_t nodes;
+                class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(variable_decl_node));
 
-                auto expected_ast = std::make_unique<class_node2>(tmp_token,
+                auto expected_ast = std::make_unique<class_node>(tmp_token,
                                                                   name_token,
                                                                   tmp_token,
                                                                   std::move(nodes),
@@ -1449,7 +1446,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.class_();
+                auto result_ast = parser.parse_class();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1463,11 +1460,11 @@ namespace cmsl::ast::test
                 const auto function_type_token = token_kw_double();
                 const auto function_name_token = token_identifier("bar");
                 const auto function_type_ref = type_representation{ function_type_token };
-                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::expressions_t{}, tmp_token);
-                auto fun_node = std::make_unique<user_function_node2>(function_type_ref,
+                auto function_block_node = std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
+                auto fun_node = std::make_unique<user_function_node>(function_type_ref,
                                                                       function_name_token,
                                                                       tmp_token,
-                                                                      user_function_node2::params_t{},
+                                                                      user_function_node::params_t{},
                                                                       tmp_token,
                                                                       std::move(function_block_node));
 
@@ -1476,11 +1473,11 @@ namespace cmsl::ast::test
                 const auto variable_type_ref = type_representation{ variable_type_token };
                 auto variable_decl_node = std::make_unique<variable_declaration_node>(variable_type_ref, variable_name_token, std::nullopt, tmp_token);
 
-                class_node2::nodes_t nodes;
+                class_node::nodes_t nodes;
                 nodes.emplace_back(std::move(fun_node));
                 nodes.emplace_back(std::move(variable_decl_node));
 
-                auto expected_ast = std::make_unique<class_node2>(tmp_token,
+                auto expected_ast = std::make_unique<class_node>(tmp_token,
                                                                   name_token,
                                                                   tmp_token,
                                                                   std::move(nodes),
@@ -1505,7 +1502,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_semicolon() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.class_();
+                auto result_ast = parser.parse_class();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1562,7 +1559,7 @@ namespace cmsl::ast::test
                                                         token_close_brace(),
                                                         token_close_brace() };
                 auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-                auto result_ast = parser.initializer_list();
+                auto result_ast = parser.parse_initializer_list();
 
                 ASSERT_THAT(result_ast, NotNull());
                 EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));

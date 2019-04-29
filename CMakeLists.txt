@@ -15,8 +15,7 @@ add_subdirectory(examples)
 
 if(CMAKESL_WITH_TESTS)
     enable_testing()
-    # Todo: move to external/CMakeLists.txt
-    add_subdirectory( external/googletest)
+    add_subdirectory(external/googletest)
     add_subdirectory(test)
 endif()
 

@@ -1,4 +1,4 @@
-#include "ast/parser2.hpp"
+#include "ast/parser.hpp"
 
 #include "ast/variable_declaration_node.hpp"
 #include "ast/infix_nodes.hpp"
@@ -9,6 +9,7 @@
 #include "ast/user_function_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/translation_unit_node.hpp"
+#include "ast/block_node.hpp"
 
 
 #include "common/algorithm.hpp"
@@ -18,18 +19,18 @@
 #include "errors/errors_observer.hpp"
 #include "ast/type_parser.hpp"
 #include "ast/type_parsing_result.hpp"
-#include "parser2.hpp"
+#include "parser.hpp"
 
 #include <map>
 
 namespace cmsl::ast
 {
-        parser2::parser2(errors::errors_observer& err_observer, cmsl::source_view source, const token_container_t& tokens)
+        parser::parser(errors::errors_observer& err_observer, cmsl::source_view source, const token_container_t& tokens)
             : parser_utils{ m_errors_reporter, tokens.cbegin(), tokens.cend() }
             , m_errors_reporter{ err_observer, source }
         {}
 
-        std::unique_ptr<ast_node> parser2::translation_unit()
+        std::unique_ptr<ast_node> parser::parse_translation_unit()
         {
             std::vector<std::unique_ptr<ast_node>> nodes;
 
@@ -39,15 +40,15 @@ namespace cmsl::ast
 
                 if(function_declaration_starts())
                 {
-                    node = function();
+                    node = parse_function();
                 }
                 else if(current_is(token_type_t::kw_class))
                 {
-                    node = class_();
+                    node = parse_class();
                 }
                 else
                 {
-                    node = variable_declaration();
+                    node = parse_variable_declaration();
                 }
 
                 if(!node)
@@ -61,7 +62,7 @@ namespace cmsl::ast
             return std::make_unique<translation_unit_node>(std::move(nodes));
         }
 
-        std::unique_ptr<ast_node> parser2::constructor(token_t class_name)
+        std::unique_ptr<ast_node> parser::constructor(token_t class_name)
         {
             auto type_name = eat(token_type_t::identifier);
             if(!type_name)
@@ -75,14 +76,14 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto block_expr = block();
+            auto block_expr = parse_block();
             if (!block_expr)
             {
                 return nullptr;
             }
 
             // Let's pretend that ctors return something.
-            return std::make_unique<user_function_node2>(type_representation{ class_name },
+            return std::make_unique<user_function_node>(type_representation{ class_name },
                                                         *type_name,
                                                         param_values->open_paren,
                                                         std::move(param_values->params),
@@ -90,7 +91,7 @@ namespace cmsl::ast
                                                         std::move(block_expr));
         }
 
-        std::unique_ptr<ast_node> parser2::class_()
+        std::unique_ptr<ast_node> parser::parse_class()
         {
             const auto class_kw = eat(token_type_t::kw_class);
             if (!class_kw)
@@ -126,7 +127,7 @@ namespace cmsl::ast
                 }
                 if(function_declaration_starts())
                 {
-                    auto fun = function();
+                    auto fun = parse_function();
                     if(!fun)
                     {
                         return nullptr;
@@ -136,7 +137,7 @@ namespace cmsl::ast
                 }
                 else
                 {
-                    auto member = variable_declaration();
+                    auto member = parse_variable_declaration();
                     if (!member)
                     {
                         return nullptr;
@@ -158,7 +159,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            return std::make_unique<class_node2>(*class_kw,
+            return std::make_unique<class_node>(*class_kw,
                                                  *name,
                                                  *open_brace,
                                                  std::move(class_nodes),
@@ -166,9 +167,9 @@ namespace cmsl::ast
                                                  *semicolon);
         }
 
-        std::unique_ptr<ast_node> parser2::function()
+        std::unique_ptr<ast_node> parser::parse_function()
         {
-            const auto ty = type();
+            const auto ty = parse_type();
             if(!ty)
             {
                 return nullptr;
@@ -186,14 +187,14 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto block_node = block();
+            auto block_node = parse_block();
 
             if (!block_node)
             {
                 return nullptr;
             }
 
-            return std::make_unique<user_function_node2>(*ty,
+            return std::make_unique<user_function_node>(*ty,
                                                          *name,
                                                          param_values->open_paren,
                                                          std::move(param_values->params),
@@ -201,7 +202,7 @@ namespace cmsl::ast
                                                          std::move(block_node));
         }
 
-        std::unique_ptr<ast_node> parser2::get_return_node()
+        std::unique_ptr<ast_node> parser::parse_return_node()
         {
             const auto return_kw =eat(token_type_t::kw_return);
             if (!return_kw)
@@ -209,7 +210,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto e = expr();
+            auto e = parse_expr();
             if (!e)
             {
                 return nullptr;
@@ -226,7 +227,7 @@ namespace cmsl::ast
                                                  *semicolon);
         }
 
-        bool parser2::declaration_starts() const
+        bool parser::declaration_starts() const
         {
             parse_errors_sink errs_sink;
             type_parser p{ errs_sink, current_iterator(), end_iterator() };
@@ -240,7 +241,7 @@ namespace cmsl::ast
             return type_of_token_is(parsing_result.stopped_at, token_type_t::identifier);
         }
 
-        std::unique_ptr<conditional_node> parser2::get_conditional_node()
+        std::unique_ptr<conditional_node> parser::get_conditional_node()
         {
             const auto open_paren =eat(token_type_t::open_paren);
             if(!open_paren)
@@ -248,7 +249,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto condition = expr();
+            auto condition = parse_expr();
             if(!condition)
             {
                 return nullptr;
@@ -260,7 +261,7 @@ namespace cmsl::ast
                 return nullptr;
             }
 
-            auto b = block();
+            auto b = parse_block();
             if(!b)
             {
                 return nullptr;
@@ -273,7 +274,7 @@ namespace cmsl::ast
                                                       std::move(b));
         }
 
-        std::unique_ptr<ast_node> parser2::get_if_else_node()
+        std::unique_ptr<ast_node> parser::parse_if_else_node()
         {
             if(!current_is(token_type_t::kw_if))
             {
@@ -285,14 +286,8 @@ namespace cmsl::ast
             std::vector<if_else_node::if_values> ifs;
 
             std::optional<token_t> else_kw;
-            while(current_is(token_type_t::kw_if))
+            while(const auto if_kw = try_eat(token_type_t::kw_if))
             {
-                const auto if_kw = eat(token_type_t::kw_if);
-                if(!if_kw)
-                {
-                    return nullptr;
-                }
-
                 auto if_node = get_conditional_node();
                 if(!if_node)
                 {
@@ -317,22 +312,21 @@ namespace cmsl::ast
             }
 
             std::optional<if_else_node::last_else_value> last_else;
-            if(current_is(token_type_t::kw_else))
+            if(const auto last_else_kw = try_eat(token_type_t::kw_else))
             {
-                else_kw = eat(token_type_t::kw_else);
-                auto else_block = block();
-
+                auto else_block = parse_block();
                 if(!else_block)
                 {
                     return nullptr;
                 }
-                last_else = if_else_node::last_else_value{ *else_kw, std::move(else_block) };
+
+                last_else = if_else_node::last_else_value{ *last_else_kw, std::move(else_block) };
             }
 
             return std::make_unique<if_else_node>(std::move(ifs), std::move(last_else));
         }
 
-        std::unique_ptr<ast_node> parser2::get_while_node()
+        std::unique_ptr<ast_node> parser::parse_while_node()
         {
             const auto while_kw =eat(token_type_t::kw_while);
             if(!while_kw)
@@ -349,7 +343,7 @@ namespace cmsl::ast
             return std::make_unique<while_node>(*while_kw, std::move(conditional_node));
         }
 
-        std::unique_ptr<block_node> parser2::block()
+        std::unique_ptr<block_node> parser::parse_block()
         {
             const auto open_brace =eat(token_type_t::open_brace);
             if (!open_brace)
@@ -365,27 +359,27 @@ namespace cmsl::ast
 
                 if (current_is(token_type_t::kw_return))
                 {
-                    node = get_return_node();
+                    node = parse_return_node();
                 }
                 else if (declaration_starts())
                 {
-                    node = variable_declaration();
+                    node = parse_variable_declaration();
                 }
                 else if(current_is(token_type_t::kw_if))
                 {
-                    node = get_if_else_node();
+                    node = parse_if_else_node();
                 }
                 else if(current_is(token_type_t::kw_while))
                 {
-                    node = get_while_node();
+                    node = parse_while_node();
                 }
                 else if(current_is(token_type_t::open_brace))
                 {
-                    node = block();
+                    node = parse_block();
                 }
                 else
                 {
-                    node = expr();
+                    node = parse_expr();
                     if(!eat(token_type_t::semicolon))
                     {
                         return nullptr;
@@ -409,9 +403,9 @@ namespace cmsl::ast
             return std::make_unique<block_node>(*open_brace, std::move(nodes), *close_brace);
         }
 
-        std::optional<param_declaration> parser2::get_param_declaration()
+        std::optional<param_declaration> parser::get_param_declaration()
         {
-            auto t = type();
+            auto t = parse_type();
 
             if (!t)
             {
@@ -427,7 +421,7 @@ namespace cmsl::ast
             return param_declaration{ *t, *name };
         }
 
-        bool parser2::prepare_for_next_parameter_declaration()
+        bool parser::prepare_for_next_parameter_declaration()
         {
             if (!expect_not_at_end())
             {
@@ -461,7 +455,7 @@ namespace cmsl::ast
             return true;
         }
 
-        std::optional<parser2::param_list_values> parser2::param_declarations()
+        std::optional<parser::param_list_values> parser::param_declarations()
         {
             std::vector<param_declaration> params;
 
@@ -508,9 +502,9 @@ namespace cmsl::ast
             return param_list_values{*open_paren, std::move(params), *close_paren};
         }
 
-        std::unique_ptr<ast_node> parser2::variable_declaration()
+        std::unique_ptr<ast_node> parser::parse_variable_declaration()
         {
-            const auto ty = type();
+            const auto ty = parse_type();
             if(!ty)
             {
                 return nullptr;
@@ -523,17 +517,16 @@ namespace cmsl::ast
             }
 
             std::optional<variable_declaration_node::initialization_values> initialization_vals;
-            if(current_is(token_type_t::equal))
+            if( const auto equal = try_eat(token_type_t::equal))
             {
-                const auto equal_kw = eat(); // equal
-                auto initialization = expr();
+                auto initialization = parse_expr();
                 if(!initialization)
                 {
                     return nullptr;
                 }
 
                 initialization_vals = variable_declaration_node::initialization_values{
-                    *equal_kw,
+                    *equal,
                     std::move(initialization)
                 };
             }
@@ -547,7 +540,7 @@ namespace cmsl::ast
             return std::make_unique<variable_declaration_node>(*ty, *name, std::move(initialization_vals), *semicolon);
         }
 
-        std::optional<type_representation> parser2::type()
+        std::optional<type_representation> parser::parse_type()
         {
             type_parser ty_parser{ m_errors_reporter, current_iterator(), end_iterator() };
             auto parsing_result = ty_parser.type();
@@ -555,7 +548,7 @@ namespace cmsl::ast
             return std::move(parsing_result.ty);
         }
 
-        std::optional<parser2::token_t> parser2::eat_function_call_name()
+        std::optional<parser::token_t> parser::eat_function_call_name()
         {
             if(!current_is_name_of_function_call())
             {
@@ -573,7 +566,7 @@ namespace cmsl::ast
         }
 
 
-        std::unique_ptr<ast_node> parser2::parse_operator(unsigned precedence)
+        std::unique_ptr<ast_node> parser::parse_operator(unsigned precedence)
         {
             static const std::map<unsigned, std::vector<token_type_t>> operators{
                 { 2, { token_type_t::dot } },
@@ -619,7 +612,7 @@ namespace cmsl::ast
 
             if(precedence == k_min_precedence)
             {
-                auto f = factor();
+                auto f = parse_factor();
                 if(!f)
                 {
                     return nullptr;
@@ -685,27 +678,27 @@ namespace cmsl::ast
             }
         }
 
-        bool parser2::current_is_class_member_access() const
+        bool parser::current_is_class_member_access() const
         {
             // At this point we know that we're after the dot token. Test whether it's a member function call or just member access.
             return !current_is_function_call();
         }
 
-        bool parser2::current_is_function_call() const
+        bool parser::current_is_function_call() const
         {
             return current_is_name_of_function_call()
                    && next_is(token_type_t::open_paren);
         }
 
-        bool parser2::current_is_fundamental_value() const
+        bool parser::current_is_fundamental_value() const
         {
             switch(curr_type())
             {
-                case lexer::token::token_type::integer:
-                case lexer::token::token_type::double_:
-                case lexer::token::token_type::string:
-                case lexer::token::token_type::kw_true:
-                case lexer::token::token_type::kw_false:
+                case lexer::token_type::integer:
+                case lexer::token_type::double_:
+                case lexer::token_type::string:
+                case lexer::token_type::kw_true:
+                case lexer::token_type::kw_false:
                     return true;
 
                 default:
@@ -713,7 +706,7 @@ namespace cmsl::ast
             }
         }
 
-        std::unique_ptr<ast_node> parser2::fundamental_value()
+        std::unique_ptr<ast_node> parser::fundamental_value()
         {
             const auto token = eat();
 
@@ -724,17 +717,17 @@ namespace cmsl::ast
 
             switch(token->get_type())
             {
-                case lexer::token::token_type::integer:
+                case lexer::token_type::integer:
                     return std::make_unique<int_value_node>(*token);
 
-                case lexer::token::token_type::double_:
+                case lexer::token_type::double_:
                     return std::make_unique<double_value_node>(*token);
 
-                case lexer::token::token_type::string:
+                case lexer::token_type::string:
                     return std::make_unique<string_value_node>(*token);
 
-                case lexer::token::token_type::kw_true:
-                case lexer::token::token_type::kw_false:
+                case lexer::token_type::kw_true:
+                case lexer::token_type::kw_false:
                     return std::make_unique<bool_value_node>(*token);
 
                 default:
@@ -742,7 +735,7 @@ namespace cmsl::ast
             }
         }
 
-        std::unique_ptr<ast_node> parser2::factor()
+        std::unique_ptr<ast_node> parser::parse_factor()
         {
             if (current_is_function_call())
             {
@@ -752,34 +745,31 @@ namespace cmsl::ast
             {
                 return fundamental_value();
             }
-            else if(current_is(token_type_t::open_paren))
+            else if(try_eat(token_type_t::open_paren))
             {
-                eat(token_type_t::open_paren);
-                auto e = expr();
+                auto e = parse_expr();
                 eat(token_type_t::close_paren);
                 return std::move(e);
             }
-            else if(current_is(token_type_t::identifier))
+            else if(const auto id = try_eat(token_type_t::identifier))
             {
-                const auto id = eat(token_type_t::identifier);
                 return id ? std::make_unique<id_node>(*id) : nullptr;
             }
             else if(current_is(token_type_t::open_brace))
             {
-                return initializer_list();
+                return parse_initializer_list();
             }
 
             m_errors_reporter.raise_unexpected_token(current());
             return nullptr;
         }
 
-        std::unique_ptr<ast_node> parser2::expr()
+        std::unique_ptr<ast_node> parser::parse_expr()
         {
                 auto operator_expr = parse_operator();
 
-                if(current_is(token_type_t::dot))
+                if(const auto dot = try_eat(token_type_t::dot))
                 {
-                    const auto dot = eat(token_type_t::dot);
                     if(current_is_class_member_access())
                     {
                         const auto member_name = eat();
@@ -808,7 +798,7 @@ namespace cmsl::ast
                 return std::move(operator_expr);
         }
 
-        std::optional<parser2::function_call_values> parser2::get_function_call_values()
+        std::optional<parser::function_call_values> parser::get_function_call_values()
         {
             function_call_values vals;
 
@@ -829,13 +819,13 @@ namespace cmsl::ast
             };
         }
 
-        std::optional<std::vector<std::unique_ptr<ast_node>>> parser2::comma_separated_expression_list(token_type_t valid_end_of_list_token)
+        std::optional<std::vector<std::unique_ptr<ast_node>>> parser::comma_separated_expression_list(token_type_t valid_end_of_list_token)
         {
             std::vector<std::unique_ptr<ast_node>> exprs;
 
             while(!is_at_end() && !current_is(valid_end_of_list_token))
             {
-                auto expression = expr();
+                auto expression = parse_expr();
                 if(!expression)
                 {
                     // Unexpected token e.g. semicolon
@@ -844,12 +834,8 @@ namespace cmsl::ast
 
                 exprs.emplace_back(std::move(expression));
 
-                // Todo: move to its own function
-                // Todo: Introduce try_eat(type) method to simplify such checks
-                if(current_is(token_type_t::comma))
+                if(try_eat(token_type_t::comma))
                 {
-                    eat(token_type_t::comma);
-
                     if(is_at_end() || current_is(valid_end_of_list_token))
                     {
                         const auto tok = is_at_end() ? prev() : current();
@@ -862,7 +848,7 @@ namespace cmsl::ast
             return std::move(exprs);
         }
 
-        std::optional<parser2::call_param_list_values> parser2::parameter_list()
+        std::optional<parser::call_param_list_values> parser::parameter_list()
         {
             const auto open_paren = eat(token_type_t::open_paren);
             if(!open_paren)
@@ -889,7 +875,7 @@ namespace cmsl::ast
             };
         }
 
-        std::unique_ptr<ast_node> parser2::function_call()
+        std::unique_ptr<ast_node> parser::function_call()
         {
             auto vals = get_function_call_values();
             if(!vals)
@@ -903,7 +889,7 @@ namespace cmsl::ast
                                                         vals->close_paren);
         }
 
-        bool parser2::function_declaration_starts() const
+        bool parser::function_declaration_starts() const
         {
             parse_errors_sink errs_sink;
             type_parser p{ errs_sink, current_iterator(), end_iterator() };
@@ -918,7 +904,7 @@ namespace cmsl::ast
                 && next_to_is(parsing_result.stopped_at, token_type_t::open_paren);
         }
 
-        std::unique_ptr<ast_node> parser2::initializer_list()
+        std::unique_ptr<ast_node> parser::parse_initializer_list()
         {
             auto open_brace = eat(token_type_t::open_brace);
             if(!open_brace)
