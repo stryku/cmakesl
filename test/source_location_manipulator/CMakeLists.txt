@@ -1,6 +1,6 @@
 set(SOURCE_LOCATION_MANIPULATOR_TEST_SOURCES 
     main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source_location_test.cpp 
+    source_location_test.cpp
 )
 
 set(TESTS_NAME source_location_manipulator_test)

@@ -1,5 +1,41 @@
 set(SEMA_SOURCES
-        sema_builder.cpp sema_builder.hpp sema_node.hpp sema_node.cpp sema_nodes.hpp sema_node_visitor.hpp sema_builder_ast_visitor.cpp sema_builder_ast_visitor.hpp identifiers_context.hpp sema_type.hpp sema_context.hpp user_sema_function.hpp sema_type.cpp sema_function.hpp builtin_sema_context.cpp builtin_sema_context.hpp type_member_info.hpp type_builder.cpp type_builder.hpp function_signature.hpp factories.cpp factories.hpp builtin_sema_function.hpp builtin_function_kind.hpp function_lookup_result.hpp overload_resolution.cpp overload_resolution.hpp builtin_types_finder.hpp homogeneous_generic_type.hpp homogeneous_generic_type.cpp variable_initialization_checker.cpp variable_initialization_checker.hpp add_subdirectory_handler.hpp sema_tree_building_context.hpp sema_context_impl.cpp sema_context_impl.hpp)
+    add_subdirectory_handler.hpp
+    builtin_function_kind.hpp
+    builtin_sema_context.cpp
+    builtin_sema_context.hpp
+    builtin_sema_function.hpp
+    builtin_types_finder.hpp
+    factories.cpp
+    factories.hpp
+    function_lookup_result.hpp
+    function_signature.hpp
+    homogeneous_generic_type.cpp
+    homogeneous_generic_type.hpp
+    identifiers_context.hpp
+    overload_resolution.cpp
+    overload_resolution.hpp
+    sema_builder.cpp
+    sema_builder.hpp
+    sema_builder_ast_visitor.cpp
+    sema_builder_ast_visitor.hpp
+    sema_context.hpp
+    sema_context_impl.cpp
+    sema_context_impl.hpp
+    sema_function.hpp
+    sema_node.cpp
+    sema_node.hpp
+    sema_node_visitor.hpp
+    sema_nodes.hpp
+    sema_tree_building_context.hpp
+    sema_type.cpp
+    sema_type.hpp
+    type_builder.cpp
+    type_builder.hpp
+    type_member_info.hpp
+    user_sema_function.hpp
+    variable_initialization_checker.cpp
+    variable_initialization_checker.hpp
+)
 
 add_library(sema ${SEMA_SOURCES})
 target_include_directories(sema PRIVATE ${CMAKESL_SOURCES_DIR})

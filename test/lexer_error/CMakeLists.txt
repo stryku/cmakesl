@@ -1,8 +1,7 @@
-set(CMAKESL_LEXER_ERROR_TEST_SOURCES 
-    main.cpp
+set(CMAKESL_LEXER_ERROR_TEST_SOURCES
     lexer_error_test.cpp
+    main.cpp
 )
-
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${CMAKESL_LEXER_ERROR_TEST_SOURCES})
