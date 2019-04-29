@@ -129,7 +129,6 @@ namespace cmsl::sema::test
                 identifiers_context_mock ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                // Todo: use int alias
                 const auto value = true;
                 const auto token = token_kw_true();
                 ast::bool_value_node node(token);
@@ -153,7 +152,6 @@ namespace cmsl::sema::test
                 identifiers_context_mock ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                // Todo: use int alias
                 const auto value = int_t{ 42 };
                 const auto token = token_integer("42");
                 ast::int_value_node node(token);
@@ -177,7 +175,6 @@ namespace cmsl::sema::test
                 identifiers_context_mock ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                // Todo: use int alias
                 const auto value = double{ 4.2 };
                 const auto token = token_double("4.2");
                 ast::double_value_node node(token);
@@ -201,7 +198,6 @@ namespace cmsl::sema::test
                 identifiers_context_mock ids_ctx;
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
-                // Todo: use int alias
                 const auto value = cmsl::string_view{ "\"42\"" };
                 const auto token = token_string("\"42\"");
                 ast::string_value_node node(token);
@@ -278,7 +274,6 @@ namespace cmsl::sema::test
                 const auto type_representation = ast::type_representation{ token_identifier() };
                 const auto name_token = token_identifier("foo");
 
-                // Todo: use int alias
                 const auto initialization_value = int_t{ 42 };
                 const auto initialization_token = token_integer("42");
                 auto initializaton_node = std::make_unique<ast::int_value_node>(initialization_token);
@@ -490,7 +485,6 @@ namespace cmsl::sema::test
                 EXPECT_THAT(casted_node->param_expressions().size(), Eq(0u));
             }
 
-            // Todo: Do we need this? Context tests should test whether context returns ctor's function.
             TEST_F(SemaBuilderAstVisitorTest, Visit_ConstructorCallWithoutParameters_GetConstructorCallNodeWithoutParameters)
             {
                 errs_t errs;
@@ -1165,7 +1159,6 @@ namespace cmsl::sema::test
                 auto lhs_node = std::make_unique<ast::id_node>(lhs_id_token);
 
                 const auto member_name_token = token_identifier("bar");
-                // Todo: use initializer list
                 std::vector<member_info> members;
                 members.emplace_back(member_info{member_name_token, valid_type});
                 const auto lhs_type_name_token = token_identifier("baz");

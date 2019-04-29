@@ -20,7 +20,6 @@
 
 namespace cmsl::ast::test
 {
-        // Todo: Consider adding semicolon at the end of all test tokens
             using token_t = cmsl::lexer::token;
             using token_type_t = cmsl::lexer::token_type;
             using tokens_container_t = cmsl::lexer::token_container_t;
@@ -444,7 +443,6 @@ namespace cmsl::ast::test
                 const auto param3 = token_integer("42");
                 const auto comma = token_comma();
 
-                // Todo: initialize instead of emplaces
                 function_call_node::params_t params;
                 params.emplace_back(std::make_unique<id_node>(param1));
                 params.emplace_back(std::make_unique<string_value_node>(param2));
@@ -506,7 +504,6 @@ namespace cmsl::ast::test
 
                 auto lhs = std::make_unique<id_node>(class_name_token);
 
-                // Todo: initialize instead of emplaces
                 function_call_node::params_t params;
                 params.emplace_back(std::make_unique<id_node>(param1));
                 params.emplace_back(std::make_unique<string_value_node>(param2));

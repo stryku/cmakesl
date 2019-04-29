@@ -23,6 +23,22 @@ namespace cmsl::sema
     overload_resolution::choose(const function_lookup_result_t &functions,
                                 const std::vector<std::unique_ptr<expression_node>> &call_parameters) const
     {
+        if(functions.empty())
+        {
+            const auto line_info = m_call_token.source().line(m_call_token.src_range().begin.line);
+            const auto err = errors::error{
+                    m_call_token.source().path(),
+                    line_info.line,
+                    line_info.start_pos,
+                    '\'' + std::string{m_call_token.str() } + "\' function not found",
+                    errors::error_type::error,
+                    m_call_token.src_range()
+            };
+            m_errs.nofify_error(err);
+
+            return nullptr;
+        }
+
         const auto call_params_wrappers = to_vector_of_wrappers(call_parameters);
 
         for(const auto& scoped_functions : functions)
