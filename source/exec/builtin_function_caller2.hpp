@@ -187,7 +187,7 @@ namespace cmsl
             inst::instance* cmake_minimum_required(const params_t& params);
 
         private:
-            inst::int_t string_pos_to_int(std::string::size_type pos) const;
+            int_t string_pos_to_int(std::string::size_type pos) const;
 
         private:
             static const std::locale m_utf8_locale;

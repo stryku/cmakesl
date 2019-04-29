@@ -14,7 +14,6 @@ namespace cmsl::sema
         class sema_context_factory;
         enum class builtin_function_kind;
 
-        // Todo: rename to type_manipulator or so
         class type_builder
         {
         public:

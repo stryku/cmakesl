@@ -248,7 +248,7 @@ namespace cmsl::exec
         builtin_function_caller2::int_ctor_bool(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [param] = get_params<alternative_t::bool_>(params);
-            instance.value_ref().set_int(static_cast<inst::int_t>(param));
+            instance.value_ref().set_int(static_cast<int_t>(param));
             return &instance;
         }
 
@@ -286,7 +286,7 @@ namespace cmsl::exec
         inst::instance *
         builtin_function_caller2::int_ctor(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
-            instance.value_ref().set_int(inst::int_t{ 0 });
+            instance.value_ref().set_int(int_t{ 0 });
             return &instance;
         }
 
@@ -468,7 +468,7 @@ namespace cmsl::exec
         builtin_function_caller2::int_ctor_double(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& [param] = get_params<alternative_t::double_>(params);
-            instance.value_ref() = static_cast<inst::int_t>(param);
+            instance.value_ref() = static_cast<int_t>(param);
             return &instance;
         }
 
@@ -623,7 +623,7 @@ namespace cmsl::exec
         builtin_function_caller2::string_size(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& str = instance.value_cref().get_string_cref();
-            const auto size = static_cast<inst::int_t>(str.size());
+            const auto size = static_cast<int_t>(str.size());
             return m_instances.create(size);
         }
 
@@ -931,11 +931,11 @@ namespace cmsl::exec
             return m_instances.create(pos);
         }
 
-        inst::int_t builtin_function_caller2::string_pos_to_int(std::string::size_type pos) const
+        int_t builtin_function_caller2::string_pos_to_int(std::string::size_type pos) const
         {
             return pos != std::string::npos
-                   ? static_cast<inst::int_t>( pos )
-                   : inst::int_t{ -1 };
+                   ? static_cast<int_t>( pos )
+                   : int_t{ -1 };
         }
 
         inst::instance *
@@ -1145,7 +1145,7 @@ namespace cmsl::exec
         builtin_function_caller2::list_size(inst::instance &instance, const builtin_function_caller2::params_t &params)
         {
             const auto& list = instance.value_cref().get_list_cref();
-            return m_instances.create(static_cast<inst::int_t>(list.size()));
+            return m_instances.create(static_cast<int_t>(list.size()));
         }
 
         inst::instance *
@@ -1458,10 +1458,10 @@ namespace cmsl::exec
         builtin_function_caller2::cmake_minimum_required(const builtin_function_caller2::params_t &params)
         {
             const auto got_version = m_cmake_facade.get_cmake_version();
-            const inst::version_value current_version{ static_cast<inst::int_t>(got_version.major),
-                                                       static_cast<inst::int_t>(got_version.minor),
-                                                       static_cast<inst::int_t>(got_version.patch),
-                                                       static_cast<inst::int_t>(got_version.tweak) };
+            const inst::version_value current_version{ static_cast<int_t>(got_version.major),
+                                                       static_cast<int_t>(got_version.minor),
+                                                       static_cast<int_t>(got_version.patch),
+                                                       static_cast<int_t>(got_version.tweak) };
 
             const auto& [requested_version] = get_params<alternative_t::version>(params);
             const auto version_satisfied = requested_version <= current_version;

@@ -16,7 +16,7 @@ namespace cmsl::exec
         namespace details
         {
             using alternatives_tuple_t = std::tuple<bool,
-                                                    inst::int_t,
+                                                    int_t,
                                                     double,
                                                     std::string,
                                                     inst::version_value,

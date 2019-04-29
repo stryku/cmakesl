@@ -7,19 +7,18 @@
 #include <sstream>
 
 // Todo: change to lexer::test
-namespace cmsl::test::lexer
+namespace cmsl::lexer::test
 {
             using lexer_t = cmsl::lexer::lexer;
-            using token_type_t = cmsl::lexer::token_type;
 
             struct TokenTestState
             {
                 std::string source;
-                token_type_t expected_token;
+                token_type expected_token;
 
                 friend std::ostream& operator<<(std::ostream& out, const TokenTestState& state)
                 {
-                    out << "{source}: " << state.source << " ------------{expected_token}: " << static_cast<int>(state.expected_token);
+                    out << "{source}: " << state.source << " {expected_token}: " << static_cast<int>(state.expected_token);
                     return out;
                 }
             };
@@ -51,7 +50,7 @@ namespace cmsl::test::lexer
                     auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
-                    ASSERT_THAT(tokens.front().get_type(), token_type_t::integer);
+                    ASSERT_THAT(tokens.front().get_type(), token_type::integer);
                 }
 
                 const auto values = testing::Values("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
@@ -69,7 +68,7 @@ namespace cmsl::test::lexer
                     auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
-                    ASSERT_THAT(tokens.front().get_type(), token_type_t::double_);
+                    ASSERT_THAT(tokens.front().get_type(), token_type::double_);
                 }
 
                 const auto values = testing::Values("1.0", "123.0", "123.012", "000123.123000",
@@ -93,15 +92,15 @@ namespace cmsl::test::lexer
                 }
 
                 const auto values = testing::Values(
-                    TokenTestState{ ".", token_type_t::dot },
-                    TokenTestState{ "{", token_type_t::open_brace },
-                    TokenTestState{ "}", token_type_t::close_brace },
-                    TokenTestState{ "[", token_type_t::open_square },
-                    TokenTestState{ "]", token_type_t::close_square },
-                    TokenTestState{ "(", token_type_t::open_paren },
-                    TokenTestState{ ")", token_type_t::close_paren },
-                    TokenTestState{ ";", token_type_t::semicolon },
-                    TokenTestState{ ",", token_type_t::comma }
+                    TokenTestState{ ".", token_type::dot },
+                    TokenTestState{ "{", token_type::open_brace },
+                    TokenTestState{ "}", token_type::close_brace },
+                    TokenTestState{ "[", token_type::open_square },
+                    TokenTestState{ "]", token_type::close_square },
+                    TokenTestState{ "(", token_type::open_paren },
+                    TokenTestState{ ")", token_type::close_paren },
+                    TokenTestState{ ";", token_type::semicolon },
+                    TokenTestState{ ",", token_type::comma }
                 );
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_OneChar, values);
             }
@@ -117,7 +116,7 @@ namespace cmsl::test::lexer
                     auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
-                    ASSERT_THAT(tokens.front().get_type(), token_type_t::identifier);
+                    ASSERT_THAT(tokens.front().get_type(), token_type::identifier);
                 }
 
                 const auto values = testing::Values("_", "_abc020", "abc_202", "abc010DEF");
@@ -139,34 +138,34 @@ namespace cmsl::test::lexer
                 }
 
                 const auto values = testing::Values(
-                    TokenTestState{ "=", token_type_t::equal },
-                    TokenTestState{ "==", token_type_t::equalequal },
-                    TokenTestState{ "-", token_type_t::minus },
-                    TokenTestState{ "--", token_type_t::minusminus },
-                    TokenTestState{ "-=", token_type_t::minusequal },
-                    TokenTestState{ "+", token_type_t::plus },
-                    TokenTestState{ "++", token_type_t::plusplus },
-                    TokenTestState{ "+=", token_type_t::plusequal },
-                    TokenTestState{ "&", token_type_t::amp },
-                    TokenTestState{ "&&", token_type_t::ampamp },
-                    TokenTestState{ "&=", token_type_t::ampequal },
-                    TokenTestState{ "|", token_type_t::pipe },
-                    TokenTestState{ "||", token_type_t::pipepipe },
-                    TokenTestState{ "|=", token_type_t::pipeequal },
-                    TokenTestState{ "/", token_type_t::slash },
-                    TokenTestState{ "/=", token_type_t::slashequal },
-                    TokenTestState{ "*", token_type_t::star },
-                    TokenTestState{ "*=", token_type_t::starequal },
-                    TokenTestState{ "%", token_type_t::percent },
-                    TokenTestState{ "%=", token_type_t::percentequal },
-                    TokenTestState{ "!", token_type_t::exclaim },
-                    TokenTestState{ "!=", token_type_t::exclaimequal },
-                    TokenTestState{ "^", token_type_t::xor_ },
-                    TokenTestState{ "^=", token_type_t::xorequal },
-                    TokenTestState{ "<", token_type_t::less },
-                    TokenTestState{ "<=", token_type_t::lessequal },
-                    TokenTestState{ ">", token_type_t::greater },
-                    TokenTestState{ ">=", token_type_t::greaterequal }
+                    TokenTestState{ "=", token_type::equal },
+                    TokenTestState{ "==", token_type::equalequal },
+                    TokenTestState{ "-", token_type::minus },
+                    TokenTestState{ "--", token_type::minusminus },
+                    TokenTestState{ "-=", token_type::minusequal },
+                    TokenTestState{ "+", token_type::plus },
+                    TokenTestState{ "++", token_type::plusplus },
+                    TokenTestState{ "+=", token_type::plusequal },
+                    TokenTestState{ "&", token_type::amp },
+                    TokenTestState{ "&&", token_type::ampamp },
+                    TokenTestState{ "&=", token_type::ampequal },
+                    TokenTestState{ "|", token_type::pipe },
+                    TokenTestState{ "||", token_type::pipepipe },
+                    TokenTestState{ "|=", token_type::pipeequal },
+                    TokenTestState{ "/", token_type::slash },
+                    TokenTestState{ "/=", token_type::slashequal },
+                    TokenTestState{ "*", token_type::star },
+                    TokenTestState{ "*=", token_type::starequal },
+                    TokenTestState{ "%", token_type::percent },
+                    TokenTestState{ "%=", token_type::percentequal },
+                    TokenTestState{ "!", token_type::exclaim },
+                    TokenTestState{ "!=", token_type::exclaimequal },
+                    TokenTestState{ "^", token_type::xor_ },
+                    TokenTestState{ "^=", token_type::xorequal },
+                    TokenTestState{ "<", token_type::less },
+                    TokenTestState{ "<=", token_type::lessequal },
+                    TokenTestState{ ">", token_type::greater },
+                    TokenTestState{ ">=", token_type::greaterequal }
                 );
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Operator, values);
             }
@@ -182,7 +181,7 @@ namespace cmsl::test::lexer
                     auto lex = create_lexer(source);
                     const auto tokens = lex.lex();
                     ASSERT_THAT(tokens.size(), 1u);
-                    ASSERT_THAT(tokens.front().get_type(), token_type_t::string);
+                    ASSERT_THAT(tokens.front().get_type(), token_type::string);
                 }
 
                 std::string quoted(const std::string& str)
@@ -206,7 +205,7 @@ namespace cmsl::test::lexer
                 struct Lex_Whitespaces_State
                 {
                     std::string source;
-                    std::vector<token_type_t> expected_tokens;
+                    std::vector<token_type> expected_tokens;
                     std::vector<std::string> expected_tokens_values;
                 };
 
@@ -228,8 +227,8 @@ namespace cmsl::test::lexer
                 }
 
                 const auto values = testing::Values(Lex_Whitespaces_State{ " \t\n\r\n", {} },
-                                                    Lex_Whitespaces_State{ " \t\n123\r\n", { token_type_t::integer }, { "123" } },
-                                                    Lex_Whitespaces_State{ "123 \t\n123\r\n", { token_type_t::integer, token_type_t::integer }, { "123", "123" } });
+                                                    Lex_Whitespaces_State{ " \t\n123\r\n", { token_type::integer }, { "123" } },
+                                                    Lex_Whitespaces_State{ "123 \t\n123\r\n", { token_type::integer, token_type::integer }, { "123", "123" } });
                 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Whitespaces, values);
             }
 
@@ -240,7 +239,7 @@ namespace cmsl::test::lexer
                     struct PureKeywordState
                     {
                         std::string source;
-                        token_type_t expected_keyword;
+                        token_type expected_keyword;
                     };
 
                     struct PureKeyword : public testing::TestWithParam<PureKeywordState>
@@ -256,19 +255,19 @@ namespace cmsl::test::lexer
                         ASSERT_THAT(tokens[0].get_type(), state.expected_keyword);
                     }
 
-                    const auto values = testing::Values(PureKeywordState{ "int", token_type_t::kw_int },
-                                                        PureKeywordState{ "double", token_type_t::kw_double },
-                                                        PureKeywordState{ "class", token_type_t::kw_class },
-                                                        PureKeywordState{ "return", token_type_t::kw_return },
-                                                        PureKeywordState{ "if", token_type_t::kw_if },
-                                                        PureKeywordState{ "else", token_type_t::kw_else },
-                                                        PureKeywordState{ "while", token_type_t::kw_while },
-                                                        PureKeywordState{ "bool", token_type_t::kw_bool },
-                                                        PureKeywordState{ "true", token_type_t::kw_true },
-                                                        PureKeywordState{ "false", token_type_t::kw_false },
-                                                        PureKeywordState{ "library", token_type_t::kw_library },
-                                                        PureKeywordState{ "executable", token_type_t::kw_executable },
-                                                        PureKeywordState{ "string", token_type_t::kw_string });
+                    const auto values = testing::Values(PureKeywordState{ "int", token_type::kw_int },
+                                                        PureKeywordState{ "double", token_type::kw_double },
+                                                        PureKeywordState{ "class", token_type::kw_class },
+                                                        PureKeywordState{ "return", token_type::kw_return },
+                                                        PureKeywordState{ "if", token_type::kw_if },
+                                                        PureKeywordState{ "else", token_type::kw_else },
+                                                        PureKeywordState{ "while", token_type::kw_while },
+                                                        PureKeywordState{ "bool", token_type::kw_bool },
+                                                        PureKeywordState{ "true", token_type::kw_true },
+                                                        PureKeywordState{ "false", token_type::kw_false },
+                                                        PureKeywordState{ "library", token_type::kw_library },
+                                                        PureKeywordState{ "executable", token_type::kw_executable },
+                                                        PureKeywordState{ "string", token_type::kw_string });
                     INSTANTIATE_TEST_CASE_P(Lexer, PureKeyword, values);
                 }
 
@@ -284,7 +283,7 @@ namespace cmsl::test::lexer
                         const auto tokens = lex.lex();
 
                         ASSERT_THAT(tokens.size(), 1u);
-                        ASSERT_THAT(tokens[0].get_type(), token_type_t::identifier);
+                        ASSERT_THAT(tokens[0].get_type(), token_type::identifier);
                     }
 
                     const auto values = testing::Values( "int123", "_double");
