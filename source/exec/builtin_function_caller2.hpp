@@ -1,6 +1,6 @@
 #pragma once
 
-#include "exec/instance/int_alias.hpp"
+#include "common/int_alias.hpp"
 
 #include <memory>
 #include <vector>
