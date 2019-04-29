@@ -14,7 +14,7 @@
 #include "test/exec/mock/cmake_facade_mock.hpp"
 
 #include <gmock/gmock.h>
-#include "exec/instance/int_alias.hpp"
+#include "common/int_alias.hpp"
 
 namespace cmsl::exec::test
 {
@@ -81,9 +81,8 @@ namespace cmsl::exec::test
                 StrictMock<inst::test::instance_mock> instance_mock;
                 expression_evaluation_visitor visitor{ m_ctx };
 
-                // Todo: use int alias instead of std::int64_t
                 auto ast_node = fake_ast_node();
-                const auto test_value = std::int64_t{42};
+                const auto test_value = int_t{42};
                 sema::int_value_node node{ast_node, valid_type, test_value };
                 inst::instance_value_variant value{test_value};
 

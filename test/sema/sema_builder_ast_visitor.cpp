@@ -154,7 +154,7 @@ namespace cmsl::sema::test
                 auto visitor = create_visitor(errs, ctx, ids_ctx);
 
                 // Todo: use int alias
-                const auto value = std::int64_t{ 42 };
+                const auto value = int_t{ 42 };
                 const auto token = token_integer("42");
                 ast::int_value_node node(token);
 
@@ -279,7 +279,7 @@ namespace cmsl::sema::test
                 const auto name_token = token_identifier("foo");
 
                 // Todo: use int alias
-                const auto initialization_value = std::int64_t{ 42 };
+                const auto initialization_value = int_t{ 42 };
                 const auto initialization_token = token_integer("42");
                 auto initializaton_node = std::make_unique<ast::int_value_node>(initialization_token);
 

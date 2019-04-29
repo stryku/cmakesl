@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast/ast_node.hpp"
+#include "common/int_alias.hpp"
 
 #include "lexer/token.hpp"
 
@@ -68,11 +69,10 @@ namespace cmsl::sema
             VISIT_METHOD
         };
 
-        // Todo: move int alias to a common file
-        class int_value_node : public value_node<std::int64_t>
+        class int_value_node : public value_node<int_t>
         {
         public:
-            explicit int_value_node(const ast::ast_node& ast_node, const sema_type& t, std::int64_t val)
+            explicit int_value_node(const ast::ast_node& ast_node, const sema_type& t, int_t val)
                     : value_node{ ast_node, t, val }
             {}
 

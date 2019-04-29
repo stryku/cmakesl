@@ -13,7 +13,6 @@ set(EXEC_SOURCES
     instance/instance_factory.hpp
         instance/instance_reference.cpp
         instance/instance_reference.hpp
-        instance/int_alias.hpp
         instance/simple_unnamed_instance.cpp
     instance/simple_unnamed_instance.hpp
     instance/complex_unnamed_instance.cpp
