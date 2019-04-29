@@ -19,5 +19,5 @@ struct cmsl_parsed_source
     std::unique_ptr<cmsl::sema::add_subdirectory_handler> add_subdirectory_handler;
     std::unique_ptr<cmsl::ast::ast_node> ast_tree;
     std::unique_ptr<cmsl::sema::sema_node> sema_tree;
-    std::unique_ptr<cmsl::sema::sema_context_interface> builtin_context;
+    std::unique_ptr<cmsl::sema::sema_context> builtin_context;
 };

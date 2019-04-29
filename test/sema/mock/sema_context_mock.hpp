@@ -6,7 +6,7 @@
 
 namespace cmsl::sema::test
 {
-            class sema_context_mock : public sema_context_interface
+            class sema_context_mock : public sema_context
             {
             public:
                 MOCK_METHOD1(add_function, void(const sema_function&));

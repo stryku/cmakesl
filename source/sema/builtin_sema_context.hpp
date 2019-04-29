@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sema/sema_context.hpp"
+#include "sema/sema_context_impl.hpp"
 #include "function_signature.hpp"
 #include "builtin_function_kind.hpp"
 
@@ -24,7 +24,7 @@ namespace cmsl
         enum class builtin_function_kind;
         class type_builder;
 
-        class builtin_sema_context : public sema_context
+        class builtin_sema_context : public sema_context_impl
         {
         public:
             explicit builtin_sema_context(sema_type_factory &type_factory,

@@ -15,7 +15,7 @@ namespace cmsl
 
     namespace sema
     {
-        class sema_context_interface;
+        class sema_context;
         class sema_type;
     }
 
@@ -30,7 +30,7 @@ namespace cmsl
             class instance_factory2
             {
             public:
-                std::unique_ptr<instance> create(instance_value_variant value, const sema::sema_context_interface &ctx) const;
+                std::unique_ptr<instance> create(instance_value_variant value, const sema::sema_context &ctx) const;
                 std::unique_ptr<instance> create_reference(instance& referenced_instance) const;
                 std::unique_ptr<instance> create(const sema::sema_type& type) const;
                 std::unique_ptr<instance> create(const sema::sema_type& type, instance_value_variant value) const;

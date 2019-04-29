@@ -12,7 +12,7 @@
 
 namespace cmsl::sema
 {
-        class sema_context_interface;
+        class sema_context;
         class sema_function;
         class sema_type_builder;
 
@@ -29,7 +29,7 @@ namespace cmsl::sema
             using token_t = lexer::token;
 
         public:
-            explicit sema_type(const sema_context_interface& ctx, ast::type_representation name, std::vector<member_info> members);
+            explicit sema_type(const sema_context& ctx, ast::type_representation name, std::vector<member_info> members);
             explicit sema_type(const sema_type_reference reference);
 
             sema_type(const sema_type&) = delete;
@@ -37,7 +37,7 @@ namespace cmsl::sema
             virtual ~sema_type() = default;
 
             const ast::type_representation& name() const;
-            const sema_context_interface& context() const;
+            const sema_context& context() const;
             const std::vector<member_info>& members() const;
 
             std::optional<member_info> find_member(cmsl::string_view name) const;
@@ -55,7 +55,7 @@ namespace cmsl::sema
             // Todo: is it needed?
             friend class sema_type_builder;
 
-            const sema_context_interface& m_ctx;
+            const sema_context& m_ctx;
             ast::type_representation m_name;
             std::vector<member_info> m_members;
 

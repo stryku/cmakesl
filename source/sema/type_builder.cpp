@@ -1,6 +1,6 @@
 #include "sema/type_builder.hpp"
 #include "sema/factories.hpp"
-#include "sema/sema_context.hpp"
+#include "sema/sema_context_impl.hpp"
 #include "sema/user_sema_function.hpp"
 #include "sema/builtin_sema_function.hpp"
 
@@ -9,7 +9,7 @@ namespace cmsl::sema
         type_builder::type_builder(sema_type_factory &type_factory,
                                    sema_function_factory &function_factory,
                                    sema_context_factory &context_factory,
-                                   sema_context_interface &current_ctx,
+                                   sema_context &current_ctx,
                                    ast::type_representation name)
                 : m_type_factory{ type_factory }
                 , m_function_factory{ function_factory }
@@ -57,7 +57,7 @@ namespace cmsl::sema
             return type;
         }
 
-        const sema_context_interface& type_builder::context()
+        const sema_context& type_builder::context()
         {
             return m_type_ctx;
         }

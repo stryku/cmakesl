@@ -6,7 +6,7 @@
 
 namespace cmsl::sema
 {
-        sema_builder::sema_builder(sema_context_interface& ctx,
+        sema_builder::sema_builder(sema_context& ctx,
                                    errors::errors_observer& errs,
                                    identifiers_context& ids_context,
                                    sema_type_factory& type_factory,

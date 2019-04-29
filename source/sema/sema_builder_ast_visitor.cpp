@@ -46,8 +46,8 @@ namespace cmsl::sema
             m_ids_ctx.leave_ctx();
         }
 
-        sema_builder_ast_visitor::sema_builder_ast_visitor(sema_context_interface& generic_types_context,
-                                                           sema_context_interface& ctx,
+        sema_builder_ast_visitor::sema_builder_ast_visitor(sema_context& generic_types_context,
+                                                           sema_context& ctx,
                                                            errors::errors_observer& errs,
                                                            identifiers_context& ids_context,
                                                            sema_type_factory& type_factory,
@@ -267,11 +267,11 @@ namespace cmsl::sema
 
             switch (chosen_function->context().type())
             {
-                case sema_context_interface::context_type::namespace_:
+                case sema_context::context_type::namespace_:
                 {
                     return std::make_unique<function_call_node>(node,*chosen_function, std::move(*params));
                 } break;
-                case sema_context_interface::context_type::class_:
+                case sema_context::context_type::class_:
                 {
                     const auto is_constructor = chosen_function->signature().name.str() == chosen_function->return_type().name().to_string();
                     if(is_constructor)
@@ -585,7 +585,7 @@ namespace cmsl::sema
             m_result_node = std::make_unique<while_node>(node, std::move(conditional));
         }
 
-        const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(const sema_context_interface& search_context, const ast::type_representation& name)
+        const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(const sema_context& search_context, const ast::type_representation& name)
         {
             const auto found = search_context.find_type(name);
             if(found)
@@ -649,7 +649,7 @@ namespace cmsl::sema
             return clone(m_ctx);
         }
 
-        sema_builder_ast_visitor sema_builder_ast_visitor::clone(sema_context_interface& ctx_to_visit) const
+        sema_builder_ast_visitor sema_builder_ast_visitor::clone(sema_context& ctx_to_visit) const
         {
             return sema_builder_ast_visitor{ m_generic_types_context,
                                              ctx_to_visit,
@@ -674,7 +674,7 @@ namespace cmsl::sema
         }
 
         template <typename T>
-        std::unique_ptr<T> sema_builder_ast_visitor::visit_child_node(const ast::ast_node& node, sema_context_interface& ctx_to_visit)
+        std::unique_ptr<T> sema_builder_ast_visitor::visit_child_node(const ast::ast_node& node, sema_context& ctx_to_visit)
         {
             return to_node<T>(visit_child(node, ctx_to_visit));
         }
@@ -686,7 +686,7 @@ namespace cmsl::sema
             return std::move(v.m_result_node);
         }
 
-        std::unique_ptr<sema_node> sema_builder_ast_visitor::visit_child(const ast::ast_node& node, sema_context_interface& ctx_to_visit)
+        std::unique_ptr<sema_node> sema_builder_ast_visitor::visit_child(const ast::ast_node& node, sema_context& ctx_to_visit)
         {
             auto v = clone(ctx_to_visit);
             node.visit(v);
@@ -719,7 +719,7 @@ namespace cmsl::sema
         }
 
         std::optional<sema_builder_ast_visitor::function_declaration> sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(const ast::user_function_node& node,
-                                                                                      sema_context& ctx)
+                                                                                      sema_context_impl& ctx)
         {
             const auto return_type_reference = node.return_type_representation();
             auto return_type = try_get_or_create_generic_type(ctx, return_type_reference);
@@ -761,7 +761,7 @@ namespace cmsl::sema
         }
 
         std::optional<sema_builder_ast_visitor::class_members> sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(const ast::class_node& node,
-                                                                                      sema_context& class_context)
+                                                                                      sema_context_impl& class_context)
         {
             class_members members;
 

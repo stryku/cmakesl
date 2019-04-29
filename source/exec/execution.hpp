@@ -43,7 +43,7 @@ namespace cmsl::exec
 
             bool returning_from_function() const;
 
-            const sema::sema_context_interface& current_context() const;
+            const sema::sema_context& current_context() const;
 
             void enter_function_scope(const sema::sema_function& fun, const std::vector<inst::instance*>& params);
             void enter_function_scope(const sema::sema_function& fun, inst::instance& class_instance, const std::vector<inst::instance*>& params);

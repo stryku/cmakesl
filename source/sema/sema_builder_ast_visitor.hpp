@@ -39,7 +39,7 @@ namespace cmsl
         class sema_function_factory;
         class sema_context_factory;
         class user_sema_function;
-        class sema_context;
+        class sema_context_impl;
         class function_signature;
 
         class sema_builder_ast_visitor : public ast::ast_node_visitor
@@ -48,15 +48,15 @@ namespace cmsl
             using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
         public:
-            explicit sema_builder_ast_visitor(sema_context_interface& generic_types_context,
-                                              sema_context_interface& ctx,
+            explicit sema_builder_ast_visitor(sema_context& generic_types_context,
+                                              sema_context& ctx,
                                               errors::errors_observer& errs,
                                               identifiers_context& ids_context,
                                               sema_type_factory& type_factory,
                                               sema_function_factory& function_factory,
                                               sema_context_factory& context_factory,
                                               add_subdirectory_handler& add_subdirectory_handler,
-                                              sema_function* currently_parsing_function = nullptr); // Todo: Create private ctor that trakes currently_parsing_function
+                                              sema_function* currently_parsing_function = nullptr); // Todo: Create private ctor that takes currently_parsing_function
 
             void visit(const ast::block_node& node) override;
             void visit(const ast::class_node& node) override;
@@ -79,7 +79,7 @@ namespace cmsl
             void visit(const ast::initializer_list_node& node) override;
 
         private:
-            const sema_type* try_get_or_create_generic_type(const sema_context_interface& search_context, const ast::type_representation& name);
+            const sema_type* try_get_or_create_generic_type(const sema_context& search_context, const ast::type_representation& name);
 
             std::unique_ptr<expression_node> build_function_call(const ast::function_call_node& node);
             std::unique_ptr<expression_node> build_add_subdirectory_call(const ast::function_call_node& node);
@@ -91,16 +91,16 @@ namespace cmsl
             void raise_error(const lexer::token token, const std::string& message);
 
             sema_builder_ast_visitor clone() const;
-            sema_builder_ast_visitor clone(sema_context_interface& ctx_to_visit) const;
+            sema_builder_ast_visitor clone(sema_context& ctx_to_visit) const;
 
 
             template <typename T>
             std::unique_ptr<T> visit_child_node(const ast::ast_node& node);
 
             template <typename T>
-            std::unique_ptr<T> visit_child_node(const ast::ast_node& node, sema_context_interface& ctx_to_visit);
+            std::unique_ptr<T> visit_child_node(const ast::ast_node& node, sema_context& ctx_to_visit);
             std::unique_ptr<sema_node> visit_child(const ast::ast_node& node);
-            std::unique_ptr<sema_node> visit_child(const ast::ast_node& node, sema_context_interface& ctx_to_visit);
+            std::unique_ptr<sema_node> visit_child(const ast::ast_node& node, sema_context& ctx_to_visit);
             std::unique_ptr<expression_node> visit_child_expr(const ast::ast_node& node);
 
             std::optional<param_expressions_t> get_function_call_params(const std::vector<std::unique_ptr<ast::ast_node>>& passed_params);
@@ -131,9 +131,9 @@ namespace cmsl
             };
 
             std::optional<function_declaration> get_function_declaration_and_add_to_ctx(const ast::user_function_node& node,
-                    sema_context& ctx);
+                    sema_context_impl& ctx);
             std::optional<class_members> collect_class_members_and_add_functions_to_ctx(const ast::class_node& node,
-                    sema_context& class_context);
+                    sema_context_impl& class_context);
 
             template<unsigned N>
             lexer::token make_token(lexer::token_type token_type, const char (&tok)[N]);
@@ -148,8 +148,8 @@ namespace cmsl
             std::unique_ptr<sema_node> m_result_node;
 
         private:
-            sema_context_interface& m_generic_types_context;
-            sema_context_interface& m_ctx;
+            sema_context& m_generic_types_context;
+            sema_context& m_ctx;
             errors::errors_observer& m_errors_observer;
             identifiers_context& m_ids_context;
             sema_type_factory& m_type_factory;

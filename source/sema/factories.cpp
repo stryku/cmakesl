@@ -23,12 +23,12 @@ namespace
 namespace cmsl::sema
 {
         user_sema_function&
-        sema_function_factory::create_user(const sema_context_interface &ctx, const sema_type &return_type, function_signature s)
+        sema_function_factory::create_user(const sema_context &ctx, const sema_type &return_type, function_signature s)
         {
             return create_impl<user_sema_function>(ctx, return_type, std::move(s));
         }
         builtin_sema_function&
-        sema_function_factory::create_builtin(const sema_context_interface &ctx, const sema_type &return_type, function_signature s, builtin_function_kind kind)
+        sema_function_factory::create_builtin(const sema_context &ctx, const sema_type &return_type, function_signature s, builtin_function_kind kind)
         {
             return create_impl<builtin_sema_function>(ctx, return_type, std::move(s), kind);
         }
@@ -36,14 +36,14 @@ namespace cmsl::sema
         sema_function_factory::~sema_function_factory()
         {}
 
-        sema_context& sema_context_factory::create(const sema_context_interface *parent)
+        sema_context_impl& sema_context_factory::create(const sema_context *parent)
         {
-            return create_impl<sema_context>(parent, sema_context_interface::context_type::namespace_);
+            return create_impl<sema_context_impl>(parent, sema_context::context_type::namespace_);
         }
 
-        sema_context &sema_context_factory::create_class(const sema_context_interface *parent)
+        sema_context_impl &sema_context_factory::create_class(const sema_context *parent)
         {
-            return create_impl<sema_context>(parent, sema_context_interface::context_type::class_);
+            return create_impl<sema_context_impl>(parent, sema_context::context_type::class_);
         }
 
         sema_context_factory::~sema_context_factory()
@@ -52,13 +52,13 @@ namespace cmsl::sema
         }
 
         const sema_type&
-        sema_type_factory::create(const sema_context_interface &ctx, ast::type_representation name, std::vector<member_info> members)
+        sema_type_factory::create(const sema_context &ctx, ast::type_representation name, std::vector<member_info> members)
         {
             return create_impl<sema_type>(ctx, name, std::move(members));
         }
 
         const sema_type &
-        sema_type_factory::create_homogeneous_generic(const sema_context_interface &ctx,
+        sema_type_factory::create_homogeneous_generic(const sema_context &ctx,
                                                       ast::type_representation name,
                                                       const sema_type &value_type)
         {
@@ -76,8 +76,8 @@ namespace cmsl::sema
 
         }
 
-        sema_generic_type_factory::sema_generic_type_factory(sema_context_interface& generic_types_context,
-                                                             const sema_context_interface& creation_context,
+        sema_generic_type_factory::sema_generic_type_factory(sema_context& generic_types_context,
+                                                             const sema_context& creation_context,
                                                              sema_type_factory& type_factory,
                                                              sema_function_factory& function_factory,
                                                              sema_context_factory& context_factory,

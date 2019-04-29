@@ -9,7 +9,7 @@ namespace cmsl
 {
     namespace sema
     {
-        class sema_context_interface;
+        class sema_context;
     }
 
     namespace exec
@@ -24,7 +24,7 @@ namespace cmsl
             class instances_holder : public instances_holder_interface
             {
             public:
-                explicit instances_holder(const sema::sema_context_interface& sema_ctx);
+                explicit instances_holder(const sema::sema_context& sema_ctx);
 
                 void store(std::unique_ptr<instance> i) override;
 
@@ -37,7 +37,7 @@ namespace cmsl
                 inst::instance *create_void() override;
 
             private:
-                const sema::sema_context_interface& m_sema_ctx;
+                const sema::sema_context& m_sema_ctx;
                 std::vector<std::unique_ptr<inst::instance>> m_instances;
             };
         }
