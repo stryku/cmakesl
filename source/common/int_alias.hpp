@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-namespace cmsl
-{
-            using int_t = std::int64_t;
+namespace cmsl {
+using int_t = std::int64_t;
 }
