@@ -68,7 +68,7 @@ namespace cmsl::exec
     }
 
     const sema::sema_function *
-    global_executor::handle_add_subdirectory(cmsl::string_view name, const std::vector<std::unique_ptr<sema::expression_node>>& params)
+    global_executor::handle_add_subdirectory(cmsl::string_view name, const std::vector<std::unique_ptr<sema::expression_node>>&)
     {
         directory_guard dg{ m_cmake_facade, std::string{ name } };
 
@@ -100,8 +100,6 @@ namespace cmsl::exec
             raise_no_main_function_error(path_view);
             return nullptr;
         }
-
-        const auto& global_context = compiled->get_global_context();
 
         m_compiled_sources.emplace_back(std::move(compiled));
 

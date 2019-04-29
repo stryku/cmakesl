@@ -25,7 +25,7 @@ namespace cmsl::exec::inst
 
     complex_unnamed_instance::instance_members_t complex_unnamed_instance::get_init_data(instance_members_t members) const
             {
-                return std::move(members);
+                return members;
             }
 
     instance_value_variant complex_unnamed_instance::value() const
@@ -43,7 +43,7 @@ namespace cmsl::exec::inst
                 CMSL_UNREACHABLE("Getting value of a complex type");
             }
 
-            void complex_unnamed_instance::assign(instance_value_variant val)
+            void complex_unnamed_instance::assign(instance_value_variant)
             {
                 CMSL_UNREACHABLE("Assigning value to a complex type");
             }
@@ -88,7 +88,7 @@ namespace cmsl::exec::inst
                                                          member_pair.second->copy());
                                });
 
-                return std::move(m);
+                return m;
             }
 
             sema::single_scope_function_lookup_result_t complex_unnamed_instance::find_function(lexer::token name) const
@@ -109,7 +109,7 @@ namespace cmsl::exec::inst
 
                 std::transform(std::cbegin(member_declarations), std::cend(member_declarations),
                                std::inserter(members, std::end(members)),
-                               [this](const auto& member_decl)
+                               [](const auto& member_decl)
                                {
                                    auto member_inst = instance_factory2{}.create(member_decl.ty);
                                    return std::make_pair(member_decl.name.str(), std::move(member_inst));

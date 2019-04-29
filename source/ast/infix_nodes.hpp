@@ -323,8 +323,8 @@ namespace cmsl::ast
                                            std::vector<std::unique_ptr<ast_node>> values,
                                            token_t close_brace)
                     : m_open_brace{ open_brace }
-                    , m_close_brace{ close_brace }
                     , m_values{ std::move(values) }
+                    , m_close_brace{ close_brace }
             {}
 
             const std::vector<std::unique_ptr<ast_node>>& values() const

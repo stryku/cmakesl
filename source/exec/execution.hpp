@@ -55,7 +55,7 @@ namespace cmsl::exec
             struct callstack_frame
             {
                 const sema::sema_function& fun;
-                execution_context exec_ctx;
+                execution_context exec_ctx{};
             };
 
             facade::cmake_facade& m_cmake_facade;

@@ -40,7 +40,7 @@ namespace cmsl
         class sema_context_factory;
         class user_sema_function;
         class sema_context_impl;
-        class function_signature;
+        struct function_signature;
 
         class sema_builder_ast_visitor : public ast::ast_node_visitor
         {

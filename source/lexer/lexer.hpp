@@ -34,7 +34,7 @@ namespace cmsl
             {
                 token_type single;
                 token_type op_equal;
-                token_type twice;
+                token_type twice{ token_type::undef };
 
                 bool has_twice() const
                 {

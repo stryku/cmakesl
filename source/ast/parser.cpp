@@ -647,7 +647,7 @@ namespace cmsl::ast
                     }
                 }
 
-                return std::move(f);
+                return f;
             }
             else
             {
@@ -674,7 +674,7 @@ namespace cmsl::ast
                     f = std::make_unique<binary_operator_node>(std::move(lhs), op, std::move(rhs));
                 }
 
-                return std::move(f);
+                return f;
             }
         }
 
@@ -749,7 +749,7 @@ namespace cmsl::ast
             {
                 auto e = parse_expr();
                 eat(token_type_t::close_paren);
-                return std::move(e);
+                return e;
             }
             else if(const auto id = try_eat(token_type_t::identifier))
             {
@@ -795,7 +795,7 @@ namespace cmsl::ast
                     }
                 }
 
-                return std::move(operator_expr);
+                return operator_expr;
         }
 
         std::optional<parser::function_call_values> parser::get_function_call_values()

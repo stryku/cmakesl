@@ -13,7 +13,9 @@ namespace cmsl::ast
                                            std::unique_ptr<block_node> body)
             : m_return_type{ std::move(return_type) }
             , m_name{ name }
+            , m_open_paren{ open_paren }
             , m_params{ std::move(params) }
+            , m_close_paren{ close_paren }
             , m_body{ std::move(body) }
     {}
 

@@ -441,7 +441,6 @@ namespace cmsl::sema
             const auto types_finder = builtin_types_finder{ *this };
             const auto& int_type = types_finder.find_int();
             const auto& bool_type = types_finder.find_bool();
-            const auto& double_type = types_finder.find_double();
             const auto& string_type = types_finder.find_string();
             const auto& string_reference_type = types_finder.find_reference_for(string_type);
             const auto& void_type = types_finder.find_string();
@@ -791,10 +790,7 @@ namespace cmsl::sema
         void builtin_sema_context::add_project_member_functions(type_builder &project_manipulator)
         {
             const auto types_finder = builtin_types_finder{ *this };
-            const auto& int_type = types_finder.find_int();
-            const auto& bool_type = types_finder.find_bool();
             const auto& string_type = types_finder.find_string();
-            const auto& version_type = types_finder.find_version();
             const auto& project_type = types_finder.find_project();
             const auto& library_type = types_finder.find_library();
             const auto& executable_type = types_finder.find_executable();
@@ -853,8 +849,6 @@ namespace cmsl::sema
         void builtin_sema_context::add_library_member_functions(type_builder &project_manipulator)
         {
             const auto types_finder = builtin_types_finder{ *this };
-            const auto& int_type = types_finder.find_int();
-            const auto& bool_type = types_finder.find_bool();
             const auto& string_type = types_finder.find_string();
             const auto& library_type = types_finder.find_library();
             const auto& void_type = types_finder.find_void();
@@ -888,8 +882,6 @@ namespace cmsl::sema
         void builtin_sema_context::add_executable_member_functions(type_builder &project_manipulator)
         {
             const auto types_finder = builtin_types_finder{ *this };
-            const auto& int_type = types_finder.find_int();
-            const auto& bool_type = types_finder.find_bool();
             const auto& string_type = types_finder.find_string();
             const auto& library_type = types_finder.find_library();
             const auto& void_type = types_finder.find_void();

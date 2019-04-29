@@ -211,7 +211,7 @@ namespace cmsl::exec::inst
             {
                 int_t erased_counter{ 0 };
                 count = interpret_special_value(count, m_list.size());
-                auto i{ 0 };
+                auto i{ 0u };
                 while(i < m_list.size() && count != 0)
                 {
                     const auto check_index = indexCalculator(i);

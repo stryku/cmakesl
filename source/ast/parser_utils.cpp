@@ -37,7 +37,7 @@ namespace cmsl::ast
 
     parser_utils::token_type_t parser_utils::peek_from(token_it it, size_t n) const
     {
-        if (std::distance(it, m_end) <= n)
+        if (static_cast<size_t>(std::distance(it, m_end)) <= n)
         {
             return token_type_t::undef;
         }
