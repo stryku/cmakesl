@@ -563,6 +563,7 @@ void builtin_sema_context::add_string_member_functions(
         make_id_token("+="),
         { parameter_declaration{ string_type, make_id_token("") } } },
       builtin_function_kind::string_operator_plus_equal },
+      //Todo: clear could return a reference
     builtin_function_info{ // void clear()
                            void_type,
                            function_signature{ make_id_token("clear") },
@@ -628,6 +629,7 @@ void builtin_sema_context::add_string_member_functions(
         { parameter_declaration{ int_type, make_id_token("") },
           parameter_declaration{ int_type, make_id_token("") } } },
       builtin_function_kind::string_substr_pos_count },
+          //Todo: resize could return a reference
     builtin_function_info{
       // void resize(int new_size)
       void_type,
@@ -635,6 +637,7 @@ void builtin_sema_context::add_string_member_functions(
         make_id_token("resize"),
         { parameter_declaration{ int_type, make_id_token("") } } },
       builtin_function_kind::string_resize_newsize },
+          //Todo: resize could return a reference
     builtin_function_info{
       // void resize(int new_size, string fill)
       void_type,
@@ -694,6 +697,7 @@ void builtin_sema_context::add_string_member_functions(
         make_id_token("contains"),
         { parameter_declaration{ string_type, make_id_token("") } } },
       builtin_function_kind::string_contains },
+      // Todo: lower should return reference
     builtin_function_info{ // void lower()
                            void_type,
                            function_signature{ make_id_token("lower") },
@@ -702,6 +706,7 @@ void builtin_sema_context::add_string_member_functions(
                            string_type,
                            function_signature{ make_id_token("make_lower") },
                            builtin_function_kind::string_make_lower },
+    // Todo: upper should return reference
     builtin_function_info{ // void upper()
                            void_type,
                            function_signature{ make_id_token("upper") },
@@ -925,7 +930,7 @@ void builtin_sema_context::add_library_member_functions(
                            function_signature{ make_id_token("name") },
                            builtin_function_kind::library_name },
     builtin_function_info{
-      // void link_to(target target)
+      // void link_to(library target)
       void_type,
       function_signature{
         make_id_token("link_to"),

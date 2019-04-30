@@ -1,0 +1,224 @@
+/** \brief The builtin string type.
+ */
+class string
+{
+public:
+  /** \brief Default constructor.
+   *
+   * Initializes to "".
+   */
+  string();
+
+  /** \brief Copy constructor.
+   *
+   * Copies value of the parameter.
+   *
+   * \param value The value to be initialized with.
+   */
+  string(string value);
+
+  /** \brief Multiplicative constructor.
+   *
+   * Initializes with \p value repeated \p count times.
+   *
+   * \param value The value to be repeated.
+   * \param count Number of times to repeat the \p value.
+   */
+  string(string value, int count);
+
+  /** \brief Checks if the string has no characters.
+   *
+   * \return true if instance contanis an empty string, false otherwise.
+   */
+  bool empty();
+
+  /**
+   * @return the number of CharT elements in the string.
+   */
+  int size();
+
+  /**
+   * @return true if lhs and rhs are equal, false otherwise.
+   */
+  bool operator==(string rhs);
+
+  /**
+   * @return true if lhs and rhs are not equal, false otherwise.
+   */
+  bool operator!=(string rhs);
+
+  /**
+   * @return true if lhs is lexicographically less than rhs, false otherwise.
+   */
+  bool operator<(string rhs);
+
+  /**
+   * @return true if lhs is lexicographically less or equal as rhs, false
+   * otherwise.
+   */
+  bool operator<=(string rhs);
+
+  /**
+   * @return true if lhs is lexicographically greater than rhs, false
+   * otherwise.
+   */
+  bool operator>(string rhs);
+
+  /**
+   * @return true if lhs is lexicographically greater or equal as rhs, false
+   * otherwise.
+   */
+  bool operator>=(string rhs);
+
+  /**
+   * @return A string containing characters from lhs followed by the characters
+   * from rhs.
+   */
+  string operator+(string rhs);
+
+  /** @brief Appends additional characters to the value of lhs.
+   *
+   * @return A reference to the lhs instance.
+   */
+  string& operator+=(string rhs);
+
+  /** @brief Clears currently held value.
+   */
+  void clear();
+
+  /** @brief Inserts value of \p str at the \p position.
+   *
+   * @return A reference to the lhs instance.
+   */
+  string& insert(int position, string str);
+
+  /** @brief Erases one character at \p position.
+   *
+   * @return A reference to the lhs instance.
+   */
+  string& erase(int position);
+
+  /** @brief Erases \p count number of characters starting from \p position.
+   *
+   * @return A reference to the lhs instance.
+   */
+  string& erase(int position, int count);
+
+  /**
+   * @return true if currently held value starts with \p str, false otherwise.
+   */
+  bool starts_with(string str);
+
+  /**
+   * @return true if currently held value ends with \p str, false otherwise.
+   */
+  bool ends_with(string str);
+
+  /** @brief Replaces part of string with another one.
+   *
+   * Replaces \p count number of characters at \p position, with value of \p
+   * str.
+   *
+   * @return A reference to the lhs instance.
+   */
+  string& replace(int position, int count, string str);
+
+  /**
+   * @return A substring of currently held value, starting from \p position
+   * through the end.
+   */
+  string substr(int position);
+
+  /**
+   * @return A substring of currently held value, starting from \p position
+   * through (\p position + \p count) position.
+   */
+  string substr(int position, int count);
+
+  /** @brief Resizes the string.
+   *
+   * Resizes currently held value to \p new_size. If \p new_size is less than
+   * current size, trims characters at the end. If \p new_size is greater that
+   * current size, appends string with null characters.
+   */
+  void resize(int new_size);
+
+  /** @brief Resizes the string.
+   *
+   * Resizes currently held value to \p new_size. If \p new_size is less than
+   * current size, trims characters at the end. If \p new_size is greater that
+   * current size, appends string with characters of \p fill.
+   */
+  void resize(int new_size, string fill);
+
+  /** @brief Finds string in another string starting from the beginning.
+   *
+   * @return A position at which \p str was found. -1 if it was not found.
+   */
+  int find(string str);
+
+  /** @brief Finds string in another string starting from the \p position.
+   *
+   * @return A position at which \p str was found. -1 if it was not found.
+   */
+  int find(string str, int position);
+
+  /** @brief Finds position of a character that is not present in \p str,
+   * string starting from the beginning.
+   *
+   * @return A position at which such character was found. -1 if it was not
+   * found.
+   */
+  int find_not_of(string str);
+
+  /** @brief Finds position of a character that is not present in \p str,
+   * string starting from the \p position.
+   *
+   * @return A position at which such character was found. -1 if it was not
+   * found.
+   */
+  int find_not_of(string str, int position);
+
+  /** @brief Finds position of the last character that is present in \p str.
+   *
+   * @return A position at which such character was found. -1 if it was not
+   * found.
+   */
+  int find_last(string str);
+
+  /** @brief Finds position of the last character that is not present in \p
+   * str.
+   *
+   * @return A position at which such character was found. -1 if it was not
+   * found.
+   */
+  int find_last_not_of(string str);
+
+  /** @brief Checks whether current string contains another one.
+   *
+   * @return true if \p str is part of currently held value, false otherwise.
+   */
+  bool contains(string str);
+
+  /** @brief Converts all uppercase characters to lowercase.
+   */
+  void lower();
+
+  /** @brief Creates a copy of currently held value, in which all uppercase
+   * characters are converted to lowercase.
+   *
+   * @return A string with lowercase characters.
+   */
+  string make_lower();
+
+  /** @brief Converts all lowercase characters to uppercase.
+   */
+  void upper();
+
+  /** @brief Creates a copy of currently held value, in which all lowercase
+   * characters are converted to uppercase.
+   *
+   * @return A string with uppercase characters.
+   */
+  string make_upper();
+};
