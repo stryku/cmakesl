@@ -1,0 +1,20 @@
+/** \brief The builtin executable type.
+ *
+ * This class is a kind of an accessor. If you create a copy of it (e.g. by
+ * passing as a parameter to a function), it doesn't mean that another
+ * executable with the same name and sources is going to be created. Think of
+ * it as of a implicit reference to the actual executable object.
+ */
+class executable
+{
+public:
+  /** @return The name of the executable.
+   */
+  string name();
+
+  /** @brief Links the library to executable.
+   *
+   * @param lib The library to be linked to.
+   */
+  void link_to(library lib);
+};
