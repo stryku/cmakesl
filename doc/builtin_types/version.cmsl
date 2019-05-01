@@ -1,0 +1,104 @@
+/** \brief The builtin version type.
+ */
+class version
+{
+public:
+  /** @brief Constructor taking major part.
+   *
+   * Initializes major part to \p major and other parts to 0.
+   *
+   * @param major The major part to be initialized with.
+   */
+  version(int major);
+
+  /** @brief Constructor taking major and minor part.
+   *
+   * Initializes major part to \p major, minor part to \p minor and other parts
+   * to 0.
+   *
+   * @param major The major part to be initialized with.
+   * @param minor The minor part to be initialized with.
+   */
+  version(int major, int minor);
+
+  /** @brief Constructor taking major, minor and patch part.
+   *
+   * Initializes major part to \p major, minor part to \p minor, patch part to
+   * \p patch and tweak part to 0.
+   *
+   * @param major The major part to be initialized with.
+   * @param minor The minor part to be initialized with.
+   * @param patch The patch part to be initialized with.
+   */
+  version(int major, int minor, int patch);
+
+  /** @brief Constructor taking all parts.
+   *
+   * Initializes major part to \p major, minor part to \p minor, patch part to
+   * \p patch and tweak part to \p tweak.
+   *
+   * @param major The major part to be initialized with.
+   * @param minor The minor part to be initialized with.
+   * @param patch The patch part to be initialized with.
+   * @param tweak The tweak part to be initialized with.
+   */
+  version(int major, int minor, int patch, int tweak);
+
+  /** @brief Compares two versions.
+   *
+   * @return true if all parts of lhs are the same as all parts of rhs, false
+   * otherwise.
+   */
+  bool operator==(version rhs);
+
+  /** @brief Compares two versions.
+   *
+   * @return true if any part from lhs is different than the part from rhs,
+   * false otherwise.
+   */
+  bool operator!=(version rhs);
+
+  /** @brief Compares two versions.
+   *
+   * @return true parts of lhs are lexicographically less than parts of rhs.
+   */
+  bool operator<(version rhs);
+
+  /** @brief Compares two versions.
+   *
+   * @return true if lhs is lexicographically less or equal as rhs.
+   */
+  bool operator<=(version rhs);
+
+  /** @brief Compares two versions.
+   *
+   * @return true parts of lhs are lexicographically greater than parts of rhs.
+   */
+  bool operator>(version rhs);
+
+  /** @brief Compares two versions.
+   *
+   * @return true if lhs is lexicographically greater or equal as rhs.
+   */
+  bool operator>=(version rhs);
+
+  /** @return The major part of currently held version.
+   */
+  int major();
+
+  /** @return The minor part of currently held version.
+   */
+  int minor();
+
+  /** @return The patch part of currently held version.
+   */
+  int patch();
+
+  /** @return The tweak part of currently held version.
+   */
+  int tweak();
+
+  /** @return A string representation of currently held value.
+   */
+  string to_string();
+};
