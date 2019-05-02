@@ -6,6 +6,9 @@ import json
 FILE_TEMPLATE = """
 #pragma once
 
+#include <common/string.hpp>
+#include <lexer/token.hpp>
+
 %documentation_string_views%
 
 namespace cmsl::sema
@@ -25,11 +28,6 @@ public:
     explicit %type_name%_tokens_provider(std::optional<cmsl::string_view> path_to_documentation)
         : m_path_to_documentation{ path_to_documentation }
     {}
-
-    source_view get_source_view() const
-    {
-        return source_view{ m_path_to_documentation, %type_name%_documentation_source };
-    }
     
     %methods%
 
@@ -37,8 +35,8 @@ private:
     source_view get_source_view() const
     {
         return m_path_to_documentation.has_value()
-            ? source_view{ m_path_to_documentation, %type_name%_documentation_source }
-            : source_view{ %type_name%_documentation_source }
+            ? source_view{ *m_path_to_documentation, %type_name%_documentation_source }
+            : source_view{ %type_name%_documentation_source };
     }
     
 private:
@@ -69,7 +67,7 @@ def load_type_documentation(type_name):
     documentation_path =  '{}/{}.cmsl'.format(sys.argv[1], type_name)
 
     if not os.path.exists(documentation_path):
-        return Null
+        return None
 
     with open(documentation_path, 'r') as file:
         return file.read()
@@ -138,7 +136,7 @@ def main():
         replace('%documentation_string_views%', documentation_string_views).\
         replace('%token_providers%', providers)
 
-    destination_path = '{}/builtin_token_providers.hpp'.format(sys.argv[2])
+    destination_path = sys.argv[2]
     with open(destination_path, 'w') as file:
         file.write(file_content)
 
