@@ -4,6 +4,8 @@ set(SEMA_SOURCES
     builtin_sema_context.cpp
     builtin_sema_context.hpp
     builtin_sema_function.hpp
+    builtin_token_provider.cpp
+    builtin_token_provider.hpp
     builtin_types_finder.hpp
     factories.cpp
     factories.hpp
