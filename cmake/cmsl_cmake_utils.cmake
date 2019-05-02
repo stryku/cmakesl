@@ -2,7 +2,7 @@ function(cmsl_add_library NAME SOURCES)
     add_library(${NAME} ${SOURCES})
 
     if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0")
-        source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX ${NAME} FILES ${SOURCES})
+#        source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX ${NAME} FILES ${SOURCES})
     endif()
 endfunction()
 

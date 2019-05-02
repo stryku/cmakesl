@@ -161,7 +161,7 @@ const sema_type* sema_generic_type_factory::create_list(
       // list()
       list_type, function_signature{ make_id_token("list"), {} },
       builtin_function_kind::list_ctor },
-      // Todo: push_back could return reference
+    // Todo: push_back could return reference
     type_builder::builtin_function_info{
       // void push_back(value_type)
       void_type,
@@ -169,7 +169,7 @@ const sema_type* sema_generic_type_factory::create_list(
         make_id_token("push_back"),
         { parameter_declaration{ *value_type, make_id_token("") } } },
       builtin_function_kind::list_push_back_value },
-          // Todo: push_back could return reference
+    // Todo: push_back could return reference
     type_builder::builtin_function_info{
       // void push_back(list)
       void_type,
@@ -177,7 +177,7 @@ const sema_type* sema_generic_type_factory::create_list(
         make_id_token("push_back"),
         { parameter_declaration{ list_type, make_id_token("") } } },
       builtin_function_kind::list_push_back_list },
-          // Todo: push_front could return reference
+    // Todo: push_front could return reference
     type_builder::builtin_function_info{
       // void push_front(value_type)
       void_type,
@@ -185,7 +185,7 @@ const sema_type* sema_generic_type_factory::create_list(
         make_id_token("push_front"),
         { parameter_declaration{ *value_type, make_id_token("") } } },
       builtin_function_kind::list_push_front_value },
-          // Todo: push_front could return reference
+    // Todo: push_front could return reference
     type_builder::builtin_function_info{
       // void push_front(list)
       void_type,
@@ -193,12 +193,12 @@ const sema_type* sema_generic_type_factory::create_list(
         make_id_token("push_front"),
         { parameter_declaration{ list_type, make_id_token("") } } },
       builtin_function_kind::list_push_front_list },
-          // Todo: pop_back could return reference
+    // Todo: pop_back could return reference
     type_builder::builtin_function_info{
       // void pop_back()
       void_type, function_signature{ make_id_token("pop_back"), {} },
       builtin_function_kind::list_pop_back },
-          // Todo: pop_front could return reference
+    // Todo: pop_front could return reference
     type_builder::builtin_function_info{
       // void pop_front()
       void_type, function_signature{ make_id_token("pop_front"), {} },
@@ -210,17 +210,17 @@ const sema_type* sema_generic_type_factory::create_list(
         make_id_token("at"),
         { parameter_declaration{ int_type, make_id_token("") } } },
       builtin_function_kind::list_at },
-      //Todo: front should return a reference
+    // Todo: front should return a reference
     type_builder::builtin_function_info{
       // value_type front()
       *value_type, function_signature{ make_id_token("front"), {} },
       builtin_function_kind::list_front },
-          //Todo: back should return a reference
+    // Todo: back should return a reference
     type_builder::builtin_function_info{
       // value_type back()
       *value_type, function_signature{ make_id_token("back"), {} },
       builtin_function_kind::list_back },
-          // Todo: insert could return reference
+    // Todo: insert could return reference
     type_builder::builtin_function_info{
       // void insert(int pos, value_type)
       void_type,
@@ -229,7 +229,7 @@ const sema_type* sema_generic_type_factory::create_list(
         { parameter_declaration{ int_type, make_id_token("") },
           parameter_declaration{ *value_type, make_id_token("") } } },
       builtin_function_kind::list_insert_pos_value },
-          // Todo: insert could return reference
+    // Todo: insert could return reference
     type_builder::builtin_function_info{
       // void insert(int pos, list)
       void_type,
@@ -238,7 +238,7 @@ const sema_type* sema_generic_type_factory::create_list(
         { parameter_declaration{ int_type, make_id_token("") },
           parameter_declaration{ list_type, make_id_token("") } } },
       builtin_function_kind::list_insert_pos_list },
-          // Todo: erase could return reference
+    // Todo: erase could return reference
     type_builder::builtin_function_info{
       // void erase(int pos)
       void_type,
@@ -246,7 +246,7 @@ const sema_type* sema_generic_type_factory::create_list(
         make_id_token("erase"),
         { parameter_declaration{ int_type, make_id_token("") } } },
       builtin_function_kind::list_erase_pos },
-          // Todo: erase could return reference
+    // Todo: erase could return reference
     type_builder::builtin_function_info{
       // void erase(int pos, int count)
       void_type,

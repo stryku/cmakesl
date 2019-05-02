@@ -563,7 +563,7 @@ void builtin_sema_context::add_string_member_functions(
         make_id_token("+="),
         { parameter_declaration{ string_type, make_id_token("") } } },
       builtin_function_kind::string_operator_plus_equal },
-      //Todo: clear could return a reference
+    // Todo: clear could return a reference
     builtin_function_info{ // void clear()
                            void_type,
                            function_signature{ make_id_token("clear") },
@@ -629,7 +629,7 @@ void builtin_sema_context::add_string_member_functions(
         { parameter_declaration{ int_type, make_id_token("") },
           parameter_declaration{ int_type, make_id_token("") } } },
       builtin_function_kind::string_substr_pos_count },
-          //Todo: resize could return a reference
+    // Todo: resize could return a reference
     builtin_function_info{
       // void resize(int new_size)
       void_type,
@@ -637,7 +637,7 @@ void builtin_sema_context::add_string_member_functions(
         make_id_token("resize"),
         { parameter_declaration{ int_type, make_id_token("") } } },
       builtin_function_kind::string_resize_newsize },
-          //Todo: resize could return a reference
+    // Todo: resize could return a reference
     builtin_function_info{
       // void resize(int new_size, string fill)
       void_type,
@@ -697,7 +697,7 @@ void builtin_sema_context::add_string_member_functions(
         make_id_token("contains"),
         { parameter_declaration{ string_type, make_id_token("") } } },
       builtin_function_kind::string_contains },
-      // Todo: lower should return reference
+    // Todo: lower should return reference
     builtin_function_info{ // void lower()
                            void_type,
                            function_signature{ make_id_token("lower") },
