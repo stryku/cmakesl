@@ -70,9 +70,9 @@ int main(int argc, const char* argv[])
   for (i = 0; i < index_entries->num_entries; ++i) {
     struct cmsl_index_entry* entry = &index_entries->entries[i];
     printf("source begin: %d, source end: %d, destination position: %d, entry "
-           "type: %s\n",
+           "type: %s, destination path: %s\n",
            entry->begin_pos, entry->end_pos, entry->position,
-           entry_type_to_string(entry->type));
+           entry_type_to_string(entry->type), entry->source_path);
   }
 
   cmsl_destroy_index_entries(index_entries);
