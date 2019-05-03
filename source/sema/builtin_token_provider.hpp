@@ -21,8 +21,12 @@ struct version_tokens_provider;
 class builtin_token_provider
 {
 public:
-  explicit builtin_token_provider(
-    std::optional<cmsl::string_view> builtin_documentation_path);
+  explicit builtin_token_provider(std::string builtin_documentation_path);
+
+  builtin_token_provider(const builtin_token_provider&) = delete;
+  builtin_token_provider& operator=(const builtin_token_provider&) = delete;
+  builtin_token_provider(builtin_token_provider&&) = default;
+  builtin_token_provider& operator=(builtin_token_provider&&) = default;
 
   bool_tokens_provider bool_() const;
   double_tokens_provider double_() const;
@@ -53,7 +57,7 @@ private:
   std::optional<cmsl::string_view> get_path(builtin_type type) const;
 
 private:
-  std::optional<cmsl::string_view> m_builtin_documentation_path;
+  std::string m_builtin_documentation_path;
   std::unordered_map<builtin_type, std::string> m_documentation_paths;
 };
 }

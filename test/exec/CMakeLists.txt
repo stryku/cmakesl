@@ -32,7 +32,7 @@ set(LIBS
     tests_common
 )
 
-cmsl_add_test(exec
+cmsl_add_test(exec_
     "${CMAKESL_TEST_SOURCES}"
     "${INCLUDE_DIRS}"
     "${LIBS}"

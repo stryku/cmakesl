@@ -96,7 +96,7 @@ GENERATION_INFO = {
         'tokens': {
             'name': ['class double', 'class ', 'double'],
             'default_constructor': ['double();', '', 'double'],
-            'copy_constructor': ['double(double value);', '',' double'],
+            'copy_constructor': ['double(double value);', '','double'],
             'conversion_from_int_constructor': ['double(int value);', '', 'double'],
             'operator_plus': ['double operator+(double value);', 'double operator', '+'],
             'operator_minus': ['double operator-(double value);', 'double operator', '-'],
@@ -121,7 +121,7 @@ GENERATION_INFO = {
             'copy_constructor': ['string(string value);', '', 'string'],
             'value_initialization_constructor': ['string(string value, int count);', '', 'string'],
             'empty': ['bool empty();', 'bool ', 'empty'],
-            'size': ['int size();', ' int ', 'size'],
+            'size': ['int size();', 'int ', 'size'],
             'operator_equal_equal': ['bool operator==(string rhs);', 'bool operator', '=='],
             'operator_not_equal': ['bool operator!=(string rhs);', 'bool operator', '!='],
             'operator_less': ['bool operator<(string rhs);', 'bool operator', '<'],
@@ -130,7 +130,7 @@ GENERATION_INFO = {
             'operator_greater_equal': ['bool operator>=(string rhs);', 'bool operator', '>='],
             'operator_plus': ['string operator+(string rhs);', 'string operator', '+'],
             'operator_plus_equal': ['string& operator+=(string rhs);', 'string& operator', '+='],
-            'clear': ['void clear();', ' void ', 'clear'],
+            'clear': ['void clear();', 'void ', 'clear'],
             'insert': ['string& insert(int position, string str);', 'string& ', 'insert'],
             'erase_pos': ['string& erase(int position);', 'string& ', 'erase'],
             'erase_pos_count': ['string& erase(int position, int count);', 'string& ', 'erase'],
@@ -167,10 +167,10 @@ GENERATION_INFO = {
             'operator_less_equal': ['bool operator<=(version rhs);', 'bool operator', '<='],
             'operator_greater': ['bool operator>(version rhs);', 'bool operator', '>'],
             'operator_greater_equal': ['bool operator>=(version rhs);', 'bool operator', '>='],
-            'major': ['int major();', 'int ', 'major'],
-            'minor': ['int minor();', 'int ', 'minor'],
-            'patch': ['int patch();', 'int ', 'patch'],
-            'tweak': ['int tweak();', 'int ', 'tweak'],
+            'major_': ['int major();', 'int ', 'major'],
+            'minor_': ['int minor();', 'int ', 'minor'],
+            'patch_': ['int patch();', 'int ', 'patch'],
+            'tweak_': ['int tweak();', 'int ', 'tweak'],
             'to_string': ['string to_string();', 'string ', 'to_string']
         }
     },
@@ -207,7 +207,7 @@ GENERATION_INFO = {
             'sublist_pos': ['list<value_type> sublist(int position);', 'list<value_type> ', 'sublist'],
             'sublist_pos_count': ['list<value_type> sublist(int position, int count);', 'list<value_type> ', 'sublist'],
             'size': ['int size();', 'int ', 'size'],
-            'empty': ['bool empty();', 'int ', 'empty'],
+            'empty': ['bool empty();', 'bool ', 'empty'],
             'find_value': ['int find(value_type value);', 'int ', 'find'],
             'find_value_pos': ['int find(value_type value, int position);', 'int ', 'find']
         }
@@ -217,7 +217,7 @@ GENERATION_INFO = {
             'name': ['class project', 'class ', 'project'],
             'constructor_name': ['project(string name);', '', 'project'],
             'add_executable': ['executable add_executable(string name, list<string> sources);', 'executable ', 'add_executable'],
-            'library': ['library add_library(string name, list<string> sources);', 'library ', 'add_library']
+            'add_library': ['library add_library(string name, list<string> sources);', 'library ', 'add_library']
         }
     },
     'library': {

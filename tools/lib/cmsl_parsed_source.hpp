@@ -13,6 +13,7 @@ class add_subdirectory_handler;
 struct cmsl_parsed_source
 {
   std::string source;
+  std::unique_ptr<cmsl::sema::builtin_token_provider> builtin_token_provider;
   cmsl::sema::sema_tree_building_context context;
   std::unique_ptr<cmsl::sema::add_subdirectory_handler>
     add_subdirectory_handler;

@@ -13,6 +13,7 @@
 
 #include "errors/errors_observer.hpp"
 
+#include "sema/builtin_token_provider.hpp"
 #include "sema/factories.hpp"
 
 #include "test/common/tokens.hpp"
@@ -60,6 +61,7 @@ protected:
   sema_function_factory m_function_factory;
   sema_context_factory m_context_factory;
   add_subdirectory_semantic_handler_mock m_add_subdirectory_mock;
+  builtin_token_provider m_token_provider{ "" };
 
   sema_builder_ast_visitor create_visitor(errs_t& errs, sema_context& ctx,
                                           identifiers_context& ids_ctx)
@@ -71,7 +73,8 @@ protected:
                                      m_type_factory,
                                      m_function_factory,
                                      m_context_factory,
-                                     m_add_subdirectory_mock };
+                                     m_add_subdirectory_mock,
+                                     m_token_provider };
   }
 
   ast::function_call_node create_function_call(

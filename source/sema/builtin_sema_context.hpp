@@ -14,6 +14,7 @@ class instance;
 }
 
 namespace sema {
+class builtin_token_provider;
 class sema_function_factory;
 class sema_type_factory;
 class sema_context_factory;
@@ -23,10 +24,11 @@ class type_builder;
 class builtin_sema_context : public sema_context_impl
 {
 public:
-  explicit builtin_sema_context(sema_type_factory& type_factory,
-                                sema_function_factory& function_factory,
-                                sema_context_factory& context_factory,
-                                errors::errors_observer& errors_observer);
+  explicit builtin_sema_context(
+    sema_type_factory& type_factory, sema_function_factory& function_factory,
+    sema_context_factory& context_factory,
+    errors::errors_observer& errors_observer,
+    const builtin_token_provider& builtin_token_provider);
 
 private:
   using token_type_t = lexer::token_type;
@@ -81,6 +83,7 @@ private:
   sema_function_factory& m_function_factory;
   sema_context_factory& m_context_factory;
   errors::errors_observer& m_errors_observer;
+  const builtin_token_provider& m_builtin_token_provider;
 };
 }
 }
