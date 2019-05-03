@@ -6,6 +6,7 @@
 #include "lexer/lexer.hpp"
 #include "sema/add_subdirectory_handler.hpp"
 #include "sema/builtin_sema_context.hpp"
+#include "sema/builtin_token_provider.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_builder.hpp"
 #include "sema/sema_function.hpp"
@@ -23,12 +24,20 @@ public:
 };
 }
 
-cmsl_parsed_source* cmsl_parse_source(const char* source)
+cmsl_parsed_source* cmsl_parse_source(
+  const char* source, const char* builtin_types_documentation_path)
 {
   auto parsed_source = new cmsl_parsed_source;
   parsed_source->source = source;
   parsed_source->add_subdirectory_handler =
     std::make_unique<cmsl::sema::details::add_subdir_handler>();
+
+  auto builtin_documentation_path = builtin_types_documentation_path != nullptr
+    ? std::string{ builtin_types_documentation_path }
+    : std::string{};
+  parsed_source->builtin_token_provider =
+    std::make_unique<cmsl::sema::builtin_token_provider>(
+      std::move(builtin_documentation_path));
 
   cmsl::source_view source_view{ parsed_source->source };
 
@@ -44,7 +53,8 @@ cmsl_parsed_source* cmsl_parse_source(const char* source)
       parsed_source->context.type_factory,
       parsed_source->context.function_factory,
       parsed_source->context.context_factory,
-      parsed_source->context.errors_observer);
+      parsed_source->context.errors_observer,
+      *(parsed_source->builtin_token_provider));
 
   auto& global_context = parsed_source->context.context_factory.create(
     parsed_source->builtin_context.get());
@@ -57,7 +67,8 @@ cmsl_parsed_source* cmsl_parse_source(const char* source)
     parsed_source->context.type_factory,
     parsed_source->context.function_factory,
     parsed_source->context.context_factory,
-    *parsed_source->add_subdirectory_handler
+    *parsed_source->add_subdirectory_handler,
+    *(parsed_source->builtin_token_provider)
   };
 
   auto sema_tree = sema_builder.build(*ast_tree);

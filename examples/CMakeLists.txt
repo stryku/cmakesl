@@ -9,3 +9,5 @@ target_include_directories(complete PRIVATE ${CMAKESL_DIR}/tools)
 add_executable(index index.c)
 target_link_libraries(index cmsl_tools)
 target_include_directories(index PRIVATE ${CMAKESL_DIR}/tools)
+
+install(TARGETS complete index DESTINATION bin)

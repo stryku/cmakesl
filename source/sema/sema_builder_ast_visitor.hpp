@@ -26,6 +26,7 @@ class token;
 
 namespace sema {
 class add_subdirectory_handler;
+class builtin_token_provider;
 class expression_node;
 class variable_declaration_node;
 class sema_type;
@@ -49,6 +50,7 @@ public:
     sema_type_factory& type_factory, sema_function_factory& function_factory,
     sema_context_factory& context_factory,
     add_subdirectory_handler& add_subdirectory_handler,
+    const builtin_token_provider& builtin_token_provider,
     sema_function* currently_parsing_function =
       nullptr); // Todo: Create private ctor that takes
                 // currently_parsing_function
@@ -159,6 +161,7 @@ private:
   sema_function_factory& m_function_factory;
   sema_context_factory& m_context_factory;
   add_subdirectory_handler& m_add_subdirectory_handler;
+  const builtin_token_provider& m_builtin_token_provider;
   sema_function* m_currently_parsed_function{ nullptr };
 };
 }
