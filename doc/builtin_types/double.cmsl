@@ -67,7 +67,7 @@ public:
    * \param value A value to assign.
    * \return A reference to the lhs instance.
    */
-  double operator=(double value);
+  double& operator=(double value);
 
   /** \brief Compound addition operator.
    *
@@ -76,7 +76,7 @@ public:
    * \param value A value to add.
    * \return A reference to the lhs instance.
    */
-  double operator+=(double value);
+  double& operator+=(double value);
 
   /** \brief Compound subtraction operator.
    *
@@ -85,7 +85,7 @@ public:
    * \param value A value to subtract.
    * \return A reference to the lhs instance.
    */
-  double operator-=(double value);
+  double& operator-=(double value);
 
   /** \brief Compound multiplication operator.
    *
@@ -94,7 +94,7 @@ public:
    * \param value A value to be multiplied by.
    * \return A reference to the lhs instance.
    */
-  double operator*=(double value);
+  double& operator*=(double value);
 
   /** \brief Compound division operator.
    *
@@ -104,7 +104,7 @@ public:
    * \param value A value to be divided by.
    * \return A reference to the lhs instance.
    */
-  double operator/=(double value);
+  double& operator/=(double value);
 
   /** \brief Less-than operator.
    *
