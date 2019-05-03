@@ -7,7 +7,7 @@ extern "C" {
 
 struct cmsl_parsed_source;
 
-struct cmsl_parsed_source* cmsl_parse_source(const char* source);
+struct cmsl_parsed_source* cmsl_parse_source(const char* source, const char* builtin_types_documentation_path);
 void cmsl_destroy_parsed_source(struct cmsl_parsed_source* parsed_source);
 
 #ifdef __cplusplus

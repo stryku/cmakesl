@@ -1,9 +1,28 @@
+
+
+set(BUILTIN_TOKENS_PROVIDERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
+set(BUILTIN_TOKENS_PROVIDER_GENERATOR_COMMAND
+    python3
+    ${CMAKESL_SCRIPTS_DIR}/builtin_token_providers_generator.py
+        ${CMAKESL_DOC_DIR}/builtin_types
+        ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
+)
+
+file(MAKE_DIRECTORY ${BUILTIN_TOKENS_PROVIDERS_DIR})
+
+add_custom_command(
+        OUTPUT  ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
+        COMMAND ${BUILTIN_TOKENS_PROVIDER_GENERATOR_COMMAND}
+)
+
 set(SEMA_SOURCES
     add_subdirectory_handler.hpp
     builtin_function_kind.hpp
     builtin_sema_context.cpp
     builtin_sema_context.hpp
     builtin_sema_function.hpp
+    builtin_token_provider.cpp
+    builtin_token_provider.hpp
     builtin_types_finder.hpp
     factories.cpp
     factories.hpp
@@ -35,6 +54,8 @@ set(SEMA_SOURCES
     user_sema_function.hpp
     variable_initialization_checker.cpp
     variable_initialization_checker.hpp
+
+        ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
 )
 
 cmsl_add_library(sema "${SEMA_SOURCES}")
@@ -42,6 +63,7 @@ cmsl_add_library(sema "${SEMA_SOURCES}")
 target_include_directories(sema
     PRIVATE
         ${CMAKESL_SOURCES_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(sema

@@ -18,7 +18,7 @@ public:
 
   token_t class_kw() const;
 
-  token_t name() const ;
+  token_t name() const;
 
   token_t open_brace() const;
 

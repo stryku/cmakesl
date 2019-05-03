@@ -50,6 +50,7 @@ sema_builder_ast_visitor::sema_builder_ast_visitor(
   sema_type_factory& type_factory, sema_function_factory& function_factory,
   sema_context_factory& context_factory,
   add_subdirectory_handler& add_subdirectory_handler,
+  const builtin_token_provider& builtin_token_provider,
   sema_function* currently_parsing_function)
   : m_generic_types_context{ generic_types_context }
   , m_ctx{ ctx }
@@ -59,6 +60,7 @@ sema_builder_ast_visitor::sema_builder_ast_visitor(
   , m_function_factory{ function_factory }
   , m_context_factory{ context_factory }
   , m_add_subdirectory_handler{ add_subdirectory_handler }
+  , m_builtin_token_provider{ builtin_token_provider }
   , m_currently_parsed_function{ currently_parsing_function }
 {
 }
@@ -589,7 +591,8 @@ const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(
   auto factory =
     sema_generic_type_factory{ m_generic_types_context, search_context,
                                m_type_factory,          m_function_factory,
-                               m_context_factory,       m_errors_observer };
+                               m_context_factory,       m_errors_observer,
+                               m_builtin_token_provider };
 
   return factory.create_generic(name);
 }
@@ -627,15 +630,13 @@ sema_builder_ast_visitor sema_builder_ast_visitor::clone() const
 sema_builder_ast_visitor sema_builder_ast_visitor::clone(
   sema_context& ctx_to_visit) const
 {
-  return sema_builder_ast_visitor{ m_generic_types_context,
-                                   ctx_to_visit,
-                                   m_errors_observer,
-                                   m_ids_context,
-                                   m_type_factory,
-                                   m_function_factory,
-                                   m_context_factory,
-                                   m_add_subdirectory_handler,
-                                   m_currently_parsed_function };
+  return sema_builder_ast_visitor{
+    m_generic_types_context,  ctx_to_visit,
+    m_errors_observer,        m_ids_context,
+    m_type_factory,           m_function_factory,
+    m_context_factory,        m_add_subdirectory_handler,
+    m_builtin_token_provider, m_currently_parsed_function
+  };
 }
 
 std::unique_ptr<expression_node> sema_builder_ast_visitor::visit_child_expr(
