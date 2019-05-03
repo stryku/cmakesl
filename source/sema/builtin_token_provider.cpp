@@ -3,8 +3,8 @@
 
 namespace cmsl::sema {
 builtin_token_provider::builtin_token_provider(
-  std::optional<cmsl::string_view> builtin_documentation_path)
-  : m_builtin_documentation_path{ builtin_documentation_path }
+  std::string builtin_documentation_path)
+  : m_builtin_documentation_path{ std::move(builtin_documentation_path) }
 {
   initialize_documentation_paths();
 }
@@ -12,11 +12,11 @@ builtin_token_provider::builtin_token_provider(
 void builtin_token_provider::initialize_documentation_paths()
 {
   const auto path_provider = [this](std::string file) {
-    if (!m_builtin_documentation_path.has_value()) {
+    if (m_builtin_documentation_path.empty()) {
       return std::string{};
     }
 
-    return std::string{ *m_builtin_documentation_path } + '/' + file;
+    return m_builtin_documentation_path + '/' + file;
   };
 
   m_documentation_paths[builtin_type::bool_] = path_provider("bool.cmsl");

@@ -14,6 +14,7 @@ class errors_observer;
 }
 
 namespace sema {
+class builtin_token_provider;
 class sema_context;
 class sema_context_impl;
 class user_sema_function;
@@ -86,12 +87,12 @@ public:
 class sema_generic_type_factory : public sema_type_factory
 {
 public:
-  explicit sema_generic_type_factory(sema_context& generic_types_context,
-                                     const sema_context& creation_context,
-                                     sema_type_factory& type_factory,
-                                     sema_function_factory& function_factory,
-                                     sema_context_factory& context_factory,
-                                     errors::errors_observer& errors_observer);
+  explicit sema_generic_type_factory(
+    sema_context& generic_types_context, const sema_context& creation_context,
+    sema_type_factory& type_factory, sema_function_factory& function_factory,
+    sema_context_factory& context_factory,
+    errors::errors_observer& errors_observer,
+    const builtin_token_provider& builtin_token_provider);
 
   const sema_type* create_generic(const ast::type_representation& name);
 
@@ -99,6 +100,8 @@ private:
   const sema_type* try_get_or_create_value_type(
     const ast::type_representation& name);
 
+  ast::type_representation prepare_list_name_representation(
+    const ast::type_representation& name) const;
   const sema_type* create_list(const ast::type_representation& name);
 
 private:
@@ -108,6 +111,7 @@ private:
   sema_function_factory& m_function_factory;
   sema_context_factory& m_context_factory;
   errors::errors_observer& m_errors_observer;
+  const builtin_token_provider& m_builtin_token_provider;
 };
 }
 }

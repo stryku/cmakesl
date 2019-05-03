@@ -112,28 +112,28 @@ public:
    * \return true if the value of lhs is less than the value of rhs, false
    * otherwise.
    */
-  double operator<(double value);
+  bool operator<(double value);
 
   /** \brief Less-or-equal operator.
    * \param value A value to be compared with.
    * \return true if the value of lhs is less or equal than the value of rhs,
    * false otherwise.
    */
-  double operator<=(double value);
+  bool operator<=(double value);
 
   /** \brief Greater-than operator.
    * \param value A value to be compared with.
    * \return true if the value of lhs is greater than the value of rhs, false
    * otherwise.
    */
-  double operator>(double value);
+  bool operator>(double value);
 
   /** \brief Greater-or-equal operator.
    * \param value A value to be compared with.
    * \return true if the value of lhs is greater or equal than the value of
    * rhs, false otherwise.
    */
-  double operator>=(double value);
+  bool operator>=(double value);
 
   /** \brief To string converter.
    *
