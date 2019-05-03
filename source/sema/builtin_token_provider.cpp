@@ -9,11 +9,6 @@ builtin_token_provider::builtin_token_provider(
   initialize_documentation_paths();
 }
 
-bool_tokens_provider builtin_token_provider::bool_() const
-{
-  return bool_tokens_provider{ get_path(builtin_type::bool_) };
-}
-
 void builtin_token_provider::initialize_documentation_paths()
 {
   const auto path_provider = [this](std::string file) {
@@ -37,5 +32,50 @@ std::optional<cmsl::string_view> builtin_token_provider::get_path(
   }
 
   return path;
+}
+
+bool_tokens_provider builtin_token_provider::bool_() const
+{
+  return bool_tokens_provider{ get_path(builtin_type::bool_) };
+}
+
+double_tokens_provider builtin_token_provider::double_() const
+{
+  return double_tokens_provider{ get_path(builtin_type::double_) };
+}
+
+executable_tokens_provider builtin_token_provider::executable() const
+{
+  return executable_tokens_provider{ get_path(builtin_type::executable) };
+}
+
+library_tokens_provider builtin_token_provider::library() const
+{
+  return library_tokens_provider{ get_path(builtin_type::library) };
+}
+
+list_tokens_provider builtin_token_provider::list() const
+{
+  return list_tokens_provider{ get_path(builtin_type::list) };
+}
+
+project_tokens_provider builtin_token_provider::project() const
+{
+  return project_tokens_provider{ get_path(builtin_type::project) };
+}
+
+int_tokens_provider builtin_token_provider::int_() const
+{
+  return int_tokens_provider{ get_path(builtin_type::int_) };
+}
+
+string_tokens_provider builtin_token_provider::string() const
+{
+  return string_tokens_provider{ get_path(builtin_type::string) };
+}
+
+version_tokens_provider builtin_token_provider::version() const
+{
+  return version_tokens_provider{ get_path(builtin_type::version) };
 }
 }
