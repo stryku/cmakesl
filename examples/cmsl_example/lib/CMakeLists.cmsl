@@ -1,0 +1,8 @@
+
+library main(project& hw_project)
+{
+    list<string> sources = {
+        "lib.cpp"
+    };
+    return hw_project.add_library("lib", sources);
+}
