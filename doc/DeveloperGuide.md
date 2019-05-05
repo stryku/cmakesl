@@ -16,5 +16,8 @@ A set of libraries are created in the project:
 Additionally, executables are created:
 * cmakesl - It's a simple exec that takes path to sources and executes CMakeSL script outside the CMake world. It's used to quickly execute some scripts and see what happens.
 
+## Testing
+To enable tests, set `CMAKESL_WITH_TESTS=ON` while CMake configuration.
+
 ## Contribution
 Just grab sources, make changes and a create pull request to `master` branch.
