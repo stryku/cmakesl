@@ -399,7 +399,7 @@ void sema_builder_ast_visitor::visit(const ast::string_value_node& node)
   // of them.
   const auto node_string = node.token().str();
   const auto string_without_quotation_marks =
-    cmsl::string_view{ std::next(node_string.begin()),
+    cmsl::string_view{ std::next(node_string.data()),
                        node_string.size() - 2u };
 
   m_result_node = std::make_unique<string_value_node>(

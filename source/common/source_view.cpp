@@ -45,9 +45,9 @@ source_view::line_info source_view::line(unsigned line_no) const
   }();
 
   const auto line_size = line_end - (pos + 1);
-  const auto line_begin = std::next(m_source.cbegin(), pos + 1);
+  const auto line_begin = std::next(m_source.data(), pos + 1);
 
-  return { cmsl::string_view{ line_begin, line_size }, pos + 1 };
+  return { cmsl::string_view{line_begin, line_size}, pos + 1 };
 }
 
 cmsl::string_view::const_iterator source_view::cbegin() const
@@ -58,5 +58,10 @@ cmsl::string_view::const_iterator source_view::cbegin() const
 cmsl::string_view::const_iterator source_view::cend() const
 {
   return std::cend(m_source);
+}
+
+cmsl::string_view::const_pointer source_view::cdata() const
+{
+  return m_source.data();
 }
 }

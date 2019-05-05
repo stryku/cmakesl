@@ -9,7 +9,7 @@ set(LEXER_SOURCES
     token_type.hpp
 )
 
-cmsl_add_library(lexer "${LEXER_SOURCES}")
+add_library(lexer "${LEXER_SOURCES}")
 target_include_directories(lexer
     PRIVATE
         ${CMAKESL_SOURCES_DIR}

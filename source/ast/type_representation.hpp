@@ -2,6 +2,8 @@
 
 #include "lexer/token.hpp"
 
+#include <optional>
+
 namespace cmsl::ast {
 class type_representation
 {

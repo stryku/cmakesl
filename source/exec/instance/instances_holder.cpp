@@ -4,6 +4,8 @@
 
 #include "common/assert.hpp"
 
+#include <algorithm>
+
 namespace cmsl::exec::inst {
 instances_holder::instances_holder(const sema::sema_context& sema_ctx)
   : m_sema_ctx{ sema_ctx }

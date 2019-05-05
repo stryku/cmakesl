@@ -1,6 +1,8 @@
 #include "sema/sema_context_impl.hpp"
 #include "sema/sema_function.hpp"
 
+#include <algorithm>
+
 namespace cmsl::sema {
 sema_context_impl::sema_context_impl(const sema_context* parent,
                                      context_type context_type)

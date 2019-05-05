@@ -12,6 +12,8 @@
 #include "sema/sema_node_visitor.hpp"
 #include "sema/sema_nodes.hpp"
 
+#include <algorithm>
+
 namespace cmsl::exec {
 class expression_evaluation_visitor : public sema::empty_sema_node_visitor
 {
