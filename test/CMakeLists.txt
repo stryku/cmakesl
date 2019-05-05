@@ -1,10 +1,16 @@
-set(CMAKESL_TEST_SOURCES main.cpp)
+set(CMAKESL_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
+add_subdirectory(ast)
+add_subdirectory(common)
+add_subdirectory(errors_observer_mock)
+add_subdirectory(exec)
 add_subdirectory(lexer)
+add_subdirectory(lexer_error)
+add_subdirectory(parser)
+add_subdirectory(parser_error)
+add_subdirectory(sema)
+add_subdirectory(source_location_manipulator)
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${CMAKESL_TEST_SOURCES})
-
-add_executable(cmakesl_test ${CMAKESL_TEST_SOURCES})
-target_link_libraries(cmakesl_test gmock_main lexer)
-target_include_directories(cmakesl_test PRIVATE ${CMAKESL_SOURCES_DIR})
-add_test(NAME cmakesl_test COMMAND cmakesl_test)
+if(NOT WIN32)
+    add_custom_target(RUN_ALL_TEST COMMAND ${CMAKE_CTEST_COMMAND})
+endif()

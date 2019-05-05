@@ -1,0 +1,171 @@
+/** \brief The builtin int type.
+ *
+ * Underlying type is signed 64 bit integer.
+ */
+class int
+{
+public:
+  /** \brief Default constructor.
+   *
+   * Initializes to 0.
+   */
+  int();
+
+  /** \brief Constructor converting from bool.
+   *
+   * If value is equal to true, initializes to 1, otherwise, initializes to 0.
+   *
+   * \param value A value to be initialized with.
+   */
+  int(bool value);
+
+  /** \brief Copy constructor.
+   *
+   * Copies value of the parameter.
+   *
+   * \param value A value to be initialized with.
+   */
+  int(int value);
+
+  /** \brief Constructor converting from double.
+   *
+   * Casts double to an int. Basically trims the decimal part.
+   *
+   * \param value A value to be initialized with.
+   */
+  int(double value);
+
+  /** \brief To string converter.
+   *
+   * \return A string representation of the held value.
+   */
+  string to_string();
+
+  /** \brief Addition operator.
+   *
+   * Adds lhs and rhs and returns a new int with the addition result. Behaviour
+   * is undefined in case of overflow.
+   *
+   * \param rhs A value to be added.
+   * \return A new int with the addition result.
+   */
+  int operator+(int rhs);
+
+  /** \brief Subtraction operator.
+   *
+   * Substracts value of rhs from value of lhs and returns a new int
+   * with the subtraction result. Behaviour is undefined in case of underflow.
+   *
+   * \param rhs A value to be substracted.
+   * \return A new int with the subtraction result.
+   */
+  int operator-(int rhs);
+
+  /** \brief Multiplication operator.
+   *
+   * Multiplies the value of lhs by the value or rhs and returns a new
+   * int with the multiplication result. Behaviour is undefined in case of
+   * overflow.
+   *
+   * \param rhs A value to be multiplied by.
+   * \return Multiplies the value of lhs by the value or rhs and returns a new
+   * int with the multiplication result.
+   */
+  int operator*(int rhs);
+
+  /** \brief Division operator.
+   *
+   * Divides the value of lhs by the value or rhs and returns a new int
+   * with the division result. Behaviour is undefined in case of division by
+   * zero.
+   *
+   * \param rhs A value to be divided by.
+   * \return A new int with the division result.
+   */
+  int operator/(int rhs);
+
+  /** \brief Assign operator.
+   *
+   * Overwrites current value with the one from rhs.
+   *
+   * \param rhs A value to assign.
+   * \return A reference to the lhs instance.
+   */
+  int& operator=(int rhs);
+
+  /** \brief Compound addition operator.
+   *
+   * Adds the value of rhs to currently held value. Behaviour is undefined in
+   * case of overflow.
+   *
+   * \param rhs A value to add.
+   * \return A reference to the lhs instance.
+   */
+  int& operator+=(int rhs);
+
+  /** \brief Compound subtraction operator.
+   *
+   * Subtracts the value of rhs from the currently held value. Behaviour is
+   * undefined in case of underflow.
+   *
+   * \param rhs A value to subtract.
+   * \return A reference to the lhs instance.
+   */
+  int& operator-=(int rhs);
+
+  /** \brief Compound multiplication operator.
+   *
+   * Multiplies the currently held value by the value of rhs. Behaviour is
+   * undefined in case of overflow.
+   *
+   * \param rhs A value to be multiplied by.
+   * \return A reference to the lhs instance.
+   */
+  int& operator*=(int rhs);
+
+  /** \brief Compound division operator.
+   *
+   * Divides the currently held value by the value of rhs. Behaviour is
+   * undefined in case of division by zero.
+   *
+   * \param rhs A value to be divided by.
+   * \return A reference to the lhs instance.
+   */
+  int& operator/=(int rhs);
+
+  /** \brief Less-than operator.
+   *
+   * \param rhs A value to be compared with.
+   * \return true if the value of lhs is less than the value of rhs, false
+   * otherwise.
+   */
+  bool operator<(int rhs);
+
+  /** \brief Less-or-equal operator.
+   * \param rhs A value to be compared with.
+   * \return true if the value of lhs is less or equal than the value of rhs,
+   * false otherwise.
+   */
+  bool operator<=(int rhs);
+
+  /** \brief Greater-than operator.
+   * \param rhs A value to be compared with.
+   * \return true if the value of lhs is greater than the value of rhs, false
+   * otherwise.
+   */
+  bool operator>(int rhs);
+
+  /** \brief Greater-or-equal operator.
+   * \param rhs A value to be compared with.
+   * \return true if the value of lhs is greater or equal than the value of
+   * rhs, false otherwise.
+   */
+  bool operator>=(int rhs);
+
+  /** \brief Comparison operator.
+   * \param rhs A value to be compared with.
+   * \return true if the value of lhs the same as the value of rhs, false
+   * otherwise.
+   */
+  bool operator==(int rhs);
+};

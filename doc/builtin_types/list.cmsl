@@ -1,0 +1,204 @@
+/** \brief The builtin generic list type.
+ */
+template <typename value_type>
+class list
+{
+public:
+  /** \brief Default constructor.
+   *
+   * Initializes to an empty list.
+   */
+  list();
+
+  /** \brief Appends the list with the \p value.
+   * \param value The value to be appended.
+   */
+  void push_back(value_type value);
+
+  /** \brief Appends the list with the values of \p value.
+   * \param value The list to be added at the end.
+   */
+  void push_back(list<value_type> value);
+
+  /** \brief Creates a list with appended \p value.
+   * \param value The value to be appended.
+   * \return The created list with appended \p value.
+   */
+  list<value_type> operator+(value_type value);
+
+  /** \brief Creates a list with appended list.
+   * \param value The list to be appended.
+   * \return The created list with appended list.
+   */
+  list<value_type> operator+(list<value_type> value);
+
+  /** \brief Appends the list with the \p value.
+   * \param value The value to be appended.
+   * \return A reference to the lhs.
+   */
+  list<value_type>& operator+=(value_type value);
+
+  /** \brief Appends the list with the values of \p value.
+   * \param value The list to be added at the end.
+   * \return A reference to the lhs.
+   */
+  list<value_type>& operator+=(list<value_type> value);
+
+  /** \brief Prepends the list with the \p value.
+   * \param value The value to be prepended.
+   */
+  void push_front(value_type value);
+
+  /** \brief Prepends the list with the values of \p value.
+   * \param value The list to be added at the beginning.
+   */
+  void push_front(list<value_type> value);
+
+  /** \brief Erases the last value from the list.
+   */
+  void pop_back();
+
+  /** \brief Erases the first value from the list.
+   */
+  void pop_front();
+
+  /** \brief Accesses the element at the \p position.
+   *
+   * \param position The position of the element to be accessed.
+   * \return A reference to the element at the \p position.
+   */
+  value_type& at(int position);
+
+  /** \brief Gets the element from the begin.
+   *
+   * \return A copy of the value held at the begin.
+   */
+  value_type front();
+
+  /** \brief Gets the element from the end.
+   *
+   * \return A copy of the value held at the end.
+   */
+  value_type back();
+
+  /** \brief Inserts value into the list.
+   *
+   * Inserts \p value at the \p position.
+   */
+  void insert(int position, value_type value);
+
+  /** \brief Inserts list into the list.
+   *
+   * Inserts \p value at the \p position.
+   */
+  void insert(int position, list<value_type> value);
+
+  /** \brief Erases element from the list.
+   *
+   * Erases element at the \p position.
+   */
+  void erase(int position);
+
+  /** \brief Erases elements from the list.
+   *
+   * Erases \p count number of elements starting from the \p position.
+   */
+  void erase(int position, int count);
+
+  /** \brief Removes values from the list.
+   *
+   * Removes all elements that are equal (compared by operator==) to \p value.
+   */
+  int remove(value_type value);
+
+  /** \brief Removes values from the list.
+   *
+   * Removes \p count number of elements that are equal (compared by
+   * operator==) to \p value.
+   */
+  int remove(value_type value, int count);
+
+  /** \brief Removes values from the end of the list.
+   *
+   * Removes \p count number of elements that are equal (compared by
+   * operator==) to \p value. Searching starts from the end of the list.
+   */
+  int remove_last(value_type value, int count);
+
+  /** \brief Removes all elements from the list.
+   */
+  void clear();
+
+  /** \brief Resizes the list.
+   *
+   * If the \p new_size is less than the current size, the list is trimmed. If
+   * the \p new_size is greater than the current size, default-constructed
+   * elements are inserted at the end.
+   */
+  void resize(int new_size);
+
+  /** \brief Sorts the list.
+   *
+   * Sorts the elements in the list. Uses operator< for comparison.
+   */
+  void sort();
+
+  /** \brief Reverses the list.
+   */
+  void reverse();
+
+  /** \brief Gets position of the least element in the list.
+   *
+   * Uses operator< for comparison.
+   */
+  int min();
+
+  /** \brief Gets position of the greatest element in the list.
+   *
+   * Uses operator< for comparison.
+   */
+  int max();
+
+  /** \brief Gets a sublist.
+   *
+   * Creates a list with elements copied from currently held elements starting
+   * from \p position through the end.
+   *
+   * \return A list with the copied elements.
+   */
+  list<value_type> sublist(int position);
+
+  /** \brief Gets a sublist.
+   *
+   * Creates a list with \p count number of elements copied from currently held
+   * elements starting from \p position through the position (\p position + \p
+   * count).
+   *
+   * \return A list with the copied elements.
+   */
+  list<value_type> sublist(int position, int count);
+
+  /** \return The size of the list.
+   */
+  int size();
+
+  /** \return true if the list holds no elements, false otherwise.
+   */
+  bool empty();
+
+  /** \brief Finds \p value in the list.
+   *
+   * Starts from the beginning. Uses operator== for comparison.
+   *
+   * \return A position of the found element, -1 if value was not found.
+   */
+  int find(value_type value);
+
+  /** \brief Finds \p value in the list.
+   *
+   * Starts from the \p position. Uses operator== for comparison.
+   *
+   * \return A position of the found element, -1 if value was not found.
+   */
+  int find(value_type value, int position);
+};

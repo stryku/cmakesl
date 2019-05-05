@@ -1,0 +1,20 @@
+/** \brief The builtin library type.
+ *
+ * This class is a kind of an accessor. If you create a copy of it (e.g. by
+ * passing as a parameter to a function), it doesn't mean that another library
+ * with the same name and sources is going to be created. Think of it as of a
+ * implicit reference to the actual library object.
+ */
+class library
+{
+public:
+  /** @return The name of the library.
+   */
+  string name();
+
+  /** @brief Links the library to another library.
+   *
+   * @param lib The library to be linked to.
+   */
+  void link_to(library lib);
+};
