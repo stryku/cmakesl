@@ -636,7 +636,7 @@ std::unique_ptr<ast_node> parser::parse_factor()
     return parse_initializer_list();
   }
 
-  m_errors_reporter.raise_unexpected_token(current());
+  m_errors_reporter.raise_unexpected_token(get_token_for_error_report());
   return nullptr;
 }
 

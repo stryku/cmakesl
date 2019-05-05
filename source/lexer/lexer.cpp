@@ -144,7 +144,7 @@ void lexer::consume_whitespaces()
 token_type lexer::get_identifier_or_keyword_token_type()
 {
   std::string token_val;
-  while (is_identifier_char(current())) {
+  while (!is_end() && is_identifier_char(current())) {
     token_val += current();
     consume_char();
   }
@@ -171,7 +171,7 @@ token_type lexer::get_equal_token_type()
   // current == '='
   m_source_loc.consume_char();
 
-  if (current() == '=') // ==
+  if (!is_end() && current() == '=') // ==
   {
     consume_char();
     return token_type::equalequal;
