@@ -1,6 +1,19 @@
-set(CMAKESL_TEST_SOURCES 
-    ${CMAKESL_TEST_SOURCES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/lexer_test.cpp 
+set(CMAKESL_TEST_SOURCES
+    lexer_test.cpp
+    main.cpp
+)
 
-    PARENT_SCOPE
+set(INCLUDE_DIRS
+    ${CMAKESL_SOURCES_DIR}
+)
+
+set(LIBS
+    lexer
+    errors
+)
+
+cmsl_add_test(lexer
+    "${CMAKESL_TEST_SOURCES}"
+    "${INCLUDE_DIRS}"
+    "${LIBS}"
 )

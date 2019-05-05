@@ -1,0 +1,143 @@
+/** \brief The builtin double type.
+ */
+class double
+{
+public:
+  /** \brief Default constructor.
+   *
+   * Initializes to 0.0.
+   */
+  double();
+
+  /** \brief Copy constructor.
+   *
+   * \param value The value to be copied.
+   */
+  double(double value);
+
+  /** \brief Conversion constructor from int.
+   *
+   * \param value The value to be converted.
+   */
+  double(int value);
+
+  /** \brief Addition operator.
+   *
+   * Adds lhs and rhs and returns a new double with the addition result.
+   *
+   * \param value The value to be added.
+   * \return A new double with the addition result.
+   */
+  double operator+(double value);
+
+  /** \brief Subtraction operator.
+   *
+   * Subtracts value of rhs from value of lhs and returns a new double
+   * with the subtraction result.
+   *
+   * \param value A value to be subtracted.
+   * \return A new double with the subtraction result.
+   */
+  double operator-(double value);
+
+  /** \brief Multiplication operator.
+   *
+   * Multiplies the value of lhs by the value or rhs and returns a new
+   * double with the multiplication result.
+   *
+   * \param value A value to be multiplied by.
+   * \return A new double with the multiplication result.
+   */
+  double operator*(double value);
+
+  /** \brief Division operator.
+   *
+   * Divides the value of lhs by the value or rhs and returns a new double
+   * with the division result.
+   *
+   * \param value The value to be divided by.
+   * \return A new double with the division result.
+   */
+  double operator/(double value);
+
+  /** \brief Assign operator.
+   *
+   * Overwrites current value with the one from rhs.
+   *
+   * \param value A value to assign.
+   * \return A reference to the lhs instance.
+   */
+  double& operator=(double value);
+
+  /** \brief Compound addition operator.
+   *
+   * Adds the value of rhs to currently held value.
+   *
+   * \param value A value to add.
+   * \return A reference to the lhs instance.
+   */
+  double& operator+=(double value);
+
+  /** \brief Compound subtraction operator.
+   *
+   * Subtracts the value of rhs from the currently held value.
+   *
+   * \param value A value to subtract.
+   * \return A reference to the lhs instance.
+   */
+  double& operator-=(double value);
+
+  /** \brief Compound multiplication operator.
+   *
+   * Multiplies the currently held value by the value of rhs.
+   *
+   * \param value A value to be multiplied by.
+   * \return A reference to the lhs instance.
+   */
+  double& operator*=(double value);
+
+  /** \brief Compound division operator.
+   *
+   * Divides the currently held value by the value of rhs. Behaviour is
+   * undefined in case of division by zero.
+   *
+   * \param value A value to be divided by.
+   * \return A reference to the lhs instance.
+   */
+  double& operator/=(double value);
+
+  /** \brief Less-than operator.
+   *
+   * \param value A value to be compared with.
+   * \return true if the value of lhs is less than the value of rhs, false
+   * otherwise.
+   */
+  bool operator<(double value);
+
+  /** \brief Less-or-equal operator.
+   * \param value A value to be compared with.
+   * \return true if the value of lhs is less or equal than the value of rhs,
+   * false otherwise.
+   */
+  bool operator<=(double value);
+
+  /** \brief Greater-than operator.
+   * \param value A value to be compared with.
+   * \return true if the value of lhs is greater than the value of rhs, false
+   * otherwise.
+   */
+  bool operator>(double value);
+
+  /** \brief Greater-or-equal operator.
+   * \param value A value to be compared with.
+   * \return true if the value of lhs is greater or equal than the value of
+   * rhs, false otherwise.
+   */
+  bool operator>=(double value);
+
+  /** \brief To string converter.
+   *
+   * \return A string representation of the held value.
+   */
+  string to_string();
+};

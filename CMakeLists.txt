@@ -1,50 +1,24 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.5)
 
 project(CMakeSL)
 
-# Download and unpack googletest at configure time
-configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-  RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-if(result)
-  message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-  RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-if(result)
-  message(FATAL_ERROR "Build step for googletest failed: ${result}")
-endif()
+include(cmake/cmsl_cmake_utils.cmake)
 
-# Prevent overriding the parent project's compiler/linker
-# settings on Windows
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Add googletest directly to our build. This defines
-# the gtest and gtest_main targets.
-add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-                 ${CMAKE_BINARY_DIR}/googletest-build
-                 EXCLUDE_FROM_ALL)
+set(CMAKESL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKESL_DOC_DIR ${CMAKESL_DIR}/doc)
+set(CMAKESL_SCRIPTS_DIR ${CMAKESL_DIR}/scripts)
+set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 
-# The gtest/gtest_main targets carry header search path
-# dependencies automatically when using CMake 2.8.11 or
-# later. Otherwise we have to add them here ourselves.
-if (CMAKE_VERSION VERSION_LESS 2.8.11)
-  include_directories(BEFORE SYSTEM
-    "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
-else()
-  target_include_directories(gmock_main SYSTEM BEFORE INTERFACE
-    "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
-endif()
-
-find_package(Boost REQUIRED)
-if (NOT Boost_FOUND)
-    message (ERROR "Boost not found!")
-endif()
-include_directories (${Boost_INCLUDE_DIRS})
-
-set(CMAKESL_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
-
+include_directories(facade)
 add_subdirectory(source)
-add_subdirectory(test)
+add_subdirectory(tools)
+add_subdirectory(examples)
+
+if(CMAKESL_WITH_TESTS)
+    enable_testing()
+    add_subdirectory(external/googletest)
+    add_subdirectory(test)
+endif()

@@ -1,0 +1,28 @@
+/** \brief The builtin project type.
+ */
+class project
+{
+public:
+  /** Initializes and registers a new project.
+   *
+   * @param name The name of the project.
+   */
+  project(string name);
+
+  /** Initializes and registers an executable target in scope of this project.
+   *
+   * @param name A name of the executable.
+   * @param sources Source files of the executable.
+   * @return A created executable object.
+   */
+  executable add_executable(string name, list<string> sources);
+
+  /** Initializes and registers an static library target in scope of this
+   * project.
+   *
+   * @param name A name of the library.
+   * @param sources Source files of the library.
+   * @return A created library object.
+   */
+  library add_library(string name, list<string> sources);
+};

@@ -1,0 +1,58 @@
+set(EXEC_SOURCES
+    builtin_function_caller2.cpp
+    builtin_function_caller2.hpp
+    compiled_source.cpp
+    execution.cpp
+    execution.hpp
+    execution_context.cpp
+    execution_context.hpp
+    expression_evaluation_context.hpp
+    expression_evaluation_visitor.hpp
+    function_caller.hpp
+    global_executor.cpp
+    global_executor.hpp
+    identifiers_context.hpp
+    parameter_alternatives_getter.hpp
+    scope_context.cpp
+    scope_context.hpp
+    source_compiler.cpp
+    source_compiler.hpp
+    instance/complex_unnamed_instance.cpp
+    instance/complex_unnamed_instance.hpp
+    instance/instance.hpp
+    instance/instance_factory.cpp
+    instance/instance_factory.hpp
+    instance/instance_reference.cpp
+    instance/instance_reference.hpp
+    instance/instance_value_alternative.hpp
+    instance/instance_value_variant.cpp
+    instance/instance_value_variant.hpp
+    instance/instances_holder.cpp
+    instance/instances_holder.hpp
+    instance/instances_holder_interface.hpp
+    instance/list_value.cpp
+    instance/list_value.hpp
+    instance/project_value.cpp
+    instance/project_value.hpp
+    instance/simple_unnamed_instance.cpp
+    instance/simple_unnamed_instance.hpp
+    instance/target_value.cpp
+    instance/target_value.hpp
+    instance/version_value.cpp
+    instance/version_value.hpp
+)
+
+add_library(exec "${EXEC_SOURCES}")
+
+target_include_directories(exec
+    PRIVATE
+        ${CMAKESL_SOURCES_DIR}
+        ${CMAKESL_FACADE_DIR}
+)
+
+target_link_libraries(exec
+    PUBLIC
+        sema
+    PRIVATE
+        errors
+)

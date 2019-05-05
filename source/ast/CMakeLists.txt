@@ -1,0 +1,41 @@
+set(AST_SOURCES
+    ast_node.hpp
+    ast_node_visitor.hpp
+    block_node.cpp
+    block_node.hpp
+    class_node.cpp
+    class_node.hpp
+    conditional_node.cpp
+    conditional_node.hpp
+    if_else_node.cpp
+    if_else_node.hpp
+    infix_nodes.hpp
+    parameter_declaration.hpp
+    parse_errors_observer.hpp
+    parser.cpp
+    parser.hpp
+    parser_utils.cpp
+    parser_utils.hpp
+    return_node.cpp
+    return_node.hpp
+    translation_unit_node.cpp
+    translation_unit_node.hpp
+    type_parser.cpp
+    type_parser.hpp
+    type_parsing_result.hpp
+    type_representation.cpp
+    type_representation.hpp
+    user_function_node.cpp
+    user_function_node.hpp
+    variable_declaration_node.cpp
+    variable_declaration_node.hpp
+    while_node.cpp
+    while_node.hpp
+)
+
+add_library(ast "${AST_SOURCES}")
+target_include_directories(ast PRIVATE ${CMAKESL_SOURCES_DIR})
+target_link_libraries(ast
+    PUBLIC
+        lexer
+)
