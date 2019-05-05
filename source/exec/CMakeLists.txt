@@ -42,7 +42,7 @@ set(EXEC_SOURCES
     instance/version_value.hpp
 )
 
-cmsl_add_library(exec "${EXEC_SOURCES}")
+add_library(exec "${EXEC_SOURCES}")
 
 target_include_directories(exec
     PRIVATE

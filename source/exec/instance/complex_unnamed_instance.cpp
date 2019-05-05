@@ -5,6 +5,9 @@
 #include "exec/instance/instance_factory.hpp"
 #include "sema/sema_type.hpp"
 
+#include <algorithm>
+#include <iterator>
+
 namespace cmsl::exec::inst {
 complex_unnamed_instance::complex_unnamed_instance(const sema::sema_type& type)
   : m_sema_type{ type }
@@ -34,16 +37,21 @@ complex_unnamed_instance::get_init_data(instance_members_t members) const
 instance_value_variant complex_unnamed_instance::value() const
 {
   CMSL_UNREACHABLE("Getting value of a complex type");
+  return instance_value_variant{};
 }
 
 instance_value_variant& complex_unnamed_instance::value_ref()
 {
   CMSL_UNREACHABLE("Getting value of a complex type");
+  static instance_value_variant dummy;
+  return dummy;
 }
 
 const instance_value_variant& complex_unnamed_instance::value_cref() const
 {
   CMSL_UNREACHABLE("Getting value of a complex type");
+  static instance_value_variant dummy;
+  return dummy;
 }
 
 void complex_unnamed_instance::assign(instance_value_variant)

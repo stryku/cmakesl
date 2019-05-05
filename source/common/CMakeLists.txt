@@ -10,7 +10,7 @@ set(COMMON_SOURCES
     string.hpp
 )
 
-cmsl_add_library(common "${COMMON_SOURCES}")
+add_library(common "${COMMON_SOURCES}")
 target_include_directories(common
     PRIVATE
         ${CMAKESL_SOURCES_DIR}

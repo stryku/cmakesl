@@ -19,10 +19,15 @@ set(CMSL_TOOLS_SOURCES
 )
 
 add_library(cmsl_tools ${CMSL_TOOLS_SOURCES})
-target_include_directories(cmsl_tools PRIVATE ${CMAKESL_SOURCES_DIR} ${CMAKESL_FACADE_DIR})
-target_link_libraries(cmsl_tools PRIVATE sema errors)
 
+target_include_directories(cmsl_tools
+    PRIVATE
+        ${CMAKESL_SOURCES_DIR}
+        ${CMAKESL_FACADE_DIR}
+)
 
-if(NOT ${CMAKE_VERSION} VERSION_LESS "3.9.0") 
-    source_group(TREE .. PREFIX cmsl_tools FILES ${CMSL_TOOLS_SOURCES})
-endif()
+target_link_libraries(cmsl_tools 
+    PRIVATE
+    sema
+    errors
+)

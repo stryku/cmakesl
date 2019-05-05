@@ -100,8 +100,8 @@ overload_resolution::match_result_variant_t overload_resolution::params_match(
 
   if (signature.params.size() != call_parameters.size()) {
     return match_result::wrong_parameters_count{
-      .expected = static_cast<unsigned>(signature.params.size()),
-      .got = static_cast<unsigned>(call_parameters.size())
+      static_cast<unsigned>(signature.params.size()),
+      static_cast<unsigned>(call_parameters.size())
     };
   }
 
@@ -125,9 +125,9 @@ overload_resolution::match_result_variant_t overload_resolution::params_match(
       case check_result_t::reference_init_from_temporary_value: {
         const auto info =
           match_result::param_types_dont_match::mismatched_type_info{
-            .position = i,
-            .expected = declared_param_type,
-            .got = param_expression_type
+            i,
+            declared_param_type,
+            param_expression_type
           };
 
         mismatched_types.emplace_back(info);

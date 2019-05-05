@@ -38,7 +38,7 @@ token token::undef()
 
 cmsl::string_view token::str() const
 {
-  return cmsl::string_view{ std::next(m_source.cbegin(),
+  return cmsl::string_view{ std::next(m_source.cdata(),
                                       m_source_range.begin.absolute),
                             m_source_range.size() };
 }

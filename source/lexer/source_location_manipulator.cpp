@@ -51,6 +51,10 @@ void source_location_manipulator::consume_char()
 
   ++m_source_loc.absolute;
 
+  if (is_at_end()) {
+    return;
+  }
+
   if (current_char() == '\n') {
     ++m_source_loc.line;
     m_source_loc.column = 1u;

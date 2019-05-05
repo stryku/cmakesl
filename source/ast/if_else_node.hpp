@@ -3,6 +3,7 @@
 #include "ast/ast_node.hpp"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace cmsl::ast {

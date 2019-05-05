@@ -21,6 +21,7 @@ public:
 
   cmsl::string_view::const_iterator cbegin() const;
   cmsl::string_view::const_iterator cend() const;
+  cmsl::string_view::const_pointer cdata() const;
 
   // Line numbers start from 1, not 0.
   line_info line(unsigned line_no) const;
