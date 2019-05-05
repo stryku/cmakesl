@@ -73,7 +73,7 @@ const auto values =
   Values(IncrementsAndExpectedLocationTestState{ "01234", 1u, 1u, 2u, 1u },
          IncrementsAndExpectedLocationTestState{ "01234", 2u, 1u, 3u, 2u },
          IncrementsAndExpectedLocationTestState{
-           "01234", 10u, 1u, 6u, 5u }, // Increment more than chars in source
+           "01234", 10u, 1u, 5u, 5u }, // Increment more than chars in source
          IncrementsAndExpectedLocationTestState{
            "0\n", 1u, 2u, 1u, 1u }, // Stop at newline -> get next line
          IncrementsAndExpectedLocationTestState{ "0\n1", 2u, 2u, 2u, 2u });
