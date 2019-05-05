@@ -37,8 +37,8 @@ int global_executor::execute(std::string source)
 {
   source_compiler compiler{ m_errors_observer, m_type_factory,
                             m_function_factory, m_context_factory, *this };
-
-  const auto src_view = source_view{ source };
+  const auto source_path = m_root_path + "/CMakeLists.cmsl";
+  const auto src_view = source_view{ source_path, source };
 
   m_sources.emplace_back(std::move(source));
   auto compiled = compiler.compile(src_view);
