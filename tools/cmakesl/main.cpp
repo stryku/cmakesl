@@ -57,7 +57,7 @@ int main(int argc, const char* argv[])
   }
 
   const auto root_dir_path = std::string{ argv[1] };
-  const auto file_path = root_dir_path + "/CMakeLists.cmakesl";
+  const auto file_path = root_dir_path + "/CMakeLists.cmsl";
 
   std::ifstream in{ file_path };
   std::string source{ (std::istreambuf_iterator<char>(in)),
