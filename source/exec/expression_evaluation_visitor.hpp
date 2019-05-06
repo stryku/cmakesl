@@ -57,7 +57,7 @@ public:
     // Todo: use small vector.
     std::vector<inst::instance*> params;
     params.emplace_back(rhs_result);
-    auto result_instance = m_ctx.function_caller.call_member(
+    auto result_instance = m_ctx.caller.call_member(
       *lhs_result, operator_function, std::move(params), m_ctx.instances);
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
@@ -68,7 +68,7 @@ public:
     auto evaluated_params = evaluate_call_parameters(node.param_expressions());
     const auto& function = node.function();
     auto result_instance =
-      m_ctx.function_caller.call(function, evaluated_params, m_ctx.instances);
+      m_ctx.caller.call(function, evaluated_params, m_ctx.instances);
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
   }
@@ -81,7 +81,7 @@ public:
     auto evaluated_params = evaluate_call_parameters(node.param_expressions());
     const auto& function = node.function();
     auto result_instance =
-      m_ctx.function_caller.call(function, evaluated_params, m_ctx.instances);
+      m_ctx.caller.call(function, evaluated_params, m_ctx.instances);
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
 
@@ -95,7 +95,7 @@ public:
     auto class_instance = m_ctx.ids_context.lookup_identifier(
       "this"); // Todo: it probably can be done better (to not search by
                // string)
-    auto result_instance = m_ctx.function_caller.call_member(
+    auto result_instance = m_ctx.caller.call_member(
       *class_instance, function, evaluated_params, m_ctx.instances);
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
@@ -106,7 +106,7 @@ public:
     auto evaluated_params = evaluate_call_parameters(node.param_expressions());
     const auto& function = node.function();
     auto class_instance = m_ctx.instances.create(node.type());
-    auto result_instance = m_ctx.function_caller.call_member(
+    auto result_instance = m_ctx.caller.call_member(
       *class_instance, function, evaluated_params, m_ctx.instances);
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
@@ -117,7 +117,7 @@ public:
     auto lhs_result = evaluate_child(node.lhs());
     auto evaluated_params = evaluate_call_parameters(node.param_expressions());
     const auto& function = node.function();
-    auto result_instance = m_ctx.function_caller.call_member(
+    auto result_instance = m_ctx.caller.call_member(
       *lhs_result, function, evaluated_params, m_ctx.instances);
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
