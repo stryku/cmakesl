@@ -53,6 +53,4 @@ target_include_directories(exec
 target_link_libraries(exec
     PUBLIC
         sema
-    PRIVATE
-        errors
 )
