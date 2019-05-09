@@ -15,7 +15,7 @@ class instances_holder_interface;
 
 struct expression_evaluation_context
 {
-  function_caller& function_caller;
+  function_caller& caller;
   inst::instances_holder_interface& instances;
   identifiers_context& ids_context;
   facade::cmake_facade& cmake_facade;

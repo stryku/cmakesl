@@ -2,7 +2,7 @@
 
 set(BUILTIN_TOKENS_PROVIDERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 set(BUILTIN_TOKENS_PROVIDER_GENERATOR_COMMAND
-    python
+    python3
     ${CMAKESL_SCRIPTS_DIR}/builtin_token_providers_generator.py
         ${CMAKESL_DOC_DIR}/builtin_types
         ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
