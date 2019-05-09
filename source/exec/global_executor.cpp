@@ -42,6 +42,11 @@ int global_executor::execute(std::string source)
 
   m_sources.emplace_back(std::move(source));
   auto compiled = compiler.compile(src_view);
+  if (!compiled) {
+    raise_unsuccessful_compilation_error(source_path);
+    return -1;
+  }
+
   const auto main_function = compiled->get_main();
   if (!main_function) {
     raise_no_main_function_error(m_root_path);
@@ -104,6 +109,17 @@ void global_executor::raise_no_main_function_error(
   errors::error err;
   err.source_path = path;
   err.message = "main function not found";
+  err.type = errors::error_type::error;
+  err.range = source_range{ source_location{}, source_location{} };
+  m_errors_observer.nofify_error(err);
+}
+
+void global_executor::raise_unsuccessful_compilation_error(
+  const cmsl::string_view& path)
+{
+  errors::error err;
+  err.source_path = path;
+  err.message = "parsing failed, can not execute";
   err.type = errors::error_type::error;
   err.range = source_range{ source_location{}, source_location{} };
   m_errors_observer.nofify_error(err);
