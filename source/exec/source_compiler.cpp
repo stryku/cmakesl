@@ -32,6 +32,10 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
   const auto tokens = lex.lex();
   ast::parser parser{ m_errors_observer, source, tokens };
   auto ast_tree = parser.parse_translation_unit();
+  if(!ast_tree)
+  {
+      return nullptr;
+  }
 
   auto builtin_token_provider =
     std::make_unique<sema::builtin_token_provider>("");
@@ -52,6 +56,11 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
                                    m_add_subdirectory_handler,
                                    *builtin_token_provider };
   auto sema_tree = sema_builder.build(*ast_tree);
+  if(!sema_tree)
+  {
+      return nullptr;
+  }
+
   return std::make_unique<compiled_source>(
     std::move(ast_tree), std::move(builtin_context), global_context,
     std::move(sema_tree), source, std::move(builtin_token_provider));
