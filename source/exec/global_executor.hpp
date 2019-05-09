@@ -31,6 +31,7 @@ public:
 
 private:
   void raise_no_main_function_error(const cmsl::string_view& path);
+  void raise_unsuccessful_compilation_error(const cmsl::string_view& path);
 
 private:
   class directory_guard
