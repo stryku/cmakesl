@@ -1,4 +1,6 @@
 # CMakeSL - The CMake scripting language
+[![Build Status](https://travis-ci.org/stryku/cmakesl.svg?branch=master)](https://travis-ci.org/stryku/cmakesl)
+
 A set of C++17 libraries that implement a new scripting language for CMake.
 
 * `doc/UserGuide.md` - The language guide
