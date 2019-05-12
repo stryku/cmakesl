@@ -257,13 +257,13 @@ def find_absolute(documentation_content, to_search, to_skip):
     return token_absolute_position
 
 
-def find_line_and_column(documentation_content, to_search):
+def find_line_and_column(documentation_content, to_search, to_skip):
     lines = documentation_content.splitlines()
     line_no = 0
     for line in lines:
         line_no = line_no + 1
         if to_search in line:
-            column = line.find(to_search)
+            column = line.find(to_search) + len(to_skip)
             return line_no, column
 
     return None
@@ -293,7 +293,7 @@ def generate_providers():
             to_skip = token_search_info[1]
             token_value = token_search_info[2]
             token_absolute_position = find_absolute(type_documentation, to_search, to_skip)
-            token_line, token_column = find_line_and_column(type_documentation, to_search)
+            token_line, token_column = find_line_and_column(type_documentation, to_search, to_skip)
             token_length = len(token_value)
             method_source = method_source.replace('%absolute_position%', str(token_absolute_position))
             method_source = method_source.replace('%line%', str(token_line))
