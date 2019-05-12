@@ -20,12 +20,21 @@ void builtin_token_provider::initialize_documentation_paths()
   };
 
   m_documentation_paths[builtin_type::bool_] = path_provider("bool.cmsl");
+  m_documentation_paths[builtin_type::int_] = path_provider("int.cmsl");
+  m_documentation_paths[builtin_type::double_] = path_provider("double.cmsl");
+  m_documentation_paths[builtin_type::string] = path_provider("string.cmsl");
+  m_documentation_paths[builtin_type::list] = path_provider("list.cmsl");
+  m_documentation_paths[builtin_type::executable] =
+    path_provider("executable.cmsl");
+  m_documentation_paths[builtin_type::library] = path_provider("library.cmsl");
+  m_documentation_paths[builtin_type::project] = path_provider("project.cmsl");
+  m_documentation_paths[builtin_type::version] = path_provider("version.cmsl");
 }
 
 std::optional<cmsl::string_view> builtin_token_provider::get_path(
   builtin_token_provider::builtin_type type) const
 {
-  const auto& path = m_documentation_paths.at(builtin_type::bool_);
+  const auto& path = m_documentation_paths.at(type);
 
   if (path.empty()) {
     return std::nullopt;
