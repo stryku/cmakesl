@@ -2,7 +2,6 @@ import sys
 import os.path
 import json
 
-
 FILE_TEMPLATE = """
 #pragma once
 
@@ -47,8 +46,8 @@ private:
 TOKEN_PROVIDER_METHOD_TEMPLATE = """
     lexer::token %token_name%() const
     {
-        const auto src_range = source_range{ source_location{ 0, 0, %absolute_position% },
-                                             source_location{ 0, 0, %absolute_position% + %token_length% } };
+        const auto src_range = source_range{ source_location{ %line%, %column%, %absolute_position% },
+                                             source_location{ %line%, %column% + %token_length%, %absolute_position% + %token_length% } };
         return lexer::token{ lexer::token_type::identifier, src_range, get_source_view()};
     }
 """
@@ -56,8 +55,8 @@ TOKEN_PROVIDER_METHOD_TEMPLATE = """
 GENERATION_INFO = {
     'bool': {
         'tokens': {
-            'name' : ['class bool', 'class ', 'bool'],
-            'default_constructor' : ['bool();', '', 'bool'],
+            'name': ['class bool', 'class ', 'bool'],
+            'default_constructor': ['bool();', '', 'bool'],
             'copy_constructor': ['bool(bool value);', '', 'bool'],
             'conversion_from_int_constructor': ['bool(int value);', '', 'bool'],
             'operator_equal': ['bool& operator=(bool rhs);', 'bool& operator', '='],
@@ -96,7 +95,7 @@ GENERATION_INFO = {
         'tokens': {
             'name': ['class double', 'class ', 'double'],
             'default_constructor': ['double();', '', 'double'],
-            'copy_constructor': ['double(double value);', '','double'],
+            'copy_constructor': ['double(double value);', '', 'double'],
             'conversion_from_int_constructor': ['double(int value);', '', 'double'],
             'operator_plus': ['double operator+(double value);', 'double operator', '+'],
             'operator_minus': ['double operator-(double value);', 'double operator', '-'],
@@ -160,7 +159,8 @@ GENERATION_INFO = {
             'constructor_major': ['version(int major);', '', 'version'],
             'constructor_major_minor': ['version(int major, int minor);', '', 'version'],
             'constructor_major_minor_patch': ['version(int major, int minor, int patch);', '', 'version'],
-            'constructor_major_minor_patch_tweak': ['version(int major, int minor, int patch, int tweak);', '', 'version'],
+            'constructor_major_minor_patch_tweak': ['version(int major, int minor, int patch, int tweak);', '',
+                                                    'version'],
             'operator_equal_equal': ['bool operator==(version rhs);', 'bool operator', '=='],
             'operator_not_equal': ['bool operator!=(version rhs);', 'bool operator', '!='],
             'operator_less': ['bool operator<(version rhs);', 'bool operator', '<'],
@@ -181,9 +181,12 @@ GENERATION_INFO = {
             'push_back_value': ['void push_back(value_type value);', 'void ', 'push_back'],
             'push_back_list': ['void push_back(list<value_type> value);', 'void ', 'push_back'],
             'operator_plus_value': ['list<value_type> operator+(value_type value);', 'list<value_type> operator', '+'],
-            'operator_plus_list': ['list<value_type> operator+(list<value_type> value);', 'list<value_type> operator', '+'],
-            'operator_plus_equal_value': ['list<value_type>& operator+=(value_type value);', 'list<value_type>& operator', '+='],
-            'operator_plus_equal_list': ['list<value_type>& operator+=(list<value_type> value);', 'list<value_type>& operator', '+='],
+            'operator_plus_list': ['list<value_type> operator+(list<value_type> value);', 'list<value_type> operator',
+                                   '+'],
+            'operator_plus_equal_value': ['list<value_type>& operator+=(value_type value);',
+                                          'list<value_type>& operator', '+='],
+            'operator_plus_equal_list': ['list<value_type>& operator+=(list<value_type> value);',
+                                         'list<value_type>& operator', '+='],
             'push_front_value': ['void push_front(value_type value);', 'void ', 'push_front'],
             'push_front_list': ['void push_front(list<value_type> value);', 'void ', 'push_front'],
             'pop_back': ['void pop_back();', 'void ', 'pop_back'],
@@ -216,7 +219,8 @@ GENERATION_INFO = {
         'tokens': {
             'name': ['class project', 'class ', 'project'],
             'constructor_name': ['project(string name);', '', 'project'],
-            'add_executable': ['executable add_executable(string name, list<string> sources);', 'executable ', 'add_executable'],
+            'add_executable': ['executable add_executable(string name, list<string> sources);', 'executable ',
+                               'add_executable'],
             'add_library': ['library add_library(string name, list<string> sources);', 'library ', 'add_library']
         }
     },
@@ -238,13 +242,31 @@ GENERATION_INFO = {
 
 
 def load_type_documentation(type_name):
-    documentation_path =  '{}/{}.cmsl'.format(sys.argv[1], type_name)
+    documentation_path = '{}/{}.cmsl'.format(sys.argv[1], type_name)
 
     if not os.path.exists(documentation_path):
         return None
 
     with open(documentation_path, 'r') as file:
         return file.read()
+
+
+def find_absolute(documentation_content, to_search, to_skip):
+    found = documentation_content.find(to_search)
+    token_absolute_position = found + len(to_skip)
+    return token_absolute_position
+
+
+def find_line_and_column(documentation_content, to_search):
+    lines = documentation_content.splitlines()
+    line_no = 0
+    for line in lines:
+        line_no = line_no + 1
+        if to_search in line:
+            column = line.find(to_search)
+            return line_no, column
+
+    return None
 
 
 def generate_providers():
@@ -270,10 +292,12 @@ def generate_providers():
             to_search = token_search_info[0]
             to_skip = token_search_info[1]
             token_value = token_search_info[2]
-            found = type_documentation.find(to_search)
-            token_absolute_position = found + len(to_skip)
+            token_absolute_position = find_absolute(type_documentation, to_search, to_skip)
+            token_line, token_column = find_line_and_column(type_documentation, to_search)
             token_length = len(token_value)
             method_source = method_source.replace('%absolute_position%', str(token_absolute_position))
+            method_source = method_source.replace('%line%', str(token_line))
+            method_source = method_source.replace('%column%', str(token_column))
             method_source = method_source.replace('%token_length%', str(token_length))
 
             methods_source += method_source
@@ -306,8 +330,8 @@ def main():
     documentation_string_views = generate_documentation_source_views()
     providers = generate_providers()
 
-    file_content = FILE_TEMPLATE.\
-        replace('%documentation_string_views%', documentation_string_views).\
+    file_content = FILE_TEMPLATE. \
+        replace('%documentation_string_views%', documentation_string_views). \
         replace('%token_providers%', providers)
 
     destination_path = sys.argv[2]
