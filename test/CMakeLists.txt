@@ -6,8 +6,6 @@ add_subdirectory(errors_observer_mock)
 add_subdirectory(exec)
 add_subdirectory(lexer)
 add_subdirectory(lexer_error)
-add_subdirectory(parser)
-add_subdirectory(parser_error)
 add_subdirectory(sema)
 add_subdirectory(source_location_manipulator)
 
