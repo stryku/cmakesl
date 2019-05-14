@@ -5,6 +5,7 @@ set(CMAKESL_TEST_SOURCES
     mock/identifiers_context_mock.hpp
     mock/sema_context_mock.hpp
     mock/sema_function_mock.hpp
+    identifiers_context_test.cpp
     overload_resolution_test.cpp
     sema_builder_ast_visitor.cpp
     vatiable_initialization_check_test.cpp
