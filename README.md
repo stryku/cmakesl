@@ -112,7 +112,7 @@ chmod +x build_cmake.sh
 
 
 ## Dependencies
-The only dependency that CMakeSL needs is C++17 (and python3, but its dependency probably is going to be removed). No external libraries are used.
+The only dependency that CMakeSL needs is C++17 (and python3, but it should be removed soon). No external libraries are used.
 
 
 ## Contribution
