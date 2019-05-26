@@ -9,7 +9,6 @@ cmsl_add_test(
         instance_value_variant_test.cpp
         int_type_smoke_test.cpp
         list_type_smoke_test.cpp
-        main.cpp
         reference_smoke_tests.cpp
         smoke_test_fixture.hpp
         string_type_smoke_tests.cpp

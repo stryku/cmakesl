@@ -2,7 +2,6 @@ cmsl_add_test(
     NAME
         sema
     SOURCES
-        main.cpp
         mock/add_subdirectory_semantic_handler_mock.hpp
         mock/expression_node_mock.hpp
         mock/identifiers_context_mock.hpp

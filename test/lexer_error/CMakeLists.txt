@@ -3,7 +3,6 @@ cmsl_add_test(
         lexer_error
     SOURCES
         lexer_error_test.cpp
-        main.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
         ${CMAKESL_TESTS_DIR}

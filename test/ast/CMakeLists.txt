@@ -2,7 +2,6 @@ cmsl_add_test(
     NAME
         ast
     SOURCES
-        main.cpp
         parser_test.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
@@ -18,7 +17,6 @@ cmsl_add_test(
     NAME
         ast_error
     SOURCES
-        main.cpp
         parser_test.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}

@@ -2,7 +2,6 @@ cmsl_add_test(
     NAME
         source_location_manipulator
     SOURCES
-        main.cpp
         source_location_test.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
