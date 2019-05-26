@@ -44,6 +44,7 @@ public:
 
   bool is_generic() const;
   bool is_reference() const;
+  bool is_auto() const;
 
 private:
   lexer::token_container_t m_tokens;

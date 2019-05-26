@@ -33,6 +33,7 @@ using ::testing::ReturnRef;
 using ::testing::Ref;
 using ::testing::IsNull;
 using ::testing::NotNull;
+using ::testing::AnyNumber;
 using ::testing::Eq;
 using ::testing::_;
 
@@ -51,6 +52,7 @@ const sema_type valid_type{ valid_context,
                             ast::type_representation{
                               token_identifier("foo") },
                             {} };
+const sema_type valid_type_reference{ sema_type_reference{ valid_type } };
 
 const auto tmp_token = token_identifier("");
 
@@ -124,6 +126,10 @@ protected:
 MATCHER(IsValidType, "")
 {
   return arg == valid_type;
+}
+MATCHER(IsValidTypeReference, "")
+{
+  return arg == valid_type_reference;
 }
 
 MATCHER(ParamDeclarations, "")
@@ -276,6 +282,25 @@ TEST_F(
   EXPECT_THAT(casted_node->initialization(), IsNull());
 }
 
+TEST_F(SemaBuilderAstVisitorTest,
+       Visit_VariableDeclarationWithAutoWithoutInitialization_ReportError)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+  const auto type_ref = ast::type_representation{ token_kw_auto() };
+  const auto name_token = token_identifier("foo");
+
+  auto variable_node = create_variable_declaration_node(type_ref, name_token);
+
+  EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
+
+  visitor.visit(*variable_node);
+
+  ASSERT_THAT(visitor.m_result_node, IsNull());
+}
+
 TEST_F(
   SemaBuilderAstVisitorTest,
   Visit_VariableDeclarationWithInitialization_GetVariableDeclarationNodeWithInitialization)
@@ -319,6 +344,54 @@ TEST_F(
   ASSERT_THAT(casted_initialization_node, NotNull());
 
   EXPECT_THAT(casted_initialization_node->value(), Eq(initialization_value));
+}
+
+TEST_F(
+  SemaBuilderAstVisitorTest,
+  Visit_VariableDeclarationWithAutoAndInitialization_GetVariableDeclarationNodeWithInitializationAndTypeDeducedFromInitialization)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+  const auto type_representation =
+    ast::type_representation{ token_kw_auto(),
+                              ast::type_representation::is_reference_tag{} };
+  const auto name_token = token_identifier("foo");
+
+  const auto initialization_token = token_identifier("bar");
+  auto initializaton_node =
+    std::make_unique<ast::id_node>(initialization_token);
+
+  auto variable_node = create_variable_declaration_node(
+    type_representation, name_token,
+    ast::variable_declaration_node::initialization_values{
+      tmp_token, std::move(initializaton_node) });
+
+  EXPECT_CALL(ctx, find_type(_)).WillRepeatedly(Return(&valid_type));
+  EXPECT_CALL(ctx, find_reference_for(Ref(valid_type)))
+    .WillRepeatedly(Return(&valid_type_reference));
+
+  EXPECT_CALL(ids_ctx, type_of(initialization_token.str()))
+    .WillRepeatedly(Return(&valid_type));
+  EXPECT_CALL(ids_ctx,
+              register_identifier(name_token, Ref(valid_type_reference)));
+
+  visitor.visit(*variable_node);
+
+  ASSERT_THAT(visitor.m_result_node, NotNull());
+
+  const auto casted_node =
+    dynamic_cast<variable_declaration_node*>(visitor.m_result_node.get());
+  ASSERT_THAT(casted_node, NotNull());
+
+  EXPECT_THAT(casted_node->type(), IsValidTypeReference());
+  EXPECT_THAT(casted_node->name(), Eq(name_token));
+  EXPECT_THAT(casted_node->initialization(), NotNull());
+
+  const auto casted_initialization_node =
+    dynamic_cast<const cast_to_reference_node*>(casted_node->initialization());
+  ASSERT_THAT(casted_initialization_node, NotNull());
 }
 
 TEST_F(SemaBuilderAstVisitorTest, Visit_Return)

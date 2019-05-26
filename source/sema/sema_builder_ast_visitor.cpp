@@ -505,8 +505,29 @@ void sema_builder_ast_visitor::visit(
   const ast::variable_declaration_node& node)
 {
   const auto& type_representation = node.type();
-  const auto type = try_get_or_create_generic_type(m_ctx, type_representation);
-  if (!type) {
+  const auto should_deduce_type_from_initialization =
+    type_representation.is_auto();
+
+  const sema_type* type = nullptr;
+  if (!should_deduce_type_from_initialization) {
+    type = try_get_or_create_generic_type(m_ctx, type_representation);
+    if (!type) {
+      // If type has not been found and that's a not an auto type declaration.
+      return;
+    }
+  }
+
+  if (should_deduce_type_from_initialization &&
+      node.initialization() == nullptr) {
+    raise_error(
+      type_representation.primary_name(),
+      "Declaration of a variable with 'auto' type requires an initializer");
+    return;
+  }
+
+  if (type && type->is_reference() && node.initialization() == nullptr) {
+    raise_error(type->name().primary_name(),
+                "Declaration of a reference variable requires an initializer");
     return;
   }
 
@@ -517,38 +538,44 @@ void sema_builder_ast_visitor::visit(
       return;
     }
 
-    variable_initialization_checker checker;
-    const auto check_result = checker.check(*type, *initialization);
+    if (!should_deduce_type_from_initialization) {
+      variable_initialization_checker checker;
+      const auto check_result = checker.check(*type, *initialization);
 
-    switch (check_result) {
-      case variable_initialization_checker::check_result::can_init: {
-        // Can initialize, do nothing.
-      } break;
-      case variable_initialization_checker::check_result::different_types: {
-        // Todo: introduce auto
-        raise_error(
-          initialization->type().name().primary_name(),
-          "Initialization and declared variable type does not match");
-        return;
+      switch (check_result) {
+        case variable_initialization_checker::check_result::can_init: {
+          // Can initialize, do nothing.
+        } break;
+        case variable_initialization_checker::check_result::different_types: {
+          raise_error(
+            initialization->type().name().primary_name(),
+            "Initialization and declared variable type does not match");
+          return;
+        }
+        case variable_initialization_checker::check_result::
+          reference_init_from_temporary_value: {
+          raise_error(initialization->type().name().primary_name(),
+                      "Reference variable can not be initialized with a "
+                      "temporary value");
+          return;
+        }
       }
-      case variable_initialization_checker::check_result::
-        reference_init_from_temporary_value: {
-        raise_error(
-          initialization->type().name().primary_name(),
-          "Reference variable can not be initialized with a temporary value");
-        return;
+    }
+
+    if (should_deduce_type_from_initialization) {
+      const auto& init_type = initialization->type();
+      type =
+        &(init_type.is_reference() ? init_type.referenced_type() : init_type);
+
+      // If there was auto with a reference, we need to declare variable with a
+      // reference type, e.g. auto& foo = bar();
+      if (type_representation.is_reference()) {
+        type = m_ctx.find_reference_for(*type);
       }
     }
 
     initialization =
       convert_to_cast_node_if_need(*type, std::move(initialization));
-  } else {
-    if (type->is_reference()) {
-      raise_error(
-        initialization->type().name().primary_name(),
-        "Declaration of a reference variable requires an initializer");
-      return;
-    }
   }
 
   m_ids_context.register_identifier(node.name(), *type);

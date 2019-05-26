@@ -13,6 +13,7 @@ cmsl_add_test(
         reference_smoke_tests.cpp
         smoke_test_fixture.hpp
         string_type_smoke_tests.cpp
+        variable_type_deduction.cpp
         version_type_smoke_tests.cpp
         mock/cmake_facade_mock.hpp
         mock/function_caller_mock.hpp
