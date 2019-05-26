@@ -1,19 +1,13 @@
-set(CMAKESL_TEST_SOURCES
-    lexer_test.cpp
-    main.cpp
+cmsl_add_test(
+    NAME
+        lexer
+    SOURCES
+        lexer_test.cpp
+        main.cpp
+    INCLUDE_DIRS
+        ${CMAKESL_SOURCES_DIR}
+    LIBRARIES
+        lexer
+        errors
 )
 
-set(INCLUDE_DIRS
-    ${CMAKESL_SOURCES_DIR}
-)
-
-set(LIBS
-    lexer
-    errors
-)
-
-cmsl_add_test(lexer
-    "${CMAKESL_TEST_SOURCES}"
-    "${INCLUDE_DIRS}"
-    "${LIBS}"
-)
