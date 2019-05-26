@@ -326,21 +326,24 @@ lexer::keyword_tokens_t lexer::create_keyword_tokens() const
 {
   keyword_tokens_t tokens;
 
+  tokens["void"] = token_type::kw_void;
   tokens["int"] = token_type::kw_int;
   tokens["double"] = token_type::kw_double;
+  tokens["bool"] = token_type::kw_bool;
+  tokens["true"] = token_type::kw_true;
+  tokens["false"] = token_type::kw_false;
+  tokens["string"] = token_type::kw_string;
+  tokens["version"] = token_type::kw_version;
+  tokens["list"] = token_type::kw_list;
+  tokens["library"] = token_type::kw_library;
+  tokens["executable"] = token_type::kw_executable;
+  tokens["project"] = token_type::kw_project;
   tokens["return"] = token_type::kw_return;
   tokens["class"] = token_type::kw_class;
   tokens["if"] = token_type::kw_if;
   tokens["else"] = token_type::kw_else;
   tokens["while"] = token_type::kw_while;
-  tokens["bool"] = token_type::kw_bool;
-  tokens["true"] = token_type::kw_true;
-  tokens["false"] = token_type::kw_false;
-  tokens["string"] = token_type::kw_string;
-  tokens["library"] = token_type::kw_library;
-  tokens["executable"] = token_type::kw_executable;
-  tokens["list"] = token_type::kw_list;
-  tokens["version"] = token_type::kw_version;
+  tokens["auto"] = token_type::kw_auto;
 
   return tokens;
 }

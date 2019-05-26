@@ -110,4 +110,9 @@ bool type_representation::is_reference() const
 {
   return m_reference_token.has_value() || m_is_reference;
 }
+bool type_representation::is_auto() const
+{
+  return !is_generic() &&
+    primary_name().get_type() == lexer::token_type::kw_auto;
+}
 }

@@ -266,19 +266,24 @@ TEST_P(PureKeyword, RecognizeKeyword)
 }
 
 const auto values =
-  testing::Values(PureKeywordState{ "int", token_type::kw_int },
+  testing::Values(PureKeywordState{ "void", token_type::kw_void },
+                  PureKeywordState{ "int", token_type::kw_int },
                   PureKeywordState{ "double", token_type::kw_double },
-                  PureKeywordState{ "class", token_type::kw_class },
-                  PureKeywordState{ "return", token_type::kw_return },
-                  PureKeywordState{ "if", token_type::kw_if },
-                  PureKeywordState{ "else", token_type::kw_else },
-                  PureKeywordState{ "while", token_type::kw_while },
                   PureKeywordState{ "bool", token_type::kw_bool },
                   PureKeywordState{ "true", token_type::kw_true },
                   PureKeywordState{ "false", token_type::kw_false },
+                  PureKeywordState{ "string", token_type::kw_string },
+                  PureKeywordState{ "version", token_type::kw_version },
+                  PureKeywordState{ "list", token_type::kw_list },
                   PureKeywordState{ "library", token_type::kw_library },
                   PureKeywordState{ "executable", token_type::kw_executable },
-                  PureKeywordState{ "string", token_type::kw_string });
+                  PureKeywordState{ "project", token_type::kw_project },
+                  PureKeywordState{ "return", token_type::kw_return },
+                  PureKeywordState{ "class", token_type::kw_class },
+                  PureKeywordState{ "if", token_type::kw_if },
+                  PureKeywordState{ "else", token_type::kw_else },
+                  PureKeywordState{ "while", token_type::kw_while },
+                  PureKeywordState{ "auto", token_type::kw_auto });
 INSTANTIATE_TEST_CASE_P(Lexer, PureKeyword, values);
 }
 

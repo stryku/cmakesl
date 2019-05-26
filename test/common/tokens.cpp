@@ -60,7 +60,9 @@ const tokens_str_t& operators_str()
                               { token_type_t::kw_string, "string" },
                               { token_type_t::kw_library, "library" },
                               { token_type_t::kw_executable, "executable" },
-                              { token_type_t::kw_list, "list" } };
+                              { token_type_t::kw_list, "list" },
+                              { token_type_t::kw_project, "project" },
+                              { token_type_t::kw_auto, "auto" } };
 
   return map;
 }
@@ -293,6 +295,14 @@ token_t token_kw_executable()
 token_t token_kw_list()
 {
   return details::simple_token(token_type_t::kw_list);
+}
+token_t token_kw_project()
+{
+  return details::simple_token(token_type_t::kw_project);
+}
+token_t token_kw_auto()
+{
+  return details::simple_token(token_type_t::kw_auto);
 }
 
 token_t token_undef()

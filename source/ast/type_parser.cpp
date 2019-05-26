@@ -123,7 +123,8 @@ bool type_parser::is_builtin_simple_type(token_type_t token_type) const
     token_type_t::kw_int,     token_type_t::kw_double,
     token_type_t::kw_bool,    token_type_t::kw_string,
     token_type_t::kw_version, token_type_t::kw_list,
-    token_type_t::kw_library, token_type_t::kw_executable
+    token_type_t::kw_library, token_type_t::kw_executable,
+    token_type_t::kw_auto
   };
 
   return cmsl::contains(simple_types, token_type);
