@@ -3,7 +3,6 @@ cmsl_add_test(
         lexer
     SOURCES
         lexer_test.cpp
-        main.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
     LIBRARIES
