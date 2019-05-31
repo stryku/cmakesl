@@ -47,6 +47,7 @@ const tokens_str_t& operators_str()
                               { token_type_t::greaterequal, ">=" },
                               { token_type_t::semicolon, ";" },
                               { token_type_t::comma, "," },
+                              { token_type_t::kw_void, "void" },
                               { token_type_t::kw_int, "int" },
                               { token_type_t::kw_double, "double" },
                               { token_type_t::kw_return, "return" },
@@ -238,7 +239,7 @@ token_t token_comma()
 
 token_t token_kw_void()
 {
-  return details::simple_token(token_type_t::kw_int);
+  return details::simple_token(token_type_t::kw_void);
 }
 token_t token_kw_int()
 {

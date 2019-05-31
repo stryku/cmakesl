@@ -52,6 +52,9 @@ const sema_type valid_type{ valid_context,
                             ast::type_representation{
                               token_identifier("foo") },
                             {} };
+const auto void_type_representation =
+  ast::type_representation{ token_kw_void() };
+const sema_type void_type_mock{ valid_context, void_type_representation, {} };
 const sema_type valid_type_reference{ sema_type_reference{ valid_type } };
 
 const auto tmp_token = token_identifier("");
@@ -267,7 +270,9 @@ TEST_F(
 
   EXPECT_CALL(ids_ctx, register_identifier(name_token, Ref(valid_type)));
 
-  EXPECT_CALL(ctx, find_type(_)).WillOnce(Return(&valid_type));
+  EXPECT_CALL(ctx, find_type(_))
+    .WillOnce(Return(&valid_type))
+    .WillOnce(Return(&void_type_mock));
 
   visitor.visit(*variable_node);
 
@@ -301,6 +306,29 @@ TEST_F(SemaBuilderAstVisitorTest,
   ASSERT_THAT(visitor.m_result_node, IsNull());
 }
 
+TEST_F(SemaBuilderAstVisitorTest,
+       Visit_VariableDeclarationWithVoidType_ReportError)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+  const auto type_ref = ast::type_representation{ token_kw_void() };
+  const auto name_token = token_identifier("foo");
+
+  auto variable_node = create_variable_declaration_node(type_ref, name_token);
+
+  EXPECT_CALL(ctx, find_type(_))
+    .WillOnce(Return(&void_type_mock))
+    .WillOnce(Return(&void_type_mock));
+
+  EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
+
+  visitor.visit(*variable_node);
+
+  ASSERT_THAT(visitor.m_result_node, IsNull());
+}
+
 TEST_F(
   SemaBuilderAstVisitorTest,
   Visit_VariableDeclarationWithInitialization_GetVariableDeclarationNodeWithInitialization)
@@ -323,7 +351,11 @@ TEST_F(
     ast::variable_declaration_node::initialization_values{
       tmp_token, std::move(initializaton_node) });
 
-  EXPECT_CALL(ctx, find_type(_)).WillRepeatedly(Return(&valid_type));
+  EXPECT_CALL(ctx, find_type(_))
+    .WillOnce(Return(
+      &valid_type)) // Find for int type during initialization expression.
+    .WillOnce(Return(&void_type_mock)) // Search for builtin void type.
+    .WillOnce(Return(&valid_type));    // Search for declared variable type.
 
   EXPECT_CALL(ids_ctx, register_identifier(name_token, Ref(valid_type)));
 
@@ -787,6 +819,10 @@ TEST_F(SemaBuilderAstVisitorTest,
   EXPECT_CALL(ctx, find_type(return_type_reference))
     .WillOnce(Return(&valid_type));
 
+  // Creation of implicit return node
+  EXPECT_CALL(ctx, find_type(void_type_representation))
+    .WillOnce(Return(&void_type_mock));
+
   EXPECT_CALL(ctx, add_function(_));
 
   // Two scopes: parameters and block
@@ -835,6 +871,10 @@ TEST_F(SemaBuilderAstVisitorTest,
   EXPECT_CALL(ctx, find_type(param_type_reference))
     .WillOnce(Return(&valid_type));
 
+  // Creation of implicit return node
+  EXPECT_CALL(ctx, find_type(void_type_representation))
+    .WillOnce(Return(&void_type_mock));
+
   EXPECT_CALL(ctx, add_function(_));
 
   // Two scopes: parameters and block
@@ -853,6 +893,94 @@ TEST_F(SemaBuilderAstVisitorTest,
   const auto expected_number_of_params{ 1u };
   EXPECT_THAT(casted_node->signature().params.size(),
               Eq(expected_number_of_params));
+}
+
+TEST_F(SemaBuilderAstVisitorTest,
+       Visit_VoidFunctionWithEmptyBody_GetFunctionNodeWithImplicitReturn)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+  auto name_token = token_identifier("foo");
+  auto block = create_block_node_ptr();
+  auto node = create_user_function_node(void_type_representation, name_token,
+                                        std::move(block));
+
+  EXPECT_CALL(ctx, find_type(void_type_representation))
+    .WillRepeatedly(Return(&void_type_mock));
+
+  EXPECT_CALL(ctx, add_function(_));
+
+  // Two scopes: parameters and block
+  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
+
+  visitor.visit(*node);
+
+  ASSERT_THAT(visitor.m_result_node, NotNull());
+
+  const auto casted_node =
+    dynamic_cast<function_node*>(visitor.m_result_node.get());
+  ASSERT_THAT(casted_node, NotNull());
+
+  const auto expected_number_of_params{ 0u };
+  EXPECT_THAT(casted_node->signature().params.size(),
+              Eq(expected_number_of_params));
+
+  const auto& body = casted_node->body();
+  ASSERT_THAT(body.nodes().size(), Eq(1u));
+
+  const auto casted_last_node =
+    dynamic_cast<const implicit_return_node*>(body.nodes().back().get());
+  EXPECT_THAT(casted_last_node, NotNull());
+}
+
+TEST_F(
+  SemaBuilderAstVisitorTest,
+  Visit_VoidFunctionWithNonEmptyBodyAndWithoutReturnStatement_GetFunctionNodeWithImplicitReturn)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+  auto name_token = token_identifier("foo");
+  auto block_subnode = create_block_node_ptr();
+  ast::block_node::nodes_t block_nodes;
+  block_nodes.emplace_back(std::move(block_subnode));
+  auto block = create_block_node_ptr(std::move(block_nodes));
+  auto node = create_user_function_node(void_type_representation, name_token,
+                                        std::move(block));
+
+  EXPECT_CALL(ctx, find_type(void_type_representation))
+    .WillRepeatedly(Return(&void_type_mock));
+
+  EXPECT_CALL(ctx, add_function(_));
+
+  // Three scopes: parameters and two blocks
+  EXPECT_CALL(ids_ctx, enter_ctx()).Times(3);
+  EXPECT_CALL(ids_ctx, leave_ctx()).Times(3);
+
+  visitor.visit(*node);
+
+  ASSERT_THAT(visitor.m_result_node, NotNull());
+
+  const auto casted_node =
+    dynamic_cast<function_node*>(visitor.m_result_node.get());
+  ASSERT_THAT(casted_node, NotNull());
+
+  const auto expected_number_of_params{ 0u };
+  EXPECT_THAT(casted_node->signature().params.size(),
+              Eq(expected_number_of_params));
+
+  const auto& body = casted_node->body();
+  ASSERT_THAT(body.nodes().size(), Eq(2u));
+
+  const auto casted_last_node =
+    dynamic_cast<const implicit_return_node*>(body.nodes().back().get());
+  EXPECT_THAT(casted_last_node, NotNull());
 }
 
 TEST_F(SemaBuilderAstVisitorTest, Visit_ClassEmpty_GetEmptyClassNode)
@@ -919,10 +1047,10 @@ TEST_F(SemaBuilderAstVisitorTest,
   EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))
     .WillOnce(Return(nullptr));
 
-  const auto member_type_name_ref =
-    ast::type_representation{ member_type_token };
-  EXPECT_CALL(ctx, find_type(member_type_name_ref))
-    .WillOnce(Return(&valid_type));
+  EXPECT_CALL(ctx, find_type(_))
+
+    .WillOnce(Return(&valid_type))      // Search for declared member type.
+    .WillOnce(Return(&void_type_mock)); // Search for void type.
 
   EXPECT_CALL(ctx, add_type(_)).Times(2); // Type and reference
 
@@ -1040,10 +1168,12 @@ TEST_F(SemaBuilderAstVisitorTest,
     .WillOnce(Return(nullptr));
 
   // Function return type and member type lookup.
-  EXPECT_CALL(ctx, find_type(member_type_reference))
-    .Times(2)
-    .WillOnce(Return(&valid_type))
-    .WillOnce(Return(&valid_type));
+  EXPECT_CALL(ctx, find_type(_))
+    .Times(3)
+    .WillOnce(
+      Return(&valid_type)) // Search for initialization expression type.
+    .WillOnce(Return(&void_type_mock)) // Search for void type.
+    .WillOnce(Return(&valid_type));    // Search for declared type.
 
   EXPECT_CALL(ctx, add_type(_)).Times(2); // Type and reference
 
@@ -1367,6 +1497,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
     .WillOnce(Return(&valid_type));
   EXPECT_CALL(ctx, find_type(function_return_type_reference))
     .WillOnce(Return(&valid_type));
+  EXPECT_CALL(ctx, find_type(void_type_representation))
+    .WillRepeatedly(Return(&void_type_mock));
+
   const auto class_type_name_ref =
     ast::type_representation{ class_name_token };
   EXPECT_CALL(ctx, find_type_in_this_scope(class_type_name_ref))

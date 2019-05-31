@@ -252,6 +252,11 @@ private:
     return entry;
   }
 
+  void visit(const sema::implicit_return_node&) override
+  {
+    CMSL_UNREACHABLE("Indexing implicit return node");
+  }
+
 private:
   std::vector<cmsl_index_entry> m_intermediate_entries;
   sema::identifiers_context_impl m_identifiers_context;

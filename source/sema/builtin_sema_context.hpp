@@ -68,6 +68,7 @@ private:
   void add_executable_member_functions(type_builder& project_manipulator);
   type_builder add_project_type();
   void add_project_member_functions(type_builder& project_manipulator);
+  void add_void_type();
 
   template <unsigned N>
   lexer::token make_token(token_type_t token_type, const char (&tok)[N]);

@@ -51,6 +51,7 @@ void builtin_sema_context::add_types()
   auto library_manipulator = add_library_type();
   auto executable_manipulator = add_executable_type();
   auto project_manipulator = add_project_type();
+  add_void_type();
 
   add_bool_member_functions(bool_manipulator);
   add_int_member_functions(int_manipulator);
@@ -1010,5 +1011,13 @@ const sema_type& builtin_sema_context::get_or_create_generic_type(
                                             m_errors_observer,
                                             m_builtin_token_provider };
   return *factory.create_generic(type_representation);
+}
+void builtin_sema_context::add_void_type()
+{
+  static const auto token = m_builtin_token_provider.void_().name();
+  static const auto name_representation = ast::type_representation{ token };
+  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
+                        *this, name_representation };
+  builder.build_and_register_in_context();
 }
 }

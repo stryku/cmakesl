@@ -15,6 +15,7 @@ struct project_tokens_provider;
 struct int_tokens_provider;
 struct string_tokens_provider;
 struct version_tokens_provider;
+struct void_tokens_provider;
 
 // An instance of this class has to live for the whole program execution.
 // String views to paths are used later by sema and execution.
@@ -37,6 +38,7 @@ public:
   int_tokens_provider int_() const;
   string_tokens_provider string() const;
   version_tokens_provider version() const;
+  void_tokens_provider void_() const;
 
 private:
   enum class builtin_type
@@ -49,7 +51,8 @@ private:
     project,
     int_,
     string,
-    version
+    version,
+    void_
   };
 
   void initialize_documentation_paths();
