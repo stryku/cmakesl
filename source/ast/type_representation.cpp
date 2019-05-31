@@ -116,3 +116,9 @@ bool type_representation::is_auto() const
     primary_name().get_type() == lexer::token_type::kw_auto;
 }
 }
+
+std::ostream& operator<<(std::ostream& out,
+                         const cmsl::ast::type_representation& type_repr)
+{
+  return out << type_repr.to_string();
+}

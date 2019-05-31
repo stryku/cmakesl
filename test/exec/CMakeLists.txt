@@ -14,6 +14,7 @@ cmsl_add_test(
         string_type_smoke_tests.cpp
         variable_type_deduction.cpp
         version_type_smoke_tests.cpp
+        void_type_smoke_test.cpp
         mock/cmake_facade_mock.hpp
         mock/function_caller_mock.hpp
         mock/identifiers_context_mock.hpp
