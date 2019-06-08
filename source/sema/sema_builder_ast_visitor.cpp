@@ -429,6 +429,11 @@ void sema_builder_ast_visitor::visit(const ast::return_node& node)
   }
 
   auto expr = to_expression(std::move(v.m_result_node));
+
+  if (!check_function_return_type(*expr)) {
+    return;
+  }
+
   expr = convert_to_cast_return_node_if_need(std::move(expr));
   m_result_node = std::make_unique<return_node>(node, std::move(expr));
 }
@@ -651,11 +656,20 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::to_expression(
 void sema_builder_ast_visitor::raise_error(const lexer::token token,
                                            const std::string& message)
 {
-  const auto line_info = token.source().line(token.src_range().begin.line);
-  const auto err =
-    errors::error{ token.source().path(),     line_info.line,
-                   line_info.start_pos,       message,
-                   errors::error_type::error, token.src_range() };
+  raise_error(token.source(), token.src_range(), message);
+}
+
+void sema_builder_ast_visitor::raise_error(const source_view& source,
+                                           const source_range& src_range,
+                                           const std::string& message)
+{
+  const auto line_info = source.line(src_range.begin.line);
+  const auto err = errors::error{ source.path(),
+                                  line_info.line,
+                                  line_info.start_pos,
+                                  message,
+                                  errors::error_type::error,
+                                  src_range };
   m_errors_observer.nofify_error(err);
 }
 
@@ -939,5 +953,47 @@ bool sema_builder_ast_visitor::is_last_node_return_node(
     dynamic_cast<const return_node*>(last_node.get()) != nullptr;
 
   return last_node_is_return;
+}
+bool sema_builder_ast_visitor::check_function_return_type(
+  const expression_node& return_expression)
+{
+  if (m_currently_parsed_function == nullptr) {
+    CMSL_UNREACHABLE("Return statement outside of function");
+  }
+
+  const auto& function_return_type =
+    m_currently_parsed_function->return_type();
+
+  variable_initialization_checker checker;
+  const auto check_result =
+    checker.check(function_return_type, return_expression);
+
+  if (check_result ==
+      variable_initialization_checker::check_result::can_init) {
+    return true;
+  }
+
+  const auto src_range = return_expression.ast_node().src_range();
+  const auto source = m_currently_parsed_function->signature().name.source();
+
+  switch (check_result) {
+    case variable_initialization_checker::check_result::different_types: {
+      raise_error(source, src_range,
+                  "Function return type and expression result type do not "
+                  "match. Expected \'" +
+                    function_return_type.name().to_string() + "\' got \'" +
+                    return_expression.type().name().to_string() + "\'");
+      return false;
+    }
+    case variable_initialization_checker::check_result::
+      reference_init_from_temporary_value: {
+      raise_error(source, src_range,
+                  "Return type is a reference and can not be initialized with "
+                  "a temporary value");
+      return false;
+    }
+    default:
+      return true;
+  }
 }
 }

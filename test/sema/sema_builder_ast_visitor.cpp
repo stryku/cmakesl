@@ -68,8 +68,9 @@ protected:
   add_subdirectory_semantic_handler_mock m_add_subdirectory_mock;
   builtin_token_provider m_token_provider{ "" };
 
-  sema_builder_ast_visitor create_visitor(errs_t& errs, sema_context& ctx,
-                                          identifiers_context& ids_ctx)
+  sema_builder_ast_visitor create_visitor(
+    errs_t& errs, sema_context& ctx, identifiers_context& ids_ctx,
+    sema_function* currently_parsed_function = nullptr)
   {
     return sema_builder_ast_visitor{ ctx,
                                      ctx,
@@ -79,7 +80,8 @@ protected:
                                      m_function_factory,
                                      m_context_factory,
                                      m_add_subdirectory_mock,
-                                     m_token_provider };
+                                     m_token_provider,
+                                     currently_parsed_function };
   }
 
   ast::function_call_node create_function_call(
@@ -430,13 +432,15 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Return)
 {
   errs_t errs;
   StrictMock<sema_context_mock> ctx;
+  StrictMock<sema_function_mock> function;
   StrictMock<identifiers_context_mock> ids_ctx;
-  auto visitor = create_visitor(errs, ctx, ids_ctx);
+  auto visitor = create_visitor(errs, ctx, ids_ctx, &function);
 
   auto expr_node = std::make_unique<ast::int_value_node>(token_integer("42"));
   ast::return_node ret_node(tmp_token, std::move(expr_node), tmp_token);
 
   EXPECT_CALL(ctx, find_type(_)).WillOnce(Return(&valid_type));
+  EXPECT_CALL(function, return_type()).WillRepeatedly(ReturnRef(valid_type));
 
   visitor.visit(ret_node);
 
@@ -448,6 +452,31 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Return)
 
   // Todo check for void type
   EXPECT_THAT(casted_node->type(), IsValidType());
+}
+
+TEST_F(SemaBuilderAstVisitorTest, Visit_ReturnWithMismatchedType_ReportsError)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<sema_function_mock> function;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx, &function);
+
+  auto expr_node = std::make_unique<ast::int_value_node>(token_integer("42"));
+  ast::return_node ret_node(tmp_token, std::move(expr_node), tmp_token);
+
+  EXPECT_CALL(ctx, find_type(_)).WillOnce(Return(&valid_type));
+  EXPECT_CALL(function, return_type())
+    .WillRepeatedly(ReturnRef(void_type_mock));
+  EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
+
+  const auto function_name_token = token_identifier("foo");
+  function_signature signature{ function_name_token };
+  EXPECT_CALL(function, signature()).WillRepeatedly(ReturnRef(signature));
+
+  visitor.visit(ret_node);
+
+  ASSERT_THAT(visitor.m_result_node, IsNull());
 }
 
 TEST_F(
