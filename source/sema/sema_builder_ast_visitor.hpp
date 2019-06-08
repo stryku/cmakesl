@@ -35,6 +35,7 @@ class sema_type_factory;
 class sema_function_factory;
 class sema_context_factory;
 class user_sema_function;
+class block_node;
 class sema_context_impl;
 struct function_signature;
 
@@ -148,6 +149,9 @@ private:
   std::unique_ptr<expression_node> convert_to_cast_node_if_need(
     const sema_type& expected_result_type,
     std::unique_ptr<expression_node> expression);
+
+  bool is_last_node_return_node(const block_node& block) const;
+  void add_implicit_return_node_if_need(block_node& block);
 
 public:
   std::unique_ptr<sema_node> m_result_node;

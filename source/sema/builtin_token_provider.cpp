@@ -29,6 +29,7 @@ void builtin_token_provider::initialize_documentation_paths()
   m_documentation_paths[builtin_type::library] = path_provider("library.cmsl");
   m_documentation_paths[builtin_type::project] = path_provider("project.cmsl");
   m_documentation_paths[builtin_type::version] = path_provider("version.cmsl");
+  m_documentation_paths[builtin_type::void_] = path_provider("void.cmsl");
 }
 
 std::optional<cmsl::string_view> builtin_token_provider::get_path(
@@ -86,5 +87,9 @@ string_tokens_provider builtin_token_provider::string() const
 version_tokens_provider builtin_token_provider::version() const
 {
   return version_tokens_provider{ get_path(builtin_type::version) };
+}
+void_tokens_provider builtin_token_provider::void_() const
+{
+  return void_tokens_provider{ get_path(builtin_type::void_) };
 }
 }

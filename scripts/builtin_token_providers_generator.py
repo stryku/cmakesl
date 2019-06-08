@@ -237,6 +237,11 @@ GENERATION_INFO = {
             'method_name': ['string name();', 'string ', 'name'],
             'link_to': ['void link_to(library lib);', 'void ', 'link_to']
         }
+    },
+    'void': {
+        'tokens': {
+            'name': ['class void', 'class ', 'void']
+        }
     }
 }
 

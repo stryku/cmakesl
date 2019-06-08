@@ -19,6 +19,7 @@
 
 #include "common/assert.hpp"
 #include "sema/add_subdirectory_handler.hpp"
+#include "sema/block_node_manipulator.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/factories.hpp"
 #include "sema/identifiers_context.hpp"
@@ -29,7 +30,6 @@
 #include "sema/type_builder.hpp"
 #include "sema/user_sema_function.hpp"
 #include "sema/variable_initialization_checker.hpp"
-#include "sema_builder_ast_visitor.hpp"
 
 namespace cmsl::sema {
 sema_builder_ast_visitor::ids_ctx_guard::ids_ctx_guard(
@@ -494,6 +494,8 @@ void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
     return;
   }
 
+  add_implicit_return_node_if_need(*block);
+
   // And set the body.
   function.set_body(*block);
 
@@ -513,6 +515,14 @@ void sema_builder_ast_visitor::visit(
     type = try_get_or_create_generic_type(m_ctx, type_representation);
     if (!type) {
       // If type has not been found and that's a not an auto type declaration.
+      return;
+    }
+
+    // If type has been found, check whether it is not void.
+    const auto& void_type = builtin_types_finder{ m_ctx }.find_void();
+    if (*type == void_type) {
+      raise_error(type_representation.primary_name(),
+                  "Variable can not be of void type");
       return;
     }
   }
@@ -901,5 +911,33 @@ void sema_builder_ast_visitor::visit(const ast::initializer_list_node& node)
 
   m_result_node = std::make_unique<initializer_list_node>(
     node, *type, std::move(expression_values));
+}
+void sema_builder_ast_visitor::add_implicit_return_node_if_need(
+  block_node& block)
+{
+  if (is_last_node_return_node(block)) {
+    return;
+  }
+
+  const auto& ast_node = block.ast_node();
+  const auto& void_type = builtin_types_finder{ m_ctx }.find_void();
+  auto ret_node = std::make_unique<implicit_return_node>(ast_node, void_type);
+
+  auto manipulator = block_node_manipulator{ block };
+  manipulator.append_expression(std::move(ret_node));
+}
+bool sema_builder_ast_visitor::is_last_node_return_node(
+  const block_node& block) const
+{
+  const auto& nodes = block.nodes();
+  if (nodes.empty()) {
+    return false;
+  }
+
+  const auto& last_node = nodes.back();
+  const auto last_node_is_return =
+    dynamic_cast<const return_node*>(last_node.get()) != nullptr;
+
+  return last_node_is_return;
 }
 }

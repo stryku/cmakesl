@@ -83,6 +83,12 @@ void execution::execute_node(const sema::sema_node& node)
 {
   if (auto ret_node = dynamic_cast<const sema::return_node*>(&node)) {
     m_function_return_value = execute_infix_expression(node);
+  } else if (auto ret_node =
+               dynamic_cast<const sema::implicit_return_node*>(&node)) {
+
+    inst::instances_holder instances{ current_context() };
+    auto void_val = instances.create_void();
+    m_function_return_value = instances.gather_ownership(void_val);
   } else if (auto var_decl =
                dynamic_cast<const sema::variable_declaration_node*>(&node)) {
     execute_variable_declaration(*var_decl);
@@ -94,7 +100,7 @@ void execution::execute_node(const sema::sema_node& node)
 
 bool execution::returning_from_function() const
 {
-  return static_cast<bool>(m_function_return_value);
+  return m_function_return_value != nullptr;
 }
 
 const sema::sema_context& execution::current_context() const
