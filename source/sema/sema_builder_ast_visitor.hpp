@@ -91,6 +91,8 @@ private:
     std::unique_ptr<sema_node> node) const;
 
   void raise_error(const lexer::token token, const std::string& message);
+  void raise_error(const source_view& source, const source_range& src_range,
+                   const std::string& message);
 
   sema_builder_ast_visitor clone() const;
   sema_builder_ast_visitor clone(sema_context& ctx_to_visit) const;
@@ -152,6 +154,8 @@ private:
 
   bool is_last_node_return_node(const block_node& block) const;
   void add_implicit_return_node_if_need(block_node& block);
+
+  bool check_function_return_type(const expression_node& return_expression);
 
 public:
   std::unique_ptr<sema_node> m_result_node;
