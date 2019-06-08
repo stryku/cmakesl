@@ -885,7 +885,7 @@ TEST_P(Type_SingleToken, GetTypeReference)
 const auto values = ::testing::Values(
   token_kw_bool(), token_kw_int(), token_kw_double(), token_kw_string(),
   token_kw_project(), token_kw_library(), token_kw_executable(),
-  token_kw_auto(), token_identifier("foo"));
+  token_kw_auto(), token_kw_void(), token_identifier("foo"));
 INSTANTIATE_TEST_CASE_P(Parser2Test, Type_SingleToken, values);
 }
 

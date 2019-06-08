@@ -1,0 +1,5 @@
+/** \brief The builtin void type.
+ *
+ * Instance of this type can not be created.
+ */
+class void{};

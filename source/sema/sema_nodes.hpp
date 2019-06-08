@@ -350,6 +350,8 @@ private:
   std::unique_ptr<string_value_node> m_directory_name;
 };
 
+class block_node_manipulator;
+
 class block_node : public sema_node
 {
 private:
@@ -370,6 +372,8 @@ public:
   VISIT_METHOD
 
 private:
+  friend class block_node_manipulator;
+
   nodes_t m_nodes;
 };
 
@@ -651,5 +655,24 @@ public:
 private:
   const sema_type& m_type;
   std::vector<std::unique_ptr<expression_node>> m_values;
+};
+
+class implicit_return_node : public expression_node
+{
+public:
+  explicit implicit_return_node(const ast::ast_node& ast_node,
+                                const sema_type& type)
+    : expression_node{ ast_node }
+    , m_type{ type }
+  {
+  }
+
+  const sema_type& type() const override { return m_type; }
+  virtual bool produces_temporary_value() const override { return true; }
+
+  VISIT_METHOD
+
+private:
+  const sema_type& m_type;
 };
 }

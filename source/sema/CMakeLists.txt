@@ -17,6 +17,8 @@ add_custom_command(
 
 set(SEMA_SOURCES
     add_subdirectory_handler.hpp
+    block_node_manipulator.cpp
+    block_node_manipulator.hpp
     builtin_function_kind.hpp
     builtin_sema_context.cpp
     builtin_sema_context.hpp
@@ -55,7 +57,7 @@ set(SEMA_SOURCES
     variable_initialization_checker.cpp
     variable_initialization_checker.hpp
 
-        ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
+    ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
 )
 
 add_library(sema "${SEMA_SOURCES}")

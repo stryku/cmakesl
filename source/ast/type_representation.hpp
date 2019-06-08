@@ -55,3 +55,6 @@ private:
   std::vector<type_representation> m_nested_types;
 };
 }
+
+std::ostream& operator<<(std::ostream& out,
+                         const cmsl::ast::type_representation&);
