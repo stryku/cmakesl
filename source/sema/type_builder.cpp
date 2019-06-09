@@ -29,7 +29,7 @@ type_builder& type_builder::with_user_function(const sema_type& return_type,
                                                function_signature s)
 {
   const auto& function =
-    m_function_factory.create_user(m_type_ctx, return_type, std::move(s));
+    m_function_factory.create_user(m_type_ctx, &return_type, std::move(s));
   m_type_ctx.add_function(function);
   return *this;
 }

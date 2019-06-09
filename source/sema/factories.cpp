@@ -25,7 +25,7 @@ cmsl::lexer::token make_id_token(const char (&tok)[N])
 
 namespace cmsl::sema {
 user_sema_function& sema_function_factory::create_user(
-  const sema_context& ctx, const sema_type& return_type, function_signature s)
+  const sema_context& ctx, const sema_type* return_type, function_signature s)
 {
   return create_impl<user_sema_function>(ctx, return_type, std::move(s));
 }
