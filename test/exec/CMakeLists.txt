@@ -2,6 +2,7 @@ cmsl_add_test(
     NAME
         exec
     SOURCES
+        auto_type_smoke_test.cpp
         bool_type_smoke_test.cpp
         builtin_function_caller2_test.cpp
         double_type_smoke_test.cpp

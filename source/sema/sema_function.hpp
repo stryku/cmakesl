@@ -12,6 +12,7 @@ public:
   virtual ~sema_function() = default;
   virtual const function_signature& signature() const = 0;
   virtual const sema_type& return_type() const = 0;
+  virtual const sema_type* try_return_type() const = 0;
   virtual const sema_context& context() const = 0;
 };
 }
