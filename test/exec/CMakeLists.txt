@@ -7,6 +7,7 @@ cmsl_add_test(
         builtin_function_caller2_test.cpp
         double_type_smoke_test.cpp
         expression_evaluation_visitor_test.cpp
+        if_else_smoke_test.cpp
         instance_value_variant_test.cpp
         int_type_smoke_test.cpp
         list_type_smoke_test.cpp
