@@ -67,10 +67,17 @@ protected:
   sema_context_factory m_context_factory;
   add_subdirectory_semantic_handler_mock m_add_subdirectory_mock;
   builtin_token_provider m_token_provider{ "" };
+  function_parsing_context m_function_parsing_context;
+
+  sema_builder_ast_visitor create_visitor(errs_t& errs, sema_context& ctx,
+                                          identifiers_context& ids_ctx)
+  {
+    return create_visitor(errs, ctx, ids_ctx, m_function_parsing_context);
+  }
 
   sema_builder_ast_visitor create_visitor(
     errs_t& errs, sema_context& ctx, identifiers_context& ids_ctx,
-    sema_function* currently_parsed_function = nullptr)
+    function_parsing_context& function_parsing_ctx)
   {
     return sema_builder_ast_visitor{ ctx,
                                      ctx,
@@ -81,7 +88,7 @@ protected:
                                      m_context_factory,
                                      m_add_subdirectory_mock,
                                      m_token_provider,
-                                     currently_parsed_function };
+                                     function_parsing_ctx };
   }
 
   ast::function_call_node create_function_call(
@@ -434,13 +441,18 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Return)
   StrictMock<sema_context_mock> ctx;
   StrictMock<sema_function_mock> function;
   StrictMock<identifiers_context_mock> ids_ctx;
-  auto visitor = create_visitor(errs, ctx, ids_ctx, &function);
+  function_parsing_context function_parsing_ctx{ nullptr, &function, {} };
+  auto visitor = create_visitor(errs, ctx, ids_ctx, function_parsing_ctx);
 
   auto expr_node = std::make_unique<ast::int_value_node>(token_integer("42"));
   ast::return_node ret_node(tmp_token, std::move(expr_node), tmp_token);
 
   EXPECT_CALL(ctx, find_type(_)).WillOnce(Return(&valid_type));
   EXPECT_CALL(function, return_type()).WillRepeatedly(ReturnRef(valid_type));
+  EXPECT_CALL(function, try_return_type()).WillRepeatedly(Return(&valid_type));
+
+  function_signature signature{ token_identifier("foo") };
+  EXPECT_CALL(function, signature()).WillRepeatedly(ReturnRef(signature));
 
   visitor.visit(ret_node);
 
@@ -460,7 +472,8 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_ReturnWithMismatchedType_ReportsError)
   StrictMock<sema_context_mock> ctx;
   StrictMock<sema_function_mock> function;
   StrictMock<identifiers_context_mock> ids_ctx;
-  auto visitor = create_visitor(errs, ctx, ids_ctx, &function);
+  function_parsing_context function_parsing_ctx{ nullptr, &function, {} };
+  auto visitor = create_visitor(errs, ctx, ids_ctx, function_parsing_ctx);
 
   auto expr_node = std::make_unique<ast::int_value_node>(token_integer("42"));
   ast::return_node ret_node(tmp_token, std::move(expr_node), tmp_token);
@@ -468,6 +481,8 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_ReturnWithMismatchedType_ReportsError)
   EXPECT_CALL(ctx, find_type(_)).WillOnce(Return(&valid_type));
   EXPECT_CALL(function, return_type())
     .WillRepeatedly(ReturnRef(void_type_mock));
+  EXPECT_CALL(function, try_return_type())
+    .WillRepeatedly(Return(&void_type_mock));
   EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
 
   const auto function_name_token = token_identifier("foo");

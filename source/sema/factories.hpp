@@ -49,7 +49,7 @@ public:
   ~sema_function_factory();
 
   user_sema_function& create_user(const sema_context& ctx,
-                                  const sema_type& return_type,
+                                  const sema_type* return_type,
                                   function_signature s);
 
   builtin_sema_function& create_builtin(const sema_context& ctx,

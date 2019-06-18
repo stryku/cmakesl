@@ -18,6 +18,7 @@ class type_representation;
 
 namespace errors {
 class errors_observer;
+enum class error_type;
 }
 
 namespace lexer {
@@ -36,8 +37,23 @@ class sema_function_factory;
 class sema_context_factory;
 class user_sema_function;
 class block_node;
+class return_node;
 class sema_context_impl;
 struct function_signature;
+
+struct function_parsing_context
+{
+  ast::user_function_node* function_node{ nullptr };
+  sema_function* function{ nullptr };
+  std::vector<const return_node*> return_nodes;
+
+  void reset()
+  {
+    function_node = nullptr;
+    function = nullptr;
+    return_nodes.clear();
+  }
+};
 
 class sema_builder_ast_visitor : public ast::ast_node_visitor
 {
@@ -52,9 +68,7 @@ public:
     sema_context_factory& context_factory,
     add_subdirectory_handler& add_subdirectory_handler,
     const builtin_token_provider& builtin_token_provider,
-    sema_function* currently_parsing_function =
-      nullptr); // Todo: Create private ctor that takes
-                // currently_parsing_function
+    function_parsing_context& function_parsing_ctx);
 
   void visit(const ast::block_node& node) override;
   void visit(const ast::class_node& node) override;
@@ -90,9 +104,17 @@ private:
   std::unique_ptr<expression_node> to_expression(
     std::unique_ptr<sema_node> node) const;
 
+  void raise_note(const lexer::token token, const std::string& message);
+  void raise_note(const source_view& source, const source_range& src_range,
+                  const std::string& message);
   void raise_error(const lexer::token token, const std::string& message);
   void raise_error(const source_view& source, const source_range& src_range,
                    const std::string& message);
+
+  void notify_error_observer(const source_view& source,
+                             const source_range& src_range,
+                             const std::string& message,
+                             errors::error_type err_type);
 
   sema_builder_ast_visitor clone() const;
   sema_builder_ast_visitor clone(sema_context& ctx_to_visit) const;
@@ -156,6 +178,7 @@ private:
   void add_implicit_return_node_if_need(block_node& block);
 
   bool check_function_return_type(const expression_node& return_expression);
+  const sema_type* try_deduce_currently_parsed_function_return_type();
 
 public:
   std::unique_ptr<sema_node> m_result_node;
@@ -170,7 +193,8 @@ private:
   sema_context_factory& m_context_factory;
   add_subdirectory_handler& m_add_subdirectory_handler;
   const builtin_token_provider& m_builtin_token_provider;
-  sema_function* m_currently_parsed_function{ nullptr };
+
+  function_parsing_context& m_function_parsing_ctx;
 };
 }
 }
