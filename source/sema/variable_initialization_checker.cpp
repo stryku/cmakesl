@@ -12,6 +12,9 @@ variable_initialization_checker::check(
 {
   const auto& expression_type = initialization_expression.type();
 
+  const auto expr_t = expression_type.name().to_string();
+  const auto var_t = variable_type.name().to_string();
+
   if (variable_type == expression_type) {
     return check_result::can_init;
   }

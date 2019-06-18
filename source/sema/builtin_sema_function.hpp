@@ -24,6 +24,7 @@ public:
   const function_signature& signature() const override { return m_signature; }
 
   const sema_type& return_type() const override { return m_return_type; }
+  const sema_type* try_return_type() const override { return &m_return_type; }
 
   builtin_function_kind kind() const { return m_kind; }
 
