@@ -44,6 +44,7 @@ private:
     const sema::variable_declaration_node& node);
   void execute_node(const sema::sema_node& node);
   void execute_if_else_node(const sema::if_else_node& node);
+  void execute_while_node(const sema::while_node& node);
 
   bool returning_from_function() const;
 
