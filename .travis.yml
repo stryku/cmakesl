@@ -16,6 +16,7 @@ matrix:
           packages:
             - libstdc++-7-dev
             - clang-7
+            - valgrind
       env:
         - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
 
@@ -27,6 +28,7 @@ matrix:
           packages:
             - g++-7
             - libpng-dev
+            - valgrind
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         - LINKER_FLAGS=""
@@ -51,4 +53,4 @@ script:
   - mkdir build && cd build
   - cmake .. -DCMAKESL_WITH_TESTS=ON -DCMAKESL_WITH_TOOLS=ON -DCMAKESL_WITH_EXAMPLES=ON
   - make
-  - make test
+  - ctest -T memcheck
