@@ -92,6 +92,8 @@ void execution::execute_node(const sema::sema_node& node)
   } else if (auto var_decl =
                dynamic_cast<const sema::variable_declaration_node*>(&node)) {
     execute_variable_declaration(*var_decl);
+  } else if (auto if_else = dynamic_cast<const sema::if_else_node*>(&node)) {
+    execute_if_else_node(*if_else);
   } else {
     // A stand alone infix expression.
     (void)execute_infix_expression(node);
@@ -152,5 +154,22 @@ std::unique_ptr<inst::instance> execution::execute_infix_expression(
   expression_evaluation_visitor visitor{ ctx };
   node.visit(visitor);
   return visitor.result->copy(); // Todo: it'd be good to move instead of copy.
+}
+
+void execution::execute_if_else_node(const sema::if_else_node& node)
+{
+  for (const auto& if_ : node.ifs()) {
+    const auto& condition = if_->get_condition();
+    auto condition_value = execute_infix_expression(condition);
+
+    if (condition_value->value().get_bool()) {
+      execute_block(if_->get_body());
+      return;
+    }
+  }
+
+  if (const auto else_body = node.else_body()) {
+    execute_block(*else_body);
+  }
 }
 }
