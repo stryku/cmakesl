@@ -27,7 +27,6 @@ endif ()
 
 option(CMAKESL_WITH_TESTS "When ON, test will be built" OFF)
 if (CMAKESL_WITH_TESTS)
-    enable_testing()
     include(CTest)
     add_subdirectory(external/googletest)
     add_subdirectory(test)

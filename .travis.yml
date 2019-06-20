@@ -53,4 +53,4 @@ script:
   - mkdir build && cd build
   - cmake .. -DCMAKESL_WITH_TESTS=ON -DCMAKESL_WITH_TOOLS=ON -DCMAKESL_WITH_EXAMPLES=ON
   - make
-  - ctest -T memcheck
+  - ctest -D ContinousMemCheck
