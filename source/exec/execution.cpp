@@ -94,6 +94,8 @@ void execution::execute_node(const sema::sema_node& node)
     execute_variable_declaration(*var_decl);
   } else if (auto if_else = dynamic_cast<const sema::if_else_node*>(&node)) {
     execute_if_else_node(*if_else);
+  } else if (auto while_ = dynamic_cast<const sema::while_node*>(&node)) {
+    execute_while_node(*while_);
   } else {
     // A stand alone infix expression.
     (void)execute_infix_expression(node);
@@ -170,6 +172,17 @@ void execution::execute_if_else_node(const sema::if_else_node& node)
 
   if (const auto else_body = node.else_body()) {
     execute_block(*else_body);
+  }
+}
+
+void execution::execute_while_node(const sema::while_node& node)
+{
+  const auto& condition = node.condition();
+  const auto& body = node.body();
+  auto condition_result = execute_infix_expression(condition);
+  while (condition_result->value_cref().get_bool()) {
+    execute_block(body);
+    condition_result = execute_infix_expression(condition);
   }
 }
 }

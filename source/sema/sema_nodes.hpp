@@ -480,7 +480,11 @@ public:
     m_conditional->set_parent(*this, passkey{});
   }
 
-  const conditional_node& condition() const { return *m_conditional; }
+  const expression_node& condition() const
+  {
+    return m_conditional->get_condition();
+  }
+  const block_node& body() const { return m_conditional->get_body(); }
 
   VISIT_METHOD
 
