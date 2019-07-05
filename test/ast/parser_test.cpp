@@ -258,7 +258,7 @@ MATCHER_P(AstEq, expected_ast, "")
   return result_visitor.result() == expected_visitor.result();
 }
 
-TEST(Parser2Test, Factor_TrueKeywordToken_GetBoolFundamentalValue)
+TEST(ParserTest, Factor_TrueKeywordToken_GetBoolFundamentalValue)
 {
   const auto token = token_kw_true();
 
@@ -273,7 +273,7 @@ TEST(Parser2Test, Factor_TrueKeywordToken_GetBoolFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Factor_FalseKeywordToken_GetBoolFundamentalValue)
+TEST(ParserTest, Factor_FalseKeywordToken_GetBoolFundamentalValue)
 {
   const auto token = token_kw_false();
 
@@ -288,7 +288,7 @@ TEST(Parser2Test, Factor_FalseKeywordToken_GetBoolFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Factor_IntegerToken_GetIntFundamentalValue)
+TEST(ParserTest, Factor_IntegerToken_GetIntFundamentalValue)
 {
   const auto token = token_integer("1");
 
@@ -303,7 +303,7 @@ TEST(Parser2Test, Factor_IntegerToken_GetIntFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Factor_DoubleToken_GetDoubleFundamentalValue)
+TEST(ParserTest, Factor_DoubleToken_GetDoubleFundamentalValue)
 {
   const auto token = token_double("1.6");
 
@@ -318,7 +318,7 @@ TEST(Parser2Test, Factor_DoubleToken_GetDoubleFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Factor_StringToken_GetStringFundamentalValue)
+TEST(ParserTest, Factor_StringToken_GetStringFundamentalValue)
 {
   const auto token = token_string("some string");
 
@@ -333,7 +333,7 @@ TEST(Parser2Test, Factor_StringToken_GetStringFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Factor_IdentifierToken_GetId)
+TEST(ParserTest, Factor_IdentifierToken_GetId)
 {
   const auto token = token_identifier("some_name");
 
@@ -348,7 +348,7 @@ TEST(Parser2Test, Factor_IdentifierToken_GetId)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Factor_ParenthesizedToken_GetInnerNode)
+TEST(ParserTest, Factor_ParenthesizedToken_GetInnerNode)
 {
   const auto lparen = token_open_paren();
   const auto id = token_identifier("some_name");
@@ -365,7 +365,7 @@ TEST(Parser2Test, Factor_ParenthesizedToken_GetInnerNode)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Expr_TokenBinaryOpToken_GetBinaryOperator)
+TEST(ParserTest, Expr_TokenBinaryOpToken_GetBinaryOperator)
 {
   // 1 + 2
   const auto lhs_token = token_integer("1");
@@ -386,7 +386,7 @@ TEST(Parser2Test, Expr_TokenBinaryOpToken_GetBinaryOperator)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
+TEST(ParserTest, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
 {
   // "foo" - bar - 4.2
   const auto lhs_lhs_token = token_string("foo");
@@ -415,7 +415,7 @@ TEST(Parser2Test, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
+TEST(ParserTest, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
 {
   // "foo" - bar * 4.2
   const auto lhs_token = token_string("foo");
@@ -444,7 +444,7 @@ TEST(Parser2Test, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
+TEST(ParserTest, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
 {
   // foo()
   const auto fun_name_token = token_identifier("foo");
@@ -462,7 +462,7 @@ TEST(Parser2Test, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test,
+TEST(ParserTest,
      Expr_IdOpenParenParametersCloseParen_GetFunctionCallWithParameters)
 {
   // foo(bar, "baz", 42)
@@ -492,7 +492,7 @@ TEST(Parser2Test,
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test,
+TEST(ParserTest,
      Expr_IdDotIdOpenParenCloseParen_GetMemberFunctionCallWithoutParameters)
 {
   // foo.bar()
@@ -517,7 +517,7 @@ TEST(Parser2Test,
 }
 
 TEST(
-  Parser2Test,
+  ParserTest,
   Expr_IdDotIdOpenParenParametersCloseParen_GetMemberFunctionCallWithParameters)
 {
   // foo.bar(baz, "qux", 42)
@@ -554,7 +554,7 @@ TEST(
 }
 
 TEST(
-  Parser2Test,
+  ParserTest,
   Expr_ParenthesizedExpressionDotIdOpenParenCloseParen_GetMemberFunctionCallWithoutParameters)
 {
   // (foo+bar).baz()
@@ -586,7 +586,7 @@ TEST(
 }
 
 TEST(
-  Parser2Test,
+  ParserTest,
   Expr_ParenthesizedExpressionDotIdOpenParenParamsCloseParen_GetMemberFunctionCallWithParameters)
 {
   // (foo+bar).baz(baz, "qux", 42)
@@ -634,7 +634,7 @@ TEST(
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Expr_IdDotId_GetClassMemberAccess)
+TEST(ParserTest, Expr_IdDotId_GetClassMemberAccess)
 {
   // foo.bar
   const auto class_name_token = token_identifier("foo");
@@ -655,7 +655,7 @@ TEST(Parser2Test, Expr_IdDotId_GetClassMemberAccess)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
+TEST(ParserTest, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
 {
   // (foo + bar).baz
   const auto lhs_lhs_token = token_identifier("foo");
@@ -683,7 +683,7 @@ TEST(Parser2Test, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, If_IfConditionBlock_GetIfElse)
+TEST(ParserTest, If_IfConditionBlock_GetIfElse)
 {
   // if(foo) {}
   const auto condition_token = token_identifier("foo");
@@ -713,7 +713,7 @@ TEST(Parser2Test, If_IfConditionBlock_GetIfElse)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, If_IfConditionParenBlockElseBlock_GetIfElse)
+TEST(ParserTest, If_IfConditionParenBlockElseBlock_GetIfElse)
 {
   // if(foo) {} else {}
   const auto condition_token = token_identifier("foo");
@@ -749,7 +749,7 @@ TEST(Parser2Test, If_IfConditionParenBlockElseBlock_GetIfElse)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
+TEST(ParserTest, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
 {
   // if(foo) {} else if(bar) else {}
   const auto if_condition_token = token_identifier("foo");
@@ -802,7 +802,7 @@ TEST(Parser2Test, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
+TEST(ParserTest, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
 {
   // if(foo) {} else if(bar)
   const auto if_condition_token = token_identifier("foo");
@@ -850,7 +850,7 @@ TEST(Parser2Test, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, While_WhileConditionBlock_GetWhile)
+TEST(ParserTest, While_WhileConditionBlock_GetWhile)
 {
   // while(foo) {}
   const auto condition_token = token_identifier("foo");
@@ -876,7 +876,7 @@ TEST(Parser2Test, While_WhileConditionBlock_GetWhile)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Return_ReturnExpression_GetReturn)
+TEST(ParserTest, Return_ReturnExpression_GetReturn)
 {
   // return foo;
   const auto expression_token = token_identifier("foo");
@@ -918,10 +918,10 @@ const auto values = ::testing::Values(
   token_kw_bool(), token_kw_int(), token_kw_double(), token_kw_string(),
   token_kw_project(), token_kw_library(), token_kw_executable(),
   token_kw_auto(), token_kw_void(), token_identifier("foo"));
-INSTANTIATE_TEST_CASE_P(Parser2Test, Type_SingleToken, values);
+INSTANTIATE_TEST_CASE_P(ParserTest, Type_SingleToken, values);
 }
 
-TEST(Parser2Test, Type_GenericType_GetTypeReference)
+TEST(ParserTest, Type_GenericType_GetTypeReference)
 {
   cmsl::string_view source = "list<int>";
   const auto list_token =
@@ -947,7 +947,7 @@ TEST(Parser2Test, Type_GenericType_GetTypeReference)
   EXPECT_THAT(*result_type_reference, Eq(expected_reference));
 }
 
-TEST(Parser2Test, Type_NestedGenericType_GetTypeReference)
+TEST(ParserTest, Type_NestedGenericType_GetTypeReference)
 {
   cmsl::string_view source = "list<list<foo>>";
   const auto list_token =
@@ -991,7 +991,7 @@ TEST(Parser2Test, Type_NestedGenericType_GetTypeReference)
   EXPECT_THAT(*result_type_reference, Eq(expected_representation));
 }
 
-TEST(Parser2Test, VariableDeclaration_TypeId_GetVariableDeclaration)
+TEST(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
 {
   // int foo;
   const auto type_token = token_kw_int();
@@ -1012,7 +1012,7 @@ TEST(Parser2Test, VariableDeclaration_TypeId_GetVariableDeclaration)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
+TEST(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
 {
   // list<int> foo;
   cmsl::string_view source = "list<int>";
@@ -1047,7 +1047,7 @@ TEST(Parser2Test, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test,
+TEST(ParserTest,
      VariableDeclaration_TypeIdEqualExpression_GetVariableDeclaration)
 {
   // int foo;
@@ -1075,7 +1075,7 @@ TEST(Parser2Test,
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test,
+TEST(ParserTest,
      VariableDeclaration_GenericTypeIdEqualExpression_GetVariableDeclaration)
 {
   // list<int> foo = 42;
@@ -1117,7 +1117,7 @@ TEST(Parser2Test,
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Block_OpenBraceCloseBrace_GetBlock)
+TEST(ParserTest, Block_OpenBraceCloseBrace_GetBlock)
 {
   // {}
   auto expected_ast =
@@ -1133,7 +1133,7 @@ TEST(Parser2Test, Block_OpenBraceCloseBrace_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Block_VariableDeclaration_GetBlock)
+TEST(ParserTest, Block_VariableDeclaration_GetBlock)
 {
   // { foo bar; }
   const auto variable_type_token = token_identifier("foo");
@@ -1160,7 +1160,7 @@ TEST(Parser2Test, Block_VariableDeclaration_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Block_IfElse_GetBlock)
+TEST(ParserTest, Block_IfElse_GetBlock)
 {
   // { if(foo) {} else if(bar) else {} }
   const auto if_condition_token = token_identifier("foo");
@@ -1223,7 +1223,7 @@ TEST(Parser2Test, Block_IfElse_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Block_Expression_GetBlock)
+TEST(ParserTest, Block_Expression_GetBlock)
 {
   // { foo + bar; }
   const auto lhs_token = token_integer("1");
@@ -1253,7 +1253,7 @@ TEST(Parser2Test, Block_Expression_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Block_While_GetBlock)
+TEST(ParserTest, Block_While_GetBlock)
 {
   // { while(foo) {} }
   const auto condition_token = token_identifier("foo");
@@ -1286,7 +1286,7 @@ TEST(Parser2Test, Block_While_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Block_Return_GetBlock)
+TEST(ParserTest, Block_Return_GetBlock)
 {
   // { return foo; }
   const auto expression_token = token_identifier("foo");
@@ -1313,7 +1313,7 @@ TEST(Parser2Test, Block_Return_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Block_NestedBlock_GetBlock)
+TEST(ParserTest, Block_NestedBlock_GetBlock)
 {
   // { {} }
 
@@ -1336,7 +1336,7 @@ TEST(Parser2Test, Block_NestedBlock_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Function_TypeIdOpenParenCloseParen_GetFunction)
+TEST(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
 {
   // double foo() {}
   const auto function_type_token = token_kw_double();
@@ -1360,7 +1360,7 @@ TEST(Parser2Test, Function_TypeIdOpenParenCloseParen_GetFunction)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
+TEST(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
 {
   // double foo(bar baz) {}
   const auto function_type_token = token_kw_double();
@@ -1395,7 +1395,7 @@ TEST(Parser2Test, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
+TEST(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
 {
   // double foo(bar baz, qux out_of_fancy_identifiers) {}
   const auto function_type_token = token_kw_double();
@@ -1440,7 +1440,7 @@ TEST(Parser2Test, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Class_ClassIdEmptyBlock_GetClass)
+TEST(ParserTest, Class_ClassIdEmptyBlock_GetClass)
 {
   // class foo {};
   const auto name_token = token_identifier("foo");
@@ -1460,7 +1460,7 @@ TEST(Parser2Test, Class_ClassIdEmptyBlock_GetClass)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Class_ClassIdVariableDeclaration_GetClass)
+TEST(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
 {
   // class foo { int bar; };
   const auto name_token = token_identifier("foo");
@@ -1489,7 +1489,7 @@ TEST(Parser2Test, Class_ClassIdVariableDeclaration_GetClass)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Class_ClassIdFunctionVariableDeclaration_GetClass)
+TEST(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
 {
   // class foo { double bar() {} baz qux; };
   const auto name_token = token_identifier("foo");
@@ -1534,7 +1534,7 @@ TEST(Parser2Test, Class_ClassIdFunctionVariableDeclaration_GetClass)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(Parser2Test, Factor_InitializerList_GetInitializerList)
+TEST(ParserTest, Factor_InitializerList_GetInitializerList)
 {
   // { foo, bar(baz, qux), { nest_foo, nest_bar } }
   const auto foo_token = token_identifier("foo");
