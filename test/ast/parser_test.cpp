@@ -2,6 +2,7 @@
 #include "ast/block_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/parser.hpp"
@@ -10,7 +11,6 @@
 #include "ast/user_function_node.hpp"
 #include "ast/variable_declaration_node.hpp"
 #include "ast/while_node.hpp"
-
 #include "errors/errors_observer.hpp"
 
 #include "test/common/tokens.hpp"
@@ -202,6 +202,38 @@ public:
       value->visit(*this);
       separator = ';';
     }
+    m_result += "}";
+  }
+
+  virtual void visit(const for_node& node) override
+  {
+    m_result += "for{init:";
+
+    if (node.init() == nullptr) {
+      m_result += "null";
+    } else {
+      node.init()->visit(*this);
+    }
+
+    m_result += ";condition:";
+
+    if (node.condition() == nullptr) {
+      m_result += "null";
+    } else {
+      node.condition()->visit(*this);
+    }
+
+    m_result += ";iteration:";
+
+    if (node.iteration() == nullptr) {
+      m_result += "null";
+    } else {
+      node.iteration()->visit(*this);
+    }
+
+    m_result += ";body:";
+    node.body().visit(*this);
+
     m_result += "}";
   }
 

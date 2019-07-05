@@ -35,6 +35,7 @@ public:
   std::unique_ptr<ast_node> parse_expr();
   std::unique_ptr<ast_node> parse_if_else_node();
   std::unique_ptr<ast_node> parse_while_node();
+  std::unique_ptr<ast_node> parse_for_node();
   std::unique_ptr<ast_node> parse_return_node();
   std::optional<type_representation> parse_type();
   std::unique_ptr<block_node> parse_block();
@@ -90,6 +91,10 @@ private:
   std::unique_ptr<conditional_node> get_conditional_node();
 
   std::unique_ptr<ast_node> constructor(token_t class_name);
+
+  std::optional<std::unique_ptr<ast_node>> parse_for_init();
+  std::optional<std::unique_ptr<ast_node>> parse_for_condition();
+  std::optional<std::unique_ptr<ast_node>> parse_for_iteration();
 
 private:
   parse_errors_reporter m_errors_reporter;

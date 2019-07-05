@@ -1087,4 +1087,8 @@ sema_builder_ast_visitor::try_deduce_currently_parsed_function_return_type()
 
   return nullptr;
 }
+
+void sema_builder_ast_visitor::visit(const ast::for_node& node)
+{
+}
 }

@@ -3,22 +3,20 @@
 #include "ast/block_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/return_node.hpp"
 #include "ast/translation_unit_node.hpp"
+#include "ast/type_parser.hpp"
+#include "ast/type_parsing_result.hpp"
 #include "ast/user_function_node.hpp"
 #include "ast/variable_declaration_node.hpp"
 #include "ast/while_node.hpp"
-
 #include "common/algorithm.hpp"
 #include "common/assert.hpp"
-
-#include "ast/type_parser.hpp"
-#include "ast/type_parsing_result.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
-#include "parser.hpp"
 
 #include <map>
 
@@ -775,5 +773,106 @@ std::unique_ptr<ast_node> parser::parse_initializer_list()
 
   return std::make_unique<initializer_list_node>(
     *open_brace, std::move(*values), *close_brace);
+}
+
+std::unique_ptr<ast_node> parser::parse_for_node()
+{
+
+  const auto for_kw = eat(token_type_t::kw_for);
+  if (!for_kw) {
+    return nullptr;
+  }
+
+  const auto open_paren = eat(token_type_t::open_paren);
+  if (!open_paren) {
+    return nullptr;
+  }
+
+  auto init = parse_for_init();
+  if (!init.has_value()) {
+    return nullptr;
+  }
+
+  const auto init_semicolon = eat(token_type_t::semicolon);
+  if (!init_semicolon) {
+    return nullptr;
+  }
+
+  auto condition = parse_for_condition();
+  if (!condition.has_value()) {
+    return nullptr;
+  }
+
+  const auto condition_semicolon = eat(token_type_t::semicolon);
+  if (!condition_semicolon) {
+    return nullptr;
+  }
+
+  auto iteration = parse_for_iteration();
+  if (!iteration.has_value()) {
+    return nullptr;
+  }
+
+  const auto close_paren = eat(token_type_t::close_paren);
+  if (!close_paren) {
+    return nullptr;
+  }
+
+  auto body = parse_block();
+  if (!body) {
+    return nullptr;
+  }
+
+  return std::make_unique<for_node>(
+    *for_kw, *open_paren, std::move(*init), *init_semicolon,
+    std::move(*condition), *condition_semicolon, std::move(*iteration),
+    *close_paren, std::move(body));
+}
+
+std::optional<std::unique_ptr<ast_node>> parser::parse_for_init()
+{
+  std::unique_ptr<ast_node> node;
+
+  if (declaration_starts()) {
+    node = parse_variable_declaration();
+  } else if (!current_is(token_type_t::semicolon)) {
+    node = parse_expr();
+  } else {
+    return nullptr;
+  }
+
+  if (!node) {
+    return std::nullopt;
+  }
+
+  return std::move(node);
+}
+
+std::optional<std::unique_ptr<ast_node>> parser::parse_for_condition()
+{
+  if (current_is(token_type_t::semicolon)) {
+    return nullptr;
+  }
+
+  auto node = parse_expr();
+  if (!node) {
+    return std::nullopt;
+  }
+
+  return std::move(node);
+}
+
+std::optional<std::unique_ptr<ast_node>> parser::parse_for_iteration()
+{
+  if (current_is(token_type_t::close_paren)) {
+    return nullptr;
+  }
+
+  auto node = parse_expr();
+  if (!node) {
+    return std::nullopt;
+  }
+
+  return std::move(node);
 }
 }
