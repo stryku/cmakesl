@@ -284,7 +284,8 @@ const auto values =
                   PureKeywordState{ "else", token_type::kw_else },
                   PureKeywordState{ "while", token_type::kw_while },
                   PureKeywordState{ "auto", token_type::kw_auto },
-                  PureKeywordState{ "for", token_type::kw_for });
+                  PureKeywordState{ "for", token_type::kw_for },
+                  PureKeywordState{ "break", token_type::kw_break });
 INSTANTIATE_TEST_CASE_P(Lexer, PureKeyword, values);
 }
 
