@@ -1,8 +1,5 @@
 #pragma once
 
-#include "sema/sema_nodes.hpp"
-#include <sema/user_sema_function.hpp>
-
 #include "exec/builtin_function_caller2.hpp"
 #include "exec/expression_evaluation_context.hpp"
 #include "exec/expression_evaluation_visitor.hpp"
@@ -12,6 +9,8 @@
 #include "exec/instance/instance_factory.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "sema/builtin_sema_function.hpp"
+#include "sema/sema_nodes.hpp"
+#include "sema/user_sema_function.hpp"
 
 #include "cmake_facade.hpp"
 
@@ -45,6 +44,7 @@ private:
   void execute_node(const sema::sema_node& node);
   void execute_if_else_node(const sema::if_else_node& node);
   void execute_while_node(const sema::while_node& node);
+  void execute_for_node(const sema::for_node& node);
 
   bool returning_from_function() const;
 

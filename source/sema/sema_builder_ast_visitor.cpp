@@ -1,23 +1,20 @@
 #include "sema/sema_builder_ast_visitor.hpp"
 
 #include "ast/block_node.hpp"
-#include "ast/conditional_node.hpp"
-#include "ast/if_else_node.hpp"
-#include "ast/translation_unit_node.hpp"
-#include "ast/user_function_node.hpp"
-#include "ast/while_node.hpp"
-
 #include "ast/class_node.hpp"
+#include "ast/conditional_node.hpp"
+#include "ast/for_node.hpp"
+#include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/return_node.hpp"
+#include "ast/translation_unit_node.hpp"
+#include "ast/user_function_node.hpp"
 #include "ast/variable_declaration_node.hpp"
-
+#include "ast/while_node.hpp"
 #include "common/algorithm.hpp"
-
+#include "common/assert.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
-
-#include "common/assert.hpp"
 #include "sema/add_subdirectory_handler.hpp"
 #include "sema/block_node_manipulator.hpp"
 #include "sema/builtin_types_finder.hpp"
@@ -539,93 +536,9 @@ void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
 }
 
 void sema_builder_ast_visitor::visit(
-  const ast::variable_declaration_node& node)
+  const ast::standalone_variable_declaration_node& node)
 {
-  const auto& type_representation = node.type();
-  const auto should_deduce_type_from_initialization =
-    type_representation.is_auto();
-
-  const sema_type* type = nullptr;
-  if (!should_deduce_type_from_initialization) {
-    type = try_get_or_create_generic_type(m_ctx, type_representation);
-    if (!type) {
-      // If type has not been found and that's a not an auto type declaration.
-      return;
-    }
-
-    // If type has been found, check whether it is not void.
-    const auto& void_type = builtin_types_finder{ m_ctx }.find_void();
-    if (*type == void_type) {
-      raise_error(type_representation.primary_name(),
-                  "Variable can not be of void type");
-      return;
-    }
-  }
-
-  if (should_deduce_type_from_initialization &&
-      node.initialization() == nullptr) {
-    raise_error(
-      type_representation.primary_name(),
-      "Declaration of a variable with 'auto' type requires an initializer");
-    return;
-  }
-
-  if (type && type->is_reference() && node.initialization() == nullptr) {
-    raise_error(type->name().primary_name(),
-                "Declaration of a reference variable requires an initializer");
-    return;
-  }
-
-  std::unique_ptr<expression_node> initialization;
-  if (auto init_node = node.initialization()) {
-    initialization = visit_child_expr(*init_node);
-    if (!initialization) {
-      return;
-    }
-
-    if (!should_deduce_type_from_initialization) {
-      variable_initialization_checker checker;
-      const auto check_result = checker.check(*type, *initialization);
-
-      switch (check_result) {
-        case variable_initialization_checker::check_result::can_init: {
-          // Can initialize, do nothing.
-        } break;
-        case variable_initialization_checker::check_result::different_types: {
-          raise_error(
-            initialization->type().name().primary_name(),
-            "Initialization and declared variable type does not match");
-          return;
-        }
-        case variable_initialization_checker::check_result::
-          reference_init_from_temporary_value: {
-          raise_error(initialization->type().name().primary_name(),
-                      "Reference variable can not be initialized with a "
-                      "temporary value");
-          return;
-        }
-      }
-    }
-
-    if (should_deduce_type_from_initialization) {
-      const auto& init_type = initialization->type();
-      type =
-        &(init_type.is_reference() ? init_type.referenced_type() : init_type);
-
-      // If there was auto with a reference, we need to declare variable with a
-      // reference type, e.g. auto& foo = bar();
-      if (type_representation.is_reference()) {
-        type = m_ctx.find_reference_for(*type);
-      }
-    }
-
-    initialization =
-      convert_to_cast_node_if_need(*type, std::move(initialization));
-  }
-
-  m_ids_context.register_identifier(node.name(), *type);
-  m_result_node = std::make_unique<variable_declaration_node>(
-    node, *type, node.name(), std::move(initialization));
+  node.variable_declaration().visit(*this);
 }
 
 void sema_builder_ast_visitor::visit(const ast::while_node& node)
@@ -840,7 +753,8 @@ sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(
 
   for (const auto& n : node.nodes()) {
     if (auto variable_decl =
-          dynamic_cast<const ast::variable_declaration_node*>(n.get())) {
+          dynamic_cast<const ast::standalone_variable_declaration_node*>(
+            n.get())) {
       auto member =
         visit_child_node<variable_declaration_node>(*variable_decl);
       if (!member) {
@@ -1086,5 +1000,135 @@ sema_builder_ast_visitor::try_deduce_currently_parsed_function_return_type()
   }
 
   return nullptr;
+}
+
+void sema_builder_ast_visitor::visit(
+  const ast::variable_declaration_node& node)
+{
+  const auto& type_representation = node.type();
+  const auto should_deduce_type_from_initialization =
+    type_representation.is_auto();
+
+  const sema_type* type = nullptr;
+  if (!should_deduce_type_from_initialization) {
+    type = try_get_or_create_generic_type(m_ctx, type_representation);
+    if (!type) {
+      // If type has not been found and that's a not an auto type declaration.
+      return;
+    }
+
+    // If type has been found, check whether it is not void.
+    const auto& void_type = builtin_types_finder{ m_ctx }.find_void();
+    if (*type == void_type) {
+      const auto n = type->name().to_string();
+      const auto n2 = void_type.name().to_string();
+      raise_error(type_representation.primary_name(),
+                  "Variable can not be of void type");
+      return;
+    }
+  }
+
+  if (should_deduce_type_from_initialization &&
+      node.initialization() == nullptr) {
+    raise_error(
+      type_representation.primary_name(),
+      "Declaration of a variable with 'auto' type requires an initializer");
+    return;
+  }
+
+  if (type && type->is_reference() && node.initialization() == nullptr) {
+    raise_error(type->name().primary_name(),
+                "Declaration of a reference variable requires an initializer");
+    return;
+  }
+
+  std::unique_ptr<expression_node> initialization;
+  if (auto init_node = node.initialization()) {
+    initialization = visit_child_expr(*init_node);
+    if (!initialization) {
+      return;
+    }
+
+    if (!should_deduce_type_from_initialization) {
+      variable_initialization_checker checker;
+      const auto check_result = checker.check(*type, *initialization);
+
+      switch (check_result) {
+        case variable_initialization_checker::check_result::can_init: {
+          // Can initialize, do nothing.
+        } break;
+        case variable_initialization_checker::check_result::different_types: {
+          raise_error(
+            initialization->type().name().primary_name(),
+            "Initialization and declared variable type does not match");
+          return;
+        }
+        case variable_initialization_checker::check_result::
+          reference_init_from_temporary_value: {
+          raise_error(initialization->type().name().primary_name(),
+                      "Reference variable can not be initialized with a "
+                      "temporary value");
+          return;
+        }
+      }
+    }
+
+    if (should_deduce_type_from_initialization) {
+      const auto& init_type = initialization->type();
+      type =
+        &(init_type.is_reference() ? init_type.referenced_type() : init_type);
+
+      // If there was auto with a reference, we need to declare variable with a
+      // reference type, e.g. auto& foo = bar();
+      if (type_representation.is_reference()) {
+        type = m_ctx.find_reference_for(*type);
+      }
+    }
+
+    initialization =
+      convert_to_cast_node_if_need(*type, std::move(initialization));
+  }
+
+  m_ids_context.register_identifier(node.name(), *type);
+  m_result_node = std::make_unique<variable_declaration_node>(
+    node, *type, node.name(), std::move(initialization));
+}
+
+void sema_builder_ast_visitor::visit(const ast::for_node& node)
+{
+  auto guard = ids_guard();
+
+  std::unique_ptr<sema_node> init;
+  if (node.init()) {
+    init = visit_child(*node.init());
+    if (!init) {
+      return;
+    }
+  }
+
+  std::unique_ptr<expression_node> condition;
+  if (node.condition()) {
+    condition = visit_child_expr(*node.condition());
+    if (!condition) {
+      return;
+    }
+  }
+
+  std::unique_ptr<expression_node> iteration;
+  if (node.iteration()) {
+    iteration = visit_child_expr(*node.iteration());
+    if (!iteration) {
+      return;
+    }
+  }
+
+  auto body = visit_child_node<block_node>(node.body());
+  if (!body) {
+    return;
+  }
+
+  m_result_node =
+    std::make_unique<for_node>(node, std::move(init), std::move(condition),
+                               std::move(iteration), std::move(body));
 }
 }

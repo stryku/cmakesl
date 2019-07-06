@@ -87,8 +87,10 @@ public:
   void visit(const ast::translation_unit_node& node) override;
   void visit(const ast::user_function_node& node) override;
   void visit(const ast::variable_declaration_node& node) override;
+  void visit(const ast::standalone_variable_declaration_node& node) override;
   void visit(const ast::while_node& node) override;
   void visit(const ast::initializer_list_node& node) override;
+  void visit(const ast::for_node& node) override;
 
 private:
   const sema_type* try_get_or_create_generic_type(

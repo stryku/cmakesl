@@ -679,4 +679,34 @@ public:
 private:
   const sema_type& m_type;
 };
+
+class for_node : public sema_node
+{
+public:
+  explicit for_node(const ast::ast_node& ast_node,
+                    std::unique_ptr<sema_node> init,
+                    std::unique_ptr<expression_node> condition,
+                    std::unique_ptr<expression_node> iteration,
+                    std::unique_ptr<block_node> body)
+    : sema_node{ ast_node }
+    , m_init{ std::move(init) }
+    , m_condition{ std::move(condition) }
+    , m_iteration{ std::move(iteration) }
+    , m_body{ std::move(body) }
+  {
+  }
+
+  const sema_node* init() const { return m_init.get(); }
+  const expression_node* condition() const { return m_condition.get(); }
+  const expression_node* iteration() const { return m_iteration.get(); }
+  const block_node& body() const { return *m_body; }
+
+  VISIT_METHOD
+
+private:
+  std::unique_ptr<sema_node> m_init;
+  std::unique_ptr<expression_node> m_condition;
+  std::unique_ptr<expression_node> m_iteration;
+  std::unique_ptr<block_node> m_body;
+};
 }

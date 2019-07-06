@@ -120,6 +120,8 @@ std::string to_string(lexer::token_type type)
       return "while keyword";
     case lexer::token_type::kw_auto:
       return "auto keyword";
+    case lexer::token_type::kw_for:
+      return "for keyword";
 
     case lexer::token_type::undef:
     default:

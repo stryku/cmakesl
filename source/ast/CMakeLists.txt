@@ -7,6 +7,8 @@ set(AST_SOURCES
     class_node.hpp
     conditional_node.cpp
     conditional_node.hpp
+    for_node.cpp
+    for_node.hpp
     if_else_node.cpp
     if_else_node.hpp
     infix_nodes.hpp

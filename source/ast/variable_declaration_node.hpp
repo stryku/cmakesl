@@ -17,7 +17,7 @@ public:
 
   explicit variable_declaration_node(
     type_representation ty, token_t name,
-    std::optional<initialization_values> initialization, token_t semicolon);
+    std::optional<initialization_values> initialization);
 
   const type_representation& type() const;
   token_t name() const;
@@ -33,6 +33,27 @@ private:
   type_representation m_type;
   lexer::token m_name;
   std::optional<initialization_values> m_initialization;
+};
+
+class standalone_variable_declaration_node : public ast_node
+{
+public:
+  using initialization_values_t =
+    variable_declaration_node::initialization_values;
+
+  explicit standalone_variable_declaration_node(
+    std::unique_ptr<variable_declaration_node> variable_decl,
+    token_t semicolon);
+
+  const variable_declaration_node& variable_declaration() const;
+  const token_t& semicolon() const;
+
+  void visit(ast_node_visitor& visitor) const override;
+  source_location begin_location() const override;
+  source_location end_location() const override;
+
+private:
+  std::unique_ptr<variable_declaration_node> m_variable_decl;
   token_t m_semicolon;
 };
 }

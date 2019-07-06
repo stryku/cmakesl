@@ -96,6 +96,8 @@ void execution::execute_node(const sema::sema_node& node)
     execute_if_else_node(*if_else);
   } else if (auto while_ = dynamic_cast<const sema::while_node*>(&node)) {
     execute_while_node(*while_);
+  } else if (auto for_ = dynamic_cast<const sema::for_node*>(&node)) {
+    execute_for_node(*for_);
   } else {
     // A stand alone infix expression.
     (void)execute_infix_expression(node);
@@ -184,5 +186,41 @@ void execution::execute_while_node(const sema::while_node& node)
     execute_block(body);
     condition_result = execute_infix_expression(condition);
   }
+}
+
+void execution::execute_for_node(const sema::for_node& node)
+{
+  m_callstack.top().exec_ctx.enter_scope();
+
+  if (node.init()) {
+    if (auto var_decl =
+          dynamic_cast<const sema::variable_declaration_node*>(node.init())) {
+      execute_variable_declaration(*var_decl);
+    } else {
+      execute_infix_expression(*node.init());
+    }
+  }
+
+  std::unique_ptr<inst::instance> condition_result;
+
+  while (true) {
+    execute_block(node.body());
+    if (returning_from_function()) {
+      break;
+    }
+
+    if (node.iteration()) {
+      execute_infix_expression(*node.iteration());
+    }
+
+    if (node.condition()) {
+      condition_result = execute_infix_expression(*node.condition());
+      if (!condition_result->value_cref().get_bool()) {
+        break;
+      }
+    }
+  }
+
+  m_callstack.top().exec_ctx.leave_scope();
 }
 }

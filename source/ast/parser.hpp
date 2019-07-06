@@ -16,6 +16,7 @@ class ast_node;
 class conditional_node;
 class block_node;
 class type_representation;
+class variable_declaration_node;
 
 class parser : public parser_utils
 {
@@ -24,7 +25,8 @@ public:
          const token_container_t& tokens);
 
   std::unique_ptr<ast_node> parse_translation_unit();
-  std::unique_ptr<ast_node> parse_variable_declaration();
+  std::unique_ptr<ast_node> parse_standalone_variable_declaration();
+  std::unique_ptr<variable_declaration_node> parse_variable_declaration();
   std::unique_ptr<ast_node> parse_function();
   std::unique_ptr<ast_node> parse_class();
   std::unique_ptr<ast_node> parse_factor();
@@ -35,6 +37,7 @@ public:
   std::unique_ptr<ast_node> parse_expr();
   std::unique_ptr<ast_node> parse_if_else_node();
   std::unique_ptr<ast_node> parse_while_node();
+  std::unique_ptr<ast_node> parse_for_node();
   std::unique_ptr<ast_node> parse_return_node();
   std::optional<type_representation> parse_type();
   std::unique_ptr<block_node> parse_block();
@@ -90,6 +93,10 @@ private:
   std::unique_ptr<conditional_node> get_conditional_node();
 
   std::unique_ptr<ast_node> constructor(token_t class_name);
+
+  std::optional<std::unique_ptr<ast_node>> parse_for_init();
+  std::optional<std::unique_ptr<ast_node>> parse_for_condition();
+  std::optional<std::unique_ptr<ast_node>> parse_for_iteration();
 
 private:
   parse_errors_reporter m_errors_reporter;

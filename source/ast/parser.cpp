@@ -3,22 +3,20 @@
 #include "ast/block_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/return_node.hpp"
 #include "ast/translation_unit_node.hpp"
+#include "ast/type_parser.hpp"
+#include "ast/type_parsing_result.hpp"
 #include "ast/user_function_node.hpp"
 #include "ast/variable_declaration_node.hpp"
 #include "ast/while_node.hpp"
-
 #include "common/algorithm.hpp"
 #include "common/assert.hpp"
-
-#include "ast/type_parser.hpp"
-#include "ast/type_parsing_result.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
-#include "parser.hpp"
 
 #include <map>
 
@@ -42,7 +40,7 @@ std::unique_ptr<ast_node> parser::parse_translation_unit()
     } else if (current_is(token_type_t::kw_class)) {
       node = parse_class();
     } else {
-      node = parse_variable_declaration();
+      node = parse_standalone_variable_declaration();
     }
 
     if (!node) {
@@ -115,7 +113,7 @@ std::unique_ptr<ast_node> parser::parse_class()
 
       class_nodes.emplace_back(std::move(fun));
     } else {
-      auto member = parse_variable_declaration();
+      auto member = parse_standalone_variable_declaration();
       if (!member) {
         return nullptr;
       }
@@ -299,11 +297,13 @@ std::unique_ptr<block_node> parser::parse_block()
     if (current_is(token_type_t::kw_return)) {
       node = parse_return_node();
     } else if (declaration_starts()) {
-      node = parse_variable_declaration();
+      node = parse_standalone_variable_declaration();
     } else if (current_is(token_type_t::kw_if)) {
       node = parse_if_else_node();
     } else if (current_is(token_type_t::kw_while)) {
       node = parse_while_node();
+    } else if (current_is(token_type_t::kw_for)) {
+      node = parse_for_node();
     } else if (current_is(token_type_t::open_brace)) {
       node = parse_block();
     } else {
@@ -414,7 +414,7 @@ std::optional<parser::param_list_values> parser::param_declarations()
   return param_list_values{ *open_paren, std::move(params), *close_paren };
 }
 
-std::unique_ptr<ast_node> parser::parse_variable_declaration()
+std::unique_ptr<variable_declaration_node> parser::parse_variable_declaration()
 {
   const auto ty = parse_type();
   if (!ty) {
@@ -426,7 +426,7 @@ std::unique_ptr<ast_node> parser::parse_variable_declaration()
     return nullptr;
   }
 
-  std::optional<variable_declaration_node::initialization_values>
+  std::optional<standalone_variable_declaration_node::initialization_values_t>
     initialization_vals;
   if (const auto equal = try_eat(token_type_t::equal)) {
     auto initialization = parse_expr();
@@ -434,9 +434,21 @@ std::unique_ptr<ast_node> parser::parse_variable_declaration()
       return nullptr;
     }
 
-    initialization_vals = variable_declaration_node::initialization_values{
-      *equal, std::move(initialization)
-    };
+    initialization_vals =
+      standalone_variable_declaration_node::initialization_values_t{
+        *equal, std::move(initialization)
+      };
+  }
+
+  return std::make_unique<variable_declaration_node>(
+    *ty, *name, std::move(initialization_vals));
+}
+
+std::unique_ptr<ast_node> parser::parse_standalone_variable_declaration()
+{
+  auto variable_decl = parse_variable_declaration();
+  if (!variable_decl) {
+    return nullptr;
   }
 
   const auto semicolon = eat(token_type_t::semicolon);
@@ -444,8 +456,8 @@ std::unique_ptr<ast_node> parser::parse_variable_declaration()
     return nullptr;
   }
 
-  return std::make_unique<variable_declaration_node>(
-    *ty, *name, std::move(initialization_vals), *semicolon);
+  return std::make_unique<standalone_variable_declaration_node>(
+    std::move(variable_decl), *semicolon);
 }
 
 std::optional<type_representation> parser::parse_type()
@@ -775,5 +787,106 @@ std::unique_ptr<ast_node> parser::parse_initializer_list()
 
   return std::make_unique<initializer_list_node>(
     *open_brace, std::move(*values), *close_brace);
+}
+
+std::unique_ptr<ast_node> parser::parse_for_node()
+{
+
+  const auto for_kw = eat(token_type_t::kw_for);
+  if (!for_kw) {
+    return nullptr;
+  }
+
+  const auto open_paren = eat(token_type_t::open_paren);
+  if (!open_paren) {
+    return nullptr;
+  }
+
+  auto init = parse_for_init();
+  if (!init.has_value()) {
+    return nullptr;
+  }
+
+  const auto init_semicolon = eat(token_type_t::semicolon);
+  if (!init_semicolon) {
+    return nullptr;
+  }
+
+  auto condition = parse_for_condition();
+  if (!condition.has_value()) {
+    return nullptr;
+  }
+
+  const auto condition_semicolon = eat(token_type_t::semicolon);
+  if (!condition_semicolon) {
+    return nullptr;
+  }
+
+  auto iteration = parse_for_iteration();
+  if (!iteration.has_value()) {
+    return nullptr;
+  }
+
+  const auto close_paren = eat(token_type_t::close_paren);
+  if (!close_paren) {
+    return nullptr;
+  }
+
+  auto body = parse_block();
+  if (!body) {
+    return nullptr;
+  }
+
+  return std::make_unique<for_node>(
+    *for_kw, *open_paren, std::move(*init), *init_semicolon,
+    std::move(*condition), *condition_semicolon, std::move(*iteration),
+    *close_paren, std::move(body));
+}
+
+std::optional<std::unique_ptr<ast_node>> parser::parse_for_init()
+{
+  std::unique_ptr<ast_node> node;
+
+  if (declaration_starts()) {
+    node = parse_variable_declaration();
+  } else if (!current_is(token_type_t::semicolon)) {
+    node = parse_expr();
+  } else {
+    return nullptr;
+  }
+
+  if (!node) {
+    return std::nullopt;
+  }
+
+  return std::move(node);
+}
+
+std::optional<std::unique_ptr<ast_node>> parser::parse_for_condition()
+{
+  if (current_is(token_type_t::semicolon)) {
+    return nullptr;
+  }
+
+  auto node = parse_expr();
+  if (!node) {
+    return std::nullopt;
+  }
+
+  return std::move(node);
+}
+
+std::optional<std::unique_ptr<ast_node>> parser::parse_for_iteration()
+{
+  if (current_is(token_type_t::close_paren)) {
+    return nullptr;
+  }
+
+  auto node = parse_expr();
+  if (!node) {
+    return std::nullopt;
+  }
+
+  return std::move(node);
 }
 }
