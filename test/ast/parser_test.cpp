@@ -186,6 +186,13 @@ public:
     m_result += "}";
   }
 
+  virtual void visit(const standalone_variable_declaration_node& node) override
+  {
+    m_result += "standalone_variable_declaration_node{";
+    node.variable_declaration().visit(*this);
+    m_result += "}";
+  }
+
   virtual void visit(const while_node& node) override
   {
     m_result += "while{";
@@ -999,14 +1006,16 @@ TEST(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
 
   const auto type_repr = type_representation{ type_token };
 
-  auto expected_ast = std::make_unique<variable_declaration_node>(
-    type_repr, name_token, std::nullopt, tmp_token);
+  auto variable_decl = std::make_unique<variable_declaration_node>(
+    type_repr, name_token, std::nullopt);
+  auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
+    std::move(variable_decl), tmp_token);
 
   const auto tokens =
     tokens_container_t{ type_token, name_token, token_semicolon() };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_variable_declaration();
+  auto result_ast = parser.parse_standalone_variable_declaration();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1033,15 +1042,17 @@ TEST(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
     type_representation{ representation_tokens,
                          { value_type_representation } };
 
-  auto expected_ast = std::make_unique<variable_declaration_node>(
-    representation, name_token, std::nullopt, tmp_token);
+  auto variable_decl = std::make_unique<variable_declaration_node>(
+    representation, name_token, std::nullopt);
+  auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
+    std::move(variable_decl), tmp_token);
 
   const auto tokens =
     tokens_container_t{ list_token,    less_token, int_token,
                         greater_token, name_token, token_semicolon() };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_variable_declaration();
+  auto result_ast = parser.parse_standalone_variable_declaration();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1059,17 +1070,21 @@ TEST(ParserTest,
 
   auto expr = std::make_unique<int_value_node>(int_expr_token);
   auto initialization =
-    variable_declaration_node::initialization_values{ tmp_token,
-                                                      std::move(expr) };
-  auto expected_ast = std::make_unique<variable_declaration_node>(
-    representation, name_token, std::move(initialization), tmp_token);
+    standalone_variable_declaration_node::initialization_values_t{
+      tmp_token, std::move(expr)
+    };
+
+  auto variable_decl = std::make_unique<variable_declaration_node>(
+    representation, name_token, std::move(initialization));
+  auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
+    std::move(variable_decl), tmp_token);
 
   const auto tokens =
     tokens_container_t{ type_token, name_token, token_equal(), int_expr_token,
                         token_semicolon() };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_variable_declaration();
+  auto result_ast = parser.parse_standalone_variable_declaration();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1100,10 +1115,14 @@ TEST(ParserTest,
 
   auto expr = std::make_unique<int_value_node>(int_expr_token);
   auto initialization =
-    variable_declaration_node::initialization_values{ tmp_token,
-                                                      std::move(expr) };
-  auto expected_ast = std::make_unique<variable_declaration_node>(
-    representation, name_token, std::move(initialization), tmp_token);
+    standalone_variable_declaration_node::initialization_values_t{
+      tmp_token, std::move(expr)
+    };
+
+  auto variable_decl = std::make_unique<variable_declaration_node>(
+    representation, name_token, std::move(initialization));
+  auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
+    std::move(variable_decl), tmp_token);
 
   const auto tokens =
     tokens_container_t{ list_token,     less_token,       int_token,
@@ -1111,7 +1130,7 @@ TEST(ParserTest,
                         int_expr_token, token_semicolon() };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_variable_declaration();
+  auto result_ast = parser.parse_standalone_variable_declaration();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1139,8 +1158,12 @@ TEST(ParserTest, Block_VariableDeclaration_GetBlock)
   const auto variable_type_token = token_identifier("foo");
   const auto variable_name_token = token_identifier("bar");
   const auto variable_type_ref = type_representation{ variable_type_token };
-  auto variable_decl_node = std::make_unique<variable_declaration_node>(
-    variable_type_ref, variable_name_token, std::nullopt, tmp_token);
+
+  auto variable_decl = std::make_unique<variable_declaration_node>(
+    variable_type_ref, variable_name_token, std::nullopt);
+  auto variable_decl_node =
+    std::make_unique<standalone_variable_declaration_node>(
+      std::move(variable_decl), tmp_token);
 
   block_node::nodes_t exprs;
   exprs.emplace_back(std::move(variable_decl_node));
@@ -1467,8 +1490,12 @@ TEST(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
   const auto variable_type_token = token_kw_int();
   const auto variable_name_token = token_identifier("bar");
   const auto variable_type_ref = type_representation{ variable_type_token };
-  auto variable_decl_node = std::make_unique<variable_declaration_node>(
-    variable_type_ref, variable_name_token, std::nullopt, tmp_token);
+
+  auto variable_decl = std::make_unique<variable_declaration_node>(
+    variable_type_ref, variable_name_token, std::nullopt);
+  auto variable_decl_node =
+    std::make_unique<standalone_variable_declaration_node>(
+      std::move(variable_decl), tmp_token);
 
   class_node::nodes_t nodes;
   nodes.emplace_back(std::move(variable_decl_node));
@@ -1506,8 +1533,12 @@ TEST(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
   const auto variable_type_token = token_identifier("baz");
   const auto variable_name_token = token_identifier("qux");
   const auto variable_type_ref = type_representation{ variable_type_token };
-  auto variable_decl_node = std::make_unique<variable_declaration_node>(
-    variable_type_ref, variable_name_token, std::nullopt, tmp_token);
+
+  auto variable_decl = std::make_unique<variable_declaration_node>(
+    variable_type_ref, variable_name_token, std::nullopt);
+  auto variable_decl_node =
+    std::make_unique<standalone_variable_declaration_node>(
+      std::move(variable_decl), tmp_token);
 
   class_node::nodes_t nodes;
   nodes.emplace_back(std::move(fun_node));
@@ -1582,6 +1613,231 @@ TEST(ParserTest, Factor_InitializerList_GetInitializerList)
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_initializer_list();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST(ParserTest, For_EmptyInitEmptyConditionEmptyIterationEmptyBody_GetFor)
+{
+  // for(;;) {}
+  auto body = std::make_unique<block_node>(
+    token_open_brace(), block_node::nodes_t{}, token_close_brace());
+
+  auto expected_ast = std::make_unique<for_node>(
+    token_kw_for(), token_open_paren(), nullptr, token_semicolon(), nullptr,
+    token_semicolon(), nullptr, token_close_paren(), std::move(body));
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_for(),
+
+    token_open_paren(),
+
+    token_semicolon(),
+    token_semicolon(),
+
+    token_close_paren(),
+
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_for_node();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST(ParserTest,
+     For_VariableDeclarationInitEmptyConditionEmptyIterationEmptyBody_GetFor)
+{
+  // for(int foo;;) {}
+  const auto int_token = token_kw_int();
+  const auto int_representation = type_representation{ int_token };
+  const auto foo_token = token_identifier("foo");
+
+  auto foo_declaration = std::make_unique<variable_declaration_node>(
+    int_representation, foo_token, std::nullopt);
+
+  auto body = std::make_unique<block_node>(
+    token_open_brace(), block_node::nodes_t{}, token_close_brace());
+
+  auto expected_ast = std::make_unique<for_node>(
+    token_kw_for(), token_open_paren(), std::move(foo_declaration),
+    token_semicolon(), nullptr, token_semicolon(), nullptr,
+    token_close_paren(), std::move(body));
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_for(),
+
+    token_open_paren(),
+
+    int_token,
+    foo_token,
+
+    token_semicolon(),
+
+    token_semicolon(),
+
+    token_close_paren(),
+
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_for_node();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST(
+  ParserTest,
+  For_VariableDeclarationWithInitializationInitEmptyConditionEmptyIterationEmptyBody_GetFor)
+{
+  // for(int foo = 42;;) {}
+  const auto int_token = token_kw_int();
+  const auto int_representation = type_representation{ int_token };
+  const auto foo_token = token_identifier("foo");
+  const auto equal_token = token_equal();
+  const auto value_token = token_integer("42");
+
+  auto init_values = variable_declaration_node::initialization_values{
+    equal_token, std::make_unique<int_value_node>(value_token)
+  };
+
+  auto foo_declaration = std::make_unique<variable_declaration_node>(
+    int_representation, foo_token, std::move(init_values));
+
+  auto body = std::make_unique<block_node>(
+    token_open_brace(), block_node::nodes_t{}, token_close_brace());
+
+  auto expected_ast = std::make_unique<for_node>(
+    token_kw_for(), token_open_paren(), std::move(foo_declaration),
+    token_semicolon(), nullptr, token_semicolon(), nullptr,
+    token_close_paren(), std::move(body));
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_for(),
+
+    token_open_paren(),
+
+    int_token,
+    foo_token,
+    equal_token,
+    value_token,
+
+    token_semicolon(),
+
+    token_semicolon(),
+
+    token_close_paren(),
+
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_for_node();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST(ParserTest, For_EmptyInitWithConditionEmptyIterationEmptyBody_GetFor)
+{
+  // for(;true;) {}
+  const auto true_token = token_kw_true();
+
+  auto condition = std::make_unique<bool_value_node>(true_token);
+
+  auto body = std::make_unique<block_node>(
+    token_open_brace(), block_node::nodes_t{}, token_close_brace());
+
+  auto expected_ast = std::make_unique<for_node>(
+    token_kw_for(), token_open_paren(), nullptr, token_semicolon(),
+    std::move(condition), token_semicolon(), nullptr, token_close_paren(),
+    std::move(body));
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_for(),
+
+    token_open_paren(),
+
+    token_semicolon(),
+
+    true_token,
+
+    token_semicolon(),
+
+    token_close_paren(),
+
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_for_node();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST(ParserTest, For_EmptyInitEmptyConditionWithIterationEmptyBody_GetFor)
+{
+  // for(;; foo()) {}
+  const auto foo_token = token_identifier("foo");
+
+  auto iteration = std::make_unique<function_call_node>(
+    foo_token, token_open_paren(), function_call_node::params_t{},
+    token_close_paren());
+
+  auto body = std::make_unique<block_node>(
+    token_open_brace(), block_node::nodes_t{}, token_close_brace());
+
+  auto expected_ast = std::make_unique<for_node>(
+    token_kw_for(), token_open_paren(), nullptr, token_semicolon(), nullptr,
+    token_semicolon(), std::move(iteration), token_close_paren(),
+    std::move(body));
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_for(),
+
+    token_open_paren(),
+
+    token_semicolon(),
+
+    token_semicolon(),
+
+    foo_token,
+    token_open_paren(),
+    token_close_paren(),
+
+    token_close_paren(),
+
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_for_node();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));

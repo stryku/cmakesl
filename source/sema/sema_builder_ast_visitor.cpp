@@ -539,9 +539,9 @@ void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
 }
 
 void sema_builder_ast_visitor::visit(
-  const ast::variable_declaration_node& node)
+  const ast::standalone_variable_declaration_node& node)
 {
-  const auto& type_representation = node.type();
+  const auto& type_representation = node.variable_declaration().type();
   const auto should_deduce_type_from_initialization =
     type_representation.is_auto();
 
@@ -563,21 +563,22 @@ void sema_builder_ast_visitor::visit(
   }
 
   if (should_deduce_type_from_initialization &&
-      node.initialization() == nullptr) {
+      node.variable_declaration().initialization() == nullptr) {
     raise_error(
       type_representation.primary_name(),
       "Declaration of a variable with 'auto' type requires an initializer");
     return;
   }
 
-  if (type && type->is_reference() && node.initialization() == nullptr) {
+  if (type && type->is_reference() &&
+      node.variable_declaration().initialization() == nullptr) {
     raise_error(type->name().primary_name(),
                 "Declaration of a reference variable requires an initializer");
     return;
   }
 
   std::unique_ptr<expression_node> initialization;
-  if (auto init_node = node.initialization()) {
+  if (auto init_node = node.variable_declaration().initialization()) {
     initialization = visit_child_expr(*init_node);
     if (!initialization) {
       return;
@@ -623,9 +624,10 @@ void sema_builder_ast_visitor::visit(
       convert_to_cast_node_if_need(*type, std::move(initialization));
   }
 
-  m_ids_context.register_identifier(node.name(), *type);
+  m_ids_context.register_identifier(node.variable_declaration().name(), *type);
   m_result_node = std::make_unique<variable_declaration_node>(
-    node, *type, node.name(), std::move(initialization));
+    node, *type, node.variable_declaration().name(),
+    std::move(initialization));
 }
 
 void sema_builder_ast_visitor::visit(const ast::while_node& node)
@@ -840,7 +842,8 @@ sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(
 
   for (const auto& n : node.nodes()) {
     if (auto variable_decl =
-          dynamic_cast<const ast::variable_declaration_node*>(n.get())) {
+          dynamic_cast<const ast::standalone_variable_declaration_node*>(
+            n.get())) {
       auto member =
         visit_child_node<variable_declaration_node>(*variable_decl);
       if (!member) {
@@ -1089,6 +1092,10 @@ sema_builder_ast_visitor::try_deduce_currently_parsed_function_return_type()
 }
 
 void sema_builder_ast_visitor::visit(const ast::for_node& node)
+{
+}
+void sema_builder_ast_visitor::visit(
+  const ast::variable_declaration_node& node)
 {
 }
 }

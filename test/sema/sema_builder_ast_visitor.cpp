@@ -114,14 +114,17 @@ protected:
                                              tmp_token);
   }
 
-  std::unique_ptr<ast::variable_declaration_node>
-  create_variable_declaration_node(
+  std::unique_ptr<ast::standalone_variable_declaration_node>
+  create_standalone_variable_declaration_node(
     ast::type_representation type, token_t name,
-    std::optional<ast::variable_declaration_node::initialization_values>
+    std::optional<
+      ast::standalone_variable_declaration_node::initialization_values_t>
       initialization = std::nullopt)
   {
-    return std::make_unique<ast::variable_declaration_node>(
-      std::move(type), name, std::move(initialization), tmp_token);
+    auto var_decl = std::make_unique<ast::variable_declaration_node>(
+      std::move(type), name, std::move(initialization));
+    return std::make_unique<ast::standalone_variable_declaration_node>(
+      std::move(var_decl), tmp_token);
   }
 
   std::unique_ptr<ast::user_function_node> create_user_function_node(
@@ -275,7 +278,8 @@ TEST_F(
   const auto type_ref = ast::type_representation{ token_identifier() };
   const auto name_token = token_identifier("foo");
 
-  auto variable_node = create_variable_declaration_node(type_ref, name_token);
+  auto variable_node =
+    create_standalone_variable_declaration_node(type_ref, name_token);
 
   EXPECT_CALL(ids_ctx, register_identifier(name_token, Ref(valid_type)));
 
@@ -306,7 +310,8 @@ TEST_F(SemaBuilderAstVisitorTest,
   const auto type_ref = ast::type_representation{ token_kw_auto() };
   const auto name_token = token_identifier("foo");
 
-  auto variable_node = create_variable_declaration_node(type_ref, name_token);
+  auto variable_node =
+    create_standalone_variable_declaration_node(type_ref, name_token);
 
   EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
 
@@ -325,7 +330,8 @@ TEST_F(SemaBuilderAstVisitorTest,
   const auto type_ref = ast::type_representation{ token_kw_void() };
   const auto name_token = token_identifier("foo");
 
-  auto variable_node = create_variable_declaration_node(type_ref, name_token);
+  auto variable_node =
+    create_standalone_variable_declaration_node(type_ref, name_token);
 
   EXPECT_CALL(ctx, find_type(_))
     .WillOnce(Return(&void_type_mock))
@@ -355,9 +361,9 @@ TEST_F(
   auto initializaton_node =
     std::make_unique<ast::int_value_node>(initialization_token);
 
-  auto variable_node = create_variable_declaration_node(
+  auto variable_node = create_standalone_variable_declaration_node(
     type_representation, name_token,
-    ast::variable_declaration_node::initialization_values{
+    ast::standalone_variable_declaration_node::initialization_values_t{
       tmp_token, std::move(initializaton_node) });
 
   EXPECT_CALL(ctx, find_type(_))
@@ -404,9 +410,9 @@ TEST_F(
   auto initializaton_node =
     std::make_unique<ast::id_node>(initialization_token);
 
-  auto variable_node = create_variable_declaration_node(
+  auto variable_node = create_standalone_variable_declaration_node(
     type_representation, name_token,
-    ast::variable_declaration_node::initialization_values{
+    ast::standalone_variable_declaration_node::initialization_values_t{
       tmp_token, std::move(initializaton_node) });
 
   EXPECT_CALL(ctx, find_type(_)).WillRepeatedly(Return(&valid_type));
@@ -1078,8 +1084,8 @@ TEST_F(SemaBuilderAstVisitorTest,
   const auto member_type_reference =
     ast::type_representation{ member_type_token };
 
-  auto member_declaration =
-    create_variable_declaration_node(member_type_reference, member_name_token);
+  auto member_declaration = create_standalone_variable_declaration_node(
+    member_type_reference, member_name_token);
   ast::class_node::nodes_t nodes;
   nodes.emplace_back(std::move(member_declaration));
 
@@ -1187,8 +1193,8 @@ TEST_F(SemaBuilderAstVisitorTest,
   const auto member_type_token = token_kw_int();
   const auto member_type_reference =
     ast::type_representation{ member_type_token };
-  auto member_declaration =
-    create_variable_declaration_node(member_type_reference, member_name_token);
+  auto member_declaration = create_standalone_variable_declaration_node(
+    member_type_reference, member_name_token);
 
   const auto function_return_type_token = token_kw_int();
   const auto function_return_type_reference =
@@ -1513,8 +1519,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
   const auto variable_type_token = token_kw_int();
   const auto variable_type_reference =
     ast::type_representation{ variable_type_token };
-  auto variable_declaration_ast_node = create_variable_declaration_node(
-    variable_type_reference, variable_name_token);
+  auto variable_declaration_ast_node =
+    create_standalone_variable_declaration_node(variable_type_reference,
+                                                variable_name_token);
 
   const auto function_return_type_token = token_kw_double();
   const auto function_return_type_reference =

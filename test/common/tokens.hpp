@@ -65,6 +65,7 @@ token_t token_kw_project();
 token_t token_kw_library();
 token_t token_kw_executable();
 token_t token_kw_auto();
+token_t token_kw_for();
 
 token_t token_from_larger_source(cmsl::string_view source,
                                  lexer::token_type type, unsigned begin,

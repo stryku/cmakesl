@@ -18,6 +18,7 @@ class return_node;
 class translation_unit_node;
 class user_function_node;
 class variable_declaration_node;
+class standalone_variable_declaration_node;
 class while_node;
 class initializer_list_node;
 class for_node;
@@ -44,6 +45,7 @@ public:
   virtual void visit(const translation_unit_node& node) = 0;
   virtual void visit(const user_function_node& node) = 0;
   virtual void visit(const variable_declaration_node& node) = 0;
+  virtual void visit(const standalone_variable_declaration_node& node) = 0;
   virtual void visit(const while_node& node) = 0;
   virtual void visit(const initializer_list_node& node) = 0;
   virtual void visit(const for_node& node) = 0;

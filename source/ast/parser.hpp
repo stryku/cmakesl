@@ -16,6 +16,7 @@ class ast_node;
 class conditional_node;
 class block_node;
 class type_representation;
+class variable_declaration_node;
 
 class parser : public parser_utils
 {
@@ -24,7 +25,8 @@ public:
          const token_container_t& tokens);
 
   std::unique_ptr<ast_node> parse_translation_unit();
-  std::unique_ptr<ast_node> parse_variable_declaration();
+  std::unique_ptr<ast_node> parse_standalone_variable_declaration();
+  std::unique_ptr<variable_declaration_node> parse_variable_declaration();
   std::unique_ptr<ast_node> parse_function();
   std::unique_ptr<ast_node> parse_class();
   std::unique_ptr<ast_node> parse_factor();
