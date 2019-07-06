@@ -1,6 +1,7 @@
 #include "sema/sema_builder_ast_visitor.hpp"
 
 #include "ast/block_node.hpp"
+#include "ast/break_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/for_node.hpp"
@@ -1134,6 +1135,6 @@ void sema_builder_ast_visitor::visit(const ast::for_node& node)
 
 void sema_builder_ast_visitor::visit(const ast::break_node& node)
 {
-  // Todo: implement
+  m_result_node = std::make_unique<break_node>(node);
 }
 }
