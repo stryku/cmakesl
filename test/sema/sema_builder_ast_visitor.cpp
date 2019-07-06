@@ -1719,7 +1719,7 @@ TEST_F(
 
   EXPECT_CALL(ctx, type())
     .WillRepeatedly(Return(sema_context::context_type::namespace_));
-  
+
   EXPECT_CALL(ctx, find_type(_))
     .Times(3)
     .WillOnce(Return(&valid_type)) // Initialization type declaration
