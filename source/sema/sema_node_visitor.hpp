@@ -27,6 +27,7 @@ class cast_to_value_node;
 class initializer_list_node;
 class add_subdirectory_node;
 class implicit_return_node;
+class for_node;
 
 class sema_node_visitor
 {
@@ -58,6 +59,7 @@ public:
   virtual void visit(const initializer_list_node& node) = 0;
   virtual void visit(const add_subdirectory_node& node) = 0;
   virtual void visit(const implicit_return_node& node) = 0;
+  virtual void visit(const for_node& node) = 0;
 };
 
 class empty_sema_node_visitor : public sema_node_visitor
@@ -90,5 +92,6 @@ public:
   virtual void visit(const initializer_list_node&) override {}
   virtual void visit(const add_subdirectory_node&) override {}
   virtual void visit(const implicit_return_node&) override {}
+  virtual void visit(const for_node&) override {}
 };
 }

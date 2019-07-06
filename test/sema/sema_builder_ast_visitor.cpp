@@ -3,6 +3,7 @@
 #include "ast/block_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/return_node.hpp"
@@ -10,12 +11,9 @@
 #include "ast/user_function_node.hpp"
 #include "ast/variable_declaration_node.hpp"
 #include "ast/while_node.hpp"
-
 #include "errors/errors_observer.hpp"
-
 #include "sema/builtin_token_provider.hpp"
 #include "sema/factories.hpp"
-
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
 #include "test/sema/mock/add_subdirectory_semantic_handler_mock.hpp"
@@ -96,6 +94,13 @@ protected:
   {
     return ast::function_call_node{ name, tmp_token, std::move(params),
                                     tmp_token };
+  }
+
+  std::unique_ptr<ast::function_call_node> create_function_call_ptr(
+    token_t name, ast::function_call_node::params_t params = {})
+  {
+    return std::make_unique<ast::function_call_node>(
+      name, tmp_token, std::move(params), tmp_token);
   }
 
   ast::member_function_call_node create_member_function_call_node(
@@ -1641,5 +1646,114 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_BinaryOperatorNode)
   ASSERT_THAT(casted_node, NotNull());
   EXPECT_THAT(&casted_node->lhs().type(), Eq(&lhs_and_rhs_type));
   EXPECT_THAT(&casted_node->rhs().type(), Eq(&lhs_and_rhs_type));
+}
+
+TEST_F(
+  SemaBuilderAstVisitorTest,
+  Visit_ForLoopWithoutInitWithoutConditionWithoutIteration_GetForWithoutInitWithoutConditionWithoutIteration)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+  auto body = create_block_node_ptr();
+
+  auto node = ast::for_node{ token_kw_for(), token_open_paren(),
+                             nullptr,        token_semicolon(),
+                             nullptr,        token_semicolon(),
+                             nullptr,        token_close_paren(),
+                             std::move(body) };
+
+  // One ids context covering initialization and one for body.
+  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
+
+  visitor.visit(node);
+
+  ASSERT_THAT(visitor.m_result_node, NotNull());
+
+  const auto casted_node =
+    dynamic_cast<for_node*>(visitor.m_result_node.get());
+  ASSERT_THAT(casted_node, NotNull());
+  EXPECT_THAT(casted_node->init(), IsNull());
+  EXPECT_THAT(casted_node->condition(), IsNull());
+  EXPECT_THAT(casted_node->iteration(), IsNull());
+}
+
+TEST_F(
+  SemaBuilderAstVisitorTest,
+  Visit_ForLoopWithInitWithConditionWithIteration_GetForWithInitWithConditionWithIteration)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  StrictMock<sema_function_mock> function_mock;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+  const auto variable_name_token = token_identifier("foo");
+  const auto variable_type_token = token_kw_int();
+  const auto variable_type_reference =
+    ast::type_representation{ variable_type_token };
+  auto var_decl = std::make_unique<ast::variable_declaration_node>(
+    variable_type_reference, variable_name_token, std::nullopt);
+
+  auto condition = std::make_unique<ast::bool_value_node>(token_kw_true());
+
+  const auto fun_name_token = token_identifier("fun");
+  auto iteration = create_function_call_ptr(fun_name_token);
+
+  auto body = create_block_node_ptr();
+
+  auto node = ast::for_node{ token_kw_for(),       token_open_paren(),
+                             std::move(var_decl),  token_semicolon(),
+                             std::move(condition), token_semicolon(),
+                             std::move(iteration), token_close_paren(),
+                             std::move(body) };
+
+  // One ids context covering initialization and one for body.
+  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx,
+              register_identifier(variable_name_token, Ref(valid_type)));
+
+  EXPECT_CALL(ctx, type())
+    .WillRepeatedly(Return(sema_context::context_type::namespace_));
+  
+  EXPECT_CALL(ctx, find_type(_))
+    .Times(3)
+    .WillOnce(Return(&valid_type)) // Initialization type declaration
+    .WillOnce(
+      Return(&void_type_mock))      // Comparison of init type and the void one
+    .WillOnce(Return(&valid_type)); // Iteration funciton return type
+
+  const auto lookup_result = function_lookup_result_t{ { &function_mock } };
+  EXPECT_CALL(ctx, find_function(fun_name_token))
+    .WillOnce(Return(lookup_result));
+
+  function_signature signature;
+  signature.name = fun_name_token;
+  EXPECT_CALL(function_mock, signature()).WillRepeatedly(ReturnRef(signature));
+
+  EXPECT_CALL(function_mock, return_type())
+    .WillRepeatedly(ReturnRef(valid_type));
+
+  EXPECT_CALL(function_mock, context()).WillRepeatedly(ReturnRef(ctx));
+
+  visitor.visit(node);
+
+  ASSERT_THAT(visitor.m_result_node, NotNull());
+
+  const auto casted_node =
+    dynamic_cast<for_node*>(visitor.m_result_node.get());
+  ASSERT_THAT(casted_node, NotNull());
+
+  ASSERT_THAT(casted_node->init(), NotNull());
+  const auto casted_init =
+    dynamic_cast<const variable_declaration_node*>(casted_node->init());
+  EXPECT_THAT(casted_init, NotNull());
+
+  EXPECT_THAT(casted_node->condition(), NotNull());
+  EXPECT_THAT(casted_node->iteration(), NotNull());
 }
 }
