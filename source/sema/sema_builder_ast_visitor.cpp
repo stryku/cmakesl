@@ -1131,4 +1131,9 @@ void sema_builder_ast_visitor::visit(const ast::for_node& node)
     std::make_unique<for_node>(node, std::move(init), std::move(condition),
                                std::move(iteration), std::move(body));
 }
+
+void sema_builder_ast_visitor::visit(const ast::break_node& node)
+{
+  // Todo: implement
+}
 }

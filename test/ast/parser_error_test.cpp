@@ -1,7 +1,7 @@
 #include "ast/ast_node.hpp"
 #include "ast/block_node.hpp"
 #include "ast/parser.hpp"
-
+#include "ast/variable_declaration_node.cpp"
 #include "errors/errors_observer.hpp"
 
 #include "test/common/tokens.hpp"
@@ -137,7 +137,7 @@ TEST_P(VariableDeclaration, Malformed_ReportError)
 
   const auto tokens = GetParam();
   parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-  auto result = p.parse_variable_declaration();
+  auto result = p.parse_standalone_variable_declaration();
 
   EXPECT_THAT(result, IsNull());
 }
@@ -149,9 +149,7 @@ const auto eq_token = token_equal();
 const auto expr_token = token_integer("1");
 
 const auto values = Values(
-  tokens_container_t{
-    type_token,
-  },                                                           // type
+  tokens_container_t{ type_token },                            // type
   tokens_container_t{ type_token, semicolon_token },           // type;
   tokens_container_t{ type_token, eq_token, semicolon_token }, // type =;
   tokens_container_t{ type_token, eq_token, expr_token,
@@ -478,5 +476,25 @@ const auto values = Values(
 );
 
 INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, InitializerList, values);
+}
+
+namespace break_ {
+using Break = TestWithParam<tokens_container_t>;
+
+TEST_P(Break, Malformed_ReportError)
+{
+  errs_t errs;
+  EXPECT_CALL(errs.mock, notify_error(_));
+
+  const auto tokens = GetParam();
+  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  auto result = p.parse_initializer_list();
+
+  EXPECT_THAT(result, IsNull());
+}
+
+const auto values = Values(tokens_container_t{ token_kw_break() }); // break
+
+INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Break, values);
 }
 }

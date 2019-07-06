@@ -91,6 +91,7 @@ public:
   void visit(const ast::while_node& node) override;
   void visit(const ast::initializer_list_node& node) override;
   void visit(const ast::for_node& node) override;
+  void visit(const ast::break_node& node) override;
 
 private:
   const sema_type* try_get_or_create_generic_type(

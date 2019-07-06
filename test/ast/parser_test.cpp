@@ -1,5 +1,6 @@
 #include "ast/ast_node_visitor.hpp"
 #include "ast/block_node.hpp"
+#include "ast/break_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/for_node.hpp"
@@ -35,7 +36,7 @@ using ::testing::Eq;
 class ast_tree_representation_visitor : public ast_node_visitor
 {
 public:
-  virtual void visit(const block_node& node) override
+  void visit(const block_node& node) override
   {
     m_result += "block{";
     for (const auto& n : node.nodes()) {
@@ -44,7 +45,7 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const class_node& node) override
+  void visit(const class_node& node) override
   {
     m_result += "class{name:" + std::string{ node.name().str() } + ";members:";
 
@@ -55,7 +56,7 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const conditional_node& node) override
+  void visit(const conditional_node& node) override
   {
     m_result += "conditional{condition:";
     node.condition().visit(*this);
@@ -64,7 +65,7 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const if_else_node& node) override
+  void visit(const if_else_node& node) override
   {
     m_result += "if_else{ifs:";
     for (const auto& if_ : node.ifs()) {
@@ -78,7 +79,7 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const binary_operator_node& node) override
+  void visit(const binary_operator_node& node) override
   {
     m_result += "binary_operator{lhs:";
     node.lhs().visit(*this);
@@ -87,7 +88,7 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const class_member_access_node& node) override
+  void visit(const class_member_access_node& node) override
   {
     m_result += "class_member_access{lhs:";
     node.lhs().visit(*this);
@@ -95,7 +96,7 @@ public:
       ";member_name:" + std::string{ node.member_name().str() } + "}";
   }
 
-  virtual void visit(const function_call_node& node) override
+  void visit(const function_call_node& node) override
   {
     m_result +=
       "function_call{name:" + std::string{ node.name().str() } + ";params:";
@@ -105,7 +106,7 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const member_function_call_node& node) override
+  void visit(const member_function_call_node& node) override
   {
     m_result +=
       "function_call{name:" + std::string{ node.name().str() } + ";params:";
@@ -118,39 +119,39 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const bool_value_node& node) override
+  void visit(const bool_value_node& node) override
   {
     m_result += "bool_value{" + std::string{ node.token().str() } + "}";
   }
 
-  virtual void visit(const int_value_node& node) override
+  void visit(const int_value_node& node) override
   {
     m_result += "int_value{" + std::string{ node.token().str() } + "}";
   }
 
-  virtual void visit(const double_value_node& node) override
+  void visit(const double_value_node& node) override
   {
     m_result += "double_value{" + std::string{ node.token().str() } + "}";
   }
 
-  virtual void visit(const string_value_node& node) override
+  void visit(const string_value_node& node) override
   {
     m_result += "string_value{" + std::string{ node.token().str() } + "}";
   }
 
-  virtual void visit(const id_node& node) override
+  void visit(const id_node& node) override
   {
     m_result += "id{" + std::string{ node.get_identifier().str() } + "}";
   }
 
-  virtual void visit(const return_node& node) override
+  void visit(const return_node& node) override
   {
     m_result += "return{";
     node.expression().visit(*this);
     m_result += "}";
   }
 
-  virtual void visit(const translation_unit_node& node) override
+  void visit(const translation_unit_node& node) override
   {
     m_result += "translation_unit{";
     for (const auto& n : node.nodes()) {
@@ -159,7 +160,7 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const user_function_node& node) override
+  void visit(const user_function_node& node) override
   {
     m_result += "user_function{return_type:";
     const auto ret_type_reference = node.return_type_representation();
@@ -174,7 +175,7 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const variable_declaration_node& node) override
+  void visit(const variable_declaration_node& node) override
   {
     m_result += "variable_declaration{type:";
     const auto ret_type_reference = node.type();
@@ -186,21 +187,21 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const standalone_variable_declaration_node& node) override
+  void visit(const standalone_variable_declaration_node& node) override
   {
     m_result += "standalone_variable_declaration_node{";
     node.variable_declaration().visit(*this);
     m_result += "}";
   }
 
-  virtual void visit(const while_node& node) override
+  void visit(const while_node& node) override
   {
     m_result += "while{";
     node.node().visit(*this);
     m_result += "}";
   }
 
-  virtual void visit(const initializer_list_node& node) override
+  void visit(const initializer_list_node& node) override
   {
     m_result += "initializer_list_node{";
     std::string separator = "";
@@ -212,7 +213,7 @@ public:
     m_result += "}";
   }
 
-  virtual void visit(const for_node& node) override
+  void visit(const for_node& node) override
   {
     m_result += "for{init:";
 
@@ -243,6 +244,8 @@ public:
 
     m_result += "}";
   }
+
+  void visit(const break_node& node) override { m_result += "break{}"; }
 
   std::string result() const { return m_result; }
 
@@ -1838,6 +1841,27 @@ TEST(ParserTest, For_EmptyInitEmptyConditionWithIterationEmptyBody_GetFor)
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_for_node();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST(ParserTest, Break_BreakSemicolon_GetBreak)
+{
+  // break;
+  auto expected_ast =
+    std::make_unique<break_node>(token_kw_break(), token_semicolon());
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_break(),
+    token_semicolon()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_break();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));

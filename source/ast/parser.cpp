@@ -1,6 +1,7 @@
 #include "ast/parser.hpp"
 
 #include "ast/block_node.hpp"
+#include "ast/break_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/for_node.hpp"
@@ -304,6 +305,8 @@ std::unique_ptr<block_node> parser::parse_block()
       node = parse_while_node();
     } else if (current_is(token_type_t::kw_for)) {
       node = parse_for_node();
+    } else if (current_is(token_type_t::kw_break)) {
+      node = parse_break();
     } else if (current_is(token_type_t::open_brace)) {
       node = parse_block();
     } else {
@@ -888,5 +891,20 @@ std::optional<std::unique_ptr<ast_node>> parser::parse_for_iteration()
   }
 
   return std::move(node);
+}
+
+std::unique_ptr<break_node> parser::parse_break()
+{
+  const auto break_kw = eat(token_type_t::kw_break);
+  if (!break_kw) {
+    return nullptr;
+  }
+
+  const auto semicolon = eat(token_type_t::semicolon);
+  if (!semicolon) {
+    return nullptr;
+  }
+
+  return std::make_unique<break_node>(*break_kw, *semicolon);
 }
 }

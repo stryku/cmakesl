@@ -17,6 +17,7 @@ class conditional_node;
 class block_node;
 class type_representation;
 class variable_declaration_node;
+class break_node;
 
 class parser : public parser_utils
 {
@@ -41,6 +42,7 @@ public:
   std::unique_ptr<ast_node> parse_return_node();
   std::optional<type_representation> parse_type();
   std::unique_ptr<block_node> parse_block();
+  std::unique_ptr<break_node> parse_break();
 
 private:
   struct function_call_values

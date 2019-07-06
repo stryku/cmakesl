@@ -64,7 +64,8 @@ const tokens_str_t& operators_str()
                               { token_type_t::kw_list, "list" },
                               { token_type_t::kw_project, "project" },
                               { token_type_t::kw_auto, "auto" },
-                              { token_type_t::kw_for, "for" } };
+                              { token_type_t::kw_for, "for" },
+                              { token_type_t::kw_break, "break" } };
 
   return map;
 }
@@ -362,6 +363,11 @@ token_t token_kw_auto()
 token_t token_kw_for()
 {
   return details::simple_token(token_type_t::kw_for);
+}
+
+token_t token_kw_break()
+{
+  return details::simple_token(token_type_t::kw_break);
 }
 
 token_t token_undef()
