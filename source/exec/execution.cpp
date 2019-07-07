@@ -55,7 +55,7 @@ void execution::execute_block(const sema::block_node& block)
 {
   for (const auto& expr : block.nodes()) {
     execute_node(*expr);
-    if (returning_from_function()) {
+    if (returning_from_function() || m_breaking_from_loop) {
       return;
     }
   }
@@ -98,6 +98,8 @@ void execution::execute_node(const sema::sema_node& node)
     execute_while_node(*while_);
   } else if (auto for_ = dynamic_cast<const sema::for_node*>(&node)) {
     execute_for_node(*for_);
+  } else if (auto break_ = dynamic_cast<const sema::break_node*>(&node)) {
+    execute_break_node(*break_);
   } else {
     // A stand alone infix expression.
     (void)execute_infix_expression(node);
@@ -184,6 +186,12 @@ void execution::execute_while_node(const sema::while_node& node)
   auto condition_result = execute_infix_expression(condition);
   while (condition_result->value_cref().get_bool()) {
     execute_block(body);
+
+    if (returning_from_function() || m_breaking_from_loop) {
+      m_breaking_from_loop = false;
+      break;
+    }
+
     condition_result = execute_infix_expression(condition);
   }
 }
@@ -208,6 +216,10 @@ void execution::execute_for_node(const sema::for_node& node)
     if (returning_from_function()) {
       break;
     }
+    if (returning_from_function() || m_breaking_from_loop) {
+      m_breaking_from_loop = false;
+      break;
+    }
 
     if (node.iteration()) {
       execute_infix_expression(*node.iteration());
@@ -222,5 +234,10 @@ void execution::execute_for_node(const sema::for_node& node)
   }
 
   m_callstack.top().exec_ctx.leave_scope();
+}
+
+void execution::execute_break_node(const sema::break_node& node)
+{
+  m_breaking_from_loop = true;
 }
 }

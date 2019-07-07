@@ -24,7 +24,7 @@ TEST_F(ForLoopSmokeTest, IncrementInitializedValue)
   const auto source = "int main()\n"
                       "{\n"
                       "    int value;\n"
-                      "    for(int i = 24; i < 43; i += 1 )"
+                      "    for(int i = 24; i < 43; i += 1 )\n"
                       "    {\n"
                       "        value = i;\n"
                       "    }\n"

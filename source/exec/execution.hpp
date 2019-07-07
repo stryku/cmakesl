@@ -45,6 +45,7 @@ private:
   void execute_if_else_node(const sema::if_else_node& node);
   void execute_while_node(const sema::while_node& node);
   void execute_for_node(const sema::for_node& node);
+  void execute_break_node(const sema::break_node& node);
 
   bool returning_from_function() const;
 
@@ -70,5 +71,6 @@ private:
   facade::cmake_facade& m_cmake_facade;
   std::unique_ptr<inst::instance> m_function_return_value;
   std::stack<callstack_frame> m_callstack;
+  bool m_breaking_from_loop{ false };
 };
 }
