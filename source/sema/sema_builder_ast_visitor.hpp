@@ -55,6 +55,12 @@ struct function_parsing_context
   }
 };
 
+struct parsing_context
+{
+  function_parsing_context function_parsing_ctx;
+  unsigned loop_parsing_counter{ 0u };
+};
+
 class sema_builder_ast_visitor : public ast::ast_node_visitor
 {
 private:
@@ -68,7 +74,7 @@ public:
     sema_context_factory& context_factory,
     add_subdirectory_handler& add_subdirectory_handler,
     const builtin_token_provider& builtin_token_provider,
-    function_parsing_context& function_parsing_ctx);
+    parsing_context& parsing_ctx);
 
   void visit(const ast::block_node& node) override;
   void visit(const ast::class_node& node) override;
@@ -91,6 +97,7 @@ public:
   void visit(const ast::while_node& node) override;
   void visit(const ast::initializer_list_node& node) override;
   void visit(const ast::for_node& node) override;
+  void visit(const ast::break_node& node) override;
 
 private:
   const sema_type* try_get_or_create_generic_type(
@@ -182,6 +189,8 @@ private:
   bool check_function_return_type(const expression_node& return_expression);
   const sema_type* try_deduce_currently_parsed_function_return_type();
 
+  bool is_inside_loop() const;
+
 public:
   std::unique_ptr<sema_node> m_result_node;
 
@@ -196,7 +205,7 @@ private:
   add_subdirectory_handler& m_add_subdirectory_handler;
   const builtin_token_provider& m_builtin_token_provider;
 
-  function_parsing_context& m_function_parsing_ctx;
+  parsing_context& m_parsing_ctx;
 };
 }
 }

@@ -3,6 +3,8 @@ set(AST_SOURCES
     ast_node_visitor.hpp
     block_node.cpp
     block_node.hpp
+    break_node.cpp
+    break_node.hpp
     class_node.cpp
     class_node.hpp
     conditional_node.cpp

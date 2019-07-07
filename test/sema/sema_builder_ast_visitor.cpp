@@ -1,6 +1,7 @@
 #include "sema/sema_builder_ast_visitor.hpp"
 
 #include "ast/block_node.hpp"
+#include "ast/break_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/for_node.hpp"
@@ -26,6 +27,7 @@
 
 namespace cmsl::sema::test {
 using ::testing::StrictMock;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::Ref;
@@ -65,17 +67,17 @@ protected:
   sema_context_factory m_context_factory;
   add_subdirectory_semantic_handler_mock m_add_subdirectory_mock;
   builtin_token_provider m_token_provider{ "" };
-  function_parsing_context m_function_parsing_context;
+  parsing_context m_parsing_ctx;
 
   sema_builder_ast_visitor create_visitor(errs_t& errs, sema_context& ctx,
                                           identifiers_context& ids_ctx)
   {
-    return create_visitor(errs, ctx, ids_ctx, m_function_parsing_context);
+    return create_visitor(errs, ctx, ids_ctx, m_parsing_ctx);
   }
 
-  sema_builder_ast_visitor create_visitor(
-    errs_t& errs, sema_context& ctx, identifiers_context& ids_ctx,
-    function_parsing_context& function_parsing_ctx)
+  sema_builder_ast_visitor create_visitor(errs_t& errs, sema_context& ctx,
+                                          identifiers_context& ids_ctx,
+                                          parsing_context& m_parsing_ctx)
   {
     return sema_builder_ast_visitor{ ctx,
                                      ctx,
@@ -86,7 +88,7 @@ protected:
                                      m_context_factory,
                                      m_add_subdirectory_mock,
                                      m_token_provider,
-                                     function_parsing_ctx };
+                                     m_parsing_ctx };
   }
 
   ast::function_call_node create_function_call(
@@ -453,7 +455,8 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Return)
   StrictMock<sema_function_mock> function;
   StrictMock<identifiers_context_mock> ids_ctx;
   function_parsing_context function_parsing_ctx{ nullptr, &function, {} };
-  auto visitor = create_visitor(errs, ctx, ids_ctx, function_parsing_ctx);
+  parsing_context parsing_ctx{ function_parsing_ctx };
+  auto visitor = create_visitor(errs, ctx, ids_ctx, parsing_ctx);
 
   auto expr_node = std::make_unique<ast::int_value_node>(token_integer("42"));
   ast::return_node ret_node(tmp_token, std::move(expr_node), tmp_token);
@@ -484,7 +487,8 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_ReturnWithMismatchedType_ReportsError)
   StrictMock<sema_function_mock> function;
   StrictMock<identifiers_context_mock> ids_ctx;
   function_parsing_context function_parsing_ctx{ nullptr, &function, {} };
-  auto visitor = create_visitor(errs, ctx, ids_ctx, function_parsing_ctx);
+  parsing_context parsing_ctx{ function_parsing_ctx };
+  auto visitor = create_visitor(errs, ctx, ids_ctx, parsing_ctx);
 
   auto expr_node = std::make_unique<ast::int_value_node>(token_integer("42"));
   ast::return_node ret_node(tmp_token, std::move(expr_node), tmp_token);
@@ -1755,5 +1759,28 @@ TEST_F(
 
   EXPECT_THAT(casted_node->condition(), NotNull());
   EXPECT_THAT(casted_node->iteration(), NotNull());
+}
+
+TEST_F(SemaBuilderAstVisitorTest,
+       Visit_BlockWithBreakNotInsideLoop_ReportError)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  NiceMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+  auto break_ =
+    std::make_unique<ast::break_node>(token_kw_break(), token_semicolon());
+
+  ast::block_node::nodes_t nodes;
+  nodes.emplace_back(std::move(break_));
+
+  auto block = create_block_node_ptr(std::move(nodes));
+
+  EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
+
+  visitor.visit(*block);
+
+  ASSERT_THAT(visitor.m_result_node, IsNull());
 }
 }

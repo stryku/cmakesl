@@ -2,9 +2,7 @@
 
 #include "ast/ast_node.hpp"
 #include "common/int_alias.hpp"
-
 #include "lexer/token.hpp"
-
 #include "sema/sema_function.hpp"
 #include "sema/sema_node.hpp"
 #include "sema/sema_node_visitor.hpp"
@@ -708,5 +706,16 @@ private:
   std::unique_ptr<expression_node> m_condition;
   std::unique_ptr<expression_node> m_iteration;
   std::unique_ptr<block_node> m_body;
+};
+
+class break_node : public sema_node
+{
+public:
+  explicit break_node(const ast::ast_node& ast_node)
+    : sema_node{ ast_node }
+  {
+  }
+
+  VISIT_METHOD
 };
 }

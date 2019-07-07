@@ -72,7 +72,8 @@ enum class token_type
   kw_else,
   kw_while,
   kw_auto,
-  kw_for
+  kw_for,
+  kw_break
 };
 }
 

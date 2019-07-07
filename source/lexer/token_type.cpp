@@ -122,6 +122,8 @@ std::string to_string(lexer::token_type type)
       return "auto keyword";
     case lexer::token_type::kw_for:
       return "for keyword";
+    case lexer::token_type::kw_break:
+      return "break keyword";
 
     case lexer::token_type::undef:
     default:

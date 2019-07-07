@@ -345,6 +345,7 @@ lexer::keyword_tokens_t lexer::create_keyword_tokens() const
   tokens["while"] = token_type::kw_while;
   tokens["auto"] = token_type::kw_auto;
   tokens["for"] = token_type::kw_for;
+  tokens["break"] = token_type::kw_break;
 
   return tokens;
 }
