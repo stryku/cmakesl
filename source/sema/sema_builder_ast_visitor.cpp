@@ -49,7 +49,7 @@ sema_builder_ast_visitor::sema_builder_ast_visitor(
   sema_context_factory& context_factory,
   add_subdirectory_handler& add_subdirectory_handler,
   const builtin_token_provider& builtin_token_provider,
-  function_parsing_context& function_parsing_ctx)
+  parsing_context& parsing_ctx)
   : m_generic_types_context{ generic_types_context }
   , m_ctx{ ctx }
   , m_errors_observer{ errs }
@@ -59,7 +59,7 @@ sema_builder_ast_visitor::sema_builder_ast_visitor(
   , m_context_factory{ context_factory }
   , m_add_subdirectory_handler{ add_subdirectory_handler }
   , m_builtin_token_provider{ builtin_token_provider }
-  , m_function_parsing_ctx{ function_parsing_ctx }
+  , m_parsing_ctx{ parsing_ctx }
 {
 }
 
@@ -117,10 +117,10 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
   std::vector<std::unique_ptr<function_node>> functions;
 
   for (auto function_declaration : members->functions) {
-    m_function_parsing_ctx.function = function_declaration.fun;
+    m_parsing_ctx.function_parsing_ctx.function = function_declaration.fun;
     auto body = visit_child_node<block_node>(
       function_declaration.body_to_visit, class_context);
-    m_function_parsing_ctx.function = nullptr;
+    m_parsing_ctx.function_parsing_ctx.function = nullptr;
     if (!body) {
       return;
     }
@@ -251,9 +251,10 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
     return nullptr;
   }
 
-  if (chosen_function == m_function_parsing_ctx.function) {
+  if (chosen_function == m_parsing_ctx.function_parsing_ctx.function) {
     const auto function_has_auto_return_type =
-      m_function_parsing_ctx.function->try_return_type() == nullptr;
+      m_parsing_ctx.function_parsing_ctx.function->try_return_type() ==
+      nullptr;
     if (function_has_auto_return_type) {
       const auto source = node.name().source();
       const auto range = node.name().src_range();
@@ -447,7 +448,7 @@ void sema_builder_ast_visitor::visit(const ast::return_node& node)
 
   expr = convert_to_cast_return_node_if_need(std::move(expr));
   auto ret_node = std::make_unique<return_node>(node, std::move(expr));
-  m_function_parsing_ctx.return_nodes.emplace_back(ret_node.get());
+  m_parsing_ctx.function_parsing_ctx.return_nodes.emplace_back(ret_node.get());
   m_result_node = std::move(ret_node);
 }
 
@@ -511,10 +512,10 @@ void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
   // Store pointer to function that is currently parsed,
   // so function body will be able to figure out function return type
   // and make casted return expression nodes as needed.
-  m_function_parsing_ctx.function = &function;
-  m_function_parsing_ctx.return_nodes.clear();
+  m_parsing_ctx.function_parsing_ctx.function = &function;
+  m_parsing_ctx.function_parsing_ctx.return_nodes.clear();
   auto block = visit_child_node<block_node>(node.body());
-  m_function_parsing_ctx.function = nullptr;
+  m_parsing_ctx.function_parsing_ctx.function = nullptr;
   if (!block) {
     return;
   }
@@ -544,7 +545,9 @@ void sema_builder_ast_visitor::visit(
 
 void sema_builder_ast_visitor::visit(const ast::while_node& node)
 {
+  ++m_parsing_ctx.loop_parsing_counter;
   auto conditional = visit_child_node<conditional_node>(node.node());
+  --m_parsing_ctx.loop_parsing_counter;
   if (!conditional) {
     return;
   }
@@ -647,7 +650,7 @@ sema_builder_ast_visitor sema_builder_ast_visitor::clone(
     m_errors_observer,        m_ids_context,
     m_type_factory,           m_function_factory,
     m_context_factory,        m_add_subdirectory_handler,
-    m_builtin_token_provider, m_function_parsing_ctx
+    m_builtin_token_provider, m_parsing_ctx
   };
 }
 
@@ -793,13 +796,13 @@ std::unique_ptr<expression_node>
 sema_builder_ast_visitor::convert_to_cast_return_node_if_need(
   std::unique_ptr<expression_node> expression)
 {
-  if (!m_function_parsing_ctx.function ||
-      !m_function_parsing_ctx.function->try_return_type()) {
+  if (!m_parsing_ctx.function_parsing_ctx.function ||
+      !m_parsing_ctx.function_parsing_ctx.function->try_return_type()) {
     return expression;
   }
 
   const auto& expected_result_type =
-    m_function_parsing_ctx.function->return_type();
+    m_parsing_ctx.function_parsing_ctx.function->return_type();
   return convert_to_cast_node_if_need(expected_result_type,
                                       std::move(expression));
 }
@@ -921,24 +924,24 @@ bool sema_builder_ast_visitor::is_last_node_return_node(
 bool sema_builder_ast_visitor::check_function_return_type(
   const expression_node& return_expression)
 {
-  if (m_function_parsing_ctx.function == nullptr) {
+  if (m_parsing_ctx.function_parsing_ctx.function == nullptr) {
     CMSL_UNREACHABLE("Return statement outside of function");
   }
 
   // If currently parsed function has 'auto' return type, return true.
   // Return types are going to be check later.
   const auto function_has_auto_return_type =
-    m_function_parsing_ctx.function->try_return_type() == nullptr;
+    m_parsing_ctx.function_parsing_ctx.function->try_return_type() == nullptr;
   if (function_has_auto_return_type) {
     return true;
   }
 
   const auto src_range = return_expression.ast_node().src_range();
   const auto source =
-    m_function_parsing_ctx.function->signature().name.source();
+    m_parsing_ctx.function_parsing_ctx.function->signature().name.source();
 
   const auto& function_return_type =
-    m_function_parsing_ctx.function->return_type();
+    m_parsing_ctx.function_parsing_ctx.function->return_type();
 
   variable_initialization_checker checker;
   const auto check_result =
@@ -975,27 +978,30 @@ sema_builder_ast_visitor::try_deduce_currently_parsed_function_return_type()
 {
   const auto types_finder = builtin_types_finder{ m_ctx };
 
-  if (m_function_parsing_ctx.return_nodes.empty()) {
+  if (m_parsing_ctx.function_parsing_ctx.return_nodes.empty()) {
     return &types_finder.find_void();
   }
 
   bool all_same{ true };
-  const auto& first_type = m_function_parsing_ctx.return_nodes.front()->type();
+  const auto& first_type =
+    m_parsing_ctx.function_parsing_ctx.return_nodes.front()->type();
 
   const auto all_expression_types_are_the_same = std::all_of(
-    std::cbegin(m_function_parsing_ctx.return_nodes),
-    std::cend(m_function_parsing_ctx.return_nodes),
+    std::cbegin(m_parsing_ctx.function_parsing_ctx.return_nodes),
+    std::cend(m_parsing_ctx.function_parsing_ctx.return_nodes),
     [&first_type](const auto& node) { return first_type == node->type(); });
 
   if (all_expression_types_are_the_same) {
     return &first_type;
   }
 
-  raise_error(m_function_parsing_ctx.function_node->name(),
+  raise_error(m_parsing_ctx.function_parsing_ctx.function_node->name(),
               "incosistent deduction for auto return type");
 
-  const auto source = m_function_parsing_ctx.function_node->name().source();
-  for (const auto& ret_node : m_function_parsing_ctx.return_nodes) {
+  const auto source =
+    m_parsing_ctx.function_parsing_ctx.function_node->name().source();
+  for (const auto& ret_node :
+       m_parsing_ctx.function_parsing_ctx.return_nodes) {
     raise_note(source, ret_node->ast_node().src_range(),
                "deduced as \'" + ret_node->type().name().to_string() + "\'");
   }
@@ -1123,7 +1129,9 @@ void sema_builder_ast_visitor::visit(const ast::for_node& node)
     }
   }
 
+  ++m_parsing_ctx.loop_parsing_counter;
   auto body = visit_child_node<block_node>(node.body());
+  --m_parsing_ctx.loop_parsing_counter;
   if (!body) {
     return;
   }
@@ -1135,6 +1143,16 @@ void sema_builder_ast_visitor::visit(const ast::for_node& node)
 
 void sema_builder_ast_visitor::visit(const ast::break_node& node)
 {
+  if (!is_inside_loop()) {
+    raise_error(node.break_(), "break can be used only inside a loop");
+    return;
+  }
+
   m_result_node = std::make_unique<break_node>(node);
+}
+
+bool sema_builder_ast_visitor::is_inside_loop() const
+{
+  return m_parsing_ctx.loop_parsing_counter > 0u;
 }
 }
