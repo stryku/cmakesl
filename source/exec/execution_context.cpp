@@ -21,10 +21,11 @@ bool execution_context::variable_exists(cmsl::string_view name) const
   return current_scope().variable_exists(name);
 }
 
-void execution_context::enter_scope()
+execution_context::scope_leaving_guard execution_context::enter_scope()
 {
   auto current = m_scopes.empty() ? nullptr : &current_scope();
   m_scopes.push(scope_context{ current });
+  return scope_leaving_guard{ m_scopes };
 }
 
 void execution_context::leave_scope()
@@ -48,11 +49,13 @@ const scope_context& execution_context::current_scope() const
   return m_scopes.top();
 }
 
-void execution_context::enter_member_function_scope(instance_t* class_instance)
+execution_context::scope_leaving_guard
+execution_context::enter_member_function_scope(instance_t* class_instance)
 {
   m_scopes.push(scope_context{ class_instance });
   add_variable("this",
                std::make_unique<inst::instance_reference>(*class_instance));
+  return scope_leaving_guard{ m_scopes };
 }
 
 execution_context::instance_t* execution_context::get_this()
