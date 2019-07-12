@@ -35,6 +35,7 @@ public:
   cmsl::source_view source() const;
 
   bool operator==(const token& rhs) const;
+  bool operator!=(const token& rhs) const;
 
   friend std::ostream& operator<<(std::ostream& out, const token& t);
 
@@ -62,19 +63,7 @@ struct hash<cmsl::lexer::token>
 {
   std::size_t operator()(const cmsl::lexer::token& token) const
   {
-    std::size_t h = std::hash<std::string_view>{}(token.str());
-
-    const auto range = token.src_range();
-
-    h ^= range.begin.line;
-    h ^= range.begin.column;
-    h ^= range.begin.absolute;
-
-    h ^= range.end.line;
-    h ^= range.end.column;
-    h ^= range.end.absolute;
-
-    return h;
+    return std::hash<std::string_view>{}(token.str());
   }
 };
 }

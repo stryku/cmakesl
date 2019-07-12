@@ -32,9 +32,8 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
   const auto tokens = lex.lex();
   ast::parser parser{ m_errors_observer, source, tokens };
   auto ast_tree = parser.parse_translation_unit();
-  if(!ast_tree)
-  {
-      return nullptr;
+  if (!ast_tree) {
+    return nullptr;
   }
 
   auto builtin_token_provider =
@@ -46,23 +45,24 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
 
   auto& global_context = m_context_factory.create(builtin_context.get());
 
-  sema::identifiers_context_impl ids_ctx;
+  std::unique_ptr<sema::identifiers_context> ids_ctx =
+    std::make_unique<sema::identifiers_context_impl>();
   sema::sema_builder sema_builder{ global_context,
                                    m_errors_observer,
-                                   ids_ctx,
+                                   *ids_ctx,
                                    m_type_factory,
                                    m_function_factory,
                                    m_context_factory,
                                    m_add_subdirectory_handler,
                                    *builtin_token_provider };
   auto sema_tree = sema_builder.build(*ast_tree);
-  if(!sema_tree)
-  {
-      return nullptr;
+  if (!sema_tree) {
+    return nullptr;
   }
 
   return std::make_unique<compiled_source>(
     std::move(ast_tree), std::move(builtin_context), global_context,
-    std::move(sema_tree), source, std::move(builtin_token_provider));
+    std::move(sema_tree), source, std::move(builtin_token_provider),
+    std::move(ids_ctx));
 }
 }

@@ -18,6 +18,9 @@ class block_node;
 class type_representation;
 class variable_declaration_node;
 class break_node;
+struct name_with_coloncolon;
+class namespace_node;
+class id_node;
 
 class parser : public parser_utils
 {
@@ -43,6 +46,8 @@ public:
   std::optional<type_representation> parse_type();
   std::unique_ptr<block_node> parse_block();
   std::unique_ptr<break_node> parse_break();
+  std::unique_ptr<namespace_node> parse_namespace();
+  std::unique_ptr<id_node> parse_possibly_qualified_name();
 
 private:
   struct function_call_values
@@ -58,6 +63,7 @@ private:
   bool current_is_class_member_access() const;
   bool current_is_function_call() const;
   bool current_is_fundamental_value() const;
+  bool current_is_possibly_qualified_name() const;
   bool function_declaration_starts() const;
   bool declaration_starts() const;
 
@@ -99,6 +105,12 @@ private:
   std::optional<std::unique_ptr<ast_node>> parse_for_init();
   std::optional<std::unique_ptr<ast_node>> parse_for_condition();
   std::optional<std::unique_ptr<ast_node>> parse_for_iteration();
+
+  template <typename StopCondition>
+  std::optional<std::vector<std::unique_ptr<ast_node>>> parse_top_level_nodes(
+    StopCondition&& stop_condition);
+
+  std::vector<name_with_coloncolon> parse_namespace_declaration_names();
 
 private:
   parse_errors_reporter m_errors_reporter;

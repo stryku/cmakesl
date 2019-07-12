@@ -6,6 +6,7 @@
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
+#include "ast/namespace_node.hpp"
 #include "ast/parser.hpp"
 #include "ast/return_node.hpp"
 #include "ast/translation_unit_node.hpp"
@@ -141,7 +142,15 @@ public:
 
   void visit(const id_node& node) override
   {
-    m_result += "id{" + std::string{ node.get_identifier().str() } + "}";
+    m_result += "id{";
+
+    for (const auto& name : node.names()) {
+      m_result += name.name.str();
+      if (name.coloncolon) {
+        m_result += "::";
+      }
+    }
+    m_result += "}";
   }
 
   void visit(const return_node& node) override
@@ -154,6 +163,23 @@ public:
   void visit(const translation_unit_node& node) override
   {
     m_result += "translation_unit{";
+    for (const auto& n : node.nodes()) {
+      n->visit(*this);
+    }
+    m_result += "}";
+  }
+
+  void visit(const namespace_node& node) override
+  {
+    m_result += "namespace_node{name:";
+    for (const auto& name : node.names()) {
+      m_result += name.name.str();
+      if (name.coloncolon) {
+        m_result += "::";
+      }
+    }
+
+    m_result += ";nodes:";
     for (const auto& n : node.nodes()) {
       n->visit(*this);
     }
@@ -268,7 +294,16 @@ MATCHER_P(AstEq, expected_ast, "")
   return result_visitor.result() == expected_visitor.result();
 }
 
-TEST(ParserTest, Factor_TrueKeywordToken_GetBoolFundamentalValue)
+class ParserTest : public ::testing::Test
+{
+protected:
+  auto create_qualified_name(token_t name) const
+  {
+    return std::vector<ast::name_with_coloncolon>{ { name } };
+  }
+};
+
+TEST_F(ParserTest, Factor_TrueKeywordToken_GetBoolFundamentalValue)
 {
   const auto token = token_kw_true();
 
@@ -283,7 +318,7 @@ TEST(ParserTest, Factor_TrueKeywordToken_GetBoolFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Factor_FalseKeywordToken_GetBoolFundamentalValue)
+TEST_F(ParserTest, Factor_FalseKeywordToken_GetBoolFundamentalValue)
 {
   const auto token = token_kw_false();
 
@@ -298,7 +333,7 @@ TEST(ParserTest, Factor_FalseKeywordToken_GetBoolFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Factor_IntegerToken_GetIntFundamentalValue)
+TEST_F(ParserTest, Factor_IntegerToken_GetIntFundamentalValue)
 {
   const auto token = token_integer("1");
 
@@ -313,7 +348,7 @@ TEST(ParserTest, Factor_IntegerToken_GetIntFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Factor_DoubleToken_GetDoubleFundamentalValue)
+TEST_F(ParserTest, Factor_DoubleToken_GetDoubleFundamentalValue)
 {
   const auto token = token_double("1.6");
 
@@ -328,7 +363,7 @@ TEST(ParserTest, Factor_DoubleToken_GetDoubleFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Factor_StringToken_GetStringFundamentalValue)
+TEST_F(ParserTest, Factor_StringToken_GetStringFundamentalValue)
 {
   const auto token = token_string("some string");
 
@@ -343,11 +378,11 @@ TEST(ParserTest, Factor_StringToken_GetStringFundamentalValue)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Factor_IdentifierToken_GetId)
+TEST_F(ParserTest, Factor_IdentifierToken_GetId)
 {
   const auto token = token_identifier("some_name");
 
-  auto expected_ast = std::make_unique<id_node>(token);
+  auto expected_ast = std::make_unique<id_node>(create_qualified_name(token));
 
   const auto tokens = tokens_container_t{ token };
   auto parser =
@@ -358,13 +393,14 @@ TEST(ParserTest, Factor_IdentifierToken_GetId)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Factor_ParenthesizedToken_GetInnerNode)
+TEST_F(ParserTest, Factor_ParenthesizedToken_GetInnerNode)
 {
   const auto lparen = token_open_paren();
   const auto id = token_identifier("some_name");
   const auto rparen = token_close_paren();
 
-  auto expected_ast = std::make_unique<id_node>(id);
+  auto names = id_node::names_t{ { id, {} } };
+  auto expected_ast = std::make_unique<id_node>(names);
 
   const auto tokens = tokens_container_t{ lparen, id, rparen };
   auto parser =
@@ -375,7 +411,7 @@ TEST(ParserTest, Factor_ParenthesizedToken_GetInnerNode)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Expr_TokenBinaryOpToken_GetBinaryOperator)
+TEST_F(ParserTest, Expr_TokenBinaryOpToken_GetBinaryOperator)
 {
   // 1 + 2
   const auto lhs_token = token_integer("1");
@@ -396,7 +432,7 @@ TEST(ParserTest, Expr_TokenBinaryOpToken_GetBinaryOperator)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
+TEST_F(ParserTest, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
 {
   // "foo" - bar - 4.2
   const auto lhs_lhs_token = token_string("foo");
@@ -406,7 +442,9 @@ TEST(ParserTest, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
   const auto rhs_token = token_double("4.2");
 
   auto lhs_lhs_node = std::make_unique<string_value_node>(lhs_lhs_token);
-  auto lhs_rhs_node = std::make_unique<id_node>(lhs_rhs_token);
+  // Todo: Introduce fixture with utils
+  auto names = id_node::names_t{ { lhs_rhs_token } };
+  auto lhs_rhs_node = std::make_unique<id_node>(names);
   auto lhs_node = std::make_unique<binary_operator_node>(
     std::move(lhs_lhs_node), lhs_op_token, std::move(lhs_rhs_node));
 
@@ -415,8 +453,15 @@ TEST(ParserTest, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
   auto expected_ast = std::make_unique<binary_operator_node>(
     std::move(lhs_node), op_token, std::move(rhs_node));
 
-  const auto tokens = tokens_container_t{ lhs_lhs_token, lhs_op_token,
-                                          lhs_rhs_token, op_token, rhs_token };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    lhs_lhs_token,
+    lhs_op_token,
+    lhs_rhs_token,
+    op_token,
+    rhs_token
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
@@ -425,7 +470,7 @@ TEST(ParserTest, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
+TEST_F(ParserTest, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
 {
   // "foo" - bar * 4.2
   const auto lhs_token = token_string("foo");
@@ -436,7 +481,8 @@ TEST(ParserTest, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
 
   auto lhs_node = std::make_unique<string_value_node>(lhs_token);
 
-  auto rhs_lhs_node = std::make_unique<id_node>(rhs_lhs_token);
+  auto rhs_lhs_node =
+    std::make_unique<id_node>(create_qualified_name(rhs_lhs_token));
   auto rhs_rhs_node = std::make_unique<double_value_node>(rhs_rhs_token);
   auto rhs_node = std::make_unique<binary_operator_node>(
     std::move(rhs_lhs_node), rhs_op_token, std::move(rhs_rhs_node));
@@ -444,8 +490,15 @@ TEST(ParserTest, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
   auto expected_ast = std::make_unique<binary_operator_node>(
     std::move(lhs_node), op_token, std::move(rhs_node));
 
-  const auto tokens = tokens_container_t{ lhs_token, op_token, rhs_lhs_token,
-                                          rhs_op_token, rhs_rhs_token };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    lhs_token,
+    op_token,
+    rhs_lhs_token,
+    rhs_op_token,
+    rhs_rhs_token
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
@@ -454,7 +507,7 @@ TEST(ParserTest, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
+TEST_F(ParserTest, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
 {
   // foo()
   const auto fun_name_token = token_identifier("foo");
@@ -472,8 +525,8 @@ TEST(ParserTest, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest,
-     Expr_IdOpenParenParametersCloseParen_GetFunctionCallWithParameters)
+TEST_F(ParserTest,
+       Expr_IdOpenParenParametersCloseParen_GetFunctionCallWithParameters)
 {
   // foo(bar, "baz", 42)
   const auto fun_name_token = token_identifier("foo");
@@ -483,7 +536,8 @@ TEST(ParserTest,
   const auto comma = token_comma();
 
   function_call_node::params_t params;
-  params.emplace_back(std::make_unique<id_node>(param1));
+  params.emplace_back(
+    std::make_unique<id_node>(create_qualified_name(param1)));
   params.emplace_back(std::make_unique<string_value_node>(param2));
   params.emplace_back(std::make_unique<int_value_node>(param3));
 
@@ -491,8 +545,16 @@ TEST(ParserTest,
     fun_name_token, tmp_token, std::move(params), tmp_token);
 
   const auto tokens = tokens_container_t{
-    fun_name_token, token_open_paren(), param1, comma, param2, comma,
-    param3,         token_close_paren()
+    // clang-format off
+    fun_name_token,
+    token_open_paren(),
+    param1,
+    comma,
+    param2,
+    comma,
+    param3,
+    token_close_paren()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -502,22 +564,29 @@ TEST(ParserTest,
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest,
-     Expr_IdDotIdOpenParenCloseParen_GetMemberFunctionCallWithoutParameters)
+TEST_F(ParserTest,
+       Expr_IdDotIdOpenParenCloseParen_GetMemberFunctionCallWithoutParameters)
 {
   // foo.bar()
   const auto class_name_token = token_identifier("foo");
   const auto fun_name_token = token_identifier("bar");
 
-  auto lhs = std::make_unique<id_node>(class_name_token);
+  auto lhs =
+    std::make_unique<id_node>(create_qualified_name(class_name_token));
 
   auto expected_ast = std::make_unique<member_function_call_node>(
     std::move(lhs), tmp_token, fun_name_token, tmp_token,
     function_call_node::params_t{}, tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ class_name_token, token_dot(), fun_name_token,
-                        token_open_paren(), token_close_paren() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    class_name_token,
+    token_dot(),
+    fun_name_token,
+    token_open_paren(),
+    token_close_paren()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
@@ -526,7 +595,7 @@ TEST(ParserTest,
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(
+TEST_F(
   ParserTest,
   Expr_IdDotIdOpenParenParametersCloseParen_GetMemberFunctionCallWithParameters)
 {
@@ -538,10 +607,12 @@ TEST(
   const auto param3 = token_integer("42");
   const auto comma = token_comma();
 
-  auto lhs = std::make_unique<id_node>(class_name_token);
+  auto lhs =
+    std::make_unique<id_node>(create_qualified_name(class_name_token));
 
   function_call_node::params_t params;
-  params.emplace_back(std::make_unique<id_node>(param1));
+  params.emplace_back(
+    std::make_unique<id_node>(create_qualified_name(param1)));
   params.emplace_back(std::make_unique<string_value_node>(param2));
   params.emplace_back(std::make_unique<int_value_node>(param3));
 
@@ -549,43 +620,19 @@ TEST(
     std::move(lhs), tmp_token, fun_name_token, tmp_token, std::move(params),
     tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ class_name_token, token_dot(),
-                        fun_name_token,   token_open_paren(),
-                        param1,           comma,
-                        param2,           comma,
-                        param3,           token_close_paren() };
-  auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_expr();
-
-  ASSERT_THAT(result_ast, NotNull());
-  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
-}
-
-TEST(
-  ParserTest,
-  Expr_ParenthesizedExpressionDotIdOpenParenCloseParen_GetMemberFunctionCallWithoutParameters)
-{
-  // (foo+bar).baz()
-  const auto lhs_lhs_token = token_identifier("foo");
-  const auto lhs_op_token = token_plus();
-  const auto lhs_rhs_token = token_identifier("bar");
-  const auto fun_name_token = token_identifier("baz");
-
-  auto lhs_lhs_node = std::make_unique<id_node>(lhs_lhs_token);
-  auto lhs_rhs_node = std::make_unique<id_node>(lhs_rhs_token);
-  auto lhs_node = std::make_unique<binary_operator_node>(
-    std::move(lhs_lhs_node), lhs_op_token, std::move(lhs_rhs_node));
-
-  auto expected_ast = std::make_unique<member_function_call_node>(
-    std::move(lhs_node), tmp_token, fun_name_token, tmp_token,
-    function_call_node::params_t{}, tmp_token);
-
   const auto tokens = tokens_container_t{
-    token_open_paren(), lhs_lhs_token,       lhs_op_token,
-    lhs_rhs_token,      token_close_paren(), token_dot(),
-    fun_name_token,     token_open_paren(),  token_close_paren()
+    // clang-format off
+    class_name_token,
+    token_dot(),
+    fun_name_token,
+    token_open_paren(),
+    param1,
+    comma,
+    param2,
+    comma,
+    param3,
+    token_close_paren()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -595,7 +642,49 @@ TEST(
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(
+TEST_F(
+  ParserTest,
+  Expr_ParenthesizedExpressionDotIdOpenParenCloseParen_GetMemberFunctionCallWithoutParameters)
+{
+  // (foo+bar).baz()
+  const auto lhs_lhs_token = token_identifier("foo");
+  const auto lhs_op_token = token_plus();
+  const auto lhs_rhs_token = token_identifier("bar");
+  const auto fun_name_token = token_identifier("baz");
+
+  auto lhs_lhs_node =
+    std::make_unique<id_node>(create_qualified_name(lhs_lhs_token));
+  auto lhs_rhs_node =
+    std::make_unique<id_node>(create_qualified_name(lhs_rhs_token));
+  auto lhs_node = std::make_unique<binary_operator_node>(
+    std::move(lhs_lhs_node), lhs_op_token, std::move(lhs_rhs_node));
+
+  auto expected_ast = std::make_unique<member_function_call_node>(
+    std::move(lhs_node), tmp_token, fun_name_token, tmp_token,
+    function_call_node::params_t{}, tmp_token);
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_open_paren(),
+    lhs_lhs_token,
+    lhs_op_token,
+    lhs_rhs_token,
+    token_close_paren(),
+    token_dot(),
+    fun_name_token,
+    token_open_paren(),
+    token_close_paren()
+    // clang-format on
+  };
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_expr();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(
   ParserTest,
   Expr_ParenthesizedExpressionDotIdOpenParenParamsCloseParen_GetMemberFunctionCallWithParameters)
 {
@@ -609,12 +698,15 @@ TEST(
   const auto param3 = token_integer("42");
   const auto comma = token_comma();
 
-  auto lhs_lhs_node = std::make_unique<id_node>(lhs_lhs_token);
-  auto lhs_rhs_node = std::make_unique<id_node>(lhs_rhs_token);
+  auto lhs_lhs_node =
+    std::make_unique<id_node>(create_qualified_name(lhs_lhs_token));
+  auto lhs_rhs_node =
+    std::make_unique<id_node>(create_qualified_name(lhs_rhs_token));
   auto lhs_node = std::make_unique<binary_operator_node>(
     std::move(lhs_lhs_node), lhs_op_token, std::move(lhs_rhs_node));
   function_call_node::params_t params;
-  params.emplace_back(std::make_unique<id_node>(param1));
+  params.emplace_back(
+    std::make_unique<id_node>(create_qualified_name(param1)));
   params.emplace_back(std::make_unique<string_value_node>(param2));
   params.emplace_back(std::make_unique<int_value_node>(param3));
 
@@ -622,20 +714,24 @@ TEST(
     std::move(lhs_node), tmp_token, fun_name_token, tmp_token,
     std::move(params), tmp_token);
 
-  const auto tokens = tokens_container_t{ token_open_paren(),
-                                          lhs_lhs_token,
-                                          lhs_op_token,
-                                          lhs_rhs_token,
-                                          token_close_paren(),
-                                          token_dot(),
-                                          fun_name_token,
-                                          token_open_paren(),
-                                          param1,
-                                          comma,
-                                          param2,
-                                          comma,
-                                          param3,
-                                          token_close_paren() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_open_paren(),
+    lhs_lhs_token,
+    lhs_op_token,
+    lhs_rhs_token,
+    token_close_paren(),
+    token_dot(),
+    fun_name_token,
+    token_open_paren(),
+    param1,
+    comma,
+    param2,
+    comma,
+    param3,
+    token_close_paren()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
@@ -644,13 +740,14 @@ TEST(
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Expr_IdDotId_GetClassMemberAccess)
+TEST_F(ParserTest, Expr_IdDotId_GetClassMemberAccess)
 {
   // foo.bar
   const auto class_name_token = token_identifier("foo");
   const auto member_name_token = token_identifier("bar");
 
-  auto lhs_node = std::make_unique<id_node>(class_name_token);
+  auto lhs_node =
+    std::make_unique<id_node>(create_qualified_name(class_name_token));
 
   auto expected_ast = std::make_unique<class_member_access_node>(
     std::move(lhs_node), tmp_token, member_name_token);
@@ -665,7 +762,7 @@ TEST(ParserTest, Expr_IdDotId_GetClassMemberAccess)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
+TEST_F(ParserTest, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
 {
   // (foo + bar).baz
   const auto lhs_lhs_token = token_identifier("foo");
@@ -673,18 +770,27 @@ TEST(ParserTest, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
   const auto lhs_rhs_token = token_identifier("bar");
   const auto member_name_token = token_identifier("baz");
 
-  auto lhs_lhs_node = std::make_unique<id_node>(lhs_lhs_token);
-  auto lhs_rhs_node = std::make_unique<id_node>(lhs_rhs_token);
+  auto lhs_lhs_node =
+    std::make_unique<id_node>(create_qualified_name(lhs_lhs_token));
+  auto lhs_rhs_node =
+    std::make_unique<id_node>(create_qualified_name(lhs_rhs_token));
   auto lhs_node = std::make_unique<binary_operator_node>(
     std::move(lhs_lhs_node), lhs_op_token, std::move(lhs_rhs_node));
 
   auto expected_ast = std::make_unique<class_member_access_node>(
     std::move(lhs_node), tmp_token, member_name_token);
 
-  const auto tokens =
-    tokens_container_t{ token_open_paren(), lhs_lhs_token,       lhs_op_token,
-                        lhs_rhs_token,      token_close_paren(), token_dot(),
-                        member_name_token };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_open_paren(),
+    lhs_lhs_token,
+    lhs_op_token,
+    lhs_rhs_token,
+    token_close_paren(),
+    token_dot(),
+    member_name_token
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
@@ -693,12 +799,13 @@ TEST(ParserTest, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, If_IfConditionBlock_GetIfElse)
+TEST_F(ParserTest, If_IfConditionBlock_GetIfElse)
 {
   // if(foo) {}
   const auto condition_token = token_identifier("foo");
 
-  auto condition_expr_node = std::make_unique<id_node>(condition_token);
+  auto condition_expr_node =
+    std::make_unique<id_node>(create_qualified_name(condition_token));
   auto block =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto condition_node = std::make_unique<conditional_node>(
@@ -711,10 +818,16 @@ TEST(ParserTest, If_IfConditionBlock_GetIfElse)
   auto expected_ast =
     std::make_unique<if_else_node>(std::move(ifs), std::nullopt);
 
-  const auto tokens =
-    tokens_container_t{ token_kw_if(),      token_open_paren(),
-                        condition_token,    token_close_paren(),
-                        token_open_brace(), token_close_brace() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_if(),
+    token_open_paren(),
+    condition_token,
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_if_else_node();
@@ -723,12 +836,13 @@ TEST(ParserTest, If_IfConditionBlock_GetIfElse)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, If_IfConditionParenBlockElseBlock_GetIfElse)
+TEST_F(ParserTest, If_IfConditionParenBlockElseBlock_GetIfElse)
 {
   // if(foo) {} else {}
   const auto condition_token = token_identifier("foo");
 
-  auto condition_expr_node = std::make_unique<id_node>(condition_token);
+  auto condition_expr_node =
+    std::make_unique<id_node>(create_qualified_name(condition_token));
   auto block =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto condition_node = std::make_unique<conditional_node>(
@@ -747,9 +861,17 @@ TEST(ParserTest, If_IfConditionParenBlockElseBlock_GetIfElse)
     std::make_unique<if_else_node>(std::move(ifs), std::move(else_value));
 
   const auto tokens = tokens_container_t{
-    token_kw_if(),       token_open_paren(), condition_token,
-    token_close_paren(), token_open_brace(), token_close_brace(),
-    token_kw_else(),     token_open_brace(), token_close_brace()
+    // clang-format off
+    token_kw_if(),
+    token_open_paren(),
+    condition_token,
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace(),
+    token_kw_else(),
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -759,13 +881,14 @@ TEST(ParserTest, If_IfConditionParenBlockElseBlock_GetIfElse)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
+TEST_F(ParserTest, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
 {
   // if(foo) {} else if(bar) else {}
   const auto if_condition_token = token_identifier("foo");
   const auto elseif_condition_token = token_identifier("bar");
 
-  auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
+  auto if_condition_expr_node =
+    std::make_unique<id_node>(create_qualified_name(if_condition_token));
   auto if_block =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto if_condition_node = std::make_unique<conditional_node>(
@@ -773,7 +896,7 @@ TEST(ParserTest, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
     std::move(if_block));
 
   auto elseif_condition_expr_node =
-    std::make_unique<id_node>(elseif_condition_token);
+    std::make_unique<id_node>(create_qualified_name(elseif_condition_token));
   auto elseif_block =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto elseif_condition_node = std::make_unique<conditional_node>(
@@ -795,14 +918,26 @@ TEST(ParserTest, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
     std::make_unique<if_else_node>(std::move(ifs), std::move(else_value));
 
   const auto tokens = tokens_container_t{
-    token_kw_if(),          token_open_paren(),  if_condition_token,
-    token_close_paren(),    token_open_brace(),  token_close_brace(),
-
-    token_kw_else(),        token_kw_if(),       token_open_paren(),
-    elseif_condition_token, token_close_paren(), token_open_brace(),
+    // clang-format off
+    token_kw_if(),
+    token_open_paren(),
+    if_condition_token,
+    token_close_paren(),
+    token_open_brace(),
     token_close_brace(),
 
-    token_kw_else(),        token_open_brace(),  token_close_brace()
+    token_kw_else(),
+    token_kw_if(),
+    token_open_paren(),
+    elseif_condition_token,
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace(),
+
+    token_kw_else(),
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -812,13 +947,14 @@ TEST(ParserTest, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
+TEST_F(ParserTest, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
 {
   // if(foo) {} else if(bar)
   const auto if_condition_token = token_identifier("foo");
   const auto elseif_condition_token = token_identifier("bar");
 
-  auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
+  auto if_condition_expr_node =
+    std::make_unique<id_node>(create_qualified_name(if_condition_token));
   auto if_block = std::make_unique<block_node>(
     tmp_token, block_node::nodes_t{},
     tmp_token); // Todo: introduce a fixture and method to create empty block
@@ -828,7 +964,7 @@ TEST(ParserTest, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
     std::move(if_block));
 
   auto elseif_condition_expr_node =
-    std::make_unique<id_node>(elseif_condition_token);
+    std::make_unique<id_node>(create_qualified_name(elseif_condition_token));
   auto elseif_block =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto elseif_condition_node = std::make_unique<conditional_node>(
@@ -845,12 +981,22 @@ TEST(ParserTest, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
     std::make_unique<if_else_node>(std::move(ifs), std::nullopt);
 
   const auto tokens = tokens_container_t{
-    token_kw_if(),          token_open_paren(),  if_condition_token,
-    token_close_paren(),    token_open_brace(),  token_close_brace(),
+    // clang-format off
+    token_kw_if(),
+    token_open_paren(),
+    if_condition_token,
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace(),
 
-    token_kw_else(),        token_kw_if(),       token_open_paren(),
-    elseif_condition_token, token_close_paren(), token_open_brace(),
+    token_kw_else(),
+    token_kw_if(),
+    token_open_paren(),
+    elseif_condition_token,
+    token_close_paren(),
+    token_open_brace(),
     token_close_brace()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -860,12 +1006,13 @@ TEST(ParserTest, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, While_WhileConditionBlock_GetWhile)
+TEST_F(ParserTest, While_WhileConditionBlock_GetWhile)
 {
   // while(foo) {}
   const auto condition_token = token_identifier("foo");
 
-  auto condition_expr_node = std::make_unique<id_node>(condition_token);
+  auto condition_expr_node =
+    std::make_unique<id_node>(create_qualified_name(condition_token));
   auto block =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto condition_node = std::make_unique<conditional_node>(
@@ -874,10 +1021,16 @@ TEST(ParserTest, While_WhileConditionBlock_GetWhile)
   auto expected_ast =
     std::make_unique<while_node>(tmp_token, std::move(condition_node));
 
-  const auto tokens =
-    tokens_container_t{ token_kw_while(),   token_open_paren(),
-                        condition_token,    token_close_paren(),
-                        token_open_brace(), token_close_brace() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_while(),
+    token_open_paren(),
+    condition_token,
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_while_node();
@@ -886,12 +1039,13 @@ TEST(ParserTest, While_WhileConditionBlock_GetWhile)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Return_ReturnExpression_GetReturn)
+TEST_F(ParserTest, Return_ReturnExpression_GetReturn)
 {
   // return foo;
   const auto expression_token = token_identifier("foo");
 
-  auto expr_node = std::make_unique<id_node>(expression_token);
+  auto expr_node =
+    std::make_unique<id_node>(create_qualified_name(expression_token));
   auto expected_ast =
     std::make_unique<return_node>(tmp_token, std::move(expr_node), tmp_token);
 
@@ -931,7 +1085,7 @@ const auto values = ::testing::Values(
 INSTANTIATE_TEST_CASE_P(ParserTest, Type_SingleToken, values);
 }
 
-TEST(ParserTest, Type_GenericType_GetTypeReference)
+TEST_F(ParserTest, Type_GenericType_GetTypeReference)
 {
   cmsl::string_view source = "list<int>";
   const auto list_token =
@@ -957,7 +1111,7 @@ TEST(ParserTest, Type_GenericType_GetTypeReference)
   EXPECT_THAT(*result_type_reference, Eq(expected_reference));
 }
 
-TEST(ParserTest, Type_NestedGenericType_GetTypeReference)
+TEST_F(ParserTest, Type_NestedGenericType_GetTypeReference)
 {
   cmsl::string_view source = "list<list<foo>>";
   const auto list_token =
@@ -986,10 +1140,17 @@ TEST(ParserTest, Type_NestedGenericType_GetTypeReference)
                          { nested_value_type_representation } };
 
   // list<list<foo>>
-  const auto expected_type_tokens =
-    tokens_container_t{ list_token,        less_token, nested_list_token,
-                        nested_less_token, foo_token,  nested_greater_token,
-                        greater_token };
+  const auto expected_type_tokens = tokens_container_t{
+    // clang-format off
+    list_token,
+    less_token,
+    nested_list_token,
+    nested_less_token,
+    foo_token,
+    nested_greater_token,
+    greater_token
+    // clang-format on
+  };
   const auto expected_representation =
     type_representation{ expected_type_tokens, { value_type_representation } };
 
@@ -1001,7 +1162,7 @@ TEST(ParserTest, Type_NestedGenericType_GetTypeReference)
   EXPECT_THAT(*result_type_reference, Eq(expected_representation));
 }
 
-TEST(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
+TEST_F(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
 {
   // int foo;
   const auto type_token = token_kw_int();
@@ -1024,7 +1185,7 @@ TEST(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
+TEST_F(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
 {
   // list<int> foo;
   cmsl::string_view source = "list<int>";
@@ -1050,9 +1211,16 @@ TEST(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
   auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
     std::move(variable_decl), tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ list_token,    less_token, int_token,
-                        greater_token, name_token, token_semicolon() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    list_token,
+    less_token,
+    int_token,
+    greater_token,
+    name_token,
+    token_semicolon()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_standalone_variable_declaration();
@@ -1061,10 +1229,10 @@ TEST(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest,
-     VariableDeclaration_TypeIdEqualExpression_GetVariableDeclaration)
+TEST_F(ParserTest,
+       VariableDeclaration_TypeIdEqualExpression_GetVariableDeclaration)
 {
-  // int foo;
+  // int foo = 42;
   const auto type_token = token_kw_int();
   const auto name_token = token_identifier("foo");
   const auto int_expr_token = token_integer("42");
@@ -1082,9 +1250,15 @@ TEST(ParserTest,
   auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
     std::move(variable_decl), tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ type_token, name_token, token_equal(), int_expr_token,
-                        token_semicolon() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    type_token,
+    name_token,
+    token_equal(),
+    int_expr_token,
+    token_semicolon()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_standalone_variable_declaration();
@@ -1093,8 +1267,8 @@ TEST(ParserTest,
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest,
-     VariableDeclaration_GenericTypeIdEqualExpression_GetVariableDeclaration)
+TEST_F(ParserTest,
+       VariableDeclaration_GenericTypeIdEqualExpression_GetVariableDeclaration)
 {
   // list<int> foo = 42;
   cmsl::string_view source = "list<int>";
@@ -1127,10 +1301,18 @@ TEST(ParserTest,
   auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
     std::move(variable_decl), tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ list_token,     less_token,       int_token,
-                        greater_token,  name_token,       token_equal(),
-                        int_expr_token, token_semicolon() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    list_token,
+    less_token,
+    int_token,
+    greater_token,
+    name_token,
+    token_equal(),
+    int_expr_token,
+    token_semicolon()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_standalone_variable_declaration();
@@ -1139,7 +1321,7 @@ TEST(ParserTest,
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Block_OpenBraceCloseBrace_GetBlock)
+TEST_F(ParserTest, Block_OpenBraceCloseBrace_GetBlock)
 {
   // {}
   auto expected_ast =
@@ -1155,7 +1337,7 @@ TEST(ParserTest, Block_OpenBraceCloseBrace_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Block_VariableDeclaration_GetBlock)
+TEST_F(ParserTest, Block_VariableDeclaration_GetBlock)
 {
   // { foo bar; }
   const auto variable_type_token = token_identifier("foo");
@@ -1174,10 +1356,17 @@ TEST(ParserTest, Block_VariableDeclaration_GetBlock)
   auto expected_ast =
     std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ token_open_brace(), variable_type_token,
-                        variable_name_token, token_semicolon(),
-                        token_close_brace() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_open_brace(),
+
+    variable_type_token,
+    variable_name_token,
+    token_semicolon(),
+
+    token_close_brace()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
@@ -1186,13 +1375,14 @@ TEST(ParserTest, Block_VariableDeclaration_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Block_IfElse_GetBlock)
+TEST_F(ParserTest, Block_IfElse_GetBlock)
 {
   // { if(foo) {} else if(bar) else {} }
   const auto if_condition_token = token_identifier("foo");
   const auto elseif_condition_token = token_identifier("bar");
 
-  auto if_condition_expr_node = std::make_unique<id_node>(if_condition_token);
+  auto if_condition_expr_node =
+    std::make_unique<id_node>(create_qualified_name(if_condition_token));
   auto if_block =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto if_condition_node = std::make_unique<conditional_node>(
@@ -1200,7 +1390,7 @@ TEST(ParserTest, Block_IfElse_GetBlock)
     std::move(if_block));
 
   auto elseif_condition_expr_node =
-    std::make_unique<id_node>(elseif_condition_token);
+    std::make_unique<id_node>(create_qualified_name(elseif_condition_token));
   auto elseif_block =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto elseif_condition_node = std::make_unique<conditional_node>(
@@ -1228,18 +1418,30 @@ TEST(ParserTest, Block_IfElse_GetBlock)
     std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
 
   const auto tokens = tokens_container_t{
+    // clang-format off
     token_open_brace(),
 
-    token_kw_if(),          token_open_paren(),  if_condition_token,
-    token_close_paren(),    token_open_brace(),  token_close_brace(),
-
-    token_kw_else(),        token_kw_if(),       token_open_paren(),
-    elseif_condition_token, token_close_paren(), token_open_brace(),
+    token_kw_if(),
+    token_open_paren(),
+    if_condition_token,
+    token_close_paren(),
+    token_open_brace(),
     token_close_brace(),
 
-    token_kw_else(),        token_open_brace(),  token_close_brace(),
+    token_kw_else(),
+    token_kw_if(),
+    token_open_paren(),
+    elseif_condition_token,
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace(),
+
+    token_kw_else(),
+    token_open_brace(),
+    token_close_brace(),
 
     token_close_brace()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -1249,7 +1451,7 @@ TEST(ParserTest, Block_IfElse_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Block_Expression_GetBlock)
+TEST_F(ParserTest, Block_Expression_GetBlock)
 {
   // { foo + bar; }
   const auto lhs_token = token_integer("1");
@@ -1267,10 +1469,18 @@ TEST(ParserTest, Block_Expression_GetBlock)
   auto expected_ast =
     std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ token_open_brace(), lhs_token,
-                        op_token,           rhs_token,
-                        token_semicolon(),  token_close_brace() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_open_brace(),
+
+    lhs_token,
+    op_token,
+    rhs_token,
+    token_semicolon(),
+
+    token_close_brace()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
@@ -1279,12 +1489,13 @@ TEST(ParserTest, Block_Expression_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Block_While_GetBlock)
+TEST_F(ParserTest, Block_While_GetBlock)
 {
   // { while(foo) {} }
   const auto condition_token = token_identifier("foo");
 
-  auto condition_expr_node = std::make_unique<id_node>(condition_token);
+  auto condition_expr_node =
+    std::make_unique<id_node>(create_qualified_name(condition_token));
   auto block =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto condition_node = std::make_unique<conditional_node>(
@@ -1299,11 +1510,20 @@ TEST(ParserTest, Block_While_GetBlock)
   auto expected_ast =
     std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ token_open_brace(),  token_kw_while(),
-                        token_open_paren(),  condition_token,
-                        token_close_paren(), token_open_brace(),
-                        token_close_brace(), token_close_brace() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_open_brace(),
+
+    token_kw_while(),
+    token_open_paren(),
+    condition_token,
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace(),
+
+    token_close_brace()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
@@ -1312,12 +1532,13 @@ TEST(ParserTest, Block_While_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Block_Return_GetBlock)
+TEST_F(ParserTest, Block_Return_GetBlock)
 {
   // { return foo; }
   const auto expression_token = token_identifier("foo");
 
-  auto expr_node = std::make_unique<id_node>(expression_token);
+  auto expr_node =
+    std::make_unique<id_node>(create_qualified_name(expression_token));
   auto return_ast_node =
     std::make_unique<return_node>(tmp_token, std::move(expr_node), tmp_token);
 
@@ -1327,10 +1548,15 @@ TEST(ParserTest, Block_Return_GetBlock)
   auto expected_ast =
     std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ token_open_brace(), token_kw_return(),
-                        expression_token, token_semicolon(),
-                        token_close_brace() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_open_brace(),
+    token_kw_return(),
+    expression_token,
+    token_semicolon(),
+    token_close_brace()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
@@ -1339,7 +1565,7 @@ TEST(ParserTest, Block_Return_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Block_NestedBlock_GetBlock)
+TEST_F(ParserTest, Block_NestedBlock_GetBlock)
 {
   // { {} }
 
@@ -1351,9 +1577,14 @@ TEST(ParserTest, Block_NestedBlock_GetBlock)
   auto expected_ast =
     std::make_unique<block_node>(tmp_token, std::move(exprs), tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ token_open_brace(), token_open_brace(),
-                        token_close_brace(), token_close_brace() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_open_brace(),
+    token_open_brace(),
+    token_close_brace(),
+    token_close_brace()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
@@ -1362,7 +1593,7 @@ TEST(ParserTest, Block_NestedBlock_GetBlock)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
+TEST_F(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
 {
   // double foo() {}
   const auto function_type_token = token_kw_double();
@@ -1374,10 +1605,16 @@ TEST(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
     function_type_ref, function_name_token, tmp_token,
     user_function_node::params_t{}, tmp_token, std::move(function_block_node));
 
-  const auto tokens =
-    tokens_container_t{ function_type_token, function_name_token,
-                        token_open_paren(),  token_close_paren(),
-                        token_open_brace(),  token_close_brace() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    function_type_token,
+    function_name_token,
+    token_open_paren(),
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_function();
@@ -1386,7 +1623,7 @@ TEST(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
+TEST_F(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
 {
   // double foo(bar baz) {}
   const auto function_type_token = token_kw_double();
@@ -1407,11 +1644,18 @@ TEST(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
     tmp_token, std::move(function_block_node));
 
   const auto tokens = tokens_container_t{
-    function_type_token, function_name_token, token_open_paren(),
+    // clang-format off
+    function_type_token,
+    function_name_token,
+    token_open_paren(),
 
-    param_type_token,    param_name_token,
+    param_type_token,
+    param_name_token,
 
-    token_close_paren(), token_open_brace(),  token_close_brace()
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -1421,7 +1665,7 @@ TEST(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
+TEST_F(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
 {
   // double foo(bar baz, qux out_of_fancy_identifiers) {}
   const auto function_type_token = token_kw_double();
@@ -1448,15 +1692,22 @@ TEST(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
     tmp_token, std::move(function_block_node));
 
   const auto tokens = tokens_container_t{
-    function_type_token, function_name_token, token_open_paren(),
+    // clang-format off
+    function_type_token,
+    function_name_token,
+    token_open_paren(),
 
-    param_type_token,    param_name_token,
-
+    param_type_token,
+    param_name_token,
     token_comma(),
 
-    param2_type_token,   param2_name_token,
+    param2_type_token,
+    param2_name_token,
 
-    token_close_paren(), token_open_brace(),  token_close_brace()
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -1466,7 +1717,7 @@ TEST(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Class_ClassIdEmptyBlock_GetClass)
+TEST_F(ParserTest, Class_ClassIdEmptyBlock_GetClass)
 {
   // class foo {};
   const auto name_token = token_identifier("foo");
@@ -1475,9 +1726,15 @@ TEST(ParserTest, Class_ClassIdEmptyBlock_GetClass)
     std::make_unique<class_node>(tmp_token, name_token, tmp_token,
                                  class_node::nodes_t{}, tmp_token, tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ token_kw_class(), name_token, token_open_brace(),
-                        token_close_brace(), token_semicolon() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_class(),
+    name_token,
+    token_open_brace(),
+    token_close_brace(),
+    token_semicolon()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_class();
@@ -1486,7 +1743,7 @@ TEST(ParserTest, Class_ClassIdEmptyBlock_GetClass)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
+TEST_F(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
 {
   // class foo { int bar; };
   const auto name_token = token_identifier("foo");
@@ -1506,11 +1763,20 @@ TEST(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
   auto expected_ast = std::make_unique<class_node>(
     tmp_token, name_token, tmp_token, std::move(nodes), tmp_token, tmp_token);
 
-  const auto tokens =
-    tokens_container_t{ token_kw_class(),    name_token,
-                        token_open_brace(),  variable_type_token,
-                        variable_name_token, token_semicolon(),
-                        token_close_brace(), token_semicolon() };
+  const auto tokens = tokens_container_t{
+    // clang-format off
+      token_kw_class(),
+      name_token,
+      token_open_brace(),
+
+      variable_type_token,
+      variable_name_token,
+      token_semicolon(),
+
+      token_close_brace(),
+      token_semicolon()
+    // clang-format on
+  };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_class();
@@ -1519,7 +1785,7 @@ TEST(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
+TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
 {
   // class foo { double bar() {} baz qux; };
   const auto name_token = token_identifier("foo");
@@ -1551,14 +1817,25 @@ TEST(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
     tmp_token, name_token, tmp_token, std::move(nodes), tmp_token, tmp_token);
 
   const auto tokens = tokens_container_t{
-    token_kw_class(),    name_token,          token_open_brace(),
+    // clang-format off
+    token_kw_class(),
+    name_token,
+    token_open_brace(),
 
-    function_type_token, function_name_token, token_open_paren(),
-    token_close_paren(), token_open_brace(),  token_close_brace(),
+    function_type_token,
+    function_name_token,
+    token_open_paren(),
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace(),
 
-    variable_type_token, variable_name_token, token_semicolon(),
+    variable_type_token,
+    variable_name_token,
+    token_semicolon(),
 
-    token_close_brace(), token_semicolon()
+    token_close_brace(),
+    token_semicolon()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -1568,7 +1845,7 @@ TEST(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Factor_InitializerList_GetInitializerList)
+TEST_F(ParserTest, Factor_InitializerList_GetInitializerList)
 {
   // { foo, bar(baz, qux), { nest_foo, nest_bar } }
   const auto foo_token = token_identifier("foo");
@@ -1580,18 +1857,20 @@ TEST(ParserTest, Factor_InitializerList_GetInitializerList)
   const auto ob_token = token_open_brace();
   const auto cb_token = token_close_brace();
 
-  auto foo = std::make_unique<id_node>(foo_token);
+  auto foo = std::make_unique<id_node>(create_qualified_name(foo_token));
 
-  auto baz = std::make_unique<id_node>(baz_token);
-  auto qux = std::make_unique<id_node>(qux_token);
+  auto baz = std::make_unique<id_node>(create_qualified_name(baz_token));
+  auto qux = std::make_unique<id_node>(create_qualified_name(qux_token));
   std::vector<std::unique_ptr<ast_node>> bar_params;
   bar_params.emplace_back(std::move(baz));
   bar_params.emplace_back(std::move(qux));
   auto bar = std::make_unique<function_call_node>(
     bar_token, tmp_token, std::move(bar_params), tmp_token);
 
-  auto nested_foo = std::make_unique<id_node>(nest_foo_token);
-  auto nested_bar = std::make_unique<id_node>(nest_bar_token);
+  auto nested_foo =
+    std::make_unique<id_node>(create_qualified_name(nest_foo_token));
+  auto nested_bar =
+    std::make_unique<id_node>(create_qualified_name(nest_bar_token));
   std::vector<std::unique_ptr<ast_node>> nested_list_values;
   nested_list_values.emplace_back(std::move(nested_foo));
   nested_list_values.emplace_back(std::move(nested_bar));
@@ -1606,12 +1885,28 @@ TEST(ParserTest, Factor_InitializerList_GetInitializerList)
     ob_token, std::move(expected_list_values), cb_token);
 
   const auto tokens = tokens_container_t{
-    token_open_brace(), foo_token,          token_comma(),
-    bar_token,          token_open_paren(), baz_token,
-    token_comma(),      qux_token,          token_close_paren(),
-    token_comma(),      token_open_brace(), nest_foo_token,
-    token_comma(),      nest_bar_token,     token_close_brace(),
+    // clang-format off
+    token_open_brace(),
+
+    foo_token,
+    token_comma(),
+
+    bar_token,
+    token_open_paren(),
+    baz_token,
+    token_comma(),
+    qux_token,
+    token_close_paren(),
+    token_comma(),
+
+    token_open_brace(),
+    nest_foo_token,
+    token_comma(),
+    nest_bar_token,
+    token_close_brace(),
+
     token_close_brace()
+    // clang-format on
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
@@ -1621,7 +1916,7 @@ TEST(ParserTest, Factor_InitializerList_GetInitializerList)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, For_EmptyInitEmptyConditionEmptyIterationEmptyBody_GetFor)
+TEST_F(ParserTest, For_EmptyInitEmptyConditionEmptyIterationEmptyBody_GetFor)
 {
   // for(;;) {}
   auto body = std::make_unique<block_node>(
@@ -1655,8 +1950,8 @@ TEST(ParserTest, For_EmptyInitEmptyConditionEmptyIterationEmptyBody_GetFor)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest,
-     For_VariableDeclarationInitEmptyConditionEmptyIterationEmptyBody_GetFor)
+TEST_F(ParserTest,
+       For_VariableDeclarationInitEmptyConditionEmptyIterationEmptyBody_GetFor)
 {
   // for(int foo;;) {}
   const auto int_token = token_kw_int();
@@ -1702,7 +1997,7 @@ TEST(ParserTest,
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(
+TEST_F(
   ParserTest,
   For_VariableDeclarationWithInitializationInitEmptyConditionEmptyIterationEmptyBody_GetFor)
 {
@@ -1758,7 +2053,7 @@ TEST(
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, For_EmptyInitWithConditionEmptyIterationEmptyBody_GetFor)
+TEST_F(ParserTest, For_EmptyInitWithConditionEmptyIterationEmptyBody_GetFor)
 {
   // for(;true;) {}
   const auto true_token = token_kw_true();
@@ -1800,7 +2095,7 @@ TEST(ParserTest, For_EmptyInitWithConditionEmptyIterationEmptyBody_GetFor)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, For_EmptyInitEmptyConditionWithIterationEmptyBody_GetFor)
+TEST_F(ParserTest, For_EmptyInitEmptyConditionWithIterationEmptyBody_GetFor)
 {
   // for(;; foo()) {}
   const auto foo_token = token_identifier("foo");
@@ -1846,7 +2141,7 @@ TEST(ParserTest, For_EmptyInitEmptyConditionWithIterationEmptyBody_GetFor)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
-TEST(ParserTest, Break_BreakSemicolon_GetBreak)
+TEST_F(ParserTest, Break_BreakSemicolon_GetBreak)
 {
   // break;
   auto expected_ast =
@@ -1862,6 +2157,107 @@ TEST(ParserTest, Break_BreakSemicolon_GetBreak)
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_break();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest, Namespace_EmptyNamespace_GetNamespace)
+{
+  // namespace foo {}
+  const auto foo_token = token_identifier("foo");
+  auto names = namespace_node::names_t{ { foo_token, std::nullopt } };
+
+  auto expected_ast = std::make_unique<namespace_node>(
+    token_kw_namespace(), std::move(names), token_open_brace(),
+    namespace_node::nodes_t{}, token_close_brace());
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_namespace(),
+    foo_token,
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_namespace();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest, Namespace_NestedNamespace_GetNamespaceWithNestedNamespace)
+{
+  // namespace foo { namespace bar {} }
+  const auto foo_token = token_identifier("foo");
+  auto foo_names = namespace_node::names_t{ { foo_token, std::nullopt } };
+  const auto bar_token = token_identifier("foo");
+  auto bar_names = namespace_node::names_t{ { bar_token, std::nullopt } };
+
+  auto nested_namespace = std::make_unique<namespace_node>(
+    token_kw_namespace(), std::move(bar_names), token_open_brace(),
+    namespace_node::nodes_t{}, token_close_brace());
+
+  namespace_node::nodes_t nodes;
+  nodes.emplace_back(std::move(nested_namespace));
+
+  auto expected_ast = std::make_unique<namespace_node>(
+    token_kw_namespace(), std::move(foo_names), token_open_brace(),
+    std::move(nodes), token_close_brace());
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_namespace(),
+    foo_token,
+    token_open_brace(),
+
+    token_kw_namespace(),
+    bar_token,
+    token_open_brace(),
+    token_close_brace(),
+
+    token_close_brace()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_namespace();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest,
+       Namespace_InlineNestedNamespace_GetNamespaceWithMultipleNames)
+{
+  // namespace foo::bar {}
+  const auto foo_token = token_identifier("foo");
+  const auto bar_token = token_identifier("bar");
+  auto names = namespace_node::names_t{ { foo_token, token_coloncolon() },
+                                        { bar_token } };
+
+  auto expected_ast = std::make_unique<namespace_node>(
+    token_kw_namespace(), std::move(names), token_open_brace(),
+    namespace_node::nodes_t{}, token_close_brace());
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_namespace(),
+    foo_token,
+    token_coloncolon(),
+    bar_token,
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_namespace();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));

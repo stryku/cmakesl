@@ -147,7 +147,8 @@ TEST_P(Lex_Operator, GetOperator)
 }
 
 const auto values =
-  testing::Values(TokenTestState{ "=", token_type::equal },
+  testing::Values(TokenTestState{ "::", token_type::coloncolon },
+                  TokenTestState{ "=", token_type::equal },
                   TokenTestState{ "==", token_type::equalequal },
                   TokenTestState{ "-", token_type::minus },
                   TokenTestState{ "--", token_type::minusminus },
@@ -285,7 +286,8 @@ const auto values =
                   PureKeywordState{ "while", token_type::kw_while },
                   PureKeywordState{ "auto", token_type::kw_auto },
                   PureKeywordState{ "for", token_type::kw_for },
-                  PureKeywordState{ "break", token_type::kw_break });
+                  PureKeywordState{ "break", token_type::kw_break },
+                  PureKeywordState{ "namespace", token_type::kw_namespace });
 INSTANTIATE_TEST_CASE_P(Lexer, PureKeyword, values);
 }
 

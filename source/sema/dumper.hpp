@@ -2,6 +2,7 @@
 
 #include "sema/sema_node_visitor.hpp"
 
+#include <ast/namespace_node.hpp>
 #include <ostream>
 
 namespace cmsl::sema {
@@ -12,7 +13,8 @@ class sema_type;
 class dumper : public sema_node_visitor
 {
 public:
-  explicit dumper(std::ostream& out);
+  explicit dumper(std::ostream& os);
+  ~dumper();
 
   void visit(const variable_declaration_node&) override;
   void visit(const bool_value_node&) override;
@@ -41,6 +43,7 @@ public:
   void visit(const implicit_return_node&) override;
   void visit(const for_node&) override;
   void visit(const break_node&) override;
+  void visit(const namespace_node& node) override;
 
 private:
   class ident_guard
@@ -86,6 +89,8 @@ private:
   void visit_call_node(const call_node& node);
 
   void dump_type(const sema_type& type);
+  void dump_qualified_name(
+    const std::vector<ast::name_with_coloncolon>& names);
 
 private:
   std::ostream& m_out;

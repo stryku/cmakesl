@@ -4,21 +4,20 @@
 #include "exec/instance/instance_reference.hpp"
 
 namespace cmsl::exec {
-void execution_context::add_variable(cmsl::string_view name,
+void execution_context::add_variable(unsigned index,
                                      std::unique_ptr<instance_t> inst)
 {
-  current_scope().add_variable(name, std::move(inst));
+  current_scope().add_variable(index, std::move(inst));
 }
 
-execution_context::instance_t* execution_context::get_variable(
-  cmsl::string_view name)
+execution_context::instance_t* execution_context::get_variable(unsigned index)
 {
-  return current_scope().get_variable(name);
+  return current_scope().get_variable(index);
 }
 
-bool execution_context::variable_exists(cmsl::string_view name) const
+bool execution_context::variable_exists(unsigned index) const
 {
-  return current_scope().variable_exists(name);
+  return current_scope().variable_exists(index);
 }
 
 execution_context::scope_leaving_guard execution_context::enter_scope()
@@ -53,13 +52,13 @@ execution_context::scope_leaving_guard
 execution_context::enter_member_function_scope(instance_t* class_instance)
 {
   m_scopes.push(scope_context{ class_instance });
-  add_variable("this",
+  add_variable(k_this_index,
                std::make_unique<inst::instance_reference>(*class_instance));
   return scope_leaving_guard{ m_scopes };
 }
 
 execution_context::instance_t* execution_context::get_this()
 {
-  return get_variable("this");
+  return get_variable(k_this_index);
 }
 }

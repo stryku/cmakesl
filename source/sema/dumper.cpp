@@ -18,10 +18,17 @@ dumper::ident_guard::~ident_guard()
   m_ident.pop_back();
 }
 
-dumper::dumper(std::ostream& out)
-  : m_out{ out }
+dumper::dumper(std::ostream& os)
+  : m_out{ os }
 {
   m_ident.clear();
+  out() << "-sema dumping begin";
+}
+
+dumper::~dumper()
+{
+  m_ident.clear();
+  out() << "-sema dumping end";
 }
 
 dumper::ident_guard dumper::ident()
@@ -42,6 +49,7 @@ void dumper::visit(const variable_declaration_node& node)
   dump_type(node.type());
 
   out() << "-name: " << node.name().str();
+  out() << "-index: " << node.index();
 
   if (auto init = node.initialization()) {
     out() << "-initialization";
@@ -72,7 +80,11 @@ void dumper::visit(const string_value_node& node)
 
 void dumper::visit(const id_node& node)
 {
-  out() << "-identifier: id: " << node.id().str();
+  out() << "-identifier";
+  auto ig = ident();
+
+  dump_qualified_name(node.names());
+  out() << "-index: " << node.index();
 }
 
 void dumper::visit(const return_node& node)
@@ -400,6 +412,36 @@ void dumper::visit(const break_node&)
 void dumper::dump_type(const sema_type& type)
 {
   out() << "-type: " << &type << " " << type.name().to_string();
+}
+
+void dumper::visit(const namespace_node& node)
+{
+  out() << "-namespace";
+  auto ig = ident();
+
+  dump_qualified_name(node.names());
+
+  {
+    out() << "-nodes";
+    auto nodes_ig = ident();
+    for (const auto& child : node.nodes()) {
+      child->visit(*this);
+    }
+  }
+}
+
+void dumper::dump_qualified_name(
+  const std::vector<ast::name_with_coloncolon>& names)
+{
+  std::string name_access;
+  for (const auto& name_with_coloncolon : names) {
+    name_access += name_with_coloncolon.name.str();
+    if (name_with_coloncolon.coloncolon) {
+      name_access += "::";
+    }
+  }
+
+  out() << "-qualified name: " << name_access;
 }
 
 }

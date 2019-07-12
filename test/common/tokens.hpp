@@ -42,6 +42,7 @@ token_t token_xor();
 token_t token_xorequal();
 token_t token_string(cmsl::string_view str);
 token_t token_semicolon();
+token_t token_coloncolon();
 token_t token_comma();
 token_t token_less();
 token_t token_lessequal();
@@ -67,6 +68,7 @@ token_t token_kw_executable();
 token_t token_kw_auto();
 token_t token_kw_for();
 token_t token_kw_break();
+token_t token_kw_namespace();
 
 token_t token_from_larger_source(cmsl::string_view source,
                                  lexer::token_type type, unsigned begin,

@@ -162,7 +162,7 @@ const auto values = Values(
   // type name = 1
 );
 
-INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, VariableDeclaration, values);
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, VariableDeclaration, values);
 }
 
 namespace while_ {
@@ -203,7 +203,7 @@ const auto values = Values(
   // while(1)}
 );
 
-INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, While, values);
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, While, values);
 }
 
 namespace if_else {
@@ -281,7 +281,7 @@ const auto values = Values(
   // if(1){} else if(2){}else}
 );
 
-INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, IfElse, values);
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, IfElse, values);
 }
 
 namespace block {
@@ -316,7 +316,7 @@ const auto values = Values(
   // Missing semicolon after expression { return }
 );
 
-INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Block, values);
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, Block, values);
 }
 
 namespace function {
@@ -380,7 +380,7 @@ const auto values = Values(
                       cp_token, ob_token, cb_token } // ret foo(,) {}
 );
 
-INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Function, values);
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, Function, values);
 }
 
 namespace class_ {
@@ -439,7 +439,7 @@ const auto values = Values(
                       semicolon_token } // class foo { void baz() {} int bar };
 );
 
-INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Class, values);
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, Class, values);
 }
 
 namespace initializer_list {
@@ -475,7 +475,7 @@ const auto values = Values(
   tokens_container_t{ ob_token, comma_token, comma_token, cb_token } // { ,,
 );
 
-INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, InitializerList, values);
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, InitializerList, values);
 }
 
 namespace break_ {
@@ -495,6 +495,43 @@ TEST_P(Break, Malformed_ReportError)
 
 const auto values = Values(tokens_container_t{ token_kw_break() }); // break
 
-INSTANTIATE_TEST_CASE_P(Parser2ErrorTest, Break, values);
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, Break, values);
+}
+
+namespace namespace_ {
+using Namespace = TestWithParam<tokens_container_t>;
+
+TEST_P(Namespace, Malformed_ReportError)
+{
+  errs_t errs;
+  EXPECT_CALL(errs.mock, notify_error(_));
+
+  const auto tokens = GetParam();
+  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  auto result = p.parse_initializer_list();
+
+  EXPECT_THAT(result, IsNull());
+}
+
+const auto nmsp = token_kw_namespace();
+const auto ob = token_open_brace();
+const auto cb = token_close_brace();
+const auto foo_token = token_identifier("foo");
+const auto bar_token = token_identifier("bar");
+const auto cc = token_coloncolon();
+
+const auto values = Values(
+  tokens_container_t{ nmsp },                        // namespace
+  tokens_container_t{ nmsp, ob },                    // namespace {
+  tokens_container_t{ nmsp, cb },                    // namespace }
+  tokens_container_t{ nmsp, cb },                    // namespace }
+  tokens_container_t{ nmsp, ob, cb },                // namespace {}
+  tokens_container_t{ nmsp, cc, ob, cb },            // namespace :: {}
+  tokens_container_t{ nmsp, cc, foo_token, ob, cb }, // namespace ::foo {}
+  tokens_container_t{ nmsp, foo_token, cc, ob, cb }, // namespace foo:: {}
+  // namespace foo:bar {}
+  tokens_container_t{ nmsp, foo_token, cc, cc, bar_token, ob, cb });
+
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, Namespace, values);
 }
 }

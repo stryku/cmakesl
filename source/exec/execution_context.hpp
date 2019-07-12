@@ -9,6 +9,7 @@ class execution_context
 {
 private:
   using instance_t = inst::instance;
+  static constexpr unsigned k_this_index = static_cast<unsigned>(-1);
 
 public:
   class scope_leaving_guard
@@ -33,11 +34,11 @@ public:
     bool m_dismissed{ false };
   };
 
-  void add_variable(cmsl::string_view name, std::unique_ptr<instance_t> inst);
-  instance_t* get_variable(cmsl::string_view name);
+  void add_variable(unsigned index, std::unique_ptr<instance_t> inst);
+  instance_t* get_variable(unsigned index);
   instance_t* get_this();
 
-  bool variable_exists(cmsl::string_view name) const;
+  bool variable_exists(unsigned index) const;
 
   [[nodiscard]] scope_leaving_guard enter_scope();
   [[nodiscard]] scope_leaving_guard enter_member_function_scope(

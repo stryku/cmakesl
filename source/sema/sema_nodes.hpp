@@ -8,6 +8,8 @@
 #include "sema/sema_node_visitor.hpp"
 #include "sema/sema_type.hpp"
 
+#include <ast/name_with_coloncolon.hpp>
+#include <ast/namespace_node.hpp>
 #include <memory>
 
 #define VISIT_METHOD                                                          \
@@ -100,10 +102,12 @@ class id_node : public expression_node
 {
 public:
   explicit id_node(const ast::ast_node& ast_node, const sema_type& t,
-                   lexer::token id)
+                   std::vector<ast::name_with_coloncolon> names,
+                   unsigned index)
     : expression_node{ ast_node }
     , m_type{ t }
-    , m_id{ id }
+    , m_names{ std::move(names) }
+    , m_index{ index }
   {
   }
 
@@ -111,13 +115,19 @@ public:
 
   bool produces_temporary_value() const override { return false; }
 
-  lexer::token id() const { return m_id; }
+  const std::vector<ast::name_with_coloncolon>& names() const
+  {
+    return m_names;
+  }
+
+  unsigned index() const { return m_index; }
 
   VISIT_METHOD
 
 private:
   const sema_type& m_type;
-  lexer::token m_id;
+  std::vector<ast::name_with_coloncolon> m_names;
+  const unsigned m_index;
 };
 
 // Todo: handle return without expression when implementing void type.
@@ -201,11 +211,12 @@ class variable_declaration_node : public sema_node
 public:
   explicit variable_declaration_node(
     const ast::ast_node& ast_node, const sema_type& type, lexer::token name,
-    std::unique_ptr<expression_node> initialization)
+    std::unique_ptr<expression_node> initialization, unsigned index)
     : sema_node{ ast_node }
     , m_type{ type }
     , m_name{ name }
     , m_initialization{ std::move(initialization) }
+    , m_index{ index }
   {
     if (initialization) {
       initialization->set_parent(*this, passkey{});
@@ -217,6 +228,7 @@ public:
   lexer::token name() const { return m_name; }
 
   const sema_node* initialization() const { return m_initialization.get(); }
+  unsigned index() const { return m_index; }
 
   VISIT_METHOD
 
@@ -542,6 +554,7 @@ public:
   bool produces_temporary_value() const override { return false; }
 
   lexer::token member_name() const { return m_member_info.name; }
+  unsigned member_index() const { return m_member_info.index; }
 
   VISIT_METHOD
 
@@ -693,6 +706,16 @@ public:
     , m_iteration{ std::move(iteration) }
     , m_body{ std::move(body) }
   {
+    if (m_init) {
+      m_init->set_parent(*this, passkey{});
+    }
+    if (m_condition) {
+      m_condition->set_parent(*this, passkey{});
+    }
+    if (m_iteration) {
+      m_iteration->set_parent(*this, passkey{});
+    }
+    m_body->set_parent(*this, passkey{});
   }
 
   const sema_node* init() const { return m_init.get(); }
@@ -718,5 +741,30 @@ public:
   }
 
   VISIT_METHOD
+};
+
+class namespace_node : public sema_node
+{
+public:
+  using nodes_t = std::vector<std::unique_ptr<sema_node>>;
+  using names_t = std::vector<ast::name_with_coloncolon>;
+
+  explicit namespace_node(const ast::ast_node& ast_node, names_t names,
+                          nodes_t nodes)
+    : sema_node{ ast_node }
+    , m_names{ std::move(names) }
+    , m_nodes{ std::move(nodes) }
+  {
+  }
+
+  VISIT_METHOD
+
+  const nodes_t& nodes() const { return m_nodes; }
+
+  const names_t& names() const { return m_names; }
+
+private:
+  nodes_t m_nodes;
+  names_t m_names;
 };
 }

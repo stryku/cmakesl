@@ -46,6 +46,7 @@ const tokens_str_t& operators_str()
                               { token_type_t::greater, ">" },
                               { token_type_t::greaterequal, ">=" },
                               { token_type_t::semicolon, ";" },
+                              { token_type_t::coloncolon, "::" },
                               { token_type_t::comma, "," },
                               { token_type_t::kw_void, "void" },
                               { token_type_t::kw_int, "int" },
@@ -65,7 +66,8 @@ const tokens_str_t& operators_str()
                               { token_type_t::kw_project, "project" },
                               { token_type_t::kw_auto, "auto" },
                               { token_type_t::kw_for, "for" },
-                              { token_type_t::kw_break, "break" } };
+                              { token_type_t::kw_break, "break" },
+                              { token_type_t::kw_namespace, "namespace" } };
 
   return map;
 }
@@ -88,6 +90,46 @@ token_t simple_token(token_type_t type)
   const auto source = map.at(type);
   return token_from_source(type, source);
 }
+}
+
+token_t token_undef()
+{
+  return token_t{ token_type_t::undef };
+}
+
+token_t token_double(cmsl::string_view str)
+{
+  return details::token_from_source(token_type_t::double_, str);
+}
+
+token_t token_string(cmsl::string_view str)
+{
+  return details::token_from_source(token_type_t::string, str);
+}
+
+token_t token_integer(cmsl::string_view str)
+{
+  return details::token_from_source(token_type_t::integer, str);
+}
+
+token_t token_identifier(cmsl::string_view str)
+{
+  return details::token_from_source(token_type_t::identifier, str);
+}
+
+token_t token_from_larger_source(cmsl::string_view source, token_type_t type,
+                                 unsigned begin, unsigned end)
+{
+  source_location begin_loc;
+  begin_loc.line = 1u;
+  begin_loc.column = begin_loc.absolute = begin;
+
+  source_location end_loc;
+  end_loc.line = 1u;
+  end_loc.column = end_loc.absolute = end;
+  const auto source_range = cmsl::source_range{ begin_loc, end_loc };
+
+  return token_t{ type, source_range, cmsl::source_view{ source } };
 }
 
 token_t token_dot()
@@ -270,6 +312,11 @@ token_t token_semicolon()
   return details::simple_token(token_type_t::semicolon);
 }
 
+token_t token_coloncolon()
+{
+  return details::simple_token(token_type_t::coloncolon);
+}
+
 token_t token_comma()
 {
   return details::simple_token(token_type_t::comma);
@@ -370,43 +417,8 @@ token_t token_kw_break()
   return details::simple_token(token_type_t::kw_break);
 }
 
-token_t token_undef()
+token_t token_kw_namespace()
 {
-  return token_t{ token_type_t::undef };
-}
-
-token_t token_double(cmsl::string_view str)
-{
-  return details::token_from_source(token_type_t::double_, str);
-}
-
-token_t token_string(cmsl::string_view str)
-{
-  return details::token_from_source(token_type_t::string, str);
-}
-
-token_t token_integer(cmsl::string_view str)
-{
-  return details::token_from_source(token_type_t::integer, str);
-}
-
-token_t token_identifier(cmsl::string_view str)
-{
-  return details::token_from_source(token_type_t::identifier, str);
-}
-
-token_t token_from_larger_source(cmsl::string_view source, token_type_t type,
-                                 unsigned begin, unsigned end)
-{
-  source_location begin_loc;
-  begin_loc.line = 1u;
-  begin_loc.column = begin_loc.absolute = begin;
-
-  source_location end_loc;
-  end_loc.line = 1u;
-  end_loc.column = end_loc.absolute = end;
-  const auto source_range = cmsl::source_range{ begin_loc, end_loc };
-
-  return token_t{ type, source_range, cmsl::source_view{ source } };
+  return details::simple_token(token_type_t::kw_namespace);
 }
 }

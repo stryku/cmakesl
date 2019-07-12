@@ -22,6 +22,8 @@ class execution
 public:
   explicit execution(facade::cmake_facade& cmake_facade);
 
+  bool initialize_static_variables(const sema::translation_unit_node& node);
+
   // Todo: consider returning a reference
   // Todo: Call parameters should be a vector of std::unique_ptrs, not raw
   // pointers. Thanks to that, we'd avoid unnecessary instances copies.
@@ -35,7 +37,8 @@ public:
     const std::vector<inst::instance*>& params,
     inst::instances_holder_interface& instances) override;
 
-  inst::instance* lookup_identifier(cmsl::string_view identifier) override;
+  inst::instance* lookup_identifier(unsigned index) override;
+  inst::instance* get_class_instance() override;
 
 private:
   void execute_block(const sema::block_node& block);
@@ -71,6 +74,8 @@ private:
   facade::cmake_facade& m_cmake_facade;
   std::unique_ptr<inst::instance> m_function_return_value;
   std::stack<callstack_frame> m_callstack;
+  std::unordered_map<unsigned, std::unique_ptr<inst::instance>>
+    m_global_variables;
   bool m_breaking_from_loop{ false };
 };
 }

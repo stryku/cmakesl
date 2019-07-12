@@ -81,6 +81,9 @@ token_type lexer::get_next_token_type()
       return token_type::dot;
     }
   }
+  if (curr == ':') {
+    return get_scope_operator();
+  }
   if (curr == '=') {
     return get_equal_token_type();
   }
@@ -346,7 +349,19 @@ lexer::keyword_tokens_t lexer::create_keyword_tokens() const
   tokens["auto"] = token_type::kw_auto;
   tokens["for"] = token_type::kw_for;
   tokens["break"] = token_type::kw_break;
+  tokens["namespace"] = token_type::kw_namespace;
 
   return tokens;
+}
+
+token_type lexer::get_scope_operator()
+{
+  consume_char();
+  if (!is_end() && current() == ':') {
+    consume_char();
+    return token_type::coloncolon;
+  }
+
+  return token_type::undef;
 }
 }

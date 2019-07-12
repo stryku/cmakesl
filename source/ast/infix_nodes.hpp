@@ -2,6 +2,7 @@
 
 #include "ast/ast_node.hpp"
 #include "ast/ast_node_visitor.hpp"
+#include "ast/name_with_coloncolon.hpp"
 #include "lexer/token.hpp"
 
 #include <memory>
@@ -257,12 +258,14 @@ public:
 class id_node : public ast_node
 {
 public:
-  explicit id_node(token_t identifer)
-    : m_identifer{ identifer }
+  using names_t = std::vector<name_with_coloncolon>;
+
+  explicit id_node(names_t names)
+    : m_names{ std::move(names) }
   {
   }
 
-  token_t get_identifier() const { return m_identifer; }
+  const names_t& names() const { return m_names; }
 
   void visit(ast_node_visitor& visitor) const override
   {
@@ -271,16 +274,23 @@ public:
 
   source_location begin_location() const override
   {
-    return m_identifer.src_range().begin;
+    const auto starts_with_global_scope_accessor =
+      m_names.front().name.str().empty();
+
+    if (starts_with_global_scope_accessor) {
+      return m_names.front().coloncolon->src_range().begin;
+    } else {
+      return m_names.front().name.src_range().begin;
+    }
   }
 
   source_location end_location() const override
   {
-    return m_identifer.src_range().end;
+    return m_names.front().name.src_range().end;
   }
 
 private:
-  lexer::token m_identifer;
+  names_t m_names;
 };
 
 class initializer_list_node : public ast_node

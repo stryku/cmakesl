@@ -86,6 +86,8 @@ std::string to_string(lexer::token_type type)
       return "string";
     case lexer::token_type::semicolon:
       return ";";
+    case lexer::token_type::coloncolon:
+      return "::";
     case lexer::token_type::comma:
       return ",";
     case lexer::token_type::kw_void:
@@ -124,6 +126,8 @@ std::string to_string(lexer::token_type type)
       return "for keyword";
     case lexer::token_type::kw_break:
       return "break keyword";
+    case lexer::token_type::kw_namespace:
+      return "namespace keyword";
 
     case lexer::token_type::undef:
     default:

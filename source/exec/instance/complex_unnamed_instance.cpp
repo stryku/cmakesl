@@ -59,18 +59,28 @@ void complex_unnamed_instance::assign(instance_value_variant)
   CMSL_UNREACHABLE("Assigning value to a complex type");
 }
 
-instance* complex_unnamed_instance::find_member(cmsl::string_view name)
-{
-  auto found = m_members.find(name);
+// instance* complex_unnamed_instance::find_member(cmsl::string_view name)
+//{
+//  auto found = m_members.find(name);
+//  return found != std::end(m_members) ? found->second.get() : nullptr;
+//}
 
+instance* complex_unnamed_instance::find_member(unsigned index)
+{
+  auto found = m_members.find(index);
   return found != std::end(m_members) ? found->second.get() : nullptr;
 }
 
-const instance* complex_unnamed_instance::find_cmember(
-  cmsl::string_view name) const
-{
-  auto found = m_members.find(name);
+// const instance* complex_unnamed_instance::find_cmember(
+//  cmsl::string_view name) const
+//{
+//  auto found = m_members.find(name);
+//  return found != std::end(m_members) ? found->second.get() : nullptr;
+//}
 
+const instance* complex_unnamed_instance::find_cmember(unsigned index) const
+{
+  auto found = m_members.find(index);
   return found != std::end(m_members) ? found->second.get() : nullptr;
 }
 
@@ -121,7 +131,7 @@ complex_unnamed_instance::create_init_members() const
     std::cbegin(member_declarations), std::cend(member_declarations),
     std::inserter(members, std::end(members)), [](const auto& member_decl) {
       auto member_inst = instance_factory2{}.create(member_decl.ty);
-      return std::make_pair(member_decl.name.str(), std::move(member_inst));
+      return std::make_pair(member_decl.index, std::move(member_inst));
     });
 
   return members;

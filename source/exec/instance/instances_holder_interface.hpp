@@ -26,6 +26,7 @@ public:
   virtual void store(std::unique_ptr<instance> i) = 0;
   virtual std::unique_ptr<instance> gather_ownership(
     inst::instance* instance_ptr) = 0;
+  virtual bool owns(inst::instance* instance_ptr) const = 0;
 
   virtual inst::instance* create(instance_value_variant value) = 0;
   virtual inst::instance* create_reference(

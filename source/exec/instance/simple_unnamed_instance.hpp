@@ -17,8 +17,8 @@ public:
   const instance_value_variant& value_cref() const override;
   void assign(instance_value_variant val) override;
   std::unique_ptr<instance> copy() const override;
-  instance* find_member(cmsl::string_view name) override;
-  const instance* find_cmember(cmsl::string_view name) const override;
+  instance* find_member(unsigned index) override;
+  const instance* find_cmember(unsigned index) const override;
   bool is_fundamental() const;
 
   sema::single_scope_function_lookup_result_t find_function(

@@ -143,6 +143,16 @@ protected:
       std::move(type), name, tmp_token, std::move(params), tmp_token,
       std::move(body));
   }
+
+  std::vector<ast::name_with_coloncolon> create_qualified_name(token_t name)
+  {
+    return { { name } };
+  }
+
+  std::unique_ptr<ast::id_node> create_ast_id_node(token_t name)
+  {
+    return std::make_unique<ast::id_node>(create_qualified_name(name));
+  }
 };
 
 MATCHER(IsValidType, "")
@@ -259,9 +269,13 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Identifier_GetCorrectIdentifierNode)
   auto visitor = create_visitor(errs, ctx, ids_ctx);
 
   const auto id_token = token_identifier("foo");
-  const ast::id_node node{ id_token };
+  const auto q_name = create_qualified_name(id_token);
+  const auto identifier_index = 0u;
+  const ast::id_node node{ q_name };
 
-  EXPECT_CALL(ids_ctx, type_of(id_token.str())).WillOnce(Return(&valid_type));
+  auto expected_info =
+    identifiers_context::identifier_info{ valid_type, identifier_index };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(&expected_info));
 
   visitor.visit(node);
 
@@ -269,7 +283,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Identifier_GetCorrectIdentifierNode)
   const auto casted_node =
     dynamic_cast<const id_node*>(visitor.m_result_node.get());
   ASSERT_THAT(casted_node, NotNull());
-  EXPECT_THAT(casted_node->id(), Eq(id_token));
+  EXPECT_THAT(casted_node->names(), Eq(q_name));
   EXPECT_THAT(casted_node->type(),
               IsValidType()); // Todo: compare by reference
 }
@@ -288,7 +302,7 @@ TEST_F(
   auto variable_node =
     create_standalone_variable_declaration_node(type_ref, name_token);
 
-  EXPECT_CALL(ids_ctx, register_identifier(name_token, Ref(valid_type)));
+  EXPECT_CALL(ids_ctx, register_identifier(_, _));
 
   EXPECT_CALL(ctx, find_type(_))
     .WillOnce(Return(&valid_type))
@@ -379,7 +393,7 @@ TEST_F(
     .WillOnce(Return(&void_type_mock)) // Search for builtin void type.
     .WillOnce(Return(&valid_type));    // Search for declared variable type.
 
-  EXPECT_CALL(ids_ctx, register_identifier(name_token, Ref(valid_type)));
+  EXPECT_CALL(ids_ctx, register_identifier(_, _));
 
   visitor.visit(*variable_node);
 
@@ -414,8 +428,8 @@ TEST_F(
   const auto name_token = token_identifier("foo");
 
   const auto initialization_token = token_identifier("bar");
-  auto initializaton_node =
-    std::make_unique<ast::id_node>(initialization_token);
+  auto initializaton_node = std::make_unique<ast::id_node>(
+    create_qualified_name(initialization_token));
 
   auto variable_node = create_standalone_variable_declaration_node(
     type_representation, name_token,
@@ -426,10 +440,9 @@ TEST_F(
   EXPECT_CALL(ctx, find_reference_for(Ref(valid_type)))
     .WillRepeatedly(Return(&valid_type_reference));
 
-  EXPECT_CALL(ids_ctx, type_of(initialization_token.str()))
-    .WillRepeatedly(Return(&valid_type));
-  EXPECT_CALL(ids_ctx,
-              register_identifier(name_token, Ref(valid_type_reference)));
+  auto expected_info = identifiers_context::identifier_info{ valid_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(&expected_info));
+  EXPECT_CALL(ids_ctx, register_identifier(_, _));
 
   visitor.visit(*variable_node);
 
@@ -586,15 +599,12 @@ TEST_F(SemaBuilderAstVisitorTest,
   EXPECT_CALL(function_mock, return_type())
     .WillRepeatedly(ReturnRef(valid_type));
 
-  EXPECT_CALL(ids_ctx, type_of(param1_id_token.str()))
-    .WillRepeatedly(Return(&valid_type));
-
-  EXPECT_CALL(ids_ctx, type_of(param2_id_token.str()))
-    .WillRepeatedly(Return(&valid_type));
+  auto expected_info = identifiers_context::identifier_info{ valid_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(&expected_info));
 
   // Todo: use mocks
-  auto param1_ast_node = std::make_unique<ast::id_node>(param1_id_token);
-  auto param2_ast_node = std::make_unique<ast::id_node>(param2_id_token);
+  auto param1_ast_node = create_ast_id_node(param1_id_token);
+  auto param2_ast_node = create_ast_id_node(param2_id_token);
 
   ast::function_call_node::params_t ast_params;
   ast_params.emplace_back(std::move(param1_ast_node));
@@ -729,7 +739,7 @@ TEST_F(
   const sema_type lhs_type{ ctx,
                             ast::type_representation{ lhs_id_token },
                             {} };
-  auto lhs_ast_node = std::make_unique<ast::id_node>(lhs_id_token);
+  auto lhs_ast_node = create_ast_id_node(lhs_id_token);
 
   const auto fun_name_token = token_identifier("bar");
   function_signature signature;
@@ -737,8 +747,8 @@ TEST_F(
   auto node =
     create_member_function_call_node(std::move(lhs_ast_node), fun_name_token);
 
-  EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
-    .WillOnce(Return(&lhs_type));
+  auto expected_info = identifiers_context::identifier_info{ lhs_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(&expected_info));
 
   const auto lookup_result =
     single_scope_function_lookup_result_t{ &function_mock };
@@ -778,14 +788,14 @@ TEST_F(
   const sema_type lhs_type{ ctx,
                             ast::type_representation{ lhs_id_token },
                             {} };
-  auto lhs_ast_node = std::make_unique<ast::id_node>(lhs_id_token);
+  auto lhs_ast_node = create_ast_id_node(lhs_id_token);
 
   const auto param1_id_token = token_identifier("baz");
   const auto param2_id_token = token_identifier("qux");
 
   // Todo: use mocks
-  auto param1_ast_node = std::make_unique<ast::id_node>(param1_id_token);
-  auto param2_ast_node = std::make_unique<ast::id_node>(param2_id_token);
+  auto param1_ast_node = create_ast_id_node(param1_id_token);
+  auto param2_ast_node = create_ast_id_node(param2_id_token);
   ast::function_call_node::params_t ast_params;
   ast_params.emplace_back(std::move(param1_ast_node));
   ast_params.emplace_back(std::move(param2_ast_node));
@@ -800,8 +810,13 @@ TEST_F(
   auto node = create_member_function_call_node(
     std::move(lhs_ast_node), fun_name_token, std::move(ast_params));
 
-  EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
-    .WillRepeatedly(Return(&lhs_type));
+  auto expected_lhs_info =
+    identifiers_context::identifier_info{ lhs_type, 0u };
+  auto expected_info = identifiers_context::identifier_info{ valid_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_))
+    .WillOnce(Return(&expected_lhs_info))
+    .WillOnce(Return(&expected_info))
+    .WillOnce(Return(&expected_info));
 
   const auto lookup_result =
     single_scope_function_lookup_result_t{ &function_mock };
@@ -809,12 +824,6 @@ TEST_F(
     .WillOnce(Return(lookup_result));
 
   EXPECT_CALL(function_mock, signature()).WillRepeatedly(ReturnRef(signature));
-
-  EXPECT_CALL(ids_ctx, type_of(param1_id_token.str()))
-    .WillRepeatedly(Return(&valid_type));
-
-  EXPECT_CALL(ids_ctx, type_of(param2_id_token.str()))
-    .WillRepeatedly(Return(&valid_type));
 
   EXPECT_CALL(function_mock, return_type())
     .WillRepeatedly(ReturnRef(valid_type));
@@ -845,7 +854,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Block_GetBlockNode)
 
   auto block = create_block_node_ptr();
 
-  EXPECT_CALL(ids_ctx, enter_ctx());
+  EXPECT_CALL(ids_ctx, enter_local_ctx());
   EXPECT_CALL(ids_ctx, leave_ctx());
 
   visitor.visit(*block);
@@ -885,7 +894,7 @@ TEST_F(SemaBuilderAstVisitorTest,
   EXPECT_CALL(ctx, add_function(_));
 
   // Two scopes: parameters and block
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
 
   visitor.visit(*node);
@@ -937,8 +946,8 @@ TEST_F(SemaBuilderAstVisitorTest,
   EXPECT_CALL(ctx, add_function(_));
 
   // Two scopes: parameters and block
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
-  EXPECT_CALL(ids_ctx, register_identifier(param_name_token, Ref(valid_type)));
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, register_identifier(_, _));
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
 
   visitor.visit(*node);
@@ -973,7 +982,7 @@ TEST_F(SemaBuilderAstVisitorTest,
   EXPECT_CALL(ctx, add_function(_));
 
   // Two scopes: parameters and block
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
 
   visitor.visit(*node);
@@ -1019,7 +1028,7 @@ TEST_F(
   EXPECT_CALL(ctx, add_function(_));
 
   // Three scopes: parameters and two blocks
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(3);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(3);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(3);
 
   visitor.visit(*node);
@@ -1061,7 +1070,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_ClassEmpty_GetEmptyClassNode)
 
   EXPECT_CALL(ctx, add_type(_)).Times(2); // Type and reference
 
-  EXPECT_CALL(ids_ctx, enter_ctx());
+  EXPECT_CALL(ids_ctx, enter_global_ctx(class_name_token.str()));
   EXPECT_CALL(ids_ctx, leave_ctx());
 
   visitor.visit(node);
@@ -1113,9 +1122,8 @@ TEST_F(SemaBuilderAstVisitorTest,
 
   EXPECT_CALL(ctx, add_type(_)).Times(2); // Type and reference
 
-  EXPECT_CALL(ids_ctx, enter_ctx());
-  EXPECT_CALL(ids_ctx,
-              register_identifier(member_name_token, Ref(valid_type)));
+  EXPECT_CALL(ids_ctx, enter_global_ctx(class_name_token.str()));
+  EXPECT_CALL(ids_ctx, register_identifier(_, _));
   EXPECT_CALL(ids_ctx, leave_ctx());
 
   visitor.visit(node);
@@ -1170,7 +1178,8 @@ TEST_F(SemaBuilderAstVisitorTest,
 
   // There are three identifier contextes: class, function parameters and
   // function body.
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(3);
+  EXPECT_CALL(ids_ctx, enter_global_ctx(class_name_token.str())).Times(1);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(3);
 
   visitor.visit(node);
@@ -1238,9 +1247,9 @@ TEST_F(SemaBuilderAstVisitorTest,
 
   // There are three identifier contextes: class, function parameters and
   // function body. Member is registered in class context.
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(3);
-  EXPECT_CALL(ids_ctx,
-              register_identifier(member_name_token, Ref(valid_type)));
+  EXPECT_CALL(ids_ctx, enter_global_ctx(class_name_token.str())).Times(1);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, register_identifier(_, _));
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(3);
 
   visitor.visit(node);
@@ -1266,18 +1275,17 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_WhileNode)
   auto visitor = create_visitor(errs, ctx, ids_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
-  auto condition_ast_node =
-    std::make_unique<ast::id_node>(condition_identifier_token);
+  auto condition_ast_node = create_ast_id_node(condition_identifier_token);
   auto body = create_block_node_ptr();
   auto conditional_ast_node = std::make_unique<ast::conditional_node>(
     tmp_token, std::move(condition_ast_node), tmp_token, std::move(body));
 
   ast::while_node node(tmp_token, std::move(conditional_ast_node));
 
-  EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
-    .WillOnce(Return(&valid_type));
+  auto expected_info = identifiers_context::identifier_info{ valid_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(&expected_info));
 
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
 
   visitor.visit(node);
@@ -1297,8 +1305,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfNode_GetIfNode)
   auto visitor = create_visitor(errs, ctx, ids_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
-  auto condition_ast_node =
-    std::make_unique<ast::id_node>(condition_identifier_token);
+  auto condition_ast_node = create_ast_id_node(condition_identifier_token);
   auto body = create_block_node_ptr();
   auto conditional_ast_node = std::make_unique<ast::conditional_node>(
     tmp_token, std::move(condition_ast_node), tmp_token, std::move(body));
@@ -1309,10 +1316,10 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfNode_GetIfNode)
 
   ast::if_else_node node(std::move(ifs), std::nullopt);
 
-  EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
-    .WillOnce(Return(&valid_type));
+  auto expected_info = identifiers_context::identifier_info{ valid_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(&expected_info));
 
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
 
   visitor.visit(node);
@@ -1337,8 +1344,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseNode_GetIfElseNode)
   auto visitor = create_visitor(errs, ctx, ids_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
-  auto condition_ast_node =
-    std::make_unique<ast::id_node>(condition_identifier_token);
+  auto condition_ast_node = create_ast_id_node(condition_identifier_token);
   auto body = create_block_node_ptr();
   auto conditional_ast_node = std::make_unique<ast::conditional_node>(
     tmp_token, std::move(condition_ast_node), tmp_token, std::move(body));
@@ -1353,10 +1359,10 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseNode_GetIfElseNode)
 
   ast::if_else_node node(std::move(ifs), std::move(else_value));
 
-  EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
-    .WillOnce(Return(&valid_type));
+  auto expected_info = identifiers_context::identifier_info{ valid_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(&expected_info));
 
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(4);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(4);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(4);
 
   visitor.visit(node);
@@ -1381,15 +1387,13 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfNode_GetIfElseIfNode)
   auto visitor = create_visitor(errs, ctx, ids_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
-  auto condition_ast_node =
-    std::make_unique<ast::id_node>(condition_identifier_token);
+  auto condition_ast_node = create_ast_id_node(condition_identifier_token);
   auto body = create_block_node_ptr();
   auto conditional_ast_node = std::make_unique<ast::conditional_node>(
     tmp_token, std::move(condition_ast_node), tmp_token, std::move(body));
 
   const auto condition_identifier_token_2 = token_identifier("bar");
-  auto condition_ast_node_2 =
-    std::make_unique<ast::id_node>(condition_identifier_token_2);
+  auto condition_ast_node_2 = create_ast_id_node(condition_identifier_token_2);
   auto body_2 = create_block_node_ptr();
   auto conditional_ast_node_2 = std::make_unique<ast::conditional_node>(
     tmp_token, std::move(condition_ast_node_2), tmp_token, std::move(body_2));
@@ -1402,13 +1406,10 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfNode_GetIfElseIfNode)
 
   ast::if_else_node node(std::move(ifs), std::nullopt);
 
-  EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
-    .WillOnce(Return(&valid_type));
+  auto expected_info = identifiers_context::identifier_info{ valid_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(&expected_info));
 
-  EXPECT_CALL(ids_ctx, type_of(condition_identifier_token_2.str()))
-    .WillOnce(Return(&valid_type));
-
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(4);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(4);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(4);
 
   visitor.visit(node);
@@ -1433,15 +1434,13 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfElseNode_GetIfElseIfElseNode)
   auto visitor = create_visitor(errs, ctx, ids_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
-  auto condition_ast_node =
-    std::make_unique<ast::id_node>(condition_identifier_token);
+  auto condition_ast_node = create_ast_id_node(condition_identifier_token);
   auto body = create_block_node_ptr();
   auto conditional_ast_node = std::make_unique<ast::conditional_node>(
     tmp_token, std::move(condition_ast_node), tmp_token, std::move(body));
 
   const auto condition_identifier_token_2 = token_identifier("bar");
-  auto condition_ast_node_2 =
-    std::make_unique<ast::id_node>(condition_identifier_token_2);
+  auto condition_ast_node_2 = create_ast_id_node(condition_identifier_token_2);
   auto body_2 = create_block_node_ptr();
   auto conditional_ast_node_2 = std::make_unique<ast::conditional_node>(
     tmp_token, std::move(condition_ast_node_2), tmp_token, std::move(body_2));
@@ -1458,13 +1457,10 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfElseNode_GetIfElseIfElseNode)
 
   ast::if_else_node node(std::move(ifs), std::move(else_value));
 
-  EXPECT_CALL(ids_ctx, type_of(condition_identifier_token.str()))
-    .WillOnce(Return(&valid_type));
+  auto expected_info = identifiers_context::identifier_info{ valid_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(&expected_info));
 
-  EXPECT_CALL(ids_ctx, type_of(condition_identifier_token_2.str()))
-    .WillOnce(Return(&valid_type));
-
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(6);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(6);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(6);
 
   visitor.visit(node);
@@ -1490,7 +1486,7 @@ TEST_F(SemaBuilderAstVisitorTest,
   auto visitor = create_visitor(errs, ctx, ids_ctx);
 
   const auto lhs_id_token = token_identifier("foo");
-  auto lhs_node = std::make_unique<ast::id_node>(lhs_id_token);
+  auto lhs_node = create_ast_id_node(lhs_id_token);
 
   const auto member_name_token = token_identifier("bar");
   std::vector<member_info> members;
@@ -1502,8 +1498,8 @@ TEST_F(SemaBuilderAstVisitorTest,
   ast::class_member_access_node node{ std::move(lhs_node), tmp_token,
                                       member_name_token };
 
-  EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
-    .WillOnce(Return(&lhs_type));
+  auto expected_info = identifiers_context::identifier_info{ lhs_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(&expected_info));
 
   visitor.visit(node);
 
@@ -1521,7 +1517,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
 {
   errs_t errs;
   StrictMock<sema_context_mock> ctx;
-  StrictMock<identifiers_context_mock> ids_ctx;
+  NiceMock<identifiers_context_mock> ids_ctx;
   auto visitor = create_visitor(errs, ctx, ids_ctx);
 
   const auto variable_name_token = token_identifier("foo");
@@ -1568,11 +1564,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
   EXPECT_CALL(ctx, add_function(_));
   EXPECT_CALL(ctx, add_type(_)).Times(2); // Type and reference
 
-  EXPECT_CALL(ids_ctx,
-              register_identifier(variable_name_token, Ref(valid_type)));
-
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(4);
-  EXPECT_CALL(ids_ctx, leave_ctx()).Times(4);
+  EXPECT_CALL(ids_ctx, register_identifier(_, _));
 
   visitor.visit(node);
 
@@ -1611,20 +1603,18 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_BinaryOperatorNode)
                                     ast::type_representation{ token_kw_int() },
                                     {} };
   const auto lhs_id_token = token_identifier("foo");
-  auto lhs_node = std::make_unique<ast::id_node>(lhs_id_token);
+  auto lhs_node = create_ast_id_node(lhs_id_token);
   const auto rhs_id_token = token_identifier("bar");
-  auto rhs_node = std::make_unique<ast::id_node>(rhs_id_token);
+  auto rhs_node = create_ast_id_node(rhs_id_token);
 
   const auto operator_token = token_plus();
 
   ast::binary_operator_node node{ std::move(lhs_node), operator_token,
                                   std::move(rhs_node) };
 
-  EXPECT_CALL(ids_ctx, type_of(lhs_id_token.str()))
-    .WillOnce(Return(&lhs_and_rhs_type));
-
-  EXPECT_CALL(ids_ctx, type_of(rhs_id_token.str()))
-    .WillOnce(Return(&lhs_and_rhs_type));
+  auto expected_info =
+    identifiers_context::identifier_info{ lhs_and_rhs_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(&expected_info));
 
   const auto expected_signature = function_signature{
     operator_token, { parameter_declaration{ lhs_and_rhs_type, lhs_id_token } }
@@ -1670,7 +1660,7 @@ TEST_F(
                              std::move(body) };
 
   // One ids context covering initialization and one for body.
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
 
   visitor.visit(node);
@@ -1716,10 +1706,9 @@ TEST_F(
                              std::move(body) };
 
   // One ids context covering initialization and one for body.
-  EXPECT_CALL(ids_ctx, enter_ctx()).Times(2);
+  EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
   EXPECT_CALL(ids_ctx, leave_ctx()).Times(2);
-  EXPECT_CALL(ids_ctx,
-              register_identifier(variable_name_token, Ref(valid_type)));
+  EXPECT_CALL(ids_ctx, register_identifier(_, _));
 
   EXPECT_CALL(ctx, type())
     .WillRepeatedly(Return(sema_context::context_type::namespace_));

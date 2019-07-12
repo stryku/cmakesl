@@ -15,40 +15,40 @@ scope_context::scope_context(instance_t* class_instance)
 {
 }
 
-void scope_context::add_variable(cmsl::string_view name,
+void scope_context::add_variable(unsigned index,
                                  std::unique_ptr<inst::instance> inst)
 {
-  m_variables[name] = std::move(inst);
+  m_variables[index] = std::move(inst);
 }
 
-inst::instance* scope_context::get_variable(cmsl::string_view name)
+inst::instance* scope_context::get_variable(unsigned index)
 {
-  const auto it = m_variables.find(name);
+  const auto it = m_variables.find(index);
   if (it != m_variables.cend()) {
     return it->second.get();
   } else if (m_parent != nullptr) {
-    return m_parent->get_variable(name);
+    return m_parent->get_variable(index);
   } else if (m_class_instance != nullptr) {
-    return m_class_instance->find_member(name);
+    return m_class_instance->find_member(index);
   }
 
   return nullptr;
 }
 
-const inst::instance* scope_context::get_variable(cmsl::string_view name) const
+const inst::instance* scope_context::get_variable(unsigned index) const
 {
-  const auto it = m_variables.find(name);
+  const auto it = m_variables.find(index);
   if (it != m_variables.cend()) {
     return it->second.get();
   } else if (m_parent != nullptr) {
-    return m_parent->get_variable(name);
+    return m_parent->get_variable(index);
   }
 
   return nullptr;
 }
 
-bool scope_context::variable_exists(cmsl::string_view name) const
+bool scope_context::variable_exists(unsigned index) const
 {
-  return get_variable(name) != nullptr;
+  return get_variable(index) != nullptr;
 }
 }

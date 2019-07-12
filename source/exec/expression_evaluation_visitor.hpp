@@ -45,7 +45,8 @@ public:
 
   void visit(const sema::id_node& node) override
   {
-    result = m_ctx.ids_context.lookup_identifier(node.id().str());
+    const auto str = node.names().back().name.str();
+    result = m_ctx.ids_context.lookup_identifier(node.index());
   }
 
   void visit(const sema::binary_operator_node& node) override
@@ -92,9 +93,7 @@ public:
   {
     auto evaluated_params = evaluate_call_parameters(node.param_expressions());
     const auto& function = node.function();
-    auto class_instance = m_ctx.ids_context.lookup_identifier(
-      "this"); // Todo: it probably can be done better (to not search by
-               // string)
+    auto class_instance = m_ctx.ids_context.get_class_instance();
     auto result_instance = m_ctx.caller.call_member(
       *class_instance, function, evaluated_params, m_ctx.instances);
     result = result_instance.get();
@@ -126,7 +125,7 @@ public:
   void visit(const sema::class_member_access_node& node) override
   {
     auto lhs = evaluate_child(node.lhs());
-    result = lhs->find_member(node.member_name().str());
+    result = lhs->find_member(node.member_index());
   }
 
   void visit(const sema::return_node& node) override

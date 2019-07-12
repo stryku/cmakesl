@@ -8,5 +8,6 @@ struct member_info
 {
   lexer::token name;
   const sema_type& ty;
+  unsigned index;
 };
 }

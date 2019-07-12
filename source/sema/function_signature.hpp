@@ -10,6 +10,7 @@ struct parameter_declaration
 {
   const sema_type& ty;
   lexer::token name;
+  unsigned index;
 };
 
 struct function_signature
