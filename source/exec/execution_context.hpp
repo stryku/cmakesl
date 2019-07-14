@@ -11,14 +11,37 @@ private:
   using instance_t = inst::instance;
 
 public:
+  class scope_leaving_guard
+  {
+  public:
+    explicit scope_leaving_guard(std::stack<scope_context>& scopes)
+      : m_scopes{ scopes }
+    {
+    }
+
+    ~scope_leaving_guard()
+    {
+      if (!m_dismissed) {
+        m_scopes.pop();
+      }
+    }
+
+    void dismiss() { m_dismissed = true; }
+
+  private:
+    std::stack<scope_context>& m_scopes;
+    bool m_dismissed{ false };
+  };
+
   void add_variable(cmsl::string_view name, std::unique_ptr<instance_t> inst);
   instance_t* get_variable(cmsl::string_view name);
   instance_t* get_this();
 
   bool variable_exists(cmsl::string_view name) const;
 
-  void enter_scope();
-  void enter_member_function_scope(instance_t* class_instance);
+  [[nodiscard]] scope_leaving_guard enter_scope();
+  [[nodiscard]] scope_leaving_guard enter_member_function_scope(
+    instance_t* class_instance);
   void leave_scope();
 
 private:

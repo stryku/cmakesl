@@ -14,6 +14,7 @@ cmsl_add_test(
         int_type_smoke_test.cpp
         list_type_smoke_test.cpp
         reference_smoke_tests.cpp
+        scopes_smoke_test.cpp
         smoke_test_fixture.hpp
         string_type_smoke_tests.cpp
         variable_type_deduction.cpp

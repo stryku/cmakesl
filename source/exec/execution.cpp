@@ -53,6 +53,7 @@ inst::instance* execution::lookup_identifier(cmsl::string_view identifier)
 
 void execution::execute_block(const sema::block_node& block)
 {
+  auto guard = m_callstack.top().exec_ctx.enter_scope();
   for (const auto& expr : block.nodes()) {
     execute_node(*expr);
     if (returning_from_function() || m_breaking_from_loop) {
@@ -81,6 +82,8 @@ void execution::execute_variable_declaration(
 
 void execution::execute_node(const sema::sema_node& node)
 {
+  // Todo: consider introducing a visitor for such execution, instead of
+  // dynamic casts.
   if (auto ret_node = dynamic_cast<const sema::return_node*>(&node)) {
     m_function_return_value = execute_infix_expression(node);
   } else if (auto ret_node =
@@ -100,6 +103,8 @@ void execution::execute_node(const sema::sema_node& node)
     execute_for_node(*for_);
   } else if (auto break_ = dynamic_cast<const sema::break_node*>(&node)) {
     execute_break_node(*break_);
+  } else if (auto block = dynamic_cast<const sema::block_node*>(&node)) {
+    execute_block(*block);
   } else {
     // A stand alone infix expression.
     (void)execute_infix_expression(node);
@@ -121,7 +126,9 @@ void execution::enter_function_scope(
   const sema::sema_function& fun, const std::vector<inst::instance*>& params)
 {
   m_callstack.push(callstack_frame{ fun });
-  m_callstack.top().exec_ctx.enter_scope();
+  auto guard = m_callstack.top().exec_ctx.enter_scope();
+  // Scope is explicitly left in leave_function_scope() method.
+  guard.dismiss();
   auto& exec_ctx = m_callstack.top().exec_ctx;
   const auto& declared_params = fun.signature().params;
 
@@ -136,7 +143,10 @@ void execution::enter_function_scope(
   const std::vector<inst::instance*>& params)
 {
   m_callstack.push(callstack_frame{ fun });
-  m_callstack.top().exec_ctx.enter_member_function_scope(&class_instance);
+  auto guard =
+    m_callstack.top().exec_ctx.enter_member_function_scope(&class_instance);
+  // Scope is explicitly left in leave_function_scope() method.
+  guard.dismiss();
   auto& exec_ctx = m_callstack.top().exec_ctx;
   const auto& declared_params = fun.signature().params;
 
@@ -198,7 +208,7 @@ void execution::execute_while_node(const sema::while_node& node)
 
 void execution::execute_for_node(const sema::for_node& node)
 {
-  m_callstack.top().exec_ctx.enter_scope();
+  auto guard = m_callstack.top().exec_ctx.enter_scope();
 
   if (node.init()) {
     if (auto var_decl =
@@ -232,8 +242,6 @@ void execution::execute_for_node(const sema::for_node& node)
       }
     }
   }
-
-  m_callstack.top().exec_ctx.leave_scope();
 }
 
 void execution::execute_break_node(const sema::break_node& node)
