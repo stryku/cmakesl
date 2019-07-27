@@ -34,6 +34,7 @@ class sema_node_visitor
 {
 public:
   virtual ~sema_node_visitor() = default;
+  virtual void visit(const initializer_list_node& node) = 0;
 
   virtual void visit(const variable_declaration_node& node) = 0;
   virtual void visit(const bool_value_node& node) = 0;
@@ -57,7 +58,6 @@ public:
   virtual void visit(const translation_unit_node& node) = 0;
   virtual void visit(const cast_to_reference_node& node) = 0;
   virtual void visit(const cast_to_value_node& node) = 0;
-  virtual void visit(const initializer_list_node& node) = 0;
   virtual void visit(const add_subdirectory_node& node) = 0;
   virtual void visit(const implicit_return_node& node) = 0;
   virtual void visit(const for_node& node) = 0;

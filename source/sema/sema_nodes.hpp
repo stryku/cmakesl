@@ -221,6 +221,7 @@ public:
   VISIT_METHOD
 
 private:
+  unsigned m_index;
   const sema_type& m_type;
   const lexer::token m_name;
   std::unique_ptr<expression_node> m_initialization;
