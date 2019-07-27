@@ -1,8 +1,8 @@
 #include "exec/compiled_source.hpp"
 #include "ast/ast_node.hpp"
+#include "sema/builtin_token_provider.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_node.hpp"
-#include "sema/builtin_token_provider.hpp"
 
 namespace cmsl::exec {
 compiled_source::compiled_source(
@@ -33,5 +33,9 @@ const sema::sema_function* compiled_source::get_main() const
     lexer::make_token(lexer::token_type::identifier, "main");
   const auto lookup_result = m_global_context.find_function(main_token);
   return lookup_result.front().front(); // Todo: handle no main function
+}
+const sema::sema_node& compiled_source::sema_tree() const
+{
+  return *m_sema_tree;
 }
 }

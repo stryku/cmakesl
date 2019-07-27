@@ -28,4 +28,5 @@ source_location translation_unit_node::end_location() const
   return (!m_nodes.empty()) ? m_nodes.front()->end_location()
                             : source_location{};
 }
+
 }

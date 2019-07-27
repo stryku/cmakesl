@@ -31,6 +31,8 @@ public:
   const sema::sema_function* get_main() const;
   const sema::sema_context& get_global_context() const;
 
+  const sema::sema_node& sema_tree() const;
+
 private:
   std::unique_ptr<ast::ast_node> m_ast_tree;
   std::unique_ptr<sema::sema_context> m_builtin_context;

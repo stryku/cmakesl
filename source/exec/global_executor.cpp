@@ -2,10 +2,10 @@
 #include "exec/compiled_source.hpp"
 #include "exec/execution.hpp"
 #include "exec/source_compiler.hpp"
+#include "sema/dumper.hpp"
 #include "sema/user_sema_function.hpp"
 
 #include "cmake_facade.hpp"
-#include "global_executor.hpp"
 
 #include <errors/error.hpp>
 #include <fstream>

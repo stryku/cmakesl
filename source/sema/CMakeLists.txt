@@ -26,6 +26,8 @@ set(SEMA_SOURCES
     builtin_token_provider.cpp
     builtin_token_provider.hpp
     builtin_types_finder.hpp
+    dumper.cpp
+    dumper.hpp
     factories.cpp
     factories.hpp
     function_lookup_result.hpp
