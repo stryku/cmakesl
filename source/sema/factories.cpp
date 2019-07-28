@@ -11,6 +11,7 @@
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
 #include "sema/type_builder.hpp"
+#include "sema/type_references_container.hpp"
 #include "sema/user_sema_function.hpp"
 
 #include <generated/builtin_token_providers.hpp>
@@ -41,16 +42,17 @@ sema_function_factory::~sema_function_factory()
 {
 }
 
-sema_context_impl& sema_context_factory::create(const sema_context* parent)
+sema_context_impl& sema_context_factory::create(std::string name,
+                                                const sema_context* parent)
 {
   return create_impl<sema_context_impl>(
-    parent, sema_context::context_type::namespace_);
+    name, parent, sema_context::context_type::namespace_);
 }
 
 sema_context_impl& sema_context_factory::create_class(
-  const sema_context* parent)
+  std::string name, const sema_context* parent)
 {
-  return create_impl<sema_context_impl>(parent,
+  return create_impl<sema_context_impl>(name, parent,
                                         sema_context::context_type::class_);
 }
 
@@ -62,44 +64,65 @@ const sema_type& sema_type_factory::create(const sema_context& ctx,
                                            ast::type_representation name,
                                            std::vector<member_info> members)
 {
-  return create_impl<sema_type>(ctx, name, std::move(members));
+  return create_and_add<sema_type>(name.primary_name_token(), ctx, name,
+                                   std::move(members));
 }
 
 const sema_type& sema_type_factory::create_builtin(
   const sema_context& ctx, ast::type_representation name,
   std::vector<member_info> members)
 {
-  return create_impl<sema_type>(sema_type::builtin_tag{}, ctx, name,
-                                std::move(members));
+  return create_and_add<sema_type>(name.primary_name_token(),
+                                   sema_type::builtin_tag{}, ctx, name,
+                                   std::move(members));
 }
 
 const sema_type& sema_type_factory::create_homogeneous_generic(
   const sema_context& ctx, ast::type_representation name,
   const sema_type& value_type)
 {
-  return create_impl<homogeneous_generic_type>(ctx, std::move(name),
-                                               value_type);
+  return create_and_add<homogeneous_generic_type>(
+    name.primary_name_token(), ctx, std::move(name), value_type);
 }
 
 const sema_type& sema_type_factory::create_reference(
   const sema_type& referenced_type)
 {
+  const auto primary_name_token = referenced_type.name().primary_name_token();
   if (referenced_type.is_builtin()) {
-    return create_impl<sema_type>(sema_type::builtin_tag{},
-                                  sema_type_reference{ referenced_type });
+    return create_and_add<sema_type>(primary_name_token,
+                                     sema_type::builtin_tag{},
+                                     sema_type_reference{ referenced_type });
   } else {
-    return create_impl<sema_type>(sema_type_reference{ referenced_type });
+    return create_and_add<sema_type>(primary_name_token,
+                                     sema_type_reference{ referenced_type });
   }
+}
+
+sema_type_factory::sema_type_factory(types_context& types_ctx)
+  : m_types_ctx{ types_ctx }
+{
 }
 
 sema_type_factory::~sema_type_factory()
 {
 }
+
 const sema_type& sema_type_factory::create_designated_initializer(
   const sema_context& ctx, ast::type_representation name)
 {
-  return create_impl<sema_type>(sema_type::designated_initializer_tag{}, ctx,
-                                name);
+  return create_and_add<sema_type>(name.primary_name_token(),
+                                   sema_type::designated_initializer_tag{},
+                                   ctx, name);
+}
+
+template <typename T, typename... Args>
+const sema_type& sema_type_factory::create_and_add(
+  const lexer::token& primary_name, Args&&... args)
+{
+  const auto& created = create_impl<T>(std::forward<Args>(args)...);
+  m_types_ctx.register_type(primary_name, created);
+  return created;
 }
 
 sema_generic_type_factory::sema_generic_type_factory(
@@ -107,21 +130,24 @@ sema_generic_type_factory::sema_generic_type_factory(
   sema_type_factory& type_factory, sema_function_factory& function_factory,
   sema_context_factory& context_factory,
   errors::errors_observer& errors_observer,
-  const builtin_token_provider& builtin_token_provider)
-  : m_generic_types_context{ generic_types_context }
+  const builtin_token_provider& builtin_token_provider,
+  builtin_types_accessor builtin_types, types_context& types_ctx)
+  : sema_type_factory{ types_ctx }
+  , m_generic_types_context{ generic_types_context }
   , m_creation_context{ creation_context }
   , m_type_factory{ type_factory }
   , m_function_factory{ function_factory }
   , m_context_factory{ context_factory }
   , m_errors_observer{ errors_observer }
   , m_builtin_token_provider{ builtin_token_provider }
+  , m_builtin_types{ builtin_types }
 {
 }
 
 const sema_type* sema_generic_type_factory::create_generic(
   const ast::type_representation& name)
 {
-  const auto primary_name = name.primary_name();
+  const auto primary_name = name.generic_name().primary_name();
   if (primary_name.str() == "list") {
     return create_list(name);
   }
@@ -137,13 +163,12 @@ const sema_type* sema_generic_type_factory::create_list(
     errors::error err;
     err.message = "list<> expects one generic parameter, got " +
       std::to_string(name.nested_types().size());
-    err.range = source_range{ name.primary_name().src_range().begin,
-                              name.tokens().back().src_range().end };
+    err.range = name.src_range();
     err.type = errors::error_type::error;
-    const auto source = name.primary_name().source();
+    const auto source = name.generic_name().primary_name().source();
     err.source_path = source.path();
     const auto line_info =
-      source.line(name.primary_name().src_range().begin.line);
+      source.line(name.generic_name().primary_name().src_range().begin.line);
     err.line_start_pos = line_info.start_pos;
     err.line_snippet = line_info.line;
     return err;
@@ -178,10 +203,9 @@ const sema_type* sema_generic_type_factory::create_list(
   // We can safely dereference it.
   const auto& list_type =
     *m_generic_types_context.find_type(list_name_representation);
-  builtin_types_finder finder{ m_creation_context };
-  const auto& int_type = finder.find_int();
-  const auto& void_type = finder.find_void();
-  const auto& bool_type = finder.find_bool();
+  const auto& int_type = m_builtin_types.int_;
+  const auto& void_type = m_builtin_types.void_;
+  const auto& bool_type = m_builtin_types.bool_;
 
   const auto token_provider = m_builtin_token_provider.list();
 
@@ -409,20 +433,22 @@ const sema_type* sema_generic_type_factory::create_list(
 }
 
 const sema_type* sema_generic_type_factory::try_get_or_create_value_type(
-  const ast::type_representation& name)
+  const ast::type_representation& type_name)
 {
-  const auto found = m_creation_context.find_type(name);
-  if (!name.is_generic()) {
+  const auto found = m_creation_context.find_type(type_name);
+  if (!type_name.is_generic()) {
     if (!found) {
       errors::error err;
       err.message = "value type not found";
-      err.range = source_range{ name.primary_name().src_range().begin,
-                                name.tokens().back().src_range().end };
+      err.range = source_range{
+        type_name.generic_name().primary_name().src_range().begin,
+        type_name.generic_name().tokens.back().src_range().end
+      };
       err.type = errors::error_type::error;
-      const auto source = name.primary_name().source();
+      const auto source = type_name.generic_name().primary_name().source();
       err.source_path = source.path();
-      const auto line_info =
-        source.line(name.primary_name().src_range().begin.line);
+      const auto line_info = source.line(
+        type_name.generic_name().primary_name().src_range().begin.line);
       err.line_start_pos = line_info.start_pos;
       err.line_snippet = line_info.line;
       m_errors_observer.nofify_error(err);
@@ -434,7 +460,7 @@ const sema_type* sema_generic_type_factory::try_get_or_create_value_type(
   if (!found) {
     // If it's a generic type and it's not found, try create it and return
     // result.
-    return create_generic(name);
+    return create_generic(type_name);
   }
 
   return found;
@@ -449,7 +475,9 @@ sema_generic_type_factory::prepare_list_name_representation(
   tokens.front() = name_token;
   auto nested_types = name.nested_types();
 
-  return ast::type_representation{ std::move(tokens),
-                                   std::move(nested_types) };
+  auto generic_name =
+    ast::type_representation::generic_type_name{ std::move(tokens),
+                                                 std::move(nested_types) };
+  return ast::type_representation{ std::move(generic_name) };
 }
 }

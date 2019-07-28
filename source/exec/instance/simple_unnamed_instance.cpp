@@ -1,5 +1,6 @@
 #include "exec/instance/simple_unnamed_instance.hpp"
 
+#include "common/algorithm.hpp"
 #include "common/assert.hpp"
 #include "exec/instance/instance_value_variant.hpp"
 #include "sema/sema_type.hpp"
@@ -20,7 +21,7 @@ simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type& type,
 
 instance_value_variant simple_unnamed_instance::create_init_data() const
 {
-  const auto name = m_sema_type.name().primary_name().str();
+  const auto name = m_sema_type.name().to_string();
   // Todo: find better way than comparing strings.
   if (name == "bool") {
     return false;
@@ -32,7 +33,7 @@ instance_value_variant simple_unnamed_instance::create_init_data() const
     return std::string{};
   } else if (name == "version") {
     return version_value{ 0u };
-  } else if (name == "list") {
+  } else if (starts_with(name, "list")) {
     return list_value{};
   } else if (name == "project") {
     return project_value{ "" };

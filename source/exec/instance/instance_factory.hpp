@@ -12,6 +12,7 @@ class type;
 }
 
 namespace sema {
+class builtin_types_accessor;
 class sema_context;
 class sema_type;
 }
@@ -25,8 +26,9 @@ class instance;
 class instance_factory2
 {
 public:
-  std::unique_ptr<instance> create(instance_value_variant value,
-                                   const sema::sema_context& ctx) const;
+  std::unique_ptr<instance> create(
+    instance_value_variant value,
+    const sema::builtin_types_accessor& builtin_types) const;
   std::unique_ptr<instance> create_reference(
     instance& referenced_instance) const;
   std::unique_ptr<instance> create(const sema::sema_type& type) const;

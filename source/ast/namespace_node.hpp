@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ast/ast_node.hpp"
-#include "ast/name_with_coloncolon.hpp"
+#include "ast/qualified_name.hpp"
 
 #include <memory>
 #include <vector>

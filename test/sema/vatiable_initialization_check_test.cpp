@@ -20,23 +20,24 @@ using ::testing::_;
 
 using namespace cmsl::test::common;
 
-const sema_context_impl valid_context;
+const sema_context_impl valid_context{ "" };
 const sema_type valid_type{ valid_context,
                             ast::type_representation{
-                              token_identifier("foo") },
+                              ast::qualified_name{ token_identifier("foo") } },
                             {} };
 const sema_type different_type{ valid_context,
-                                ast::type_representation{
-                                  token_identifier("bar") },
+                                ast::type_representation{ ast::qualified_name{
+                                  token_identifier("bar") } },
                                 {} };
 const sema_type designated_initialization_type{
   sema_type::designated_initializer_tag{}, valid_context,
-  ast::type_representation{ token_identifier("designated_type") }
+  ast::type_representation{
+    ast::qualified_name{ token_identifier("designated_type") } }
 };
 
 const sema_type complex_type{
   valid_context,
-  ast::type_representation{ token_identifier("foo") },
+  ast::type_representation{ ast::qualified_name{ token_identifier("foo") } },
   { member_info{ token_identifier("member_foo"), valid_type, 0 } }
 };
 

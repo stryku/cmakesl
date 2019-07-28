@@ -32,9 +32,7 @@ public:
       dynamic_cast<const ast::standalone_variable_declaration_node*>(&ast_node)
         ->variable_declaration();
 
-    add_entry(variable_decl.type().primary_name(), cmsl_index_entry_type::type,
-              node.type().name().primary_name().source().path(),
-              node.type().name().primary_name().src_range().begin.absolute);
+    add_type_entry(variable_decl.type(), node.type());
 
     m_identifiers_context.register_identifier(variable_decl.name(),
                                               { node.type(), node.index() });
@@ -132,7 +130,7 @@ public:
 
   void visit(const sema::class_node& node) override
   {
-    m_identifiers_context.enter_global_ctx(node.name().str());
+    m_identifiers_context.enter_global_ctx(node.name());
 
     for (const auto& member : node.members()) {
       member->visit(*this);
@@ -219,12 +217,49 @@ private:
     }
   }
 
+  //  void add_type_entry(const ast::type_representation& type_representation,
+  //                      const sema::sema_type& type)
+  //  {
+  //
+  //    add_entry(type_representation.primary_name(),
+  //    cmsl_index_entry_type::type,
+  //              type.name().primary_name().source().path(),
+  //              type.name().primary_name().src_range().begin.absolute);
+  //  }
+
   void add_type_entry(const ast::type_representation& type_representation,
                       const sema::sema_type& type)
   {
-    add_entry(type_representation.primary_name(), cmsl_index_entry_type::type,
-              type.name().primary_name().source().path(),
-              type.name().primary_name().src_range().begin.absolute);
+    if (type_representation.is_generic()) {
+      // Todo: handle generic types
+    } else {
+      const auto& qual_name = type_representation.qual_name();
+      add_qualified_type_access_entries(qual_name.names(), type);
+    }
+  }
+
+  void add_qualified_type_access_entries(
+    const std::vector<ast::name_with_coloncolon>& names,
+    const sema::sema_type& type)
+  {
+    std::vector<ast::name_with_coloncolon> namespaces{
+      std::cbegin(names), std::prev(std::cend(names))
+    };
+
+    while (!namespaces.empty()) {
+      const auto declaration_token =
+        m_identifiers_context.declaration_token_of_ctx(namespaces);
+      add_entry(namespaces.back().name, cmsl_index_entry_type::namespace_,
+                declaration_token->source().path(),
+                declaration_token->src_range().begin.absolute);
+
+      namespaces.pop_back();
+    }
+
+    const auto& type_name_token = names.back().name;
+    add_entry(type_name_token, cmsl_index_entry_type::type,
+              type.name().source().path(),
+              type.name().src_range().begin.absolute);
   }
 
   void add_entry(const lexer::token& entry_token, cmsl_index_entry_type type,

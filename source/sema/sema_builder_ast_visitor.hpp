@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast/ast_node_visitor.hpp"
+#include "sema/builtin_types_accessor.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_node.hpp"
 #include "sema/type_member_info.hpp"
@@ -32,6 +33,7 @@ class expression_node;
 class variable_declaration_node;
 class sema_type;
 class identifiers_context;
+class types_context;
 class sema_type_factory;
 class sema_function_factory;
 class sema_context_factory;
@@ -40,6 +42,7 @@ class block_node;
 class return_node;
 class sema_context_impl;
 struct function_signature;
+class type_references_container;
 
 struct function_parsing_context
 {
@@ -70,11 +73,12 @@ public:
   explicit sema_builder_ast_visitor(
     sema_context& generic_types_context, sema_context& ctx,
     errors::errors_observer& errs, identifiers_context& ids_context,
-    sema_type_factory& type_factory, sema_function_factory& function_factory,
+    types_context& ty_context, sema_type_factory& type_factory,
+    sema_function_factory& function_factory,
     sema_context_factory& context_factory,
     add_subdirectory_handler& add_subdirectory_handler,
     const builtin_token_provider& builtin_token_provider,
-    parsing_context& parsing_ctx);
+    parsing_context& parsing_ctx, builtin_types_accessor builtin_types);
 
   void visit(const ast::block_node& node) override;
   void visit(const ast::class_node& node) override;
@@ -116,10 +120,10 @@ private:
   std::unique_ptr<expression_node> to_expression(
     std::unique_ptr<sema_node> node) const;
 
-  void raise_note(const lexer::token token, const std::string& message);
+  void raise_note(const lexer::token& token, const std::string& message);
   void raise_note(const source_view& source, const source_range& src_range,
                   const std::string& message);
-  void raise_error(const lexer::token token, const std::string& message);
+  void raise_error(const lexer::token& token, const std::string& message);
   void raise_error(const source_view& source, const source_range& src_range,
                    const std::string& message);
 
@@ -150,7 +154,7 @@ private:
   public:
     explicit ids_ctx_guard(identifiers_context& ids_context);
     explicit ids_ctx_guard(identifiers_context& ids_context,
-                           cmsl::string_view name);
+                           lexer::token name);
     ~ids_ctx_guard();
 
     ids_ctx_guard(ids_ctx_guard&&);
@@ -165,7 +169,7 @@ private:
   };
 
   ids_ctx_guard ids_guard();
-  ids_ctx_guard global_ids_guard(cmsl::string_view name);
+  ids_ctx_guard global_ids_guard(lexer::token name);
 
   struct function_declaration
   {
@@ -214,13 +218,14 @@ private:
   sema_context& m_ctx;
   errors::errors_observer& m_errors_observer;
   identifiers_context& m_ids_context;
+  types_context& m_types_context;
   sema_type_factory& m_type_factory;
   sema_function_factory& m_function_factory;
   sema_context_factory& m_context_factory;
   add_subdirectory_handler& m_add_subdirectory_handler;
   const builtin_token_provider& m_builtin_token_provider;
-
   parsing_context& m_parsing_ctx;
+  builtin_types_accessor m_builtin_types;
 
   static unsigned m_identifier_index;
 };

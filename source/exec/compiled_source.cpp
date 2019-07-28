@@ -12,7 +12,8 @@ compiled_source::compiled_source(
   const sema::sema_context& global_context,
   std::unique_ptr<sema::sema_node> sema_tree, source_view source,
   std::unique_ptr<sema::builtin_token_provider> builtin_token_provider,
-  std::unique_ptr<sema::identifiers_context> ids_ctx)
+  std::unique_ptr<sema::identifiers_context> ids_ctx,
+  sema::builtin_types_accessor builtin_types)
   : m_ast_tree{ std::move(ast_tree) }
   , m_builtin_context{ std::move(builtin_context) }
   , m_global_context{ std::move(global_context) }
@@ -20,6 +21,7 @@ compiled_source::compiled_source(
   , m_source{ source }
   , m_builtin_token_provider{ std::move(builtin_token_provider) }
   , m_ids_ctx{ std::move(ids_ctx) }
+  , m_builtin_types{ builtin_types }
 {
 }
 
@@ -46,5 +48,10 @@ const sema::sema_node& compiled_source::sema_tree() const
 sema::identifiers_context& compiled_source::get_ids_ctx()
 {
   return *m_ids_ctx;
+}
+
+sema::builtin_types_accessor compiled_source::builtin_types() const
+{
+  return m_builtin_types;
 }
 }

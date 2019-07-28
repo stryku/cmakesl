@@ -62,9 +62,9 @@ std::unique_ptr<ast_node> parser::constructor(token_t class_name)
 
   // Let's pretend that ctors return something.
   return std::make_unique<user_function_node>(
-    type_representation{ class_name }, *type_name, param_values->open_paren,
-    std::move(param_values->params), param_values->close_paren,
-    std::move(block_expr));
+    type_representation{ qualified_name{ class_name } }, *type_name,
+    param_values->open_paren, std::move(param_values->params),
+    param_values->close_paren, std::move(block_expr));
 }
 
 std::unique_ptr<ast_node> parser::parse_class()
@@ -641,7 +641,7 @@ std::unique_ptr<ast_node> parser::parse_factor()
     eat(token_type_t::close_paren);
     return e;
   } else if (current_is_possibly_qualified_name()) {
-    return parse_possibly_qualified_name();
+    return parse_identifier();
   } else if (current_is(token_type_t::open_brace)) {
     return parse_expression_starting_from_brace();
   }
@@ -991,34 +991,13 @@ std::vector<name_with_coloncolon> parser::parse_namespace_declaration_names()
   return names;
 }
 
-std::unique_ptr<id_node> parser::parse_possibly_qualified_name()
+std::unique_ptr<id_node> parser::parse_identifier()
 {
-  id_node::names_t names;
-
-  const auto starts_with_global_scope_access =
-    current_is(token_type_t::coloncolon);
-  if (starts_with_global_scope_access) {
-    auto name = lexer::make_token(token_type_t::identifier, "");
-    auto coloncolon = eat(token_type_t::coloncolon);
-
-    names.emplace_back(name_with_coloncolon{ name, coloncolon });
+  auto names = parse_possibly_qualified_name();
+  if (!names) {
+    return nullptr;
   }
-
-  while (true) {
-    auto name = eat(token_type_t::identifier);
-    if (!name) {
-      return nullptr;
-    }
-
-    if (auto coloncolon = try_eat(token_type_t::coloncolon)) {
-      names.emplace_back(name_with_coloncolon{ *name, coloncolon });
-    } else {
-      names.emplace_back(name_with_coloncolon{ *name });
-      break;
-    }
-  }
-
-  return std::make_unique<id_node>(std::move(names));
+  return std::make_unique<id_node>(std::move(*names));
 }
 
 std::unique_ptr<ternary_operator_node> parser::parse_rest_of_ternary_operator(

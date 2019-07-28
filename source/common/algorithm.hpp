@@ -49,4 +49,10 @@ bool contains_if(Container&& container, Predicate&& pred)
   return std::find_if(std::cbegin(container), std::cend(container), pred) !=
     std::cend(container);
 }
+
+inline bool starts_with(cmsl::string_view str, cmsl::string_view pattern)
+{
+  return str.size() >= pattern.size() &&
+    cmsl::string_view{ str.data(), pattern.size() } == pattern;
+}
 }

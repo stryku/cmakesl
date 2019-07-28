@@ -51,19 +51,25 @@ std::optional<type_representation> type_parser::generic_type()
   token_container_t tokens;
   tokens.emplace_back(*name_token);
   tokens.emplace_back(*less_token);
-  tokens.insert(std::end(tokens), std::cbegin(value_type->tokens()),
-                std::cend(value_type->tokens()));
+  const auto& value_type_tokens = value_type->tokens();
+  tokens.insert(std::end(tokens), std::cbegin(value_type_tokens),
+                std::cend(value_type_tokens));
   tokens.emplace_back(*greater_token);
+
+  type_representation::generic_type_name name{ std::move(tokens),
+                                               { std::move(*value_type) } };
 
   const auto is_reference = next_is(token_type_t::amp);
   if (is_reference) {
     const auto ref_token = eat(token_type_t::amp);
-    return type_representation{ tokens,
-                                *ref_token,
-                                { std::move(*value_type) } };
+    type_representation::generic_type_name name{ std::move(tokens),
+                                                 { std::move(*value_type) } };
+
+    return type_representation{ std::move(name),
+                                type_representation::is_reference_tag{} };
   }
 
-  return type_representation{ tokens, { std::move(*value_type) } };
+  return type_representation{ std::move(name) };
 }
 
 bool type_parser::generic_type_starts() const
@@ -90,31 +96,35 @@ std::optional<type_parser::token_t> type_parser::eat_generic_type_token()
 
 std::optional<type_representation> type_parser::simple_type()
 {
-  const auto type_token = eat_simple_type_token();
-  if (!type_token) {
+  const auto qualified_name = eat_simple_type_name();
+  if (!qualified_name) {
     return {};
   }
 
   const auto is_reference = current_is(token_type_t::amp);
   if (is_reference) {
     const auto ref_token = eat(token_type_t::amp);
-    return type_representation{ *type_token, *ref_token };
+    //    return type_representation{ *type_token, *ref_token };
+    return type_representation{ *qualified_name,
+                                type_representation::is_reference_tag{} };
   }
 
-  return type_representation{ *type_token };
+  return type_representation{ *qualified_name };
 }
 
-std::optional<type_parser::token_t> type_parser::eat_simple_type_token()
+std::optional<ast::qualified_name> type_parser::eat_simple_type_name()
 {
   const auto token_type = curr_type();
 
-  if (is_builtin_simple_type(token_type) ||
-      token_type == token_type_t::identifier) {
-    return eat();
-  } else {
-    m_err_observer.raise_expected_type(get_token_for_error_report());
-    return {};
+  if (is_builtin_simple_type(token_type) || possibly_qualified_name_starts()) {
+    auto name = parse_possibly_qualified_name();
+    if (name) {
+      return qualified_name{ std::move(*name) };
+    }
   }
+
+  m_err_observer.raise_expected_type(get_token_for_error_report());
+  return {};
 }
 
 bool type_parser::is_builtin_simple_type(token_type_t token_type) const
@@ -133,6 +143,5 @@ bool type_parser::is_builtin_simple_type(token_type_t token_type) const
 std::optional<type_representation> type_parser::parse_type()
 {
   return generic_type_starts() ? generic_type() : simple_type();
-  ;
 }
 }

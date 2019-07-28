@@ -1,6 +1,7 @@
 #pragma once
 
 #include "exec/instance/instances_holder_interface.hpp"
+#include "sema/builtin_types_accessor.hpp"
 
 #include <memory>
 #include <vector>
@@ -21,7 +22,7 @@ class instance;
 class instances_holder : public instances_holder_interface
 {
 public:
-  explicit instances_holder(const sema::sema_context& sema_ctx);
+  explicit instances_holder(sema::builtin_types_accessor builtin_types);
 
   void store(std::unique_ptr<instance> i) override;
 
@@ -38,7 +39,7 @@ public:
   inst::instance* create_void() override;
 
 private:
-  const sema::sema_context& m_sema_ctx;
+  sema::builtin_types_accessor m_builtin_types;
   std::vector<std::unique_ptr<inst::instance>> m_instances;
 };
 }

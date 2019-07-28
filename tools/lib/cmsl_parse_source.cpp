@@ -10,6 +10,7 @@
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_builder.hpp"
 #include "sema/sema_function.hpp"
+#include "sema/types_context.hpp"
 
 namespace cmsl::sema::details {
 class add_subdir_handler : public add_subdirectory_handler
@@ -48,27 +49,34 @@ cmsl_parsed_source* cmsl_parse_source(
                             source_view, tokens };
   auto ast_tree = parser.parse_translation_unit();
 
-  parsed_source->builtin_context =
-    std::make_unique<cmsl::sema::builtin_sema_context>(
-      parsed_source->context.type_factory,
-      parsed_source->context.function_factory,
-      parsed_source->context.context_factory,
-      parsed_source->context.errors_observer,
-      *(parsed_source->builtin_token_provider));
+  auto builtin_ctx = std::make_unique<cmsl::sema::builtin_sema_context>(
+    parsed_source->context.type_factory,
+    parsed_source->context.function_factory,
+    parsed_source->context.context_factory,
+    parsed_source->context.errors_observer,
+    *(parsed_source->builtin_token_provider),
+    parsed_source->context.types_ctx);
+
+  auto builtin_types = builtin_ctx->builtin_types();
+
+  parsed_source->builtin_context = std::move(builtin_ctx);
 
   auto& global_context = parsed_source->context.context_factory.create(
-    parsed_source->builtin_context.get());
+    "", parsed_source->builtin_context.get());
 
   cmsl::sema::identifiers_context_impl ids_ctx;
+  cmsl::sema::types_context_impl types_context;
   cmsl::sema::sema_builder sema_builder{
     global_context,
     parsed_source->context.errors_observer,
     ids_ctx,
+    types_context,
     parsed_source->context.type_factory,
     parsed_source->context.function_factory,
     parsed_source->context.context_factory,
     *parsed_source->add_subdirectory_handler,
-    *(parsed_source->builtin_token_provider)
+    *(parsed_source->builtin_token_provider),
+    builtin_types
   };
 
   auto sema_tree = sema_builder.build(*ast_tree);

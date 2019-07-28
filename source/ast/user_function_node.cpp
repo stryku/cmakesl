@@ -56,7 +56,7 @@ void user_function_node::visit(ast_node_visitor& visitor) const
 
 source_location user_function_node::begin_location() const
 {
-  return m_return_type.tokens().front().src_range().begin;
+  return m_return_type.src_range().begin;
 }
 
 source_location user_function_node::end_location() const

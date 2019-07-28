@@ -1,15 +1,16 @@
 #pragma once
 
 #include "sema/sema_context.hpp"
+#include "sema/types_context.hpp"
 
 namespace cmsl::sema {
-class builtin_types_finder
+class builtin_types_finder2
 {
 private:
   using token_type_t = lexer::token_type;
 
 public:
-  explicit builtin_types_finder(const sema_context& ctx)
+  explicit builtin_types_finder2(const types_context& ctx)
     : m_ctx{ ctx }
   {
   }
@@ -61,7 +62,8 @@ public:
 
   const sema_type& find_reference_for(const sema_type& t) const
   {
-    return *m_ctx.find_reference_for(t);
+    const auto& parent_ctx = t.context().parent();
+    return *parent_ctx->find_reference_for(t);
   }
 
 private:
@@ -79,11 +81,12 @@ private:
   const sema_type& find(const char (&tok)[N]) const
   {
     static const auto token = make_token(token_type, tok);
-    static const auto name_reference = ast::type_representation{ token };
-    return *m_ctx.find_type(name_reference);
+    static const auto name_reference =
+      ast::type_representation{ ast::qualified_name{ token } };
+    return *m_ctx.find(name_reference.qual_name().names());
   }
 
 private:
-  const sema_context& m_ctx;
+  const types_context& m_ctx;
 };
 }

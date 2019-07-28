@@ -12,14 +12,14 @@ using ::testing::NotNull;
 
 using namespace cmsl::test::common;
 
-const sema_context_impl valid_context;
+const sema_context_impl valid_context{ "" };
 const sema_type valid_type{ valid_context,
                             ast::type_representation{
-                              token_identifier("foo") },
+                              ast::qualified_name{ token_identifier("foo") } },
                             {} };
 const sema_type different_type{ valid_context,
-                                ast::type_representation{
-                                  token_identifier("bar") },
+                                ast::type_representation{ ast::qualified_name{
+                                  token_identifier("bar") } },
                                 {} };
 
 class IdentifiersContextTest : public ::testing::Test
@@ -51,7 +51,7 @@ TEST_F(IdentifiersContextTest, SingleCtx_NotRegistered_TypeOf_ReturnsNull)
   ctx.enter_local_ctx();
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  EXPECT_THAT(got_info, IsNull());
+  EXPECT_EQ(got_info, std::nullopt);
 }
 
 TEST_F(IdentifiersContextTest, MultipleCtxs_NotRegistered_TypeOf_ReturnsNull)
@@ -62,7 +62,7 @@ TEST_F(IdentifiersContextTest, MultipleCtxs_NotRegistered_TypeOf_ReturnsNull)
   ctx.enter_local_ctx();
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  EXPECT_THAT(got_info, IsNull());
+  EXPECT_EQ(got_info, std::nullopt);
 }
 
 TEST_F(IdentifiersContextTest,
@@ -76,7 +76,7 @@ TEST_F(IdentifiersContextTest,
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -98,7 +98,7 @@ TEST_F(
                           { different_type, different_identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -115,7 +115,7 @@ TEST_F(IdentifiersContextTest,
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -133,7 +133,7 @@ TEST_F(IdentifiersContextTest,
   ctx.enter_local_ctx();
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -156,7 +156,7 @@ TEST_F(
                           { different_type, different_identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &different_type);
   EXPECT_THAT(got_info->index, different_identifier_index);
 }
@@ -180,7 +180,7 @@ TEST_F(
   ctx.leave_ctx();
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -189,31 +189,31 @@ TEST_F(IdentifiersContextTest,
        WithinGlobalCtxWithNothingRegistered_TypeOf_ReturnsNull)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("foo");
+  ctx.enter_global_ctx(token_identifier("foo"));
 
   const auto got_info = ctx.info_of(create_qualified_name("bar"));
-  EXPECT_THAT(got_info, IsNull());
+  EXPECT_EQ(got_info, std::nullopt);
 }
 
 TEST_F(IdentifiersContextTest,
        WithinGlobalCtxWithNothingRegistered_TypeOfSameNameAsCtx_ReturnsNull)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("foo");
+  ctx.enter_global_ctx(token_identifier("foo"));
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  EXPECT_THAT(got_info, IsNull());
+  EXPECT_EQ(got_info, std::nullopt);
 }
 
 TEST_F(IdentifiersContextTest,
        AfterLeavingGlobalCtxWithNothingRegistered_TypeOf_ReturnsNull)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("foo");
+  ctx.enter_global_ctx(token_identifier("foo"));
   ctx.leave_ctx();
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  EXPECT_THAT(got_info, IsNull());
+  EXPECT_EQ(got_info, std::nullopt);
 }
 
 TEST_F(IdentifiersContextTest,
@@ -226,7 +226,7 @@ TEST_F(IdentifiersContextTest,
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -235,14 +235,14 @@ TEST_F(IdentifiersContextTest,
        SingleGlobalCtx_TypeOfRegistered_TypeOf_ReturnsCorrectType)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -252,7 +252,7 @@ TEST_F(
   SingleGlobalCtx_RegisteredAmongOtherIdentifiers_TypeOf_ReturnsCorrectType)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
@@ -264,7 +264,7 @@ TEST_F(
                           { different_type, different_identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -273,15 +273,15 @@ TEST_F(IdentifiersContextTest,
        MultipleGlobalCtxs_RegisteredInChildCtx_TypeOf_ReturnsCorrectType)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("ctx");
-  ctx.enter_global_ctx("other_ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("other_ctx"));
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -290,16 +290,16 @@ TEST_F(IdentifiersContextTest,
        MultipleGlobalCtxs_RegisteredInParentCtx_TypeOf_ReturnsCorrectType)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
-  ctx.enter_global_ctx("other_ctx");
+  ctx.enter_global_ctx(token_identifier("other_ctx"));
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -309,12 +309,12 @@ TEST_F(
   MultipleGlobalCtxs_lRegisteredInParentAndChildCtxs_TypeOf_ReturnsTypeFromNestedCtx)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
-  ctx.enter_global_ctx("other_ctx");
+  ctx.enter_global_ctx(token_identifier("other_ctx"));
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
@@ -322,7 +322,7 @@ TEST_F(
                           { different_type, different_identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &different_type);
   EXPECT_THAT(got_info->index, different_identifier_index);
 }
@@ -332,12 +332,12 @@ TEST_F(
   MultipleGlobal_RegisteredInParentAndChildCtxs_TypeOfAfterLeavingCtx_ReturnsFromParentCtx)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
-  ctx.enter_global_ctx("other_ctx");
+  ctx.enter_global_ctx(token_identifier("other_ctx"));
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
@@ -347,7 +347,7 @@ TEST_F(
   ctx.leave_ctx();
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -364,7 +364,7 @@ TEST_F(IdentifiersContextTest,
   ctx.enter_local_ctx();
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -381,7 +381,7 @@ TEST_F(IdentifiersContextTest,
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -391,7 +391,7 @@ TEST_F(
   GlobalAndLocalCtxs_RegisteredInLocalAndGlobalCtx_TypeOf_ReturnsFromLocalCtx)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx("ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
@@ -405,7 +405,7 @@ TEST_F(
                           { different_type, different_identifier_index });
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &different_type);
   EXPECT_THAT(got_info->index, different_identifier_index);
 }
@@ -419,7 +419,7 @@ TEST_F(IdentifiersContextTest,
   const auto identifier_index = 0u;
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
-  ctx.enter_global_ctx("ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
@@ -428,7 +428,7 @@ TEST_F(IdentifiersContextTest,
 
   // ::foo
   const auto got_info = ctx.info_of(create_qualified_name("foo", ""));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &valid_type);
   EXPECT_THAT(got_info->index, identifier_index);
 }
@@ -443,7 +443,7 @@ TEST_F(
   const auto identifier_index = 0u;
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
-  ctx.enter_global_ctx("ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
@@ -453,7 +453,7 @@ TEST_F(
   {
     // ctx::foo
     const auto got_info = ctx.info_of(create_qualified_name("foo", "ctx"));
-    ASSERT_THAT(got_info, NotNull());
+    ASSERT_NE(got_info, std::nullopt);
     EXPECT_THAT(&(got_info->type.get()), &different_type);
     EXPECT_THAT(got_info->index, different_identifier_index);
   }
@@ -461,7 +461,7 @@ TEST_F(
 
     // ::ctx::foo
     const auto got_info = ctx.info_of(create_qualified_name("foo", "", "ctx"));
-    ASSERT_THAT(got_info, NotNull());
+    ASSERT_NE(got_info, std::nullopt);
     EXPECT_THAT(&(got_info->type.get()), &different_type);
     EXPECT_THAT(got_info->index, different_identifier_index);
   }
@@ -476,7 +476,7 @@ TEST_F(IdentifiersContextTest,
   const auto identifier_index = 0u;
   ctx.register_identifier(declaration_token, { valid_type, identifier_index });
 
-  ctx.enter_global_ctx("ctx");
+  ctx.enter_global_ctx(token_identifier("ctx"));
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
@@ -492,7 +492,7 @@ TEST_F(IdentifiersContextTest,
 
   // ::ctx::foo
   const auto got_info = ctx.info_of(create_qualified_name("foo", "", "ctx"));
-  ASSERT_THAT(got_info, NotNull());
+  ASSERT_NE(got_info, std::nullopt);
   EXPECT_THAT(&(got_info->type.get()), &different_type);
   EXPECT_THAT(got_info->index, different_identifier_index);
 }

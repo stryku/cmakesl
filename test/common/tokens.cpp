@@ -62,6 +62,7 @@ const tokens_str_t& operators_str()
                               { token_type_t::kw_true, "true" },
                               { token_type_t::kw_false, "false" },
                               { token_type_t::kw_string, "string" },
+                              { token_type_t::kw_version, "version" },
                               { token_type_t::kw_library, "library" },
                               { token_type_t::kw_executable, "executable" },
                               { token_type_t::kw_list, "list" },
@@ -394,6 +395,10 @@ token_t token_kw_string()
   return details::simple_token(token_type_t::kw_string);
 }
 
+token_t token_kw_version()
+{
+  return details::simple_token(token_type_t::kw_version);
+}
 token_t token_kw_library()
 {
   return details::simple_token(token_type_t::kw_library);

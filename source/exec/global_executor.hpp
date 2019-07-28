@@ -3,6 +3,7 @@
 #include "errors/errors_observer.hpp"
 #include "sema/add_subdirectory_handler.hpp"
 #include "sema/factories.hpp"
+#include "sema/types_context.hpp"
 
 #include <memory>
 #include <vector>
@@ -48,6 +49,7 @@ private:
   std::string m_root_path;
   facade::cmake_facade& m_cmake_facade;
   errors::errors_observer m_errors_observer;
+  sema::types_context_impl m_types_context;
   sema::sema_type_factory m_type_factory;
   sema::sema_function_factory m_function_factory;
   sema::sema_context_factory m_context_factory;

@@ -9,7 +9,7 @@ cmsl_add_test(
         mock/sema_function_mock.hpp
         identifiers_context_test.cpp
         overload_resolution_test.cpp
-        sema_builder_ast_visitor.cpp
+        sema_builder_ast_visitor_test.cpp
         sema_dumper_smoke_test.cpp
         vatiable_initialization_check_test.cpp
     INCLUDE_DIRS

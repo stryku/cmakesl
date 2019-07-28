@@ -106,4 +106,135 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalAndManyNestedNamespac)
   EXPECT_THAT(result, Eq(42));
 }
 
+TEST_F(NamespacesSmokeTest, ClassInGlobalNamespaceAccessByUnqualifiedName)
+{
+  const auto source = "class Foo"
+                      "{"
+                      "    int bar;"
+                      "};"
+                      ""
+                      "int main()"
+                      "{"
+                      "    Foo foo = { .bar = 42 };"
+                      "    return foo.bar;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest, ClassInGlobalNamespaceAccessByFullyQualifiedName)
+{
+  const auto source = "class Foo"
+                      "{"
+                      "    int bar;"
+                      "};"
+                      ""
+                      "int main()"
+                      "{"
+                      "    ::Foo foo = { .bar = 42 };"
+                      "    return foo.bar;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest, ClassInNamespaceAccessByUnqualifiedName)
+{
+  const auto source = "namespace foo"
+                      "{"
+                      "    class Bar"
+                      "    {"
+                      "        int baz;"
+                      "    };"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    foo::Bar bar = { .baz = 42 };"
+                      "    return bar.baz;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest, ClassInSameNamespaceAccessByUnqualifiedName)
+{
+  const auto source = "namespace foo"
+                      "{"
+                      "    class Bar"
+                      "    {"
+                      "        int baz;"
+                      "    };"
+                      "}"
+                      ""
+                      "namespace foo"
+                      "{"
+                      "    Bar bar = { .baz = 42 };"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return foo::bar.baz;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest, ClassInNestedNamespaceAccessByUnqualifiedName)
+{
+  const auto source = "namespace foo"
+                      "{"
+                      "    class Bar"
+                      "    {"
+                      "        int baz;"
+                      "    };"
+                      ""
+                      "    namespace qux"
+                      "    {"
+                      "        class Bar"
+                      "        {"
+                      "            int kek;"
+                      "        };"
+                      ""
+                      "        Bar top = { .kek = 42 };"
+                      "    }"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return foo::qux::top.kek;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest,
+       ClassInNestedNamespaceAccessClassFromParentNamespace)
+{
+  const auto source = "namespace foo"
+                      "{"
+                      "    class Bar"
+                      "    {"
+                      "        int kek;"
+                      "    };"
+                      ""
+                      "    namespace qux"
+                      "    {"
+                      "        class Bar"
+                      "        {"
+                      "            int baz;"
+                      "        };"
+                      ""
+                      "        foo::Bar top = { .kek = 42 };"
+                      "    }"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return foo::qux::top.kek;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
 }

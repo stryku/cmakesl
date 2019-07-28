@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sema/builtin_types_accessor.hpp"
 #include "sema/sema_node.hpp"
 #include "sema/sema_tree_building_context.hpp"
 

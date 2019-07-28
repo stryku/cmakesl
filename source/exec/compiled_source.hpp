@@ -1,9 +1,9 @@
 #pragma once
 
 #include "common/source_view.hpp"
+#include "sema/builtin_types_accessor.hpp"
 
 #include <memory>
-#include <sema/sema_nodes.hpp>
 
 namespace cmsl {
 namespace ast {
@@ -16,6 +16,7 @@ class sema_node;
 class sema_function;
 class sema_context;
 class identifiers_context;
+class types_context;
 }
 
 namespace exec {
@@ -28,7 +29,8 @@ public:
     const sema::sema_context& global_context,
     std::unique_ptr<sema::sema_node> sema_tree, source_view source,
     std::unique_ptr<sema::builtin_token_provider> builtin_token_provider,
-    std::unique_ptr<sema::identifiers_context> ids_ctx);
+    std::unique_ptr<sema::identifiers_context> ids_ctx,
+    sema::builtin_types_accessor builtin_types);
   ~compiled_source();
 
   const sema::sema_function* get_main() const;
@@ -36,6 +38,8 @@ public:
   sema::identifiers_context& get_ids_ctx();
 
   const sema::sema_node& sema_tree() const;
+
+  sema::builtin_types_accessor builtin_types() const;
 
 private:
   std::unique_ptr<ast::ast_node> m_ast_tree;
@@ -45,6 +49,7 @@ private:
   source_view m_source;
   std::unique_ptr<sema::builtin_token_provider> m_builtin_token_provider;
   std::unique_ptr<sema::identifiers_context> m_ids_ctx;
+  sema::builtin_types_accessor m_builtin_types;
 };
 }
 }
