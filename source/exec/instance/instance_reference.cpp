@@ -4,9 +4,8 @@
 #include "lexer/token.hpp"
 
 namespace cmsl::exec::inst {
-instance_reference::instance_reference(cmsl::string_view name,
-                                       execution_context& ctx)
-  : instance_reference{ *ctx.get_variable(name) }
+instance_reference::instance_reference(unsigned index, execution_context& ctx)
+  : instance_reference{ *ctx.get_variable(index) }
 {
 }
 
@@ -40,14 +39,14 @@ std::unique_ptr<instance> instance_reference::copy() const
   return std::make_unique<instance_reference>(m_instance);
 }
 
-instance* instance_reference::find_member(cmsl::string_view name)
+instance* instance_reference::find_member(unsigned index)
 {
-  return m_instance.find_member(name);
+  return m_instance.find_member(index);
 }
 
-const instance* instance_reference::find_cmember(cmsl::string_view name) const
+const instance* instance_reference::find_cmember(unsigned index) const
 {
-  return m_instance.find_cmember(name);
+  return m_instance.find_cmember(index);
 }
 
 sema::single_scope_function_lookup_result_t instance_reference::find_function(

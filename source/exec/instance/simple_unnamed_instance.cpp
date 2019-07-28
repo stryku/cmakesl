@@ -67,12 +67,12 @@ void simple_unnamed_instance::assign(instance_value_variant val)
   m_data = val;
 }
 
-instance* simple_unnamed_instance::find_member(cmsl::string_view)
+instance* simple_unnamed_instance::find_member(unsigned)
 {
   return nullptr;
 }
 
-const instance* simple_unnamed_instance::find_cmember(cmsl::string_view) const
+const instance* simple_unnamed_instance::find_cmember(unsigned index) const
 {
   return nullptr;
 }

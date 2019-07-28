@@ -27,6 +27,7 @@ public:
 
   std::unique_ptr<instance> gather_ownership(
     inst::instance* instance_ptr) override;
+  bool owns(inst::instance* instance_ptr) const override;
 
   inst::instance* create(instance_value_variant value) override;
   inst::instance* create_reference(

@@ -50,6 +50,7 @@ enum class token_type
   greaterequal,
   string,
   semicolon,
+  coloncolon,
 
   comma,
 
@@ -73,7 +74,8 @@ enum class token_type
   kw_while,
   kw_auto,
   kw_for,
-  kw_break
+  kw_break,
+  kw_namespace
 };
 }
 

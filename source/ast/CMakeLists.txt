@@ -14,6 +14,9 @@ set(AST_SOURCES
     if_else_node.cpp
     if_else_node.hpp
     infix_nodes.hpp
+    name_with_coloncolon.hpp
+    namespace_node.cpp
+    namespace_node.hpp
     parameter_declaration.hpp
     parse_errors_observer.hpp
     parser.cpp

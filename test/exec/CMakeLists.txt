@@ -13,9 +13,11 @@ cmsl_add_test(
         instance_value_variant_test.cpp
         int_type_smoke_test.cpp
         list_type_smoke_test.cpp
+        namespaces_smoke_test.cpp
         reference_smoke_tests.cpp
         scopes_smoke_test.cpp
         smoke_test_fixture.hpp
+        static_variables_smoke_test.cpp
         string_type_smoke_tests.cpp
         variable_type_deduction.cpp
         version_type_smoke_tests.cpp

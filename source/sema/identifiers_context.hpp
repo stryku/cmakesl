@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ast/name_with_coloncolon.hpp"
+#include "common/algorithm.hpp"
 #include "common/assert.hpp"
 #include "lexer/token.hpp"
 
@@ -15,13 +17,23 @@ class identifiers_context
 {
 protected:
   using token_t = lexer::token;
+  using qualified_names_t = std::vector<ast::name_with_coloncolon>;
 
 public:
+  struct identifier_info
+  {
+    std::reference_wrapper<const sema_type> type;
+    unsigned index;
+  };
+
   virtual ~identifiers_context() = default;
 
-  virtual void register_identifier(token_t name, const sema_type& ty) = 0;
-  virtual const sema_type* type_of(cmsl::string_view name) const = 0;
-  virtual void enter_ctx() = 0;
+  virtual void register_identifier(token_t name, identifier_info info) = 0;
+  virtual const identifier_info* info_of(
+    const qualified_names_t& names) const = 0;
+
+  virtual void enter_global_ctx(cmsl::string_view name) = 0;
+  virtual void enter_local_ctx() = 0;
   virtual void leave_ctx() = 0;
 };
 
@@ -29,69 +41,61 @@ class identifiers_context_impl : public identifiers_context
 {
 private:
   using token_t = lexer::token;
-  using id_map_t =
-    std::unordered_map<token_t, std::reference_wrapper<const sema_type>>;
+  using id_map_t = std::unordered_map<token_t, identifier_info>;
+
+  using context_id_t = unsigned;
+  static constexpr auto k_bad_id = static_cast<context_id_t>(-1);
+
+  struct contextes_tree_node
+  {
+    cmsl::string_view name;
+    context_id_t id{ k_bad_id };
+    context_id_t parent_id{ k_bad_id };
+    id_map_t ids;
+    std::unordered_map<cmsl::string_view, context_id_t> ctxs;
+  };
+
+  struct context_id_and_name
+  {
+    cmsl::string_view name;
+    context_id_t id;
+  };
 
 public:
+  explicit identifiers_context_impl();
+
   void register_identifier(token_t declaration_token,
-                           const sema_type& ty) override
-  {
-    if (m_contextes.empty()) {
-      CMSL_UNREACHABLE("Tried to register identifier without context");
-    }
+                           identifier_info info) override;
 
-    auto& ctx = m_contextes.back();
-    ctx.emplace(declaration_token, ty);
-  }
+  const identifier_info* info_of(
+    const qualified_names_t& names) const override;
+  std::optional<token_t> declaration_token_of(
+    const qualified_names_t& names) const;
 
-  const sema_type* type_of(cmsl::string_view name) const override
-  {
-    const auto found = find(name);
-    if (!found) {
-      return nullptr;
-    }
-
-    const auto& found_pair = *found;
-    return &(found_pair->second.get());
-  }
-
-  std::optional<token_t> declaration_token_of(cmsl::string_view name) const
-  {
-    const auto found = find(name);
-    if (!found) {
-      return {};
-    }
-
-    const auto& found_pair = *found;
-    return found_pair->first;
-  }
-
-  void enter_ctx() override { m_contextes.emplace_back(id_map_t{}); }
-
-  void leave_ctx() override { m_contextes.pop_back(); }
+  void enter_global_ctx(cmsl::string_view name) override;
+  void enter_local_ctx() override;
+  void leave_ctx() override;
 
 private:
-  std::optional<id_map_t::const_iterator> find(cmsl::string_view name) const
-  {
-    const auto pred = [name](const auto& id_pair) {
-      return id_pair.first.str() == name;
-    };
+  std::optional<id_map_t::const_iterator> find(
+    const qualified_names_t& names) const;
+  std::optional<id_map_t::const_iterator> find(cmsl::string_view name) const;
+  std::optional<id_map_t::const_iterator> find_qualified(
+    const qualified_names_t& names) const;
+  std::optional<id_map_t::const_iterator> find_in_ctx(
+    cmsl::string_view name, const id_map_t& ids) const;
 
-    // Iterate contextes 'from top to down'.
-    for (auto ctx_it = std::crbegin(m_contextes);
-         ctx_it != std::crend(m_contextes); ++ctx_it) {
-      const auto& ids = *ctx_it;
-      const auto found = std::find_if(std::cbegin(ids), std::cend(ids), pred);
+  context_id_t current_context_id() const;
+  context_id_t create_context(cmsl::string_view name);
+  contextes_tree_node& current_context();
+  const contextes_tree_node& current_context() const;
+  id_map_t& current_ids();
 
-      if (found != std::cend(ids)) {
-        return found;
-      }
-    }
-
-    return {};
-  }
+  bool is_qualified_name(const qualified_names_t& names) const;
 
 private:
-  std::vector<id_map_t> m_contextes;
+  std::vector<contextes_tree_node> m_contextes_container;
+  std::vector<context_id_and_name> m_current_context_path;
+  std::vector<id_map_t> m_local_contextes;
 };
 }

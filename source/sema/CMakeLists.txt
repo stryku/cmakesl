@@ -34,6 +34,7 @@ set(SEMA_SOURCES
     function_signature.hpp
     homogeneous_generic_type.cpp
     homogeneous_generic_type.hpp
+    identifiers_context.cpp
     identifiers_context.hpp
     overload_resolution.cpp
     overload_resolution.hpp

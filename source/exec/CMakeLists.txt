@@ -17,6 +17,7 @@ set(EXEC_SOURCES
     scope_context.hpp
     source_compiler.cpp
     source_compiler.hpp
+    static_variables_initializer.hpp
     instance/complex_unnamed_instance.cpp
     instance/complex_unnamed_instance.hpp
     instance/instance.hpp

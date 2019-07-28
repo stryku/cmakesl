@@ -33,8 +33,8 @@ public:
   virtual instance_value_variant& value_ref() = 0;
   virtual const instance_value_variant& value_cref() const = 0;
   virtual void assign(instance_value_variant val) = 0;
-  virtual instance* find_member(cmsl::string_view name) = 0;
-  virtual const instance* find_cmember(cmsl::string_view name) const = 0;
+  virtual instance* find_member(unsigned index) = 0;
+  virtual const instance* find_cmember(unsigned index) const = 0;
   virtual sema::single_scope_function_lookup_result_t find_function(
     lexer::token name) const = 0;
   virtual const sema::sema_type& type() const = 0;

@@ -45,6 +45,18 @@ protected:
   StrictMock<cmake_facade_mock> m_cmake_facade;
   expression_evaluation_context m_ctx{ m_caller, m_instances, m_ids_ctx,
                                        m_cmake_facade };
+
+  std::vector<ast::name_with_coloncolon> create_qualified_name(token_t name)
+  {
+    return { { name } };
+  }
+
+  std::unique_ptr<sema::id_node> create_id_node_ptr(
+    const ast::ast_node& ast_node, token_t name, unsigned index)
+  {
+    return std::make_unique<sema::id_node>(ast_node, valid_type,
+                                           create_qualified_name(name), index);
+  }
 };
 
 // Todo: move to a common file.
@@ -137,9 +149,12 @@ TEST_F(ExpressionEvaluationVisitorTest,
 
   auto ast_node = fake_ast_node();
   const auto id_token = token_identifier("foo");
-  sema::id_node node{ ast_node, valid_type, id_token };
+  const auto identifier_index = 0u;
+  sema::id_node node{
+    ast_node, valid_type, { { id_token } }, identifier_index
+  };
 
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(id_token.str()))
+  EXPECT_CALL(m_ids_ctx, lookup_identifier(identifier_index))
     .WillOnce(Return(&instance_mock));
 
   visitor.visit(node);
@@ -162,11 +177,15 @@ TEST_F(
   const auto operator_token = token_plus();
 
   const auto lhs_expression_token = token_identifier("foo");
-  auto lhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type,
-                                                        lhs_expression_token);
+  const auto lhs_identifier_index = 0u;
+  auto lhs_expression = std::make_unique<sema::id_node>(
+    ast_node, valid_type, create_qualified_name(lhs_expression_token),
+    lhs_identifier_index);
   const auto rhs_expression_token = token_identifier("bar");
-  auto rhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type,
-                                                        rhs_expression_token);
+  const auto rhs_identifier_index = 0u;
+  auto rhs_expression = std::make_unique<sema::id_node>(
+    ast_node, valid_type, create_qualified_name(rhs_expression_token),
+    rhs_identifier_index);
 
   sema::binary_operator_node node{
     ast_node, std::move(lhs_expression), operator_token,
@@ -174,11 +193,8 @@ TEST_F(
   };
 
   // Evaluation of lhs expression.
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(lhs_expression_token.str()))
-    .WillOnce(Return(&lhs_instance));
-
-  // Evaluation of rhs expression.
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(rhs_expression_token.str()))
+  EXPECT_CALL(m_ids_ctx, lookup_identifier(_))
+    .WillOnce(Return(&lhs_instance))
     .WillOnce(Return(&rhs_instance));
 
   const std::vector<inst::instance*> expected_param_instances = {
@@ -211,11 +227,11 @@ TEST_F(ExpressionEvaluationVisitorTest,
   auto result_instance_ptr = result_instance.get();
 
   const auto param_expression_0_token = token_identifier("foo");
-  auto param_expression_0 = std::make_unique<sema::id_node>(
-    ast_node, valid_type, param_expression_0_token);
+  auto param_expression_0 =
+    create_id_node_ptr(ast_node, param_expression_0_token, 0u);
   const auto param_expression_1_token = token_identifier("bar");
-  auto param_expression_1 = std::make_unique<sema::id_node>(
-    ast_node, valid_type, param_expression_1_token);
+  auto param_expression_1 =
+    create_id_node_ptr(ast_node, param_expression_1_token, 1u);
 
   sema::function_call_node::param_expressions_t param_expressions;
   param_expressions.emplace_back(std::move(param_expression_0));
@@ -223,10 +239,8 @@ TEST_F(ExpressionEvaluationVisitorTest,
   sema::function_call_node node{ ast_node, function,
                                  std::move(param_expressions) };
 
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(param_expression_0_token.str()))
-    .WillOnce(Return(&param_instance_0));
-
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(param_expression_1_token.str()))
+  EXPECT_CALL(m_ids_ctx, lookup_identifier(_))
+    .WillOnce(Return(&param_instance_0))
     .WillOnce(Return(&param_instance_1));
 
   std::vector<inst::instance*> expected_param_instances{ &param_instance_0,
@@ -257,15 +271,14 @@ TEST_F(
   auto result_instance_ptr = result_instance.get();
 
   const auto lhs_expression_token = token_identifier("foo");
-  auto lhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type,
-                                                        lhs_expression_token);
+  auto lhs_expression = create_id_node_ptr(ast_node, lhs_expression_token, 0u);
 
   const auto param_expression_0_token = token_identifier("bar");
-  auto param_expression_0 = std::make_unique<sema::id_node>(
-    ast_node, valid_type, param_expression_0_token);
+  auto param_expression_0 =
+    create_id_node_ptr(ast_node, param_expression_0_token, 1u);
   const auto param_expression_1_token = token_identifier("baz");
-  auto param_expression_1 = std::make_unique<sema::id_node>(
-    ast_node, valid_type, param_expression_1_token);
+  auto param_expression_1 =
+    create_id_node_ptr(ast_node, param_expression_1_token, 2u);
 
   sema::function_call_node::param_expressions_t param_expressions;
   param_expressions.emplace_back(std::move(param_expression_0));
@@ -275,14 +288,9 @@ TEST_F(
                                         function,
                                         std::move(param_expressions) };
 
-  // Evaluation of lhs expression.
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(lhs_expression_token.str()))
-    .WillOnce(Return(&lhs_instance));
-
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(param_expression_0_token.str()))
-    .WillOnce(Return(&param_instance_0));
-
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(param_expression_1_token.str()))
+  EXPECT_CALL(m_ids_ctx, lookup_identifier(_))
+    .WillOnce(Return(&lhs_instance))
+    .WillOnce(Return(&param_instance_0))
     .WillOnce(Return(&param_instance_1));
 
   std::vector<inst::instance*> expected_param_instances{ &param_instance_0,
@@ -315,15 +323,14 @@ TEST_F(
   auto result_instance_ptr = result_instance.get();
 
   const auto lhs_expression_token = token_identifier("this");
-  auto lhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type,
-                                                        lhs_expression_token);
+  auto lhs_expression = create_id_node_ptr(ast_node, lhs_expression_token, 1u);
 
   const auto param_expression_0_token = token_identifier("bar");
-  auto param_expression_0 = std::make_unique<sema::id_node>(
-    ast_node, valid_type, param_expression_0_token);
+  auto param_expression_0 =
+    create_id_node_ptr(ast_node, param_expression_0_token, 1u);
   const auto param_expression_1_token = token_identifier("baz");
-  auto param_expression_1 = std::make_unique<sema::id_node>(
-    ast_node, valid_type, param_expression_1_token);
+  auto param_expression_1 =
+    create_id_node_ptr(ast_node, param_expression_1_token, 2u);
 
   sema::function_call_node::param_expressions_t param_expressions;
   param_expressions.emplace_back(std::move(param_expression_0));
@@ -334,13 +341,9 @@ TEST_F(
                                         std::move(param_expressions) };
 
   // Evaluation of lhs expression.
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(lhs_expression_token.str()))
-    .WillOnce(Return(&lhs_instance));
-
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(param_expression_0_token.str()))
-    .WillOnce(Return(&param_instance_0));
-
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(param_expression_1_token.str()))
+  EXPECT_CALL(m_ids_ctx, lookup_identifier(_))
+    .WillOnce(Return(&lhs_instance))
+    .WillOnce(Return(&param_instance_0))
     .WillOnce(Return(&param_instance_1));
 
   std::vector<inst::instance*> expected_param_instances{ &param_instance_0,
@@ -367,8 +370,7 @@ TEST_F(ExpressionEvaluationVisitorTest,
   auto ast_node = fake_ast_node();
 
   const auto lhs_expression_token = token_identifier("foo");
-  auto lhs_expression = std::make_unique<sema::id_node>(ast_node, valid_type,
-                                                        lhs_expression_token);
+  auto lhs_expression = create_id_node_ptr(ast_node, lhs_expression_token, 0u);
 
   const auto member_name_token = token_identifier("bar");
   sema::member_info member{ member_name_token, valid_type };
@@ -376,11 +378,9 @@ TEST_F(ExpressionEvaluationVisitorTest,
   sema::class_member_access_node node{ ast_node, std::move(lhs_expression),
                                        std::move(member) };
 
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(lhs_expression_token.str()))
-    .WillOnce(Return(&lhs_instance));
+  EXPECT_CALL(m_ids_ctx, lookup_identifier(_)).WillOnce(Return(&lhs_instance));
 
-  EXPECT_CALL(lhs_instance, find_member(member_name_token.str()))
-    .WillOnce(Return(&member_instance));
+  EXPECT_CALL(lhs_instance, find_member(_)).WillOnce(Return(&member_instance));
 
   expression_evaluation_visitor visitor{ m_ctx };
   visitor.visit(node);
@@ -395,12 +395,11 @@ TEST_F(ExpressionEvaluationVisitorTest,
   auto ast_node = fake_ast_node();
 
   const auto expression_token = token_identifier("foo");
-  auto expression =
-    std::make_unique<sema::id_node>(ast_node, valid_type, expression_token);
+  auto expression = create_id_node_ptr(ast_node, expression_token, 0u);
 
   sema::return_node node{ ast_node, std::move(expression) };
 
-  EXPECT_CALL(m_ids_ctx, lookup_identifier(expression_token.str()))
+  EXPECT_CALL(m_ids_ctx, lookup_identifier(_))
     .WillOnce(Return(&result_instance));
 
   expression_evaluation_visitor visitor{ m_ctx };

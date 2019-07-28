@@ -7,6 +7,7 @@
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
+#include "ast/namespace_node.hpp"
 #include "ast/return_node.hpp"
 #include "ast/translation_unit_node.hpp"
 #include "ast/type_parser.hpp"
@@ -31,27 +32,13 @@ parser::parser(errors::errors_observer& err_observer, cmsl::source_view source,
 
 std::unique_ptr<ast_node> parser::parse_translation_unit()
 {
-  std::vector<std::unique_ptr<ast_node>> nodes;
-
-  while (!is_at_end()) {
-    std::unique_ptr<ast_node> node;
-
-    if (function_declaration_starts()) {
-      node = parse_function();
-    } else if (current_is(token_type_t::kw_class)) {
-      node = parse_class();
-    } else {
-      node = parse_standalone_variable_declaration();
-    }
-
-    if (!node) {
-      return nullptr;
-    }
-
-    nodes.emplace_back(std::move(node));
+  const auto stop_condition = [this] { return is_at_end(); };
+  auto nodes = parse_top_level_nodes(stop_condition);
+  if (!nodes) {
+    return nullptr;
   }
 
-  return std::make_unique<translation_unit_node>(std::move(nodes));
+  return std::make_unique<translation_unit_node>(std::move(*nodes));
 }
 
 std::unique_ptr<ast_node> parser::constructor(token_t class_name)
@@ -608,6 +595,12 @@ bool parser::current_is_fundamental_value() const
   }
 }
 
+bool parser::current_is_possibly_qualified_name() const
+{
+  return current_is(token_type_t::coloncolon) ||
+    current_is(token_type_t::identifier);
+}
+
 std::unique_ptr<ast_node> parser::fundamental_value()
 {
   const auto token = eat();
@@ -645,8 +638,8 @@ std::unique_ptr<ast_node> parser::parse_factor()
     auto e = parse_expr();
     eat(token_type_t::close_paren);
     return e;
-  } else if (const auto id = try_eat(token_type_t::identifier)) {
-    return id ? std::make_unique<id_node>(*id) : nullptr;
+  } else if (current_is_possibly_qualified_name()) {
+    return parse_possibly_qualified_name();
   } else if (current_is(token_type_t::open_brace)) {
     return parse_initializer_list();
   }
@@ -906,5 +899,121 @@ std::unique_ptr<break_node> parser::parse_break()
   }
 
   return std::make_unique<break_node>(*break_kw, *semicolon);
+}
+
+std::unique_ptr<namespace_node> parser::parse_namespace()
+{
+  const auto namespace_kw = eat(token_type_t::kw_namespace);
+  if (!namespace_kw) {
+    return nullptr;
+  }
+
+  auto names = parse_namespace_declaration_names();
+  if (names.empty()) {
+    return nullptr;
+  }
+
+  const auto open_bracket = eat(token_type_t::open_brace);
+  if (!open_bracket) {
+    return nullptr;
+  }
+
+  const auto stop_condition = [this] {
+    return curr_type() == token_type_t::close_brace;
+  };
+  auto nodes = parse_top_level_nodes(stop_condition);
+  if (!nodes) {
+    return nullptr;
+  }
+
+  const auto close_brace = eat(token_type_t::close_brace);
+  if (!close_brace) {
+    return nullptr;
+  }
+
+  return std::make_unique<namespace_node>(*namespace_kw, std::move(names),
+                                          *open_bracket, std::move(*nodes),
+                                          *close_brace);
+}
+
+template <typename StopCondition>
+std::optional<std::vector<std::unique_ptr<ast_node>>>
+parser::parse_top_level_nodes(StopCondition&& stop_condition)
+{
+  std::vector<std::unique_ptr<ast_node>> nodes;
+
+  while (!stop_condition()) {
+    std::unique_ptr<ast_node> node;
+
+    if (function_declaration_starts()) {
+      node = parse_function();
+    } else if (current_is(token_type_t::kw_class)) {
+      node = parse_class();
+    } else if (current_is(token_type_t::kw_namespace)) {
+      node = parse_namespace();
+    } else {
+      node = parse_standalone_variable_declaration();
+    }
+
+    if (!node) {
+      return std::nullopt;
+    }
+
+    nodes.emplace_back(std::move(node));
+  }
+
+  return std::move(nodes);
+}
+
+std::vector<name_with_coloncolon> parser::parse_namespace_declaration_names()
+{
+  std::vector<name_with_coloncolon> names;
+
+  while (true) {
+    auto name = eat(token_type_t::identifier);
+    if (!name) {
+      return {};
+    }
+
+    const auto coloncolon = try_eat(token_type_t::coloncolon);
+    if (!coloncolon) {
+      names.emplace_back(name_with_coloncolon{ *name });
+      break;
+    }
+
+    names.emplace_back(name_with_coloncolon{ *name, *coloncolon });
+  }
+
+  return names;
+}
+
+std::unique_ptr<id_node> parser::parse_possibly_qualified_name()
+{
+  id_node::names_t names;
+
+  const auto starts_with_global_scope_access =
+    current_is(token_type_t::coloncolon);
+  if (starts_with_global_scope_access) {
+    auto name = lexer::make_token(token_type_t::identifier, "");
+    auto coloncolon = eat(token_type_t::coloncolon);
+
+    names.emplace_back(name_with_coloncolon{ name, coloncolon });
+  }
+
+  while (true) {
+    auto name = eat(token_type_t::identifier);
+    if (!name) {
+      return nullptr;
+    }
+
+    if (auto coloncolon = try_eat(token_type_t::coloncolon)) {
+      names.emplace_back(name_with_coloncolon{ *name, coloncolon });
+    } else {
+      names.emplace_back(name_with_coloncolon{ *name });
+      break;
+    }
+  }
+
+  return std::make_unique<id_node>(std::move(names));
 }
 }

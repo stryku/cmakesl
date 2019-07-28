@@ -23,6 +23,7 @@ class while_node;
 class initializer_list_node;
 class for_node;
 class break_node;
+class namespace_node;
 
 class ast_node_visitor
 {
@@ -51,5 +52,6 @@ public:
   virtual void visit(const initializer_list_node& node) = 0;
   virtual void visit(const for_node& node) = 0;
   virtual void visit(const break_node& node) = 0;
+  virtual void visit(const namespace_node& node) = 0;
 };
 }

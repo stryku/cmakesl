@@ -98,6 +98,7 @@ public:
   void visit(const ast::initializer_list_node& node) override;
   void visit(const ast::for_node& node) override;
   void visit(const ast::break_node& node) override;
+  void visit(const ast::namespace_node& node) override;
 
 private:
   const sema_type* try_get_or_create_generic_type(
@@ -142,16 +143,27 @@ private:
   std::optional<param_expressions_t> get_function_call_params(
     const std::vector<std::unique_ptr<ast::ast_node>>& passed_params);
 
-  struct ids_ctx_guard
+  class ids_ctx_guard
   {
+  public:
     explicit ids_ctx_guard(identifiers_context& ids_context);
-
+    explicit ids_ctx_guard(identifiers_context& ids_context,
+                           cmsl::string_view name);
     ~ids_ctx_guard();
 
+    ids_ctx_guard(ids_ctx_guard&&);
+    ids_ctx_guard& operator=(ids_ctx_guard&&);
+
+    ids_ctx_guard(const ids_ctx_guard&) = delete;
+    ids_ctx_guard& operator=(const ids_ctx_guard&) = delete;
+
+  private:
     identifiers_context& m_ids_ctx;
+    bool m_valid{ true };
   };
 
   ids_ctx_guard ids_guard();
+  ids_ctx_guard global_ids_guard(cmsl::string_view name);
 
   struct function_declaration
   {
@@ -206,6 +218,8 @@ private:
   const builtin_token_provider& m_builtin_token_provider;
 
   parsing_context& m_parsing_ctx;
+
+  static unsigned m_identifier_index;
 };
 }
 }

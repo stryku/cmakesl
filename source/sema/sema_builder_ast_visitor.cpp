@@ -7,6 +7,7 @@
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
+#include "ast/namespace_node.hpp"
 #include "ast/return_node.hpp"
 #include "ast/translation_unit_node.hpp"
 #include "ast/user_function_node.hpp"
@@ -29,17 +30,46 @@
 #include "sema/user_sema_function.hpp"
 #include "sema/variable_initialization_checker.hpp"
 
+#include <stack>
+
 namespace cmsl::sema {
+unsigned sema_builder_ast_visitor::m_identifier_index = 0u;
+
 sema_builder_ast_visitor::ids_ctx_guard::ids_ctx_guard(
   identifiers_context& ids_context)
   : m_ids_ctx{ ids_context }
 {
-  m_ids_ctx.enter_ctx();
+  m_ids_ctx.enter_local_ctx();
+}
+
+sema_builder_ast_visitor::ids_ctx_guard::ids_ctx_guard(
+  identifiers_context& ids_context, cmsl::string_view name)
+  : m_ids_ctx{ ids_context }
+{
+  m_ids_ctx.enter_global_ctx(name);
 }
 
 sema_builder_ast_visitor::ids_ctx_guard::~ids_ctx_guard()
 {
-  m_ids_ctx.leave_ctx();
+  if (m_valid) {
+    m_ids_ctx.leave_ctx();
+  }
+}
+
+sema_builder_ast_visitor::ids_ctx_guard::ids_ctx_guard(
+  sema_builder_ast_visitor::ids_ctx_guard&& other)
+  : m_ids_ctx{ other.m_ids_ctx }
+{
+  other.m_valid = false;
+}
+
+sema_builder_ast_visitor::ids_ctx_guard&
+sema_builder_ast_visitor::ids_ctx_guard::operator=(
+  sema_builder_ast_visitor::ids_ctx_guard&& other)
+{
+  m_valid = true;
+  other.m_valid = false;
+  return *this;
 }
 
 sema_builder_ast_visitor::sema_builder_ast_visitor(
@@ -85,13 +115,12 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
 {
   const auto name = node.name();
   const auto class_name_representation = ast::type_representation{ name };
-  if (const auto found_type =
-        m_ctx.find_type_in_this_scope(class_name_representation)) {
+  if (m_ctx.find_type_in_this_scope(class_name_representation) != nullptr) {
     raise_error(name, "Type redefinition");
     return;
   }
 
-  auto class_ids_guard = ids_guard();
+  auto class_ids_guard = global_ids_guard(name.str());
 
   auto& class_context = m_context_factory.create_class(&m_ctx);
 
@@ -102,8 +131,6 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
     return;
   }
 
-  // We move created ast ctx ownership but it will live for the whole program
-  // lifetime, so it is safe to use class_ast_ctx raw pointer.
   auto& class_type = m_type_factory.create(
     class_context, class_name_representation, std::move(members->info));
   auto& class_type_reference = m_type_factory.create_reference(class_type);
@@ -420,16 +447,18 @@ void sema_builder_ast_visitor::visit(const ast::string_value_node& node)
 
 void sema_builder_ast_visitor::visit(const ast::id_node& node)
 {
-  const auto id_token = node.get_identifier();
-  const auto type = m_ids_context.type_of(node.get_identifier().str());
+  const auto& names = node.names();
+  const auto id_token = names.back().name;
+  const auto info = m_ids_context.info_of(names);
 
-  if (!type) {
+  if (!info) {
     raise_error(id_token,
                 std::string{ id_token.str() } + " identifier not found");
     return;
   }
 
-  m_result_node = std::make_unique<id_node>(node, *type, id_token);
+  m_result_node =
+    std::make_unique<id_node>(node, info->type, names, info->index);
 }
 
 void sema_builder_ast_visitor::visit(const ast::return_node& node)
@@ -454,7 +483,7 @@ void sema_builder_ast_visitor::visit(const ast::return_node& node)
 
 void sema_builder_ast_visitor::visit(const ast::translation_unit_node& node)
 {
-  auto ig = ids_guard();
+  auto ig = global_ids_guard("");
   std::vector<std::unique_ptr<sema_node>> nodes;
 
   for (const auto& n : node.nodes()) {
@@ -497,8 +526,11 @@ void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
       return;
     }
 
-    params.emplace_back(param_decl_t{ *param_type, param_decl.name });
-    m_ids_context.register_identifier(param_decl.name, *param_type);
+    const auto identifier_index = m_identifier_index++;
+    params.emplace_back(
+      param_decl_t{ *param_type, param_decl.name, identifier_index });
+    m_ids_context.register_identifier(param_decl.name,
+                                      { *param_type, identifier_index });
   }
 
   function_signature signature{ node.name(), std::move(params) };
@@ -568,7 +600,7 @@ const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(
     return nullptr;
   }
 
-  const auto proper_generic_token_types = { lexer::token_type ::kw_list };
+  const auto proper_generic_token_types = { lexer::token_type::kw_list };
 
   if (!contains(proper_generic_token_types, name.primary_name().get_type())) {
     raise_error(name.primary_name(),
@@ -713,6 +745,12 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
   return ids_ctx_guard{ m_ids_context };
 }
 
+sema_builder_ast_visitor::ids_ctx_guard
+sema_builder_ast_visitor::global_ids_guard(cmsl::string_view name)
+{
+  return ids_ctx_guard{ m_ids_context, name };
+}
+
 std::optional<sema_builder_ast_visitor::function_declaration>
 sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
   const ast::user_function_node& node, sema_context_impl& ctx)
@@ -738,7 +776,9 @@ sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
     }
 
     params.emplace_back(parameter_declaration{ *param_type, param_decl.name });
-    m_ids_context.register_identifier(param_decl.name, *param_type);
+    const auto idenfitied_context = m_identifier_index++;
+    m_ids_context.register_identifier(param_decl.name,
+                                      { *param_type, idenfitied_context });
   }
 
   function_signature signature{ node.name(), std::move(params) };
@@ -765,7 +805,8 @@ sema_builder_ast_visitor::collect_class_members_and_add_functions_to_ctx(
         return {};
       }
 
-      members.info.emplace_back(member_info{ member->name(), member->type() });
+      members.info.emplace_back(
+        member_info{ member->name(), member->type(), member->index() });
       members.declarations.emplace_back(std::move(member));
     } else if (auto fun_node =
                  dynamic_cast<const ast::user_function_node*>(n.get())) {
@@ -892,6 +933,7 @@ void sema_builder_ast_visitor::visit(const ast::initializer_list_node& node)
   m_result_node = std::make_unique<initializer_list_node>(
     node, *type, std::move(expression_values));
 }
+
 void sema_builder_ast_visitor::add_implicit_return_node_if_need(
   block_node& block)
 {
@@ -906,6 +948,7 @@ void sema_builder_ast_visitor::add_implicit_return_node_if_need(
   auto manipulator = block_node_manipulator{ block };
   manipulator.append_expression(std::move(ret_node));
 }
+
 bool sema_builder_ast_visitor::is_last_node_return_node(
   const block_node& block) const
 {
@@ -1096,9 +1139,10 @@ void sema_builder_ast_visitor::visit(
       convert_to_cast_node_if_need(*type, std::move(initialization));
   }
 
-  m_ids_context.register_identifier(node.name(), *type);
+  const auto identifier_index = m_identifier_index++;
+  m_ids_context.register_identifier(node.name(), { *type, identifier_index });
   m_result_node = std::make_unique<variable_declaration_node>(
-    node, *type, node.name(), std::move(initialization));
+    node, *type, node.name(), std::move(initialization), identifier_index);
 }
 
 void sema_builder_ast_visitor::visit(const ast::for_node& node)
@@ -1154,5 +1198,32 @@ void sema_builder_ast_visitor::visit(const ast::break_node& node)
 bool sema_builder_ast_visitor::is_inside_loop() const
 {
   return m_parsing_ctx.loop_parsing_counter > 0u;
+}
+
+void sema_builder_ast_visitor::visit(const ast::namespace_node& node)
+{
+  std::stack<ids_ctx_guard> guards;
+  for (const auto& name_with_colon : node.names()) {
+    auto ig = global_ids_guard(name_with_colon.name.str());
+    guards.emplace(std::move(ig));
+  }
+
+  namespace_node::nodes_t nodes;
+
+  for (const auto& ast_node : node.nodes()) {
+    auto child = visit_child(*ast_node);
+    if (!child) {
+      return;
+    }
+
+    nodes.emplace_back(std::move(child));
+  }
+
+  m_result_node =
+    std::make_unique<namespace_node>(node, node.names(), std::move(nodes));
+
+  while (!guards.empty()) {
+    guards.pop();
+  }
 }
 }

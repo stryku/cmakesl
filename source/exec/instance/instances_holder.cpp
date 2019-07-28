@@ -73,4 +73,13 @@ inst::instance* instances_holder::create(const sema::sema_type& type,
   m_instances.emplace_back(std::move(instance));
   return ptr;
 }
+
+bool instances_holder::owns(inst::instance* instance_ptr) const
+{
+  const auto found = std::find_if(
+    std::cbegin(m_instances), std::cend(m_instances),
+    [instance_ptr](const auto& i) { return i.get() == instance_ptr; });
+
+  return found != std::cend(m_instances);
+}
 }

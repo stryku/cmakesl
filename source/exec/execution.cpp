@@ -1,4 +1,5 @@
 #include "exec/execution.hpp"
+#include "exec/static_variables_initializer.hpp"
 
 namespace cmsl::exec {
 execution::execution(facade::cmake_facade& cmake_facade)
@@ -46,9 +47,19 @@ std::unique_ptr<inst::instance> execution::call_member(
   }
 }
 
-inst::instance* execution::lookup_identifier(cmsl::string_view identifier)
+inst::instance* execution::lookup_identifier(unsigned index)
 {
-  return m_callstack.top().exec_ctx.get_variable(identifier);
+  if (auto found = m_global_variables.find(index);
+      found != std::cend(m_global_variables)) {
+    return found->second.get();
+  } else {
+    return m_callstack.top().exec_ctx.get_variable(index);
+  }
+}
+
+inst::instance* execution::get_class_instance()
+{
+  return m_callstack.top().exec_ctx.get_this();
 }
 
 void execution::execute_block(const sema::block_node& block)
@@ -77,7 +88,7 @@ void execution::execute_variable_declaration(
     created_instance = instances.gather_ownership(variable_instance_ptr);
   }
 
-  exec_ctx.add_variable(node.name().str(), std::move(created_instance));
+  exec_ctx.add_variable(node.index(), std::move(created_instance));
 }
 
 void execution::execute_node(const sema::sema_node& node)
@@ -134,7 +145,7 @@ void execution::enter_function_scope(
 
   for (auto i = 0u; i < params.size(); ++i) {
     auto param = params[i]->copy();
-    exec_ctx.add_variable(declared_params[i].name.str(), std::move(param));
+    exec_ctx.add_variable(declared_params[i].index, std::move(param));
   }
 }
 
@@ -152,7 +163,7 @@ void execution::enter_function_scope(
 
   for (auto i = 0u; i < params.size(); ++i) {
     auto param = params[i]->copy();
-    exec_ctx.add_variable(declared_params[i].name.str(), std::move(param));
+    exec_ctx.add_variable(declared_params[i].index, std::move(param));
   }
 }
 
@@ -247,5 +258,15 @@ void execution::execute_for_node(const sema::for_node& node)
 void execution::execute_break_node(const sema::break_node& node)
 {
   m_breaking_from_loop = true;
+}
+
+bool execution::initialize_static_variables(
+  const sema::translation_unit_node& node)
+{
+  static_variables_initializer initializer{ *this, node.context(),
+                                            m_cmake_facade };
+  node.visit(initializer);
+  m_global_variables = initializer.gather_instances();
+  return true;
 }
 }

@@ -9,6 +9,7 @@
 
 #include <errors/error.hpp>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 
 namespace cmsl::exec {
@@ -47,6 +48,11 @@ int global_executor::execute(std::string source)
     return -1;
   }
 
+  {
+    sema::dumper dumper{ std::cout };
+    compiled->sema_tree().visit(dumper);
+  }
+
   const auto main_function = compiled->get_main();
   if (!main_function) {
     raise_no_main_function_error(m_root_path);
@@ -55,12 +61,16 @@ int global_executor::execute(std::string source)
 
   const auto& global_context = compiled->get_global_context();
 
-  m_compiled_sources.emplace_back(std::move(compiled));
-
   const auto casted =
     dynamic_cast<const sema::user_sema_function*>(main_function);
 
   execution e{ m_cmake_facade };
+
+  const auto translation_unit =
+    dynamic_cast<const sema::translation_unit_node*>(&compiled->sema_tree());
+  e.initialize_static_variables(*translation_unit);
+
+  m_compiled_sources.emplace_back(std::move(compiled));
 
   inst::instances_holder instances{ global_context };
   auto main_result = e.call(*casted, {}, instances);

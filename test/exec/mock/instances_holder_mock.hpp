@@ -14,6 +14,7 @@ struct instances_holder_mock : public instances_holder_interface
 {
   MOCK_METHOD1(store, void(std::unique_ptr<instance>));
   MOCK_METHOD1(gather_ownership, std::unique_ptr<instance>(inst::instance*));
+  MOCK_CONST_METHOD1(owns, bool(inst::instance*));
 
   MOCK_METHOD1(create, instance*(instance_value_variant));
 

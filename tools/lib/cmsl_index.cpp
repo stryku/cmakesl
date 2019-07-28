@@ -16,7 +16,7 @@ class indexer : public sema::sema_node_visitor
 public:
   void visit(const sema::translation_unit_node& node) override
   {
-    m_identifiers_context.enter_ctx();
+    m_identifiers_context.enter_local_ctx();
 
     for (const auto& sub_node : node.nodes()) {
       sub_node->visit(*this);
@@ -37,7 +37,7 @@ public:
               node.type().name().primary_name().src_range().begin.absolute);
 
     m_identifiers_context.register_identifier(variable_decl.name(),
-                                              node.type());
+                                              { node.type(), node.index() });
 
     if (node.initialization()) {
       node.initialization()->visit(*this);
@@ -52,8 +52,10 @@ public:
   void visit(const sema::id_node& node) override
   {
     const auto declaration_node =
-      *m_identifiers_context.declaration_token_of(node.id().str());
-    add_entry(node.id(), cmsl_index_entry_type::identifier,
+      *m_identifiers_context.declaration_token_of(node.names());
+
+    const auto id_token = node.names().back().name;
+    add_entry(id_token, cmsl_index_entry_type::identifier,
               declaration_node.source().path(),
               declaration_node.src_range().begin.absolute);
   }
@@ -97,7 +99,7 @@ public:
 
   void visit(const sema::block_node& node) override
   {
-    m_identifiers_context.enter_ctx();
+    m_identifiers_context.enter_local_ctx();
 
     for (const auto& sub_node : node.nodes()) {
       sub_node->visit(*this);
@@ -108,7 +110,7 @@ public:
 
   void visit(const sema::function_node& node) override
   {
-    m_identifiers_context.enter_ctx();
+    m_identifiers_context.enter_local_ctx();
     const auto function_node =
       dynamic_cast<const ast::user_function_node*>(&node.ast_node());
 
@@ -119,7 +121,8 @@ public:
     const auto& params = node.signature().params;
     for (auto i = 0u; i < params.size(); ++i) {
       add_type_entry(ast_param_declarations[i].ty, params[i].ty);
-      m_identifiers_context.register_identifier(params[i].name, params[i].ty);
+      m_identifiers_context.register_identifier(
+        params[i].name, { params[i].ty, params[i].index });
     }
 
     node.body().visit(*this);
@@ -129,7 +132,7 @@ public:
 
   void visit(const sema::class_node& node) override
   {
-    m_identifiers_context.enter_ctx();
+    m_identifiers_context.enter_global_ctx(node.name().str());
 
     for (const auto& member : node.members()) {
       member->visit(*this);
@@ -263,6 +266,11 @@ private:
   }
 
   void visit(const sema::break_node&) override
+  {
+    // Todo: implement
+  }
+
+  void visit(const sema::namespace_node&) override
   {
     // Todo: implement
   }

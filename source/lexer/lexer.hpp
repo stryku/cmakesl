@@ -54,6 +54,7 @@ private:
   token_type get_string_token_type();
   token_type get_arithmetical_token_type(char operator_char);
   token_type get_one_char_token_type(char c);
+  token_type get_scope_operator();
 
   void consume_integer();
   void consume_char();
