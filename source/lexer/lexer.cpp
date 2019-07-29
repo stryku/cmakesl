@@ -1,4 +1,5 @@
 #include "lexer/lexer.hpp"
+#include "common/algorithm.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
 
@@ -82,7 +83,12 @@ token_type lexer::get_next_token_type()
     }
   }
   if (curr == ':') {
-    return get_scope_operator();
+    if (next() == ':') {
+      return get_scope_operator();
+    }
+
+    consume_char();
+    return token_type::colon;
   }
   if (curr == '=') {
     return get_equal_token_type();
@@ -291,6 +297,7 @@ lexer::one_char_tokens_t lexer::create_one_char_tokens() const
   tokens['['] = token_type::open_square;
   tokens[']'] = token_type::close_square;
   tokens[';'] = token_type::semicolon;
+  tokens['?'] = token_type::question;
   tokens[','] = token_type::comma;
 
   return tokens;
@@ -304,8 +311,7 @@ bool lexer::is_arithmetical_operator(char c) const
 
 bool lexer::is_one_char_token(char c) const
 {
-  const auto chars = cmsl::string_view{ "{}[]();," };
-  return chars.find(c) != cmsl::string_view::npos;
+  return contains(m_one_char_tokens, c);
 }
 
 bool lexer::is_whitespace(char c) const

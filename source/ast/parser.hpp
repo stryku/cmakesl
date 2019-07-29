@@ -21,6 +21,7 @@ class break_node;
 struct name_with_coloncolon;
 class namespace_node;
 class id_node;
+class ternary_operator_node;
 
 class parser : public parser_utils
 {
@@ -48,6 +49,10 @@ public:
   std::unique_ptr<break_node> parse_break();
   std::unique_ptr<namespace_node> parse_namespace();
   std::unique_ptr<id_node> parse_possibly_qualified_name();
+
+  // Called when condition is already parsed, co current() is question.
+  std::unique_ptr<ternary_operator_node> parse_rest_of_ternary_operator(
+    std::unique_ptr<ast_node> condition, token_t question);
 
 private:
   struct function_call_values

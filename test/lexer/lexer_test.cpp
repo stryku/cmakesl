@@ -106,6 +106,8 @@ const auto values =
                   TokenTestState{ "(", token_type::open_paren },
                   TokenTestState{ ")", token_type::close_paren },
                   TokenTestState{ ";", token_type::semicolon },
+                  TokenTestState{ "?", token_type::question },
+                  TokenTestState{ ":", token_type::colon },
                   TokenTestState{ ",", token_type::comma });
 INSTANTIATE_TEST_CASE_P(Lexer, Lex_OneChar, values);
 }
@@ -310,4 +312,44 @@ const auto values = testing::Values("int123", "_double");
 INSTANTIATE_TEST_CASE_P(Lexer, PollutedKeyword, values);
 }
 }
+
+namespace colon {
+struct Lex_Colon_State
+{
+  std::string source;
+  std::vector<token_type> expected_tokens;
+};
+
+struct Lex_Colon
+  : public testing::Test
+  , testing::WithParamInterface<Lex_Colon_State>
+{
+};
+
+TEST_P(Lex_Colon, TokensType)
+{
+  const auto state = GetParam();
+  auto lex = create_lexer(state.source);
+  const auto tokens = lex.lex();
+
+  ASSERT_THAT(tokens.size(), state.expected_tokens.size());
+
+  for (auto i = 0u; i < tokens.size(); ++i) {
+    ASSERT_THAT(tokens[i].get_type(), state.expected_tokens[i]);
+  }
+}
+
+const auto values = testing::Values(
+  Lex_Colon_State{ ":", { token_type::colon } },
+  Lex_Colon_State{ "::", { token_type::coloncolon } },
+  Lex_Colon_State{ ":::", { token_type::coloncolon, token_type::colon } },
+  Lex_Colon_State{ ":foo", { token_type::colon, token_type::identifier } },
+  Lex_Colon_State{ "::foo",
+                   { token_type::coloncolon, token_type::identifier } },
+  Lex_Colon_State{ "foo:", { token_type::identifier, token_type::colon } },
+  Lex_Colon_State{ "foo::",
+                   { token_type::identifier, token_type::coloncolon } });
+INSTANTIATE_TEST_CASE_P(Lexer, Lex_Colon, values);
+}
+
 }

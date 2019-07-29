@@ -51,6 +51,8 @@ enum class token_type
   string,
   semicolon,
   coloncolon,
+  question,
+  colon,
 
   comma,
 

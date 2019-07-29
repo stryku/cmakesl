@@ -45,27 +45,4 @@ const auto values = Values("\"", "abc\"", "\"abc", "\"abc\\\"", "\"abc''");
 INSTANTIATE_TEST_CASE_P(LexerErrorTest, StringNotEndedBeforeEOF, values);
 }
 
-namespace single_colon {
-struct NotFinishedScopeOperator
-  : public Test
-  , WithParamInterface<std::string>
-{
-};
-
-TEST_P(NotFinishedScopeOperator, NotifyError)
-{
-  errors::test::errors_observer_mock err_observer_mock;
-  errors::errors_observer err_observer;
-
-  EXPECT_CALL(err_observer_mock, notify_error(_)).Times(AnyNumber());
-
-  const auto source = GetParam();
-  auto lex = lexer_t{ err_observer, cmsl::source_view{ source } };
-  (void)lex.lex();
-}
-
-const auto values = Values(":", ":1", ": :", ":foo", ":::", "foo:bar");
-INSTANTIATE_TEST_CASE_P(LexerErrorTest, NotFinishedScopeOperator, values);
-}
-
 }
