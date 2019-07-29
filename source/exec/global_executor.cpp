@@ -2,14 +2,12 @@
 #include "exec/compiled_source.hpp"
 #include "exec/execution.hpp"
 #include "exec/source_compiler.hpp"
-#include "sema/dumper.hpp"
 #include "sema/user_sema_function.hpp"
 
 #include "cmake_facade.hpp"
 
 #include <errors/error.hpp>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 
 namespace cmsl::exec {
@@ -46,11 +44,6 @@ int global_executor::execute(std::string source)
   if (!compiled) {
     raise_unsuccessful_compilation_error(source_path);
     return -1;
-  }
-
-  {
-    sema::dumper dumper{ std::cout };
-    compiled->sema_tree().visit(dumper);
   }
 
   const auto main_function = compiled->get_main();
