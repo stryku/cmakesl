@@ -25,6 +25,8 @@ set(AST_SOURCES
     parser_utils.hpp
     return_node.cpp
     return_node.hpp
+    ternary_operator_node.cpp
+    ternary_operator_node.hpp
     translation_unit_node.cpp
     translation_unit_node.hpp
     type_parser.cpp

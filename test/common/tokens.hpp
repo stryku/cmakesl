@@ -43,6 +43,9 @@ token_t token_xorequal();
 token_t token_string(cmsl::string_view str);
 token_t token_semicolon();
 token_t token_coloncolon();
+token_t token_colon();
+token_t token_question();
+
 token_t token_comma();
 token_t token_less();
 token_t token_lessequal();

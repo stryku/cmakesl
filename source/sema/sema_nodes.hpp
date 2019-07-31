@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ast/ast_node.hpp"
+#include "ast/name_with_coloncolon.hpp"
+#include "ast/namespace_node.hpp"
 #include "common/int_alias.hpp"
 #include "lexer/token.hpp"
 #include "sema/sema_function.hpp"
@@ -8,8 +10,6 @@
 #include "sema/sema_node_visitor.hpp"
 #include "sema/sema_type.hpp"
 
-#include <ast/name_with_coloncolon.hpp>
-#include <ast/namespace_node.hpp>
 #include <memory>
 
 #define VISIT_METHOD                                                          \
@@ -766,5 +766,39 @@ public:
 private:
   nodes_t m_nodes;
   names_t m_names;
+};
+
+class ternary_operator_node : public expression_node
+{
+public:
+  explicit ternary_operator_node(const ast::ast_node& ast_node,
+                                 std::unique_ptr<expression_node> condition,
+                                 std::unique_ptr<expression_node> true_,
+                                 std::unique_ptr<expression_node> false_)
+    : expression_node{ ast_node }
+    , m_condition{ std::move(condition) }
+    , m_true{ std::move(true_) }
+    , m_false{ std::move(false_) }
+  {
+  }
+
+  const expression_node& condition() const { return *m_condition; }
+  const expression_node& true_() const { return *m_true; }
+  const expression_node& false_() const { return *m_false; }
+
+  const sema_type& type() const override { return m_true->type(); }
+
+  bool produces_temporary_value() const override
+  {
+    return m_true->produces_temporary_value() ||
+      m_false->produces_temporary_value();
+  }
+
+  VISIT_METHOD
+
+private:
+  std::unique_ptr<expression_node> m_condition;
+  std::unique_ptr<expression_node> m_true;
+  std::unique_ptr<expression_node> m_false;
 };
 }

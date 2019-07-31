@@ -8,6 +8,7 @@
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/return_node.hpp"
+#include "ast/ternary_operator_node.hpp"
 #include "ast/translation_unit_node.hpp"
 #include "ast/user_function_node.hpp"
 #include "ast/variable_declaration_node.hpp"
@@ -52,6 +53,10 @@ const sema_type valid_type{ valid_context,
                             ast::type_representation{
                               token_identifier("foo") },
                             {} };
+const sema_type different_type{ valid_context,
+                                ast::type_representation{
+                                  token_identifier("different_type") },
+                                {} };
 const auto void_type_representation =
   ast::type_representation{ token_kw_void() };
 const sema_type void_type_mock{ valid_context, void_type_representation, {} };
@@ -1772,4 +1777,94 @@ TEST_F(SemaBuilderAstVisitorTest,
 
   ASSERT_THAT(visitor.m_result_node, IsNull());
 }
+
+TEST_F(SemaBuilderAstVisitorTest, Visit_TernaryOperator_GetTernaryOperator)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  NiceMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+  auto condition = std::make_unique<ast::bool_value_node>(token_kw_false());
+  auto true_ = std::make_unique<ast::int_value_node>(token_integer("12"));
+  auto false_ = std::make_unique<ast::int_value_node>(token_integer("42"));
+
+  auto ternary = std::make_unique<ast::ternary_operator_node>(
+    std::move(condition), token_question(), std::move(true_), token_colon(),
+    std::move(false_));
+
+  EXPECT_CALL(ctx, find_type(_)).WillRepeatedly(Return(&valid_type));
+  EXPECT_CALL(ctx, find_reference_for(_))
+    .WillRepeatedly(Return(&valid_type_reference));
+
+  visitor.visit(*ternary);
+
+  ASSERT_THAT(visitor.m_result_node, NotNull());
+}
+
+TEST_F(SemaBuilderAstVisitorTest,
+       Visit_TernaryOperatorWithConditionNotReturningBool_ReportError)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  NiceMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+  auto condition = std::make_unique<ast::int_value_node>(token_integer("12"));
+  auto true_ = std::make_unique<ast::int_value_node>(token_integer("12"));
+  auto false_ = std::make_unique<ast::int_value_node>(token_integer("42"));
+
+  auto ternary = std::make_unique<ast::ternary_operator_node>(
+    std::move(condition), token_question(), std::move(true_), token_colon(),
+    std::move(false_));
+
+  EXPECT_CALL(ctx, find_type(_))
+    .WillOnce(Return(&valid_type)) // Type for builtin bool type.
+    .WillOnce(
+      Return(&different_type)); // Type for condition expression result type.
+  EXPECT_CALL(ctx, find_reference_for(_))
+    .WillRepeatedly(
+      Return(&valid_type_reference)); // Reference for builtin bool type.
+
+  EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
+
+  visitor.visit(*ternary);
+
+  ASSERT_THAT(visitor.m_result_node, IsNull());
+}
+
+TEST_F(SemaBuilderAstVisitorTest,
+       Visit_TernaryOperatorWithArgumentsReturningDifferentTypes_ReportError)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  NiceMock<identifiers_context_mock> ids_ctx;
+  auto visitor = create_visitor(errs, ctx, ids_ctx);
+
+  auto condition = std::make_unique<ast::bool_value_node>(token_kw_false());
+  auto true_ =
+    std::make_unique<ast::string_value_node>(token_integer("some_str"));
+  auto false_ = std::make_unique<ast::int_value_node>(token_integer("42"));
+
+  auto ternary = std::make_unique<ast::ternary_operator_node>(
+    std::move(condition), token_question(), std::move(true_), token_colon(),
+    std::move(false_));
+
+  EXPECT_CALL(ctx, find_type(_))
+    .WillOnce(Return(&valid_type)) // Type for builtin bool type.
+    .WillOnce(
+      Return(&valid_type)) // Type for condition expression result type.
+    .WillOnce(Return(&valid_type))      // Type for true expression type.
+    .WillOnce(Return(&different_type)); // Type for false expression type.
+  EXPECT_CALL(ctx, find_reference_for(_))
+    .WillRepeatedly(
+      Return(&valid_type_reference)); // Reference for builtin bool type.
+
+  EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
+
+  visitor.visit(*ternary);
+
+  ASSERT_THAT(visitor.m_result_node, IsNull());
+}
+
 }

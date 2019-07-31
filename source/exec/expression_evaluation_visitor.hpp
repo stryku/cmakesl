@@ -161,6 +161,18 @@ public:
     result = list_instance;
   }
 
+  void visit(const sema::ternary_operator_node& node) override
+  {
+    const auto condition = evaluate_child(node.condition());
+    const auto& condition_result_value = condition->value_cref();
+
+    if (condition_result_value.get_bool()) {
+      result = evaluate_child(node.true_());
+    } else {
+      result = evaluate_child(node.false_());
+    }
+  }
+
 public:
   inst::instance* result;
 

@@ -9,6 +9,7 @@
 #include "ast/infix_nodes.hpp"
 #include "ast/namespace_node.hpp"
 #include "ast/return_node.hpp"
+#include "ast/ternary_operator_node.hpp"
 #include "ast/translation_unit_node.hpp"
 #include "ast/type_parser.hpp"
 #include "ast/type_parsing_result.hpp"
@@ -669,6 +670,8 @@ std::unique_ptr<ast_node> parser::parse_expr()
         std::move(operator_expr), *dot, vals->name, vals->open_paren,
         std::move(vals->params), vals->close_paren);
     }
+  } else if (const auto question = try_eat(token_type_t::question)) {
+    return parse_rest_of_ternary_operator(std::move(operator_expr), *question);
   }
 
   return operator_expr;
@@ -1015,5 +1018,28 @@ std::unique_ptr<id_node> parser::parse_possibly_qualified_name()
   }
 
   return std::make_unique<id_node>(std::move(names));
+}
+
+std::unique_ptr<ternary_operator_node> parser::parse_rest_of_ternary_operator(
+  std::unique_ptr<ast_node> condition, token_t question)
+{
+  auto true_ = parse_expr();
+  if (!true_) {
+    return nullptr;
+  }
+
+  const auto colon = eat(token_type_t::colon);
+  if (!colon) {
+    return nullptr;
+  }
+
+  auto false_ = parse_expr();
+  if (!false_) {
+    return nullptr;
+  }
+
+  return std::make_unique<ternary_operator_node>(std::move(condition),
+                                                 question, std::move(true_),
+                                                 *colon, std::move(false_));
 }
 }

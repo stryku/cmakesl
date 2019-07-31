@@ -86,6 +86,10 @@ std::string to_string(lexer::token_type type)
       return "string";
     case lexer::token_type::semicolon:
       return ";";
+    case lexer::token_type::question:
+      return "?";
+    case lexer::token_type::colon:
+      return ":";
     case lexer::token_type::coloncolon:
       return "::";
     case lexer::token_type::comma:

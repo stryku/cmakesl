@@ -19,6 +19,7 @@ cmsl_add_test(
         smoke_test_fixture.hpp
         static_variables_smoke_test.cpp
         string_type_smoke_tests.cpp
+        ternary_operator_smoke_test.cpp
         variable_type_deduction.cpp
         version_type_smoke_tests.cpp
         void_type_smoke_test.cpp

@@ -9,6 +9,7 @@
 #include "ast/infix_nodes.hpp"
 #include "ast/namespace_node.hpp"
 #include "ast/return_node.hpp"
+#include "ast/ternary_operator_node.hpp"
 #include "ast/translation_unit_node.hpp"
 #include "ast/user_function_node.hpp"
 #include "ast/variable_declaration_node.hpp"
@@ -1225,5 +1226,72 @@ void sema_builder_ast_visitor::visit(const ast::namespace_node& node)
   while (!guards.empty()) {
     guards.pop();
   }
+}
+
+void sema_builder_ast_visitor::visit(const ast::ternary_operator_node& node)
+{
+  auto condition = visit_child_expr(node.condition());
+  if (!condition) {
+    return;
+  }
+
+  const auto finder = builtin_types_finder{ m_ctx };
+  const auto& bool_type = finder.find_bool();
+  const auto& bool_ref_type = finder.find_reference_for(bool_type);
+  if (condition->type() != bool_type && condition->type() != bool_ref_type) {
+    const auto src_view = node.question().source();
+    const auto range = source_range{ node.condition().src_range() };
+    raise_error(src_view, range,
+                "expected bool value, got " +
+                  condition->type().name().to_string());
+    return;
+  }
+
+  auto true_ = visit_child_expr(node.true_());
+  if (!true_) {
+    return;
+  }
+
+  auto false_ = visit_child_expr(node.false_());
+  if (!false_) {
+    return;
+  }
+
+  const auto& true_expr_type = true_->type();
+  const auto& false_expr_type = false_->type();
+
+  const auto different_types_error_raiser = [&node, &true_expr_type,
+                                             &false_expr_type, this] {
+    raise_error(node.question(),
+                "incompatible operand types. " +
+                  true_expr_type.name().to_string() + " and " +
+                  false_expr_type.name().to_string());
+  };
+
+  if (true_expr_type != false_expr_type) {
+    if (!true_expr_type.is_reference() && !false_expr_type.is_reference()) {
+      different_types_error_raiser();
+      return;
+    }
+
+    if (true_expr_type.is_reference()) {
+      if (true_expr_type.referenced_type() != false_expr_type) {
+        different_types_error_raiser();
+        return;
+      }
+      true_ = convert_to_cast_node_if_need(true_expr_type.referenced_type(),
+                                           std::move(true_));
+    } else if (false_expr_type.is_reference()) {
+      if (false_expr_type.referenced_type() != true_expr_type) {
+        different_types_error_raiser();
+        return;
+      }
+      false_ = convert_to_cast_node_if_need(false_expr_type.referenced_type(),
+                                            std::move(false_));
+    }
+  }
+
+  m_result_node = std::make_unique<ternary_operator_node>(
+    node, std::move(condition), std::move(true_), std::move(false_));
 }
 }

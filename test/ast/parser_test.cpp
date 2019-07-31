@@ -9,6 +9,7 @@
 #include "ast/namespace_node.hpp"
 #include "ast/parser.hpp"
 #include "ast/return_node.hpp"
+#include "ast/ternary_operator_node.hpp"
 #include "ast/translation_unit_node.hpp"
 #include "ast/user_function_node.hpp"
 #include "ast/variable_declaration_node.hpp"
@@ -273,6 +274,20 @@ public:
 
   void visit(const break_node& node) override { m_result += "break{}"; }
 
+  void visit(const ternary_operator_node& node) override
+  {
+    m_result += "ternary operator{condition:";
+
+    node.condition().visit(*this);
+
+    m_result += ";true:";
+    node.true_().visit(*this);
+    m_result += ";false:";
+    node.false_().visit(*this);
+
+    m_result += '}';
+  }
+
   std::string result() const { return m_result; }
 
 private:
@@ -300,6 +315,11 @@ protected:
   auto create_qualified_name(token_t name) const
   {
     return std::vector<ast::name_with_coloncolon>{ { name } };
+  }
+
+  auto create_id_node_ptr(token_t name) const
+  {
+    return std::make_unique<id_node>(create_qualified_name(name));
   }
 };
 
@@ -2258,6 +2278,84 @@ TEST_F(ParserTest,
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_namespace();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest, Expr_TernaryOperator_GetTernaryOperator)
+{
+  // foo ? bar : baz
+  const auto foo_token = token_identifier("foo");
+  const auto bar_token = token_identifier("bar");
+  const auto baz_token = token_identifier("baz");
+
+  auto foo_node = create_id_node_ptr(foo_token);
+  auto bar_node = create_id_node_ptr(bar_token);
+  auto baz_node = create_id_node_ptr(baz_token);
+
+  auto expected_ast = std::make_unique<ternary_operator_node>(
+    std::move(foo_node), token_question(), std::move(bar_node), token_colon(),
+    std::move(baz_node));
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    foo_token,
+    token_question(),
+    bar_token,
+    token_colon(),
+    baz_token
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_expr();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest, Expr_NestedTernaryOperator_GetTernaryOperator)
+{
+  // foo ? bar ? baz : qux : kek
+  const auto foo_token = token_identifier("foo");
+  const auto bar_token = token_identifier("bar");
+  const auto baz_token = token_identifier("baz");
+  const auto qux_token = token_identifier("qux");
+  const auto kek_token = token_identifier("kek");
+
+  auto foo_node = create_id_node_ptr(foo_token);
+  auto bar_node = create_id_node_ptr(bar_token);
+  auto baz_node = create_id_node_ptr(baz_token);
+  auto qux_node = create_id_node_ptr(qux_token);
+  auto kek_node = create_id_node_ptr(kek_token);
+
+  auto nested_ternary = std::make_unique<ternary_operator_node>(
+    std::move(bar_node), token_question(), std::move(baz_node), token_colon(),
+    std::move(qux_node));
+
+  auto expected_ast = std::make_unique<ternary_operator_node>(
+    std::move(foo_node), token_question(), std::move(nested_ternary),
+    token_colon(), std::move(kek_node));
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    foo_token,
+    token_question(),
+    bar_token,
+    token_question(),
+    baz_token,
+    token_colon(),
+    qux_token,
+    token_colon(),
+    kek_token
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
