@@ -62,7 +62,13 @@ private:
   void leave_function_scope();
 
   std::unique_ptr<inst::instance> execute_infix_expression(
+    expression_evaluation_context ctx, const sema::sema_node& node);
+
+  std::unique_ptr<inst::instance> execute_infix_expression(
     const sema::sema_node& node);
+
+  std::unique_ptr<inst::instance> execute_infix_expression(
+    const sema::sema_type& expected_type, const sema::sema_node& node);
 
 private:
   struct callstack_frame

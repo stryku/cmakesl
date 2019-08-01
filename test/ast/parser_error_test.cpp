@@ -1,5 +1,6 @@
 #include "ast/ast_node.hpp"
 #include "ast/block_node.hpp"
+#include "ast/designated_initializers_node.hpp"
 #include "ast/parser.hpp"
 #include "ast/variable_declaration_node.cpp"
 #include "errors/errors_observer.hpp"
@@ -533,5 +534,43 @@ const auto values = Values(
   tokens_container_t{ nmsp, foo_token, cc, cc, bar_token, ob, cb });
 
 INSTANTIATE_TEST_CASE_P(ParserErrorTest, Namespace, values);
+}
+
+namespace designated_initializers {
+using DesignatedInitializers = TestWithParam<tokens_container_t>;
+
+TEST_P(DesignatedInitializers, Malformed_ReportError)
+{
+  errs_t errs;
+  EXPECT_CALL(errs.mock, notify_error(_));
+
+  const auto tokens = GetParam();
+  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  auto result = p.parse_designated_initializers();
+
+  EXPECT_THAT(result, IsNull());
+}
+
+const auto dot = token_dot();
+const auto ob = token_open_brace();
+const auto cb = token_close_brace();
+const auto equal = token_equal();
+const auto comma = token_comma();
+const auto foo_token = token_identifier("foo");
+const auto bar_token = token_identifier("bar");
+const auto baz_token = token_identifier("baz");
+const auto qux_token = token_identifier("qux");
+
+const auto values = Values(
+  tokens_container_t{ ob, dot, cb },                          // { . }
+  tokens_container_t{ ob, dot, foo_token, cb },               // { .foo }
+  tokens_container_t{ ob, dot, foo_token, equal, cb },        // { .foo = }
+  tokens_container_t{ ob, dot, foo_token, equal, comma, cb }, // { .foo = , }
+  tokens_container_t{ ob, dot, foo_token, equal, bar_token, comma,
+                      cb }, // { .foo = bar,  }
+  tokens_container_t{ ob, dot, foo_token, equal, comma, dot, baz_token, equal,
+                      qux_token, cb }); // { .foo = , .baz = qux }
+
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, DesignatedInitializers, values);
 }
 }

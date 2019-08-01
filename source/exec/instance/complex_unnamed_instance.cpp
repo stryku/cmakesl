@@ -59,24 +59,24 @@ void complex_unnamed_instance::assign(instance_value_variant)
   CMSL_UNREACHABLE("Assigning value to a complex type");
 }
 
-// instance* complex_unnamed_instance::find_member(cmsl::string_view name)
-//{
-//  auto found = m_members.find(name);
-//  return found != std::end(m_members) ? found->second.get() : nullptr;
-//}
+void complex_unnamed_instance::assign_member(unsigned index,
+                                             std::unique_ptr<instance> val)
+{
+  auto found = m_members.find(index);
+  if (found == std::cend(m_members)) {
+    CMSL_UNREACHABLE(
+      "Assinging a member that does not belong to type of the instance");
+    return;
+  }
+
+  found->second = std::move(val);
+}
 
 instance* complex_unnamed_instance::find_member(unsigned index)
 {
   auto found = m_members.find(index);
   return found != std::end(m_members) ? found->second.get() : nullptr;
 }
-
-// const instance* complex_unnamed_instance::find_cmember(
-//  cmsl::string_view name) const
-//{
-//  auto found = m_members.find(name);
-//  return found != std::end(m_members) ? found->second.get() : nullptr;
-//}
 
 const instance* complex_unnamed_instance::find_cmember(unsigned index) const
 {

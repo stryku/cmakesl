@@ -1,8 +1,14 @@
 #pragma once
 
+#include <stack>
+
 namespace cmsl {
 namespace facade {
 class cmake_facade;
+}
+
+namespace sema {
+class sema_type;
 }
 
 namespace exec {
@@ -19,6 +25,10 @@ struct expression_evaluation_context
   inst::instances_holder_interface& instances;
   identifiers_context& ids_context;
   facade::cmake_facade& cmake_facade;
+
+  using expected_types_t =
+    std::stack<std::reference_wrapper<const sema::sema_type>>;
+  expected_types_t expected_types;
 };
 }
 }

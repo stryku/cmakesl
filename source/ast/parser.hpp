@@ -22,6 +22,7 @@ struct name_with_coloncolon;
 class namespace_node;
 class id_node;
 class ternary_operator_node;
+class designated_initializers_node;
 
 class parser : public parser_utils
 {
@@ -53,6 +54,10 @@ public:
   // Called when condition is already parsed, co current() is question.
   std::unique_ptr<ternary_operator_node> parse_rest_of_ternary_operator(
     std::unique_ptr<ast_node> condition, token_t question);
+
+  std::unique_ptr<ast_node> parse_expression_starting_from_brace();
+  std::unique_ptr<designated_initializers_node>
+  parse_designated_initializers();
 
 private:
   struct function_call_values

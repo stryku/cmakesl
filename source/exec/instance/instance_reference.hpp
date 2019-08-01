@@ -16,6 +16,7 @@ public:
   instance_value_variant& value_ref() override;
   const instance_value_variant& value_cref() const override;
   void assign(instance_value_variant val) override;
+  void assign_member(unsigned index, std::unique_ptr<instance> val) override;
   std::unique_ptr<instance> copy() const override;
   instance* find_member(unsigned index) override;
   const instance* find_cmember(unsigned index) const override;

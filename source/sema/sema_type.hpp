@@ -28,9 +28,15 @@ private:
   using token_t = lexer::token;
 
 public:
+  struct designated_initializer_tag
+  {
+  };
+
   explicit sema_type(const sema_context& ctx, ast::type_representation name,
                      std::vector<member_info> members);
   explicit sema_type(const sema_type_reference reference);
+  explicit sema_type(designated_initializer_tag, const sema_context& ctx,
+                     ast::type_representation name);
 
   sema_type(const sema_type&) = delete;
   sema_type& operator=(sema_type&&) = delete;
@@ -46,6 +52,7 @@ public:
 
   bool is_complex() const;
   bool is_reference() const;
+  bool is_designated_initializer() const;
   bool operator==(const sema_type& rhs) const;
   bool operator!=(const sema_type& rhs) const;
 
@@ -56,5 +63,6 @@ private:
   ast::type_representation m_name;
   std::vector<member_info> m_members;
   const sema_type* m_referenced_type{ nullptr };
+  bool m_is_designated_initializer = false;
 };
 }

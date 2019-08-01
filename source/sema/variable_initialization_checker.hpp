@@ -1,31 +1,39 @@
 #pragma once
 
+#include "lexer/token.hpp"
+#include "sema/variable_initialization_issue.hpp"
+
+#include <variant>
+
 namespace cmsl::sema {
 class sema_type;
 class expression_node;
+class designated_initializers_node;
 
 class variable_initialization_checker
 {
 public:
-  enum class check_result
-  {
-    can_init,
-    different_types,
-    reference_init_from_temporary_value
-  };
+  using issue_t = variable_initialization_issue_t;
 
-  check_result check(const sema_type& variable_type,
-                     const expression_node& initialization_expression) const;
+  // Returns a vector of isses. If the vector is empty, variable can be
+  // initialized by a given expression.
+  std::vector<issue_t> check(
+    const sema_type& variable_type,
+    const expression_node& initialization_expression) const;
 
 private:
   // For reference types returns the referenced type.
   const sema_type& effective_type(const sema_type& type) const;
 
-  check_result check_initialization_of_reference_type(
+  std::optional<issue_t> check_initialization_of_reference_type(
     const sema_type& variable_type,
     const expression_node& initialization_expression) const;
-  check_result check_initialization(
+  std::optional<issue_t> check_initialization(
     const sema_type& variable_type,
     const expression_node& initialization_expression) const;
+
+  std::vector<issue_t> check_designated_initializers(
+    const sema_type& variable_type,
+    const designated_initializers_node& designated_initializers) const;
 };
 }

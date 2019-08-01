@@ -3,6 +3,7 @@
 #include "ast/break_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/designated_initializers_node.hpp"
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
@@ -288,6 +289,19 @@ public:
     m_result += '}';
   }
 
+  void visit(const designated_initializers_node& node) override
+  {
+    m_result += "designated initializers{";
+
+    for (const auto& n : node.initializers()) {
+      m_result += "initializer{";
+      n.initialization->visit(*this);
+      m_result += '}';
+    }
+
+    m_result += '}';
+  }
+
   std::string result() const { return m_result; }
 
 private:
@@ -302,7 +316,6 @@ MATCHER_P(AstEq, expected_ast, "")
   ast_tree_representation_visitor expected_visitor;
   expected_ast->visit(expected_visitor);
 
-  // Uncomment to see nice values at a test fail.
   *result_listener << "result: " << result_visitor.result()
                    << "\nexpected: " << expected_visitor.result();
 
@@ -2360,4 +2373,53 @@ TEST_F(ParserTest, Expr_NestedTernaryOperator_GetTernaryOperator)
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
+
+TEST_F(ParserTest, DesignatedInitializers_GetDesignatedInitializers)
+{
+  // { .foo = bar, .baz = qux }
+  const auto foo_token = token_identifier("foo");
+  const auto bar_token = token_identifier("bar");
+  const auto baz_token = token_identifier("baz");
+  const auto qux_token = token_identifier("qux");
+
+  auto bar_node = create_id_node_ptr(bar_token);
+  auto qux_node = create_id_node_ptr(qux_token);
+
+  designated_initializers_node::initializers_t initializers;
+  initializers.emplace_back(designated_initializers_node::initializer{
+    token_dot(), foo_token, token_equal(), std::move(bar_node),
+    token_comma() });
+  initializers.emplace_back(designated_initializers_node::initializer{
+    token_dot(), baz_token, token_equal(), std::move(qux_node) });
+
+  auto expected_ast = std::make_unique<designated_initializers_node>(
+    token_open_brace(), std::move(initializers), token_close_brace());
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_open_brace(),
+
+    token_dot(),
+    foo_token,
+    token_equal(),
+    bar_token,
+    token_comma(),
+
+    token_dot(),
+    baz_token,
+    token_equal(),
+    qux_token,
+
+    token_close_brace()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_expr();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
 }

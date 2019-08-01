@@ -21,12 +21,12 @@ void return_node::visit(ast_node_visitor& visitor) const
   visitor.visit(*this);
 }
 
-ast_node::token_t return_node::return_kw() const
+const ast_node::token_t& return_node::return_kw() const
 {
   return m_return_kw;
 }
 
-ast_node::token_t return_node::semicolon() const
+const ast_node::token_t& return_node::semicolon() const
 {
   return m_semicolon;
 }

@@ -21,6 +21,7 @@ using ::testing::_;
 using ::testing::ByRef;
 using ::testing::ByMove;
 using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::Eq;
 using ::testing::StrictMock;
 using ::testing::NiceMock;
@@ -226,10 +227,12 @@ TEST_F(ExpressionEvaluationVisitorTest,
     std::make_unique<StrictMock<inst::test::instance_mock>>();
   auto result_instance_ptr = result_instance.get();
 
-  const auto param_expression_0_token = token_identifier("foo");
+  const auto fun_name_token = token_identifier("foo");
+
+  const auto param_expression_0_token = token_identifier("bar");
   auto param_expression_0 =
     create_id_node_ptr(ast_node, param_expression_0_token, 0u);
-  const auto param_expression_1_token = token_identifier("bar");
+  const auto param_expression_1_token = token_identifier("baz");
   auto param_expression_1 =
     create_id_node_ptr(ast_node, param_expression_1_token, 1u);
 
@@ -242,6 +245,14 @@ TEST_F(ExpressionEvaluationVisitorTest,
   EXPECT_CALL(m_ids_ctx, lookup_identifier(_))
     .WillOnce(Return(&param_instance_0))
     .WillOnce(Return(&param_instance_1));
+
+  sema::function_signature signature;
+  signature.name = fun_name_token;
+  signature.params.emplace_back(
+    sema::parameter_declaration{ valid_type, param_expression_0_token, 3u });
+  signature.params.emplace_back(
+    sema::parameter_declaration{ valid_type, param_expression_1_token, 4u });
+  EXPECT_CALL(function, signature()).WillRepeatedly(ReturnRef(signature));
 
   std::vector<inst::instance*> expected_param_instances{ &param_instance_0,
                                                          &param_instance_1 };
@@ -273,10 +284,12 @@ TEST_F(
   const auto lhs_expression_token = token_identifier("foo");
   auto lhs_expression = create_id_node_ptr(ast_node, lhs_expression_token, 0u);
 
-  const auto param_expression_0_token = token_identifier("bar");
+  const auto fun_name_token = token_identifier("bar");
+
+  const auto param_expression_0_token = token_identifier("baz");
   auto param_expression_0 =
     create_id_node_ptr(ast_node, param_expression_0_token, 1u);
-  const auto param_expression_1_token = token_identifier("baz");
+  const auto param_expression_1_token = token_identifier("qux");
   auto param_expression_1 =
     create_id_node_ptr(ast_node, param_expression_1_token, 2u);
 
@@ -287,6 +300,14 @@ TEST_F(
   sema::member_function_call_node node{ ast_node, std::move(lhs_expression),
                                         function,
                                         std::move(param_expressions) };
+
+  sema::function_signature signature;
+  signature.name = fun_name_token;
+  signature.params.emplace_back(
+    sema::parameter_declaration{ valid_type, param_expression_0_token, 3u });
+  signature.params.emplace_back(
+    sema::parameter_declaration{ valid_type, param_expression_1_token, 4u });
+  EXPECT_CALL(function, signature()).WillRepeatedly(ReturnRef(signature));
 
   EXPECT_CALL(m_ids_ctx, lookup_identifier(_))
     .WillOnce(Return(&lhs_instance))
@@ -325,10 +346,12 @@ TEST_F(
   const auto lhs_expression_token = token_identifier("this");
   auto lhs_expression = create_id_node_ptr(ast_node, lhs_expression_token, 1u);
 
-  const auto param_expression_0_token = token_identifier("bar");
+  const auto fun_name_token = token_identifier("bar");
+
+  const auto param_expression_0_token = token_identifier("baz");
   auto param_expression_0 =
     create_id_node_ptr(ast_node, param_expression_0_token, 1u);
-  const auto param_expression_1_token = token_identifier("baz");
+  const auto param_expression_1_token = token_identifier("qux");
   auto param_expression_1 =
     create_id_node_ptr(ast_node, param_expression_1_token, 2u);
 
@@ -339,6 +362,14 @@ TEST_F(
   sema::member_function_call_node node{ ast_node, std::move(lhs_expression),
                                         function,
                                         std::move(param_expressions) };
+
+  sema::function_signature signature;
+  signature.name = fun_name_token;
+  signature.params.emplace_back(
+    sema::parameter_declaration{ valid_type, param_expression_0_token, 3u });
+  signature.params.emplace_back(
+    sema::parameter_declaration{ valid_type, param_expression_1_token, 4u });
+  EXPECT_CALL(function, signature()).WillRepeatedly(ReturnRef(signature));
 
   // Evaluation of lhs expression.
   EXPECT_CALL(m_ids_ctx, lookup_identifier(_))

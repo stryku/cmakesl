@@ -18,6 +18,8 @@
     visitor.visit(*this);                                                     \
   }
 
+using token_t = cmsl::lexer::token;
+
 namespace cmsl::sema {
 class expression_node : public sema_node
 {
@@ -801,4 +803,38 @@ private:
   std::unique_ptr<expression_node> m_true;
   std::unique_ptr<expression_node> m_false;
 };
+
+class designated_initializers_node : public expression_node
+{
+public:
+  struct initializer
+  {
+    token_t name;
+    std::unique_ptr<expression_node> init;
+  };
+
+  using initializers_t = std::vector<initializer>;
+
+  explicit designated_initializers_node(const ast::ast_node& ast_node,
+                                        const sema_type& ty,
+                                        initializers_t initializers)
+    : expression_node{ ast_node }
+    , m_type{ ty }
+    , m_initializers{ std::move(initializers) }
+  {
+  }
+
+  const initializers_t& initializers() const { return m_initializers; }
+
+  const sema_type& type() const override { return m_type; }
+
+  bool produces_temporary_value() const override { return true; }
+
+  VISIT_METHOD
+
+private:
+  const sema_type& m_type;
+  initializers_t m_initializers;
+};
+
 }

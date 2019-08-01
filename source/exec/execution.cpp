@@ -81,7 +81,7 @@ void execution::execute_variable_declaration(
   std::unique_ptr<inst::instance> created_instance;
 
   if (auto initialization = node.initialization()) {
-    created_instance = execute_infix_expression(*initialization);
+    created_instance = execute_infix_expression(node.type(), *initialization);
   } else {
     // Todo: create variable without instances holder
     auto variable_instance_ptr = instances.create(node.type());
@@ -174,13 +174,30 @@ void execution::leave_function_scope()
 }
 
 std::unique_ptr<inst::instance> execution::execute_infix_expression(
+  expression_evaluation_context ctx, const sema::sema_node& node)
+{
+  expression_evaluation_visitor visitor{ ctx };
+  node.visit(visitor);
+  return visitor.result->copy(); // Todo: it'd be good to move instead of copy.
+}
+
+std::unique_ptr<inst::instance> execution::execute_infix_expression(
   const sema::sema_node& node)
 {
   inst::instances_holder instances{ current_context() };
   expression_evaluation_context ctx{ *this, instances, *this, m_cmake_facade };
-  expression_evaluation_visitor visitor{ ctx };
-  node.visit(visitor);
-  return visitor.result->copy(); // Todo: it'd be good to move instead of copy.
+  return execute_infix_expression(std::move(ctx), node);
+}
+
+std::unique_ptr<inst::instance> execution::execute_infix_expression(
+  const sema::sema_type& expected_type, const sema::sema_node& node)
+{
+  inst::instances_holder instances{ current_context() };
+  expression_evaluation_context::expected_types_t types;
+  types.push(expected_type);
+  expression_evaluation_context ctx{ *this, instances, *this, m_cmake_facade,
+                                     std::move(types) };
+  return execute_infix_expression(std::move(ctx), node);
 }
 
 void execution::execute_if_else_node(const sema::if_else_node& node)

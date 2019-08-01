@@ -100,6 +100,7 @@ public:
   void visit(const ast::break_node& node) override;
   void visit(const ast::namespace_node& node) override;
   void visit(const ast::ternary_operator_node& node) override;
+  void visit(const ast::designated_initializers_node& node) override;
 
 private:
   const sema_type* try_get_or_create_generic_type(
@@ -199,7 +200,8 @@ private:
   bool is_last_node_return_node(const block_node& block) const;
   void add_implicit_return_node_if_need(block_node& block);
 
-  bool check_function_return_type(const expression_node& return_expression);
+  bool check_function_return_type(const lexer::token& return_kw,
+                                  const expression_node& return_expression);
   const sema_type* try_deduce_currently_parsed_function_return_type();
 
   bool is_inside_loop() const;

@@ -444,4 +444,43 @@ void dumper::dump_qualified_name(
   out() << "-qualified name: " << name_access;
 }
 
+void dumper::visit(const ternary_operator_node& node)
+{
+  out() << "-ternary operator";
+  auto ig = ident();
+
+  {
+    out() << "-condition";
+    auto guard = ident();
+    node.condition().visit(*this);
+  }
+  {
+    out() << "-true value";
+    auto guard = ident();
+    node.true_().visit(*this);
+  }
+  {
+    out() << "-false value";
+    auto guard = ident();
+    node.false_().visit(*this);
+  }
+}
+
+void dumper::visit(const designated_initializers_node& node)
+{
+  out() << "-designated initializers";
+  auto ig = ident();
+
+  const auto& inits = node.initializers();
+  for (auto i = 0; i < inits.size(); ++i) {
+    const auto& init = inits[i];
+    out() << "-initializer " << i;
+    auto guard = ident();
+    out() << "-name: " << init.name.str();
+    out() << "-value";
+    auto val_guard = ident();
+    init.init->visit(*this);
+  }
+}
+
 }

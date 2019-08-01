@@ -29,8 +29,20 @@ const sema_type different_type{ valid_context,
                                 ast::type_representation{
                                   token_identifier("bar") },
                                 {} };
+const sema_type designated_initialization_type{
+  sema_type::designated_initializer_tag{}, valid_context,
+  ast::type_representation{ token_identifier("designated_type") }
+};
 
-using check_result_t = variable_initialization_checker::check_result;
+const sema_type complex_type{
+  valid_context,
+  ast::type_representation{ token_identifier("foo") },
+  { member_info{ token_identifier("member_foo"), valid_type, 0 } }
+};
+
+// using check_result_t = variable_initialization_checker::check_result;
+
+using namespace variable_initialization_issues;
 
 class VariableInitializationCheck : public ::testing::Test
 {
@@ -39,6 +51,31 @@ public:
   {
     static auto ast_node = NiceMock<ast::test::ast_node_mock>{};
     return StrictMock<expression_node_mock>{ ast_node };
+  }
+
+  auto expression_mock_ptr()
+  {
+    static auto ast_node = NiceMock<ast::test::ast_node_mock>{};
+    return std::make_unique<StrictMock<expression_node_mock>>(ast_node);
+  }
+
+  auto designated_init_expression_mock(
+    designated_initializers_node::initializers_t inits = {})
+  {
+    static auto ast_node = NiceMock<ast::test::ast_node_mock>{};
+    return designated_initializers_node{ ast_node,
+                                         designated_initialization_type,
+                                         std::move(inits) };
+  }
+
+  auto member_initializer(lexer::token name)
+  {
+    auto member_init = expression_mock_ptr();
+    const auto init_mock_ptr = member_init.get();
+    return std::make_pair(
+      designated_initializers_node::initializer{ name,
+                                                 std::move(member_init) },
+      init_mock_ptr);
   }
 };
 
@@ -50,9 +87,9 @@ TEST_F(VariableInitializationCheck,
   EXPECT_CALL(init_expression, type()).WillOnce(ReturnRef(valid_type));
 
   variable_initialization_checker checker;
-  const auto result = checker.check(valid_type, init_expression);
+  const auto init_issues = checker.check(valid_type, init_expression);
 
-  EXPECT_THAT(result, Eq(check_result_t::can_init));
+  EXPECT_TRUE(init_issues.empty());
 }
 
 TEST_F(VariableInitializationCheck,
@@ -66,9 +103,9 @@ TEST_F(VariableInitializationCheck,
     .WillRepeatedly(ReturnRef(expression_type));
 
   variable_initialization_checker checker;
-  const auto result = checker.check(valid_type, init_expression);
+  const auto init_issues = checker.check(valid_type, init_expression);
 
-  EXPECT_THAT(result, Eq(check_result_t::can_init));
+  EXPECT_TRUE(init_issues.empty());
 }
 
 TEST_F(VariableInitializationCheck,
@@ -83,9 +120,9 @@ TEST_F(VariableInitializationCheck,
     .WillRepeatedly(ReturnRef(expression_type));
 
   variable_initialization_checker checker;
-  const auto result = checker.check(variable_type, init_expression);
+  const auto init_issues = checker.check(variable_type, init_expression);
 
-  EXPECT_THAT(result, Eq(check_result_t::can_init));
+  EXPECT_TRUE(init_issues.empty());
 }
 
 TEST_F(
@@ -102,9 +139,10 @@ TEST_F(
     .WillRepeatedly(Return(false));
 
   variable_initialization_checker checker;
-  const auto result = checker.check(variable_type, init_expression);
+  const auto init_issues = checker.check(variable_type, init_expression);
 
-  EXPECT_THAT(result, Eq(check_result_t::can_init));
+  EXPECT_TRUE(init_issues.empty());
+  ;
 }
 
 TEST_F(
@@ -121,9 +159,11 @@ TEST_F(
     .WillRepeatedly(Return(true));
 
   variable_initialization_checker checker;
-  const auto result = checker.check(variable_type, init_expression);
+  const auto init_issues = checker.check(variable_type, init_expression);
 
-  EXPECT_THAT(result, Eq(check_result_t::reference_init_from_temporary_value));
+  ASSERT_THAT(init_issues.size(), Eq(1));
+  EXPECT_TRUE(std::holds_alternative<reference_init_from_temporary_value>(
+    init_issues[0]));
 }
 
 TEST_F(VariableInitializationCheck,
@@ -135,9 +175,10 @@ TEST_F(VariableInitializationCheck,
     .WillRepeatedly(ReturnRef(different_type));
 
   variable_initialization_checker checker;
-  const auto result = checker.check(valid_type, init_expression);
+  const auto init_issues = checker.check(valid_type, init_expression);
 
-  EXPECT_THAT(result, Eq(check_result_t::different_types));
+  ASSERT_THAT(init_issues.size(), Eq(1));
+  EXPECT_TRUE(std::holds_alternative<different_types>(init_issues[0]));
 }
 
 TEST_F(VariableInitializationCheck,
@@ -151,9 +192,10 @@ TEST_F(VariableInitializationCheck,
     .WillRepeatedly(ReturnRef(expression_type));
 
   variable_initialization_checker checker;
-  const auto result = checker.check(valid_type, init_expression);
+  const auto init_issues = checker.check(valid_type, init_expression);
 
-  EXPECT_THAT(result, Eq(check_result_t::different_types));
+  ASSERT_THAT(init_issues.size(), Eq(1));
+  EXPECT_TRUE(std::holds_alternative<different_types>(init_issues[0]));
 }
 
 TEST_F(VariableInitializationCheck,
@@ -168,9 +210,10 @@ TEST_F(VariableInitializationCheck,
     .WillRepeatedly(ReturnRef(expression_type));
 
   variable_initialization_checker checker;
-  const auto result = checker.check(variable_type, init_expression);
+  const auto init_issues = checker.check(variable_type, init_expression);
 
-  EXPECT_THAT(result, Eq(check_result_t::different_types));
+  ASSERT_THAT(init_issues.size(), Eq(1));
+  EXPECT_TRUE(std::holds_alternative<different_types>(init_issues[0]));
 }
 
 TEST_F(VariableInitializationCheck,
@@ -184,8 +227,104 @@ TEST_F(VariableInitializationCheck,
     .WillRepeatedly(ReturnRef(different_type));
 
   variable_initialization_checker checker;
-  const auto result = checker.check(variable_type, init_expression);
+  const auto init_issues = checker.check(variable_type, init_expression);
 
-  EXPECT_THAT(result, Eq(check_result_t::different_types));
+  ASSERT_THAT(init_issues.size(), Eq(1));
+  EXPECT_TRUE(std::holds_alternative<different_types>(init_issues[0]));
+}
+
+TEST_F(
+  VariableInitializationCheck,
+  ReferenceFromDesignatedInitializers_ReturnsReferenceInitFromTemporaryValue)
+{
+  auto init_expression = designated_init_expression_mock();
+
+  sema_type variable_type{ sema_type_reference{ valid_type } };
+
+  variable_initialization_checker checker;
+  const auto init_issues = checker.check(variable_type, init_expression);
+
+  ASSERT_THAT(init_issues.size(), Eq(1));
+  EXPECT_TRUE(std::holds_alternative<reference_init_from_temporary_value>(
+    init_issues[0]));
+}
+
+TEST_F(VariableInitializationCheck,
+       NonReferenceFromDesignatedInitializers_NoMember_ReturnsMemberNotFound)
+{
+  auto [initializer, _] = member_initializer(token_identifier("member_foo"));
+
+  designated_initializers_node::initializers_t inits;
+  inits.emplace_back(std::move(initializer));
+  auto init_expression = designated_init_expression_mock(std::move(inits));
+
+  variable_initialization_checker checker;
+  const auto init_issues = checker.check(valid_type, init_expression);
+
+  ASSERT_THAT(init_issues.size(), Eq(1));
+  EXPECT_TRUE(
+    std::holds_alternative<designated_member_not_found>(init_issues[0]));
+}
+
+TEST_F(
+  VariableInitializationCheck,
+  NonReferenceFromDesignatedInitializers_DifferentMemberType_ReturnsDesigDifferentType)
+{
+  auto [initializer, init_initialization_ptr] =
+    member_initializer(token_identifier("member_foo"));
+
+  designated_initializers_node::initializers_t inits;
+  inits.emplace_back(std::move(initializer));
+
+  auto init_expression = designated_init_expression_mock(std::move(inits));
+
+  EXPECT_CALL(*init_initialization_ptr, type())
+    .WillRepeatedly(ReturnRef(different_type));
+
+  variable_initialization_checker checker;
+  const auto init_issues = checker.check(complex_type, init_expression);
+
+  ASSERT_THAT(init_issues.size(), Eq(1));
+  EXPECT_TRUE(
+    std::holds_alternative<designated_different_types>(init_issues[0]));
+}
+
+TEST_F(
+  VariableInitializationCheck,
+  NonReferenceFromDesignatedInitializers_MultipleMembersInitializers_ReturnsDesigMemberInitializedMultipleTimes)
+{
+  designated_initializers_node::initializers_t inits;
+
+  const auto member_name = token_identifier("member_foo");
+  auto [first_member_init, first_member_init_initialization_ptr] =
+    member_initializer(member_name);
+  auto [second_member_init, _] = member_initializer(member_name);
+
+  inits.emplace_back(std::move(first_member_init));
+  inits.emplace_back(std::move(second_member_init));
+  auto init_expression = designated_init_expression_mock(std::move(inits));
+
+  EXPECT_CALL(*first_member_init_initialization_ptr, type())
+    .WillRepeatedly(ReturnRef(valid_type));
+
+  variable_initialization_checker checker;
+  const auto init_issues = checker.check(complex_type, init_expression);
+
+  ASSERT_THAT(init_issues.size(), Eq(1));
+  EXPECT_TRUE(
+    std::holds_alternative<designated_member_initialized_multiple_times>(
+      init_issues[0]));
+}
+
+TEST_F(
+  VariableInitializationCheck,
+  NonReferenceFromDesignatedInitializers_ReturnsNoIssues)
+{
+  auto init_expression = designated_init_expression_mock();
+
+  variable_initialization_checker checker;
+  const auto init_issues = checker.check(valid_type, init_expression);
+
+  EXPECT_TRUE(init_issues.empty());
 }
 }

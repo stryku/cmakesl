@@ -23,6 +23,14 @@ sema_type::sema_type(const sema_type_reference reference)
 {
 }
 
+sema_type::sema_type(designated_initializer_tag, const sema_context& ctx,
+                     ast::type_representation name)
+  : m_ctx{ ctx }
+  , m_name{ std::move(name) }
+  , m_is_designated_initializer{ true }
+{
+}
+
 const ast::type_representation& sema_type::name() const
 {
   return m_name;
@@ -67,7 +75,7 @@ bool sema_type::operator!=(const sema_type& rhs) const
 
 bool sema_type::is_complex() const
 {
-  return m_members.size() > 0u;
+  return !m_members.empty();
 }
 
 const std::vector<member_info>& sema_type::members() const
@@ -83,5 +91,10 @@ bool sema_type::is_reference() const
 const sema_type& sema_type::referenced_type() const
 {
   return *m_referenced_type;
+}
+
+bool sema_type::is_designated_initializer() const
+{
+  return m_is_designated_initializer;
 }
 }

@@ -82,6 +82,12 @@ const sema_type& sema_type_factory::create_reference(
 sema_type_factory::~sema_type_factory()
 {
 }
+const sema_type& sema_type_factory::create_designated_initializer(
+  const sema_context& ctx, ast::type_representation name)
+{
+  return create_impl<sema_type>(sema_type::designated_initializer_tag{}, ctx,
+                                name);
+}
 
 sema_generic_type_factory::sema_generic_type_factory(
   sema_context& generic_types_context, const sema_context& creation_context,
