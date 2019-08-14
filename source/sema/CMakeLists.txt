@@ -59,6 +59,9 @@ set(SEMA_SOURCES
     user_sema_function.hpp
     variable_initialization_checker.cpp
     variable_initialization_checker.hpp
+    failed_initialization_errors_reporters.cpp
+    failed_initialization_errors_reporters.hpp
+    variable_initialization_issue.hpp
 
     ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
 )

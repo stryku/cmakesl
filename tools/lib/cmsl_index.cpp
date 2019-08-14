@@ -280,6 +280,11 @@ private:
     // Todo: implement
   }
 
+  void visit(const sema::designated_initializers_node&) override
+  {
+    // Todo: implement
+  }
+
 private:
   std::vector<cmsl_index_entry> m_intermediate_entries;
   sema::identifiers_context_impl m_identifiers_context;

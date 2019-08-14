@@ -22,6 +22,7 @@
 #include "sema/block_node_manipulator.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/factories.hpp"
+#include "sema/failed_initialization_errors_reporters.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/overload_resolution.hpp"
 #include "sema/sema_context.hpp"
@@ -31,6 +32,7 @@
 #include "sema/user_sema_function.hpp"
 #include "sema/variable_initialization_checker.hpp"
 
+#include <ast/designated_initializers_node.hpp>
 #include <stack>
 
 namespace cmsl::sema {
@@ -472,7 +474,7 @@ void sema_builder_ast_visitor::visit(const ast::return_node& node)
 
   auto expr = to_expression(std::move(v.m_result_node));
 
-  if (!check_function_return_type(*expr)) {
+  if (!check_function_return_type(node.return_kw(), *expr)) {
     return;
   }
 
@@ -854,6 +856,12 @@ sema_builder_ast_visitor::convert_to_cast_node_if_need(
   const sema_type& expected_result_type,
   std::unique_ptr<expression_node> expression)
 {
+  // Designated initializers never need to be casted. Semantic for them has
+  // been already checked by the variable_initialization_checker.
+  if (expression->type().is_designated_initializer()) {
+    return expression;
+  }
+
   if (expected_result_type == expression->type()) {
     return expression;
   }
@@ -966,7 +974,7 @@ bool sema_builder_ast_visitor::is_last_node_return_node(
 }
 
 bool sema_builder_ast_visitor::check_function_return_type(
-  const expression_node& return_expression)
+  const lexer::token& return_kw, const expression_node& return_expression)
 {
   if (m_parsing_ctx.function_parsing_ctx.function == nullptr) {
     CMSL_UNREACHABLE("Return statement outside of function");
@@ -988,33 +996,21 @@ bool sema_builder_ast_visitor::check_function_return_type(
     m_parsing_ctx.function_parsing_ctx.function->return_type();
 
   variable_initialization_checker checker;
-  const auto check_result =
+  const auto init_issues =
     checker.check(function_return_type, return_expression);
 
-  if (check_result ==
-      variable_initialization_checker::check_result::can_init) {
+  if (init_issues.empty()) {
     return true;
   }
 
-  switch (check_result) {
-    case variable_initialization_checker::check_result::different_types: {
-      raise_error(source, src_range,
-                  "Function return type and expression result type do not "
-                  "match. Expected \'" +
-                    function_return_type.name().to_string() + "\' got \'" +
-                    return_expression.type().name().to_string() + "\'");
-      return false;
-    }
-    case variable_initialization_checker::check_result::
-      reference_init_from_temporary_value: {
-      raise_error(source, src_range,
-                  "Return type is a reference and can not be initialized with "
-                  "a temporary value");
-      return false;
-    }
-    default:
-      return true;
+  for (const auto& issue : init_issues) {
+    function_return_value_failed_initialization_errors_reporter reporter{
+      m_errors_observer, function_return_type, return_kw
+    };
+    std::visit(reporter, issue);
   }
+
+  return false;
 }
 
 const sema_type*
@@ -1102,25 +1098,16 @@ void sema_builder_ast_visitor::visit(
 
     if (!should_deduce_type_from_initialization) {
       variable_initialization_checker checker;
-      const auto check_result = checker.check(*type, *initialization);
+      const auto init_issues = checker.check(*type, *initialization);
 
-      switch (check_result) {
-        case variable_initialization_checker::check_result::can_init: {
-          // Can initialize, do nothing.
-        } break;
-        case variable_initialization_checker::check_result::different_types: {
-          raise_error(
-            initialization->type().name().primary_name(),
-            "Initialization and declared variable type does not match");
-          return;
+      if (!init_issues.empty()) {
+        for (const auto& issue : init_issues) {
+          variable_failed_initialization_errors_reporter reporter{
+            m_errors_observer, *node.equal()
+          };
+          std::visit(reporter, issue);
         }
-        case variable_initialization_checker::check_result::
-          reference_init_from_temporary_value: {
-          raise_error(initialization->type().name().primary_name(),
-                      "Reference variable can not be initialized with a "
-                      "temporary value");
-          return;
-        }
+        return;
       }
     }
 
@@ -1294,4 +1281,29 @@ void sema_builder_ast_visitor::visit(const ast::ternary_operator_node& node)
   m_result_node = std::make_unique<ternary_operator_node>(
     node, std::move(condition), std::move(true_), std::move(false_));
 }
+
+void sema_builder_ast_visitor::visit(
+  const ast::designated_initializers_node& node)
+{
+  const auto name = ast::type_representation{ make_token(
+    lexer::token_type::identifier, "designated_initializer") };
+  const auto& designated_type =
+    m_type_factory.create_designated_initializer(m_ctx, name);
+
+  designated_initializers_node::initializers_t initializers;
+
+  for (const auto& init : node.initializers()) {
+    designated_initializers_node::initializer initializer;
+    initializer.name = init.name;
+    initializer.init = visit_child_expr(*init.initialization);
+    if (!initializer.init) {
+      return;
+    }
+    initializers.emplace_back(std::move(initializer));
+  }
+
+  m_result_node = std::make_unique<designated_initializers_node>(
+    node, designated_type, std::move(initializers));
+}
+
 }

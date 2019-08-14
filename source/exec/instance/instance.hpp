@@ -33,6 +33,8 @@ public:
   virtual instance_value_variant& value_ref() = 0;
   virtual const instance_value_variant& value_cref() const = 0;
   virtual void assign(instance_value_variant val) = 0;
+  virtual void assign_member(unsigned index,
+                             std::unique_ptr<instance> val) = 0;
   virtual instance* find_member(unsigned index) = 0;
   virtual const instance* find_cmember(unsigned index) const = 0;
   virtual sema::single_scope_function_lookup_result_t find_function(

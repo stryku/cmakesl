@@ -67,12 +67,18 @@ void simple_unnamed_instance::assign(instance_value_variant val)
   m_data = val;
 }
 
+void simple_unnamed_instance::assign_member(unsigned,
+                                            std::unique_ptr<instance>)
+{
+  CMSL_UNREACHABLE("Assinging a member of a simple instance");
+}
+
 instance* simple_unnamed_instance::find_member(unsigned)
 {
   return nullptr;
 }
 
-const instance* simple_unnamed_instance::find_cmember(unsigned index) const
+const instance* simple_unnamed_instance::find_cmember(unsigned) const
 {
   return nullptr;
 }

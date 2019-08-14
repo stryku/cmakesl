@@ -66,7 +66,8 @@ public:
 
   void visit(const sema::function_call_node& node) override
   {
-    auto evaluated_params = evaluate_call_parameters(node.param_expressions());
+    auto evaluated_params =
+      evaluate_call_parameters(node.function(), node.param_expressions());
     const auto& function = node.function();
     auto result_instance =
       m_ctx.caller.call(function, evaluated_params, m_ctx.instances);
@@ -79,7 +80,8 @@ public:
     m_ctx.cmake_facade.go_into_subdirectory(
       std::string{ node.dir_name().value() });
 
-    auto evaluated_params = evaluate_call_parameters(node.param_expressions());
+    auto evaluated_params =
+      evaluate_call_parameters(node.function(), node.param_expressions());
     const auto& function = node.function();
     auto result_instance =
       m_ctx.caller.call(function, evaluated_params, m_ctx.instances);
@@ -91,7 +93,8 @@ public:
 
   void visit(const sema::implicit_member_function_call_node& node) override
   {
-    auto evaluated_params = evaluate_call_parameters(node.param_expressions());
+    auto evaluated_params =
+      evaluate_call_parameters(node.function(), node.param_expressions());
     const auto& function = node.function();
     auto class_instance = m_ctx.ids_context.get_class_instance();
     auto result_instance = m_ctx.caller.call_member(
@@ -102,7 +105,8 @@ public:
 
   void visit(const sema::constructor_call_node& node) override
   {
-    auto evaluated_params = evaluate_call_parameters(node.param_expressions());
+    auto evaluated_params =
+      evaluate_call_parameters(node.function(), node.param_expressions());
     const auto& function = node.function();
     auto class_instance = m_ctx.instances.create(node.type());
     auto result_instance = m_ctx.caller.call_member(
@@ -114,7 +118,8 @@ public:
   void visit(const sema::member_function_call_node& node) override
   {
     auto lhs_result = evaluate_child(node.lhs());
-    auto evaluated_params = evaluate_call_parameters(node.param_expressions());
+    auto evaluated_params =
+      evaluate_call_parameters(node.function(), node.param_expressions());
     const auto& function = node.function();
     auto result_instance = m_ctx.caller.call_member(
       *lhs_result, function, evaluated_params, m_ctx.instances);
@@ -173,6 +178,26 @@ public:
     }
   }
 
+  void visit(const sema::designated_initializers_node& node) override
+  {
+    const auto& expected_type = m_ctx.expected_types.top().get();
+    auto instance = m_ctx.instances.create(expected_type);
+
+    for (const auto& initializer : node.initializers()) {
+      const auto member_info =
+        expected_type.find_member(initializer.name.str());
+      auto guard = set_expected_type(member_info->ty);
+
+      auto initialization_value = evaluate_child(*initializer.init);
+
+      // It could probably be gathered from the instances.
+      instance->assign_member(member_info->index,
+                              initialization_value->copy());
+    }
+
+    result = instance;
+  }
+
 public:
   inst::instance* result;
 
@@ -186,15 +211,17 @@ private:
   }
 
   std::vector<inst::instance*> evaluate_call_parameters(
+    const sema::sema_function& function,
     const sema::call_node::param_expressions_t& params)
   {
     std::vector<inst::instance*> evaluated_params;
 
-    std::transform(std::cbegin(params), std::cend(params),
-                   std::back_inserter(evaluated_params),
-                   [this](const auto& param_expression) {
-                     return evaluate_child(*param_expression);
-                   });
+    for (auto i = 0; i < params.size(); ++i) {
+      const auto& expected_type = function.signature().params[i].ty;
+      auto guard = set_expected_type(expected_type);
+      auto param = evaluate_child(*params[i]);
+      evaluated_params.emplace_back(param);
+    }
 
     return evaluated_params;
   }
@@ -243,6 +270,50 @@ private:
 
     CMSL_UNREACHABLE("Unknown operator token");
     return "";
+  }
+
+  class expected_types_guard
+  {
+  public:
+    explicit expected_types_guard(
+      expression_evaluation_context ::expected_types_t& types,
+      const sema::sema_type& ty)
+      : m_types{ types }
+    {
+      m_types.push(ty);
+    }
+    ~expected_types_guard()
+    {
+      if (m_valid) {
+        m_types.pop();
+      }
+    }
+
+    expected_types_guard() = delete;
+    expected_types_guard(const expected_types_guard&) = delete;
+    expected_types_guard& operator=(const expected_types_guard&) = delete;
+
+    expected_types_guard(expected_types_guard&& other)
+      : m_types{ other.m_types }
+    {
+      other.m_valid = false;
+    }
+
+    expected_types_guard& operator=(expected_types_guard&& other)
+    {
+      m_valid = true;
+      other.m_valid = false;
+      return *this;
+    }
+
+  private:
+    expression_evaluation_context ::expected_types_t& m_types;
+    bool m_valid{ true };
+  };
+
+  expected_types_guard set_expected_type(const sema::sema_type& ty)
+  {
+    return expected_types_guard{ m_ctx.expected_types, ty };
   }
 
 private:

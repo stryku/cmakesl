@@ -4,6 +4,7 @@
 #include "ast/break_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/designated_initializers_node.hpp"
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
@@ -642,7 +643,7 @@ std::unique_ptr<ast_node> parser::parse_factor()
   } else if (current_is_possibly_qualified_name()) {
     return parse_possibly_qualified_name();
   } else if (current_is(token_type_t::open_brace)) {
-    return parse_initializer_list();
+    return parse_expression_starting_from_brace();
   }
 
   m_errors_reporter.raise_unexpected_token(get_token_for_error_report());
@@ -1041,5 +1042,75 @@ std::unique_ptr<ternary_operator_node> parser::parse_rest_of_ternary_operator(
   return std::make_unique<ternary_operator_node>(std::move(condition),
                                                  question, std::move(true_),
                                                  *colon, std::move(false_));
+}
+std::unique_ptr<ast_node> parser::parse_expression_starting_from_brace()
+{
+  if (next_is(token_type_t::dot)) {
+    return parse_designated_initializers();
+  } else {
+    return parse_initializer_list();
+  }
+}
+
+std::unique_ptr<designated_initializers_node>
+parser::parse_designated_initializers()
+{
+  const auto open_brace = eat(token_type_t::open_brace);
+  if (!open_brace) {
+    return nullptr;
+  }
+
+  using initializer_t = designated_initializers_node::initializer;
+  std::vector<initializer_t> initializers;
+
+  while (const auto dot = try_eat(token_type_t::dot)) {
+    const auto name = eat(token_type_t::identifier);
+    if (!name) {
+      return nullptr;
+    }
+
+    const auto equal = eat(token_type_t::equal);
+    if (!equal) {
+      return nullptr;
+    }
+
+    auto initialization = parse_expr();
+    if (!initialization) {
+      return nullptr;
+    }
+
+    std::optional<token_t> comma;
+
+    if (const auto tried_comma = try_eat(token_type_t::comma)) {
+      comma = tried_comma;
+
+      if (!current_is(token_type_t::dot)) {
+        m_errors_reporter.raise_expected_designated_initializer(
+          get_token_for_error_report());
+        return nullptr;
+      }
+
+    } else if (current_is(token_type_t::dot)) {
+      m_errors_reporter.raise_expected_token(get_token_for_error_report(),
+                                             token_type_t::comma);
+      return nullptr;
+    }
+
+    auto initializer =
+      initializer_t{ .dot = *dot,
+                     .name = *name,
+                     .equal = *equal,
+                     .initialization = std::move(initialization),
+                     .comma = comma };
+    initializers.emplace_back(std::move(initializer));
+  }
+
+  const auto close_brace = eat(token_type_t::close_brace);
+  if (!close_brace) {
+    return nullptr;
+  }
+
+  return std::make_unique<designated_initializers_node>(
+    *open_brace, std::move(initializers), *close_brace);
 }
 }

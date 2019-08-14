@@ -42,4 +42,11 @@ bool contains(Container&& container, Value&& value)
                                 std::forward<Value>(value),
                                 details::contains_helper<1>{});
 }
+
+template <typename Container, typename Predicate>
+bool contains_if(Container&& container, Predicate&& pred)
+{
+  return std::find_if(std::cbegin(container), std::cend(container), pred) !=
+    std::cend(container);
+}
 }

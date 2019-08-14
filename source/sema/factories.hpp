@@ -82,6 +82,9 @@ public:
   const sema_type& create_homogeneous_generic(const sema_context& ctx,
                                               ast::type_representation name,
                                               const sema_type& value_type);
+
+  const sema_type& create_designated_initializer(
+    const sema_context& ctx, ast::type_representation name);
 };
 
 class sema_generic_type_factory : public sema_type_factory

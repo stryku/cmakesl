@@ -34,6 +34,12 @@ void instance_reference::assign(instance_value_variant val)
   m_instance.assign(val);
 }
 
+void instance_reference::assign_member(unsigned index,
+                                       std::unique_ptr<instance> val)
+{
+  m_instance.assign_member(index, std::move(val));
+}
+
 std::unique_ptr<instance> instance_reference::copy() const
 {
   return std::make_unique<instance_reference>(m_instance);

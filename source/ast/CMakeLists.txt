@@ -9,6 +9,8 @@ set(AST_SOURCES
     class_node.hpp
     conditional_node.cpp
     conditional_node.hpp
+    designated_initializers_node.cpp
+    designated_initializers_node.hpp
     for_node.cpp
     for_node.hpp
     if_else_node.cpp

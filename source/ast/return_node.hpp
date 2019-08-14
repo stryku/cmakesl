@@ -13,8 +13,8 @@ public:
 
   const ast_node& expression() const;
 
-  token_t return_kw() const;
-  token_t semicolon() const;
+  const token_t& return_kw() const;
+  const token_t& semicolon() const;
 
   void visit(ast_node_visitor& visitor) const override;
 

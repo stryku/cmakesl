@@ -3,6 +3,7 @@
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
 #include "overload_resolution.hpp"
+#include "sema/failed_initialization_errors_reporters.hpp"
 #include "sema/sema_function.hpp"
 #include "sema/sema_nodes.hpp"
 #include "sema/variable_initialization_checker.hpp"
@@ -86,7 +87,7 @@ const sema_function* overload_resolution::choose_from_scope(
   }
 
   // At this point we know that there is no good function to call.
-  raise_error(results);
+  raise_error(results, call_parameters);
 
   return nullptr;
 }
@@ -105,38 +106,36 @@ overload_resolution::match_result_variant_t overload_resolution::params_match(
     };
   }
 
-  std::vector<match_result::param_types_dont_match::mismatched_type_info>
-    mismatched_types;
+  //  std::vector<match_result::param_types_dont_match::mismatched_type_info>
+  //    mismatched_types;
+
+  std::vector<
+    match_result::params_initialization_failed::param_initialization_info>
+    initialization_failed_info;
 
   for (auto i = 0u; i < call_parameters.size(); ++i) {
     const auto& declared_param_type = signature.params[i].ty;
     const auto& param_expression_type = call_parameters[i].get().type();
 
     variable_initialization_checker checker;
-    const auto init_check_result =
+    const auto init_issues =
       checker.check(declared_param_type, call_parameters[i].get());
 
-    using check_result_t = variable_initialization_checker::check_result;
-    switch (init_check_result) {
-      case check_result_t::can_init: {
-        continue;
-      }
-      case check_result_t::different_types:
-      case check_result_t::reference_init_from_temporary_value: {
-        const auto info =
-          match_result::param_types_dont_match::mismatched_type_info{
-            i,
-            declared_param_type,
-            param_expression_type
-          };
-
-        mismatched_types.emplace_back(info);
-      } break;
+    if (init_issues.empty()) {
+      continue;
     }
+
+    auto param_init_failed_info =
+      match_result::params_initialization_failed::param_initialization_info{
+        i, init_issues
+      };
+
+    initialization_failed_info.emplace_back(std::move(param_init_failed_info));
   }
 
-  if (!mismatched_types.empty()) {
-    return match_result::param_types_dont_match{ std::move(mismatched_types) };
+  if (!initialization_failed_info.empty()) {
+    return match_result::params_initialization_failed{ std::move(
+      initialization_failed_info) };
   }
 
   return match_result::ok{};
@@ -144,9 +143,14 @@ overload_resolution::match_result_variant_t overload_resolution::params_match(
 
 overload_resolution::error_notes_reporter::error_notes_reporter(
   cmsl::errors::errors_observer& errs,
-  const cmsl::sema::sema_function& function)
+  const cmsl::sema::sema_function& function, const lexer::token& call_token,
+
+  const std::vector<std::reference_wrapper<const expression_node>>&
+    call_parameters)
   : m_errs{ errs }
   , m_function{ function }
+  , m_call_token{ call_token }
+  , m_call_parameters{ call_parameters }
 {
 }
 
@@ -161,9 +165,28 @@ void overload_resolution::error_notes_reporter::operator()(
 }
 
 void overload_resolution::error_notes_reporter::operator()(
-  const overload_resolution::match_result::param_types_dont_match& result)
-  const
+  const overload_resolution::match_result::params_initialization_failed&
+    result) const
 {
+
+  for (const auto& info : result.info) {
+    for (const auto& call_issue : info.issues) {
+      const auto& param_expr = m_call_parameters[info.position].get();
+
+      function_call_parameters_failed_initializations_errors_reporter reporter{
+        m_errs, m_function, info.position, param_expr, m_call_token
+      };
+
+      std::visit(reporter, call_issue);
+    }
+  }
+
+  /*
+
+  auto err = create_note_basics();
+
+  ////////////
+
   auto err = create_note_basics();
   const std::string parameters_str =
     result.info.size() > 1u ? "parameters" : "parameter";
@@ -186,6 +209,7 @@ void overload_resolution::error_notes_reporter::operator()(
 
   // Todo: would be nice to create notes about expected and got types, with
   // expressions indication.
+   */
 }
 
 errors::error overload_resolution::error_notes_reporter::create_note_basics()
@@ -205,8 +229,9 @@ errors::error overload_resolution::error_notes_reporter::create_note_basics()
 }
 
 void overload_resolution::raise_error(
-  const std::vector<overload_resolution::function_match_result>& match_results)
-  const
+  const std::vector<overload_resolution::function_match_result>& match_results,
+  const std::vector<std::reference_wrapper<const expression_node>>&
+    call_parameters) const
 {
   {
     const auto line_info =
@@ -220,7 +245,9 @@ void overload_resolution::raise_error(
   }
 
   for (const auto& result : match_results) {
-    const auto reporter = error_notes_reporter{ m_errs, result.function };
+    const auto reporter =
+      error_notes_reporter{ m_errs, result.function, m_call_token,
+                            call_parameters };
     std::visit(reporter, result.params_match_result);
   }
 }
