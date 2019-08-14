@@ -28,7 +28,8 @@ private:
   using token_t = lexer::token;
 
 public:
-  struct designated_initializer_tag{
+  struct designated_initializer_tag
+  {
   };
   struct builtin_tag
   {

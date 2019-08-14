@@ -28,7 +28,8 @@ sema_type::sema_type(designated_initializer_tag, const sema_context& ctx,
   : m_ctx{ ctx }
   , m_name{ std::move(name) }
   , m_is_designated_initializer{ true }
-  {}
+{
+}
 sema_type::sema_type(builtin_tag, const sema_context& ctx,
                      ast::type_representation name,
                      std::vector<member_info> members)
