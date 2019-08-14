@@ -9,14 +9,14 @@ using ScopesSmokeTest = ExecutionSmokeTest;
 
 TEST_F(ScopesSmokeTest, SingleScope)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    int foo = 42;\n"
-                      "    {\n"
-                      "        int foo;\n"
-                      "        foo = 0;\n"
-                      "    }\n"
-                      "    return foo;\n"
+  const auto source = "int main()"
+                      "{"
+                      "    int foo = 42;"
+                      "    {"
+                      "        int foo;"
+                      "        foo = 0;"
+                      "    }"
+                      "    return foo;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -33,10 +33,10 @@ TEST_F(ScopesSmokeTest, FunctionScope)
                       "    }"
                       "}"
                       ""
-                      "int main()\n"
-                      "{\n"
+                      "int main()"
+                      "{"
                       "    int foo;"
-                      "    return fun(foo);\n"
+                      "    return fun(foo);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));

@@ -8,10 +8,10 @@ using StringTypeSmokeTest = ExecutionSmokeTest;
 
 TEST_F(StringTypeSmokeTest, DefaultConstructor)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s;\n"
-                      "    return int(s.size() == 0 && s.empty());\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s;"
+                      "    return int(s.size() == 0 && s.empty());"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -19,10 +19,10 @@ TEST_F(StringTypeSmokeTest, DefaultConstructor)
 
 TEST_F(StringTypeSmokeTest, ExplicitDefaultConstructor)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = string();\n"
-                      "    return int(s.size() == 0 && s.empty());\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = string();"
+                      "    return int(s.size() == 0 && s.empty());"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -31,10 +31,10 @@ TEST_F(StringTypeSmokeTest, ExplicitDefaultConstructor)
 TEST_F(StringTypeSmokeTest, ExplicitConstructorWithValue)
 {
   const auto source =
-    "int main()\n"
-    "{\n"
-    "    string s = string(\"foo\");\n"
-    "    return int(s.size() == 3 && s.empty() == false && s == \"foo\");\n"
+    "int main()"
+    "{"
+    "    string s = string(\"foo\");"
+    "    return int(s.size() == 3 && s.empty() == false && s == \"foo\");"
     "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -42,11 +42,11 @@ TEST_F(StringTypeSmokeTest, ExplicitConstructorWithValue)
 
 TEST_F(StringTypeSmokeTest, ExplicitConstructorWithString)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = string(\"foo\");\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = string(\"foo\");"
                       "    string s2 = string(s);"
-                      "    return int(s2 == \"foo\");\n"
+                      "    return int(s2 == \"foo\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -54,11 +54,11 @@ TEST_F(StringTypeSmokeTest, ExplicitConstructorWithString)
 
 TEST_F(StringTypeSmokeTest, ExplicitConstructorWithRepeatedString)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = string(\"foo \");\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = string(\"foo \");"
                       "    string s2 = string(s, 4);"
-                      "    return int(s2 == \"foo foo foo foo \");\n"
+                      "    return int(s2 == \"foo foo foo foo \");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -66,24 +66,23 @@ TEST_F(StringTypeSmokeTest, ExplicitConstructorWithRepeatedString)
 
 TEST_F(StringTypeSmokeTest, OperatorEqual)
 {
-  const auto source =
-    "int main()\n"
-    "{\n"
-    "    string s = \"foo\";\n"
-    "    string s2 = s;"
-    "    return int(s2.size() == 3 && s2.empty() == false);\n"
-    "}";
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo\";"
+                      "    string s2 = s;"
+                      "    return int(s2.size() == 3 && s2.empty() == false);"
+                      "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
 TEST_F(StringTypeSmokeTest, OperatorEqualEqual)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo\";\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo\";"
                       "    string s2 = s;"
-                      "    return int(s == s2);\n"
+                      "    return int(s == s2);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -91,11 +90,11 @@ TEST_F(StringTypeSmokeTest, OperatorEqualEqual)
 
 TEST_F(StringTypeSmokeTest, OperatorNotEqual)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo\";\n"
-                      "    string s2 = \"fooo\";\n"
-                      "    return int(s != s2);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo\";"
+                      "    string s2 = \"fooo\";"
+                      "    return int(s != s2);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -103,11 +102,11 @@ TEST_F(StringTypeSmokeTest, OperatorNotEqual)
 
 TEST_F(StringTypeSmokeTest, OperatorLess)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"bar\";\n"
-                      "    string s2 = \"foo\";\n"
-                      "    return int(s < s2);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"bar\";"
+                      "    string s2 = \"foo\";"
+                      "    return int(s < s2);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -115,11 +114,11 @@ TEST_F(StringTypeSmokeTest, OperatorLess)
 
 TEST_F(StringTypeSmokeTest, OperatorLessEqual)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"bar\";\n"
-                      "    string s2 = \"bar\";\n"
-                      "    return int(s <= s2);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"bar\";"
+                      "    string s2 = \"bar\";"
+                      "    return int(s <= s2);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -127,11 +126,11 @@ TEST_F(StringTypeSmokeTest, OperatorLessEqual)
 
 TEST_F(StringTypeSmokeTest, OperatorGreater)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo\";\n"
-                      "    string s2 = \"bar\";\n"
-                      "    return int(s > s2);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo\";"
+                      "    string s2 = \"bar\";"
+                      "    return int(s > s2);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -139,11 +138,11 @@ TEST_F(StringTypeSmokeTest, OperatorGreater)
 
 TEST_F(StringTypeSmokeTest, OperatorGreaterEqual)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"bar\";\n"
-                      "    string s2 = \"bar\";\n"
-                      "    return int(s >= s2);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"bar\";"
+                      "    string s2 = \"bar\";"
+                      "    return int(s >= s2);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -151,12 +150,12 @@ TEST_F(StringTypeSmokeTest, OperatorGreaterEqual)
 
 TEST_F(StringTypeSmokeTest, OperatorPlus)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo +\";\n"
-                      "    string s2 = \" bar\";\n"
-                      "    string s3 = s + s2;\n"
-                      "    return int(s3 == \"foo + bar\");\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo +\";"
+                      "    string s2 = \" bar\";"
+                      "    string s3 = s + s2;"
+                      "    return int(s3 == \"foo + bar\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -164,11 +163,11 @@ TEST_F(StringTypeSmokeTest, OperatorPlus)
 
 TEST_F(StringTypeSmokeTest, OperatorPlusEqual)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo +\";\n"
-                      "    s += \" bar\";\n"
-                      "    return int(s == \"foo + bar\");\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo +\";"
+                      "    s += \" bar\";"
+                      "    return int(s == \"foo + bar\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -176,11 +175,11 @@ TEST_F(StringTypeSmokeTest, OperatorPlusEqual)
 
 TEST_F(StringTypeSmokeTest, Clear)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo +\";\n"
-                      "    s.clear();\n"
-                      "    return int(s.empty());\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo +\";"
+                      "    s.clear();"
+                      "    return int(s.empty());"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -188,13 +187,13 @@ TEST_F(StringTypeSmokeTest, Clear)
 
 TEST_F(StringTypeSmokeTest, Insert)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s;\n"
-                      "    s.insert(0, \"bar\");\n"
-                      "    s.insert(0, \"foo \");\n"
-                      "    s.insert(7, \" baz\");\n"
-                      "    return int(s == \"foo bar baz\");\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s;"
+                      "    s.insert(0, \"bar\");"
+                      "    s.insert(0, \"foo \");"
+                      "    s.insert(7, \" baz\");"
+                      "    return int(s == \"foo bar baz\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -202,11 +201,11 @@ TEST_F(StringTypeSmokeTest, Insert)
 
 TEST_F(StringTypeSmokeTest, Erase)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo bar bazrubbish\";\n"
-                      "    s.erase(11);\n"
-                      "    return int(s == \"foo bar baz\");\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo bar bazrubbish\";"
+                      "    s.erase(11);"
+                      "    return int(s == \"foo bar baz\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -214,13 +213,13 @@ TEST_F(StringTypeSmokeTest, Erase)
 
 TEST_F(StringTypeSmokeTest, ErasePos)
 {
-  const auto source = "int main()\n"
-                      "{\n"
+  const auto source = "int main()"
+                      "{"
                       "    int rubbish_size = \"rubbish\".size();"
-                      "    string s = \"rubbishfoorubissh bar baz\";\n"
-                      "    s.erase(0, rubbish_size);\n"
-                      "    s.erase(3, rubbish_size);\n"
-                      "    return int(s == \"foo bar baz\");\n"
+                      "    string s = \"rubbishfoorubissh bar baz\";"
+                      "    s.erase(0, rubbish_size);"
+                      "    s.erase(3, rubbish_size);"
+                      "    return int(s == \"foo bar baz\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -229,10 +228,10 @@ TEST_F(StringTypeSmokeTest, ErasePos)
 // Todo: Introduce more test cases
 TEST_F(StringTypeSmokeTest, StartsWith)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo bar baz\";\n"
-                      "    return int(s.starts_with(\"foo b\"));\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo bar baz\";"
+                      "    return int(s.starts_with(\"foo b\"));"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -241,10 +240,10 @@ TEST_F(StringTypeSmokeTest, StartsWith)
 // Todo: Introduce more test cases
 TEST_F(StringTypeSmokeTest, EndsWith)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo bar baz\";\n"
-                      "    return int(s.ends_with(\"r baz\"));\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo bar baz\";"
+                      "    return int(s.ends_with(\"r baz\"));"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -252,12 +251,12 @@ TEST_F(StringTypeSmokeTest, EndsWith)
 
 TEST_F(StringTypeSmokeTest, Replace)
 {
-  const auto source = "int main()\n"
-                      "{\n"
+  const auto source = "int main()"
+                      "{"
                       "    int rubbish_size = \"rubbish\".size();"
-                      "    string s = \"foo rubbish baz\";\n"
-                      "    s.replace(4, rubbish_size, \"bar\");\n"
-                      "    return int(s == \"foo bar baz\");\n"
+                      "    string s = \"foo rubbish baz\";"
+                      "    s.replace(4, rubbish_size, \"bar\");"
+                      "    return int(s == \"foo bar baz\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -265,12 +264,12 @@ TEST_F(StringTypeSmokeTest, Replace)
 
 TEST_F(StringTypeSmokeTest, Substr)
 {
-  const auto source = "int main()\n"
-                      "{\n"
+  const auto source = "int main()"
+                      "{"
                       "    int rubbish_size = \"rubbish \".size();"
-                      "    string s = \"rubbish foo bar baz\";\n"
-                      "    string s2 = s.substr(rubbish_size);\n"
-                      "    return int(s2 == \"foo bar baz\");\n"
+                      "    string s = \"rubbish foo bar baz\";"
+                      "    string s2 = s.substr(rubbish_size);"
+                      "    return int(s2 == \"foo bar baz\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -278,12 +277,12 @@ TEST_F(StringTypeSmokeTest, Substr)
 
 TEST_F(StringTypeSmokeTest, SubstrPosCount)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    int foobarbaz_size = \"foo bar baz\".size();\n"
-                      "    string s = \"rub foo bar baz bish\";\n"
-                      "    string s2 = s.substr(4, foobarbaz_size);\n"
-                      "    return int(s2 == \"foo bar baz\");\n"
+  const auto source = "int main()"
+                      "{"
+                      "    int foobarbaz_size = \"foo bar baz\".size();"
+                      "    string s = \"rub foo bar baz bish\";"
+                      "    string s2 = s.substr(4, foobarbaz_size);"
+                      "    return int(s2 == \"foo bar baz\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -291,12 +290,12 @@ TEST_F(StringTypeSmokeTest, SubstrPosCount)
 
 TEST_F(StringTypeSmokeTest, Resize)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    int foobarbaz_size = \"foo bar baz\".size();\n"
-                      "    string s = \"foo bar baz rubbish\";\n"
-                      "    s.resize(foobarbaz_size);\n"
-                      "    return int(s == \"foo bar baz\");\n"
+  const auto source = "int main()"
+                      "{"
+                      "    int foobarbaz_size = \"foo bar baz\".size();"
+                      "    string s = \"foo bar baz rubbish\";"
+                      "    s.resize(foobarbaz_size);"
+                      "    return int(s == \"foo bar baz\");"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -304,12 +303,12 @@ TEST_F(StringTypeSmokeTest, Resize)
 
 TEST_F(StringTypeSmokeTest, ResizeFill)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string expected = \"foo bar baz qux qu\";\n"
-                      "    string s = \"foo bar baz\";\n"
-                      "    s.resize(expected.size(), \" qux\");\n"
-                      "    return int(s == expected);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string expected = \"foo bar baz qux qu\";"
+                      "    string s = \"foo bar baz\";"
+                      "    s.resize(expected.size(), \" qux\");"
+                      "    return int(s == expected);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -318,11 +317,11 @@ TEST_F(StringTypeSmokeTest, ResizeFill)
 // Todo: Add more test cases
 TEST_F(StringTypeSmokeTest, Find)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo bar baz\";\n"
-                      "    int found_at = s.find(\"bar\");\n"
-                      "    return int(found_at == 4);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo bar baz\";"
+                      "    int found_at = s.find(\"bar\");"
+                      "    return int(found_at == 4);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -331,11 +330,11 @@ TEST_F(StringTypeSmokeTest, Find)
 // Todo: Add more test cases
 TEST_F(StringTypeSmokeTest, FindFromPos)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo bar baz bar\";\n"
-                      "    int found_at = s.find(\"bar\", 6);\n"
-                      "    return int(found_at == 12);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo bar baz bar\";"
+                      "    int found_at = s.find(\"bar\", 6);"
+                      "    return int(found_at == 12);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -344,11 +343,11 @@ TEST_F(StringTypeSmokeTest, FindFromPos)
 // Todo: Add more test cases
 TEST_F(StringTypeSmokeTest, FindNotOf)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"baz bar foo\";\n"
-                      "    int found_at = s.find_not_of(\"abrz \");\n"
-                      "    return int(found_at == 8);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"baz bar foo\";"
+                      "    int found_at = s.find_not_of(\"abrz \");"
+                      "    return int(found_at == 8);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -357,11 +356,11 @@ TEST_F(StringTypeSmokeTest, FindNotOf)
 // Todo: Add more test cases
 TEST_F(StringTypeSmokeTest, FindNotOfFromPos)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo baz bar foo\";\n"
-                      "    int found_at = s.find_not_of(\"abrz \", 3);\n"
-                      "    return int(found_at == 12);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo baz bar foo\";"
+                      "    int found_at = s.find_not_of(\"abrz \", 3);"
+                      "    return int(found_at == 12);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -370,11 +369,11 @@ TEST_F(StringTypeSmokeTest, FindNotOfFromPos)
 // Todo: Add more test cases
 TEST_F(StringTypeSmokeTest, FindLast)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo baz bar foo\";\n"
-                      "    int found_at = s.find_last(\"foo\");\n"
-                      "    return int(found_at == 12);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo baz bar foo\";"
+                      "    int found_at = s.find_last(\"foo\");"
+                      "    return int(found_at == 12);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -383,11 +382,11 @@ TEST_F(StringTypeSmokeTest, FindLast)
 // Todo: Add more test cases
 TEST_F(StringTypeSmokeTest, FindLastNotOf)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo baz bar foo\";\n"
-                      "    int found_at = s.find_last_not_of(\"fo \");\n"
-                      "    return int(found_at == 10);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo baz bar foo\";"
+                      "    int found_at = s.find_last_not_of(\"fo \");"
+                      "    return int(found_at == 10);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -396,10 +395,10 @@ TEST_F(StringTypeSmokeTest, FindLastNotOf)
 // Todo: Add more test cases
 TEST_F(StringTypeSmokeTest, Contains)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    string s = \"foo baz bar\";\n"
-                      "    return int(s.contains(\"z b\"));\n"
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo baz bar\";"
+                      "    return int(s.contains(\"z b\"));"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -409,13 +408,13 @@ TEST_F(StringTypeSmokeTest, Contains)
 TEST_F(StringTypeSmokeTest, Lower)
 {
   const auto source =
-    "int main()\n"
-    "{\n"
+    "int main()"
+    "{"
     "    string s = "
-    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";\n"
+    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";"
     "    s.lower();"
     "    return int(s == "
-    "\"qwertyuiopasdfghjklzxcvbnm01234567890qwertyuiopasdfghjklzxcvbnm\");\n"
+    "\"qwertyuiopasdfghjklzxcvbnm01234567890qwertyuiopasdfghjklzxcvbnm\");"
     "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -425,16 +424,16 @@ TEST_F(StringTypeSmokeTest, Lower)
 TEST_F(StringTypeSmokeTest, MakeLower)
 {
   const auto source =
-    "int main()\n"
-    "{\n"
+    "int main()"
+    "{"
     "    string s = "
-    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";\n"
+    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";"
     "    string s2 = s.make_lower();"
     "    bool test1 = s == "
-    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";\n"
+    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";"
     "    bool test2 = s2 == "
-    "\"qwertyuiopasdfghjklzxcvbnm01234567890qwertyuiopasdfghjklzxcvbnm\";\n"
-    "    return int(test1 && test2);\n"
+    "\"qwertyuiopasdfghjklzxcvbnm01234567890qwertyuiopasdfghjklzxcvbnm\";"
+    "    return int(test1 && test2);"
     "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -444,13 +443,13 @@ TEST_F(StringTypeSmokeTest, MakeLower)
 TEST_F(StringTypeSmokeTest, Upper)
 {
   const auto source =
-    "int main()\n"
-    "{\n"
+    "int main()"
+    "{"
     "    string s = "
-    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";\n"
+    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";"
     "    s.upper();"
     "    return int(s == "
-    "\"QWERTYUIOPASDFGHJKLZXCVBNM01234567890QWERTYUIOPASDFGHJKLZXCVBNM\");\n"
+    "\"QWERTYUIOPASDFGHJKLZXCVBNM01234567890QWERTYUIOPASDFGHJKLZXCVBNM\");"
     "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));
@@ -460,16 +459,16 @@ TEST_F(StringTypeSmokeTest, Upper)
 TEST_F(StringTypeSmokeTest, MakeUpper)
 {
   const auto source =
-    "int main()\n"
-    "{\n"
+    "int main()"
+    "{"
     "    string s = "
-    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";\n"
+    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";"
     "    string s2 = s.make_upper();"
     "    bool test1 = s == "
-    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";\n"
+    "\"qwertyuiopasdfghjklzxcvbnm01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";"
     "    bool test2 = s2 == "
-    "\"QWERTYUIOPASDFGHJKLZXCVBNM01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";\n"
-    "    return int(test1 && test2);\n"
+    "\"QWERTYUIOPASDFGHJKLZXCVBNM01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";"
+    "    return int(test1 && test2);"
     "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));

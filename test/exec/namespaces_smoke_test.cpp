@@ -8,11 +8,11 @@ using NamespacesSmokeTest = ExecutionSmokeTest;
 
 TEST_F(NamespacesSmokeTest, VariableInGlobalNamespace)
 {
-  const auto source = "int foo = 42;\n"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
-                      "    return ::foo;\n"
+  const auto source = "int foo = 42;"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return ::foo;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -20,12 +20,12 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalNamespace)
 
 TEST_F(NamespacesSmokeTest, VariableInGlobalNamespaceAndLocalScope)
 {
-  const auto source = "int foo = 42;\n"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
+  const auto source = "int foo = 42;"
+                      ""
+                      "int main()"
+                      "{"
                       "    int foo = 0;"
-                      "    return ::foo;\n"
+                      "    return ::foo;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -33,17 +33,17 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalNamespaceAndLocalScope)
 
 TEST_F(NamespacesSmokeTest, VariableInGlobalAndNestedNamespace)
 {
-  const auto source = "int bar = 0;\n"
+  const auto source = "int bar = 0;"
                       ""
                       "namespace foo"
                       "{"
                       "    int bar = 42;"
                       "}"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
+                      ""
+                      "int main()"
+                      "{"
                       "    int foo = 0;"
-                      "    return foo::bar;\n"
+                      "    return foo::bar;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -52,17 +52,17 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalAndNestedNamespace)
 TEST_F(NamespacesSmokeTest,
        VariableInGlobalAndNestedNamespace_GetByGlobalAccess)
 {
-  const auto source = "int bar = 0;\n"
+  const auto source = "int bar = 0;"
                       ""
                       "namespace foo"
                       "{"
                       "    int bar = 42;"
                       "}"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
+                      ""
+                      "int main()"
+                      "{"
                       "    int foo = 0;"
-                      "    return ::foo::bar;\n"
+                      "    return ::foo::bar;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -70,16 +70,16 @@ TEST_F(NamespacesSmokeTest,
 
 TEST_F(NamespacesSmokeTest, VariableInGlobalAndNestedNamespace_GetFromGlobal)
 {
-  const auto source = "int bar = 42;\n"
+  const auto source = "int bar = 42;"
                       ""
                       "namespace foo"
                       "{"
                       "    int bar = 0;"
                       "}"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
-                      "    return ::bar;\n"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return ::bar;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -87,7 +87,7 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalAndNestedNamespace_GetFromGlobal)
 
 TEST_F(NamespacesSmokeTest, VariableInGlobalAndManyNestedNamespac)
 {
-  const auto source = "int bar = 0;\n"
+  const auto source = "int bar = 0;"
                       ""
                       "namespace foo"
                       "{"
@@ -97,10 +97,10 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalAndManyNestedNamespac)
                       "         int kek = bar;"
                       "    }"
                       "}"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
-                      "    return ::foo::baz::qux::kek;\n"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return ::foo::baz::qux::kek;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
