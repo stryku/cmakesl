@@ -8,14 +8,14 @@ using WhileLoopSmokeTest = ExecutionSmokeTest;
 
 TEST_F(WhileLoopSmokeTest, SimpleWhileLoop)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    auto counter = 0;\n"
+  const auto source = "int main()"
+                      "{"
+                      "    auto counter = 0;"
                       "    while(counter < 42)"
                       "    {"
                       "        counter += 1;"
                       "    }"
-                      "    return counter;\n"
+                      "    return counter;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));

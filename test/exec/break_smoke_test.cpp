@@ -9,18 +9,18 @@ using BreakSmokeTest = ExecutionSmokeTest;
 
 TEST_F(BreakSmokeTest, BreakFromForLoop)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    int value;\n"
-                      "    for(int i = 0; i < 100; i += 1 )\n"
-                      "    {\n"
-                      "        if(i == 42)\n"
-                      "        {\n"
-                      "            value = i;\n"
-                      "            break;\n"
-                      "        }\n"
-                      "    }\n"
-                      "    return value;\n"
+  const auto source = "int main()"
+                      "{"
+                      "    int value;"
+                      "    for(int i = 0; i < 100; i += 1 )"
+                      "    {"
+                      "        if(i == 42)"
+                      "        {"
+                      "            value = i;"
+                      "            break;"
+                      "        }"
+                      "    }"
+                      "    return value;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -28,21 +28,21 @@ TEST_F(BreakSmokeTest, BreakFromForLoop)
 
 TEST_F(BreakSmokeTest, BreakFromNestedForLoop)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    int value;\n"
+  const auto source = "int main()"
+                      "{"
+                      "    int value;"
                       "    for(int i = 0; i < 42; i += 1)"
-                      "    {\n"
-                      "        for(int j = 0; j < 10; j += 1)\n"
-                      "        {\n"
-                      "            if(j == 1)\n"
-                      "            {\n"
-                      "                value += j;\n"
-                      "                break;\n"
-                      "            }\n"
-                      "        }\n"
-                      "    }\n"
-                      "    return value;\n"
+                      "    {"
+                      "        for(int j = 0; j < 10; j += 1)"
+                      "        {"
+                      "            if(j == 1)"
+                      "            {"
+                      "                value += j;"
+                      "                break;"
+                      "            }"
+                      "        }"
+                      "    }"
+                      "    return value;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -50,20 +50,20 @@ TEST_F(BreakSmokeTest, BreakFromNestedForLoop)
 
 TEST_F(BreakSmokeTest, BreakFromWhileLoop)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    int value;\n"
-                      "    int i;\n"
-                      "    while(i < 100 )\n"
-                      "    {\n"
-                      "        if(i == 42)\n"
-                      "        {\n"
-                      "            value = i;\n"
-                      "            break;\n"
-                      "        }\n"
-                      "        i += 1;\n"
-                      "    }\n"
-                      "    return value;\n"
+  const auto source = "int main()"
+                      "{"
+                      "    int value;"
+                      "    int i;"
+                      "    while(i < 100 )"
+                      "    {"
+                      "        if(i == 42)"
+                      "        {"
+                      "            value = i;"
+                      "            break;"
+                      "        }"
+                      "        i += 1;"
+                      "    }"
+                      "    return value;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -71,25 +71,25 @@ TEST_F(BreakSmokeTest, BreakFromWhileLoop)
 
 TEST_F(BreakSmokeTest, BreakFromNestedWhileLoop)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    int value;\n"
-                      "    int i;\n"
+  const auto source = "int main()"
+                      "{"
+                      "    int value;"
+                      "    int i;"
                       "    while(i < 42)"
-                      "    {\n"
-                      "        int j;\n"
-                      "        while(j < 10)\n"
-                      "        {\n"
-                      "            if(j == 1)\n"
-                      "            {\n"
-                      "                value += j;\n"
-                      "                break;\n"
-                      "            }\n"
+                      "    {"
+                      "        int j;"
+                      "        while(j < 10)"
+                      "        {"
+                      "            if(j == 1)"
+                      "            {"
+                      "                value += j;"
+                      "                break;"
+                      "            }"
                       "            j += 1;"
-                      "        }\n"
+                      "        }"
                       "        i += 1;"
-                      "    }\n"
-                      "    return value;\n"
+                      "    }"
+                      "    return value;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));

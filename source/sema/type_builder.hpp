@@ -47,6 +47,7 @@ public:
   }
 
   const sema_type& build_and_register_in_context();
+  const sema_type& build_builtin_and_register_in_context();
   const sema_type& build_homogeneous_generic_and_register_in_context(
     const sema_type& value_type);
 

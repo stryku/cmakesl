@@ -31,12 +31,19 @@ public:
   struct designated_initializer_tag
   {
   };
+  struct builtin_tag
+  {
+  };
 
   explicit sema_type(const sema_context& ctx, ast::type_representation name,
                      std::vector<member_info> members);
   explicit sema_type(const sema_type_reference reference);
   explicit sema_type(designated_initializer_tag, const sema_context& ctx,
                      ast::type_representation name);
+  explicit sema_type(builtin_tag, const sema_context& ctx,
+                     ast::type_representation name,
+                     std::vector<member_info> members);
+  explicit sema_type(builtin_tag, const sema_type_reference reference);
 
   sema_type(const sema_type&) = delete;
   sema_type& operator=(sema_type&&) = delete;
@@ -51,6 +58,7 @@ public:
     token_t name) const;
 
   bool is_complex() const;
+  bool is_builtin() const;
   bool is_reference() const;
   bool is_designated_initializer() const;
   bool operator==(const sema_type& rhs) const;
@@ -64,5 +72,6 @@ private:
   std::vector<member_info> m_members;
   const sema_type* m_referenced_type{ nullptr };
   bool m_is_designated_initializer = false;
+  bool m_is_builtin{ false };
 };
 }

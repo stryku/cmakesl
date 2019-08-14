@@ -9,10 +9,10 @@ using VariableTypeDeductionTest = ExecutionSmokeTest;
 
 TEST_F(VariableTypeDeductionTest, InitByCopy)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    auto foo = 42;\n"
-                      "    return foo;\n"
+  const auto source = "int main()"
+                      "{"
+                      "    auto foo = 42;"
+                      "    return foo;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -20,12 +20,12 @@ TEST_F(VariableTypeDeductionTest, InitByCopy)
 
 TEST_F(VariableTypeDeductionTest, InitReference)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    auto foo = 24;\n"
-                      "    auto& bar = foo;\n"
-                      "    bar = 42;\n"
-                      "    return int(foo == 42 && bar == 42);\n"
+  const auto source = "int main()"
+                      "{"
+                      "    auto foo = 24;"
+                      "    auto& bar = foo;"
+                      "    bar = 42;"
+                      "    return int(foo == 42 && bar == 42);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(1));

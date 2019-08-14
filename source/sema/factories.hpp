@@ -77,6 +77,10 @@ public:
                           ast::type_representation name,
                           std::vector<member_info> members);
 
+  const sema_type& create_builtin(const sema_context& ctx,
+                                  ast::type_representation name,
+                                  std::vector<member_info> members);
+
   const sema_type& create_reference(const sema_type& referenced_type);
 
   const sema_type& create_homogeneous_generic(const sema_context& ctx,

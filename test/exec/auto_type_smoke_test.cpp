@@ -9,10 +9,10 @@ using AutoTypeSmokeTest = ExecutionSmokeTest;
 TEST_F(AutoTypeSmokeTest,
        VariableDeclarationDeduction_SimpleVariableDeclaration)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    auto val = 42;\n"
-                      "    return val;\n"
+  const auto source = "int main()"
+                      "{"
+                      "    auto val = 42;"
+                      "    return val;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -20,10 +20,10 @@ TEST_F(AutoTypeSmokeTest,
 
 TEST_F(AutoTypeSmokeTest, VariableDeclarationDeduction_FromBinaryOperator)
 {
-  const auto source = "int main()\n"
-                      "{\n"
-                      "    auto val = 20 + 22;\n"
-                      "    return val;\n"
+  const auto source = "int main()"
+                      "{"
+                      "    auto val = 20 + 22;"
+                      "    return val;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -31,15 +31,15 @@ TEST_F(AutoTypeSmokeTest, VariableDeclarationDeduction_FromBinaryOperator)
 
 TEST_F(AutoTypeSmokeTest, VariableDeclarationDeduction_FromFunctionReturn)
 {
-  const auto source = "int foo()\n"
-                      "{\n"
-                      "    return 42;\n"
-                      "}\n"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
-                      "    auto val = foo();\n"
-                      "    return val;\n"
+  const auto source = "int foo()"
+                      "{"
+                      "    return 42;"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    auto val = foo();"
+                      "    return val;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -47,15 +47,15 @@ TEST_F(AutoTypeSmokeTest, VariableDeclarationDeduction_FromFunctionReturn)
 
 TEST_F(AutoTypeSmokeTest, FunctionReturnTypeDeduction_FromSimpleValue)
 {
-  const auto source = "auto foo()\n"
-                      "{\n"
-                      "    return 42;\n"
-                      "}\n"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
-                      "    int val = foo();\n"
-                      "    return val;\n"
+  const auto source = "auto foo()"
+                      "{"
+                      "    return 42;"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    int val = foo();"
+                      "    return val;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -63,20 +63,20 @@ TEST_F(AutoTypeSmokeTest, FunctionReturnTypeDeduction_FromSimpleValue)
 
 TEST_F(AutoTypeSmokeTest, FunctionReturnTypeDeduction_FromFunctionReturn)
 {
-  const auto source = "auto foo()\n"
-                      "{\n"
-                      "    return 42;\n"
-                      "}\n"
-                      "\n"
-                      "auto bar()\n"
-                      "{\n"
-                      "    return foo();\n"
-                      "}\n"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
-                      "    int val = bar();\n"
-                      "    return val;\n"
+  const auto source = "auto foo()"
+                      "{"
+                      "    return 42;"
+                      "}"
+                      ""
+                      "auto bar()"
+                      "{"
+                      "    return foo();"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    int val = bar();"
+                      "    return val;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -85,27 +85,27 @@ TEST_F(AutoTypeSmokeTest, FunctionReturnTypeDeduction_FromFunctionReturn)
 TEST_F(AutoTypeSmokeTest,
        MultipleReturnStatements_FromFunctionReturnAndSimpleValue)
 {
-  const auto source = "auto foo()\n"
-                      "{\n"
-                      "    return 42;\n"
-                      "}\n"
-                      "\n"
-                      "auto bar(bool flag)\n"
-                      "{\n"
-                      "    if(flag)\n"
-                      "    {\n"
-                      "        return 42;\n"
-                      "    }\n"
-                      "    else\n"
-                      "    {\n"
-                      "        return foo();\n"
-                      "    }\n"
-                      "}\n"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
-                      "    int val = bar(true);\n"
-                      "    return val;\n"
+  const auto source = "auto foo()"
+                      "{"
+                      "    return 42;"
+                      "}"
+                      ""
+                      "auto bar(bool flag)"
+                      "{"
+                      "    if(flag)"
+                      "    {"
+                      "        return 42;"
+                      "    }"
+                      "    else"
+                      "    {"
+                      "        return foo();"
+                      "    }"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    int val = bar(true);"
+                      "    return val;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -115,15 +115,15 @@ TEST_F(
   AutoTypeSmokeTest,
   VariableDeclarationDeductionWithFunctionReturnTypeDeduction_FromSimpleValue)
 {
-  const auto source = "auto foo()\n"
-                      "{\n"
-                      "    return 42;\n"
-                      "}\n"
-                      "\n"
-                      "int main()\n"
-                      "{\n"
-                      "    auto val = foo();\n"
-                      "    return val;\n"
+  const auto source = "auto foo()"
+                      "{"
+                      "    return 42;"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    auto val = foo();"
+                      "    return val;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));

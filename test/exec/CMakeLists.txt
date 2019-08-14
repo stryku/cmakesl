@@ -6,6 +6,7 @@ cmsl_add_test(
         bool_type_smoke_test.cpp
         break_smoke_test.cpp
         builtin_function_caller2_test.cpp
+        class_smoke_test.cpp
         designated_initializers_smoke_test.cpp
         double_type_smoke_test.cpp
         expression_evaluation_visitor_test.cpp
