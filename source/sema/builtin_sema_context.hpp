@@ -52,6 +52,8 @@ private:
   void add_type_member_functions(type_builder& manipulator,
                                  Functions&& functions);
 
+  type_builder add_type(lexer::token name_token);
+
   type_builder add_bool_type();
   void add_bool_member_functions(type_builder& bool_manipulator);
   type_builder add_int_type();

@@ -28,6 +28,25 @@ sema_type::sema_type(designated_initializer_tag, const sema_context& ctx,
   : m_ctx{ ctx }
   , m_name{ std::move(name) }
   , m_is_designated_initializer{ true }
+  {}
+sema_type::sema_type(builtin_tag, const sema_context& ctx,
+                     ast::type_representation name,
+                     std::vector<member_info> members)
+  : m_ctx{ ctx }
+  , m_name{ std::move(name) }
+  , m_members{ std::move(members) }
+  , m_is_builtin{ true }
+{
+}
+
+sema_type::sema_type(builtin_tag, const sema_type_reference reference)
+  : m_ctx{ reference.referenced_type.m_ctx }
+  , m_name{ ast::type_representation{
+      reference.referenced_type.m_name.tokens(),
+      ast::type_representation::is_reference_tag{} } }
+  , m_members{ reference.referenced_type.m_members }
+  , m_referenced_type{ &reference.referenced_type }
+  , m_is_builtin{ true }
 {
 }
 
@@ -96,5 +115,10 @@ const sema_type& sema_type::referenced_type() const
 bool sema_type::is_designated_initializer() const
 {
   return m_is_designated_initializer;
+}
+
+bool sema_type::is_builtin() const
+{
+  return m_is_builtin;
 }
 }

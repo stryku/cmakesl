@@ -5,7 +5,7 @@ namespace cmsl::sema {
 homogeneous_generic_type::homogeneous_generic_type(
   const sema_context& ctx, ast::type_representation name,
   const sema_type& value_type)
-  : sema_type{ ctx, std::move(name), {} }
+  : sema_type{ sema_type::builtin_tag{}, ctx, std::move(name), {} }
   , m_value_type{ value_type }
 {
 }

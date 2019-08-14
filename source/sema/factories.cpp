@@ -65,6 +65,14 @@ const sema_type& sema_type_factory::create(const sema_context& ctx,
   return create_impl<sema_type>(ctx, name, std::move(members));
 }
 
+const sema_type& sema_type_factory::create_builtin(
+  const sema_context& ctx, ast::type_representation name,
+  std::vector<member_info> members)
+{
+  return create_impl<sema_type>(sema_type::builtin_tag{}, ctx, name,
+                                std::move(members));
+}
+
 const sema_type& sema_type_factory::create_homogeneous_generic(
   const sema_context& ctx, ast::type_representation name,
   const sema_type& value_type)
@@ -76,7 +84,12 @@ const sema_type& sema_type_factory::create_homogeneous_generic(
 const sema_type& sema_type_factory::create_reference(
   const sema_type& referenced_type)
 {
-  return create_impl<sema_type>(sema_type_reference{ referenced_type });
+  if (referenced_type.is_builtin()) {
+    return create_impl<sema_type>(sema_type::builtin_tag{},
+                                  sema_type_reference{ referenced_type });
+  } else {
+    return create_impl<sema_type>(sema_type_reference{ referenced_type });
+  }
 }
 
 sema_type_factory::~sema_type_factory()

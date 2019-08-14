@@ -98,11 +98,7 @@ void builtin_sema_context::add_type_member_functions(type_builder& manipulator,
 type_builder builtin_sema_context::add_bool_type()
 {
   static const auto token = m_builtin_token_provider.bool_().name();
-  static const auto name_representation = ast::type_representation{ token };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
-  builder.build_and_register_in_context();
-  return builder;
+  return add_type(token);
 }
 
 void builtin_sema_context::add_bool_member_functions(
@@ -175,11 +171,7 @@ void builtin_sema_context::add_bool_member_functions(
 type_builder builtin_sema_context::add_int_type()
 {
   static const auto token = m_builtin_token_provider.int_().name();
-  static const auto name_representation = ast::type_representation{ token };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
-  builder.build_and_register_in_context();
-  return builder;
+  return add_type(token);
 }
 
 void builtin_sema_context::add_int_member_functions(
@@ -330,11 +322,7 @@ void builtin_sema_context::add_int_member_functions(
 type_builder builtin_sema_context::add_double_type()
 {
   static const auto token = m_builtin_token_provider.double_().name();
-  static const auto name_representation = ast::type_representation{ token };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
-  builder.build_and_register_in_context();
-  return builder;
+  return add_type(token);
 }
 
 void builtin_sema_context::add_double_member_functions(
@@ -471,11 +459,7 @@ void builtin_sema_context::add_double_member_functions(
 type_builder builtin_sema_context::add_string_type()
 {
   static const auto token = m_builtin_token_provider.string().name();
-  static const auto name_representation = ast::type_representation{ token };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
-  builder.build_and_register_in_context();
-  return builder;
+  return add_type(token);
 }
 
 void builtin_sema_context::add_string_member_functions(
@@ -736,11 +720,7 @@ void builtin_sema_context::add_string_member_functions(
 type_builder builtin_sema_context::add_version_type()
 {
   static const auto token = m_builtin_token_provider.version().name();
-  static const auto name_representation = ast::type_representation{ token };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
-  builder.build_and_register_in_context();
-  return builder;
+  return add_type(token);
 }
 
 void builtin_sema_context::add_version_member_functions(
@@ -859,11 +839,7 @@ void builtin_sema_context::add_version_member_functions(
 type_builder builtin_sema_context::add_project_type()
 {
   static const auto token = m_builtin_token_provider.project().name();
-  static const auto name_representation = ast::type_representation{ token };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
-  builder.build_and_register_in_context();
-  return builder;
+  return add_type(token);
 }
 
 void builtin_sema_context::add_project_member_functions(
@@ -925,11 +901,7 @@ void builtin_sema_context::add_project_member_functions(
 type_builder builtin_sema_context::add_library_type()
 {
   static const auto token = m_builtin_token_provider.library().name();
-  static const auto name_representation = ast::type_representation{ token };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
-  builder.build_and_register_in_context();
-  return builder;
+  return add_type(token);
 }
 
 void builtin_sema_context::add_library_member_functions(
@@ -962,11 +934,7 @@ void builtin_sema_context::add_library_member_functions(
 type_builder builtin_sema_context::add_executable_type()
 {
   static const auto token = m_builtin_token_provider.executable().name();
-  static const auto name_representation = ast::type_representation{ token };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
-  builder.build_and_register_in_context();
-  return builder;
+  return add_type(token);
 }
 
 void builtin_sema_context::add_executable_member_functions(
@@ -1015,9 +983,15 @@ const sema_type& builtin_sema_context::get_or_create_generic_type(
 void builtin_sema_context::add_void_type()
 {
   static const auto token = m_builtin_token_provider.void_().name();
-  static const auto name_representation = ast::type_representation{ token };
+  add_type(token);
+}
+
+type_builder builtin_sema_context::add_type(lexer::token name_token)
+{
+  const auto name_representation = ast::type_representation{ name_token };
   type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
                         *this, name_representation };
-  builder.build_and_register_in_context();
+  builder.build_builtin_and_register_in_context();
+  return builder;
 }
 }

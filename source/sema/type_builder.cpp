@@ -54,6 +54,16 @@ const sema_type& type_builder::build_and_register_in_context()
   return type;
 }
 
+const sema_type& type_builder::build_builtin_and_register_in_context()
+{
+  const auto& type =
+    m_type_factory.create_builtin(m_type_ctx, m_name, std::move(m_members));
+  const auto& reference_type = m_type_factory.create_reference(type);
+  m_current_ctx.add_type(type);
+  m_current_ctx.add_type(reference_type);
+  return type;
+}
+
 const sema_type&
 type_builder::build_homogeneous_generic_and_register_in_context(
   const sema_type& value_type)
