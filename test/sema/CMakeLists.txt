@@ -10,6 +10,7 @@ cmsl_add_test(
         identifiers_context_test.cpp
         overload_resolution_test.cpp
         sema_builder_ast_visitor.cpp
+        sema_dumper_smoke_test.cpp
         vatiable_initialization_check_test.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}

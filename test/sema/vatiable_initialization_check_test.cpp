@@ -40,8 +40,6 @@ const sema_type complex_type{
   { member_info{ token_identifier("member_foo"), valid_type, 0 } }
 };
 
-// using check_result_t = variable_initialization_checker::check_result;
-
 using namespace variable_initialization_issues;
 
 class VariableInitializationCheck : public ::testing::Test
@@ -316,9 +314,8 @@ TEST_F(
       init_issues[0]));
 }
 
-TEST_F(
-  VariableInitializationCheck,
-  NonReferenceFromDesignatedInitializers_ReturnsNoIssues)
+TEST_F(VariableInitializationCheck,
+       NonReferenceFromDesignatedInitializers_ReturnsNoIssues)
 {
   auto init_expression = designated_init_expression_mock();
 
