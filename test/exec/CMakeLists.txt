@@ -11,6 +11,7 @@ cmsl_add_test(
         double_type_smoke_test.cpp
         expression_evaluation_visitor_test.cpp
         for_loop_smoke_test.cpp
+        function_smoke_test.cpp
         if_else_smoke_test.cpp
         instance_value_variant_test.cpp
         int_type_smoke_test.cpp
