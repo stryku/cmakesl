@@ -48,14 +48,14 @@ TOKEN_PROVIDER_METHOD_TEMPLATE = """
     {
         const auto src_range = source_range{ source_location{ %line%, %column%, %absolute_position% },
                                              source_location{ %line%, %column% + %token_length%, %absolute_position% + %token_length% } };
-        return lexer::token{ lexer::token_type::identifier, src_range, get_source_view()};
+        return lexer::token{ lexer::token_type::%token_type%, src_range, get_source_view()};
     }
 """
 
 GENERATION_INFO = {
     'bool': {
         'tokens': {
-            'name': ['class bool', 'class ', 'bool'],
+            'name': ['class bool', 'class ', 'bool', 'kw_bool'],
             'default_constructor': ['bool();', '', 'bool'],
             'copy_constructor': ['bool(bool value);', '', 'bool'],
             'conversion_from_int_constructor': ['bool(int value);', '', 'bool'],
@@ -68,7 +68,7 @@ GENERATION_INFO = {
     },
     'int': {
         'tokens': {
-            'name': ['class int', 'class ', 'int'],
+            'name': ['class int', 'class ', 'int', 'kw_int'],
             'default_constructor': ['int();', '', 'int'],
             'copy_constructor': ['int(int value);', '', 'int'],
             'conversion_from_bool_constructor': ['int(bool value);', '', 'int'],
@@ -93,7 +93,7 @@ GENERATION_INFO = {
     },
     'double': {
         'tokens': {
-            'name': ['class double', 'class ', 'double'],
+            'name': ['class double', 'class ', 'double', 'kw_double'],
             'default_constructor': ['double();', '', 'double'],
             'copy_constructor': ['double(double value);', '', 'double'],
             'conversion_from_int_constructor': ['double(int value);', '', 'double'],
@@ -115,7 +115,7 @@ GENERATION_INFO = {
     },
     'string': {
         'tokens': {
-            'name': ['class string', 'class ', 'string'],
+            'name': ['class string', 'class ', 'string', 'kw_string'],
             'default_constructor': ['string();', '', 'string'],
             'copy_constructor': ['string(string value);', '', 'string'],
             'value_initialization_constructor': ['string(string value, int count);', '', 'string'],
@@ -155,7 +155,7 @@ GENERATION_INFO = {
     },
     'version': {
         'tokens': {
-            'name': ['class version', 'class ', 'version'],
+            'name': ['class version', 'class ', 'version', 'kw_version'],
             'constructor_major': ['version(int major);', '', 'version'],
             'constructor_major_minor': ['version(int major, int minor);', '', 'version'],
             'constructor_major_minor_patch': ['version(int major, int minor, int patch);', '', 'version'],
@@ -176,7 +176,7 @@ GENERATION_INFO = {
     },
     'list': {
         'tokens': {
-            'name': ['class list', 'class ', 'list'],
+            'name': ['class list', 'class ', 'list', 'kw_list'],
             'default_constructor': ['list();', '', 'list'],
             'push_back_value': ['void push_back(value_type value);', 'void ', 'push_back'],
             'push_back_list': ['void push_back(list<value_type> value);', 'void ', 'push_back'],
@@ -217,7 +217,7 @@ GENERATION_INFO = {
     },
     'project': {
         'tokens': {
-            'name': ['class project', 'class ', 'project'],
+            'name': ['class project', 'class ', 'project', 'kw_project'],
             'constructor_name': ['project(string name);', '', 'project'],
             'add_executable': ['executable add_executable(string name, list<string> sources);', 'executable ',
                                'add_executable'],
@@ -226,21 +226,21 @@ GENERATION_INFO = {
     },
     'library': {
         'tokens': {
-            'name': ['class library', 'class ', 'library'],
+            'name': ['class library', 'class ', 'library', 'kw_library'],
             'method_name': ['string name();', 'string ', 'name'],
             'link_to': ['void link_to(library lib);', 'void ', 'link_to']
         }
     },
     'executable': {
         'tokens': {
-            'name': ['class executable', 'class ', 'executable'],
+            'name': ['class executable', 'class ', 'executable', 'kw_executable'],
             'method_name': ['string name();', 'string ', 'name'],
             'link_to': ['void link_to(library lib);', 'void ', 'link_to']
         }
     },
     'void': {
         'tokens': {
-            'name': ['class void', 'class ', 'void']
+            'name': ['class void', 'class ', 'void', 'kw_void']
         }
     }
 }
@@ -297,6 +297,7 @@ def generate_providers():
             to_search = token_search_info[0]
             to_skip = token_search_info[1]
             token_value = token_search_info[2]
+            token_type = token_search_info[3] if len(token_search_info) > 3 else 'identifier'
             token_absolute_position = find_absolute(type_documentation, to_search, to_skip)
             token_line, token_column = find_line_and_column(type_documentation, to_search, to_skip)
             token_length = len(token_value)
@@ -304,6 +305,7 @@ def generate_providers():
             method_source = method_source.replace('%line%', str(token_line))
             method_source = method_source.replace('%column%', str(token_column))
             method_source = method_source.replace('%token_length%', str(token_length))
+            method_source = method_source.replace('%token_type%', str(token_type))
 
             methods_source += method_source
 

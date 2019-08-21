@@ -3,6 +3,7 @@
 #include "ast/parameter_declaration.hpp"
 #include "ast/parse_errors_observer.hpp"
 #include "ast/parser_utils.hpp"
+#include "ast/qualified_name.hpp"
 
 #include <memory>
 
@@ -62,10 +63,19 @@ public:
 private:
   struct function_call_values
   {
-    token_t name;
     token_t open_paren;
     std::vector<std::unique_ptr<ast_node>> params;
     token_t close_paren;
+  };
+
+  struct member_function_call_values : public function_call_values
+  {
+    token_t name;
+  };
+
+  struct standalone_function_call_values : public function_call_values
+  {
+    std::vector<name_with_coloncolon> names;
   };
 
   std::optional<token_t> eat_function_call_name();
@@ -95,7 +105,9 @@ private:
     token_t close_paren;
   };
   std::optional<call_param_list_values> parameter_list();
-  std::optional<function_call_values> get_function_call_values();
+  std::optional<member_function_call_values> get_member_function_call_values();
+  std::optional<standalone_function_call_values>
+  get_standalone_function_call_values();
 
   bool prepare_for_next_parameter_declaration();
   std::optional<param_declaration> get_param_declaration();

@@ -101,8 +101,17 @@ public:
 
   void visit(const function_call_node& node) override
   {
-    m_result +=
-      "function_call{name:" + std::string{ node.name().str() } + ";params:";
+    m_result += "function_call{name:";
+
+    for (const auto& name : node.names()) {
+      m_result += name.name.str();
+      if (name.coloncolon) {
+        m_result += "::";
+      }
+    }
+
+    m_result += ";params:";
+
     for (const auto& param : node.param_nodes()) {
       param->visit(*this);
     }
@@ -544,9 +553,10 @@ TEST_F(ParserTest, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
 {
   // foo()
   const auto fun_name_token = token_identifier("foo");
+  std::vector<name_with_coloncolon> names{ { fun_name_token } };
 
   auto expected_ast = std::make_unique<function_call_node>(
-    fun_name_token, tmp_token, function_call_node::params_t{}, tmp_token);
+    names, tmp_token, function_call_node::params_t{}, tmp_token);
 
   const auto tokens = tokens_container_t{ fun_name_token, token_open_paren(),
                                           token_close_paren() };
@@ -563,6 +573,7 @@ TEST_F(ParserTest,
 {
   // foo(bar, "baz", 42)
   const auto fun_name_token = token_identifier("foo");
+  std::vector<name_with_coloncolon> names{ { fun_name_token } };
   const auto param1 = token_identifier("bar");
   const auto param2 = token_string("baz");
   const auto param3 = token_integer("42");
@@ -575,7 +586,7 @@ TEST_F(ParserTest,
   params.emplace_back(std::make_unique<int_value_node>(param3));
 
   auto expected_ast = std::make_unique<function_call_node>(
-    fun_name_token, tmp_token, std::move(params), tmp_token);
+    names, tmp_token, std::move(params), tmp_token);
 
   const auto tokens = tokens_container_t{
     // clang-format off
@@ -1923,8 +1934,9 @@ TEST_F(ParserTest, Factor_InitializerList_GetInitializerList)
   std::vector<std::unique_ptr<ast_node>> bar_params;
   bar_params.emplace_back(std::move(baz));
   bar_params.emplace_back(std::move(qux));
+  std::vector<ast::name_with_coloncolon> names{ { bar_token } };
   auto bar = std::make_unique<function_call_node>(
-    bar_token, tmp_token, std::move(bar_params), tmp_token);
+    names, tmp_token, std::move(bar_params), tmp_token);
 
   auto nested_foo =
     std::make_unique<id_node>(create_qualified_name(nest_foo_token));
@@ -2160,9 +2172,10 @@ TEST_F(ParserTest, For_EmptyInitEmptyConditionWithIterationEmptyBody_GetFor)
 {
   // for(;; foo()) {}
   const auto foo_token = token_identifier("foo");
+  std::vector<ast::name_with_coloncolon> names{ { foo_token } };
 
   auto iteration = std::make_unique<function_call_node>(
-    foo_token, token_open_paren(), function_call_node::params_t{},
+    names, token_open_paren(), function_call_node::params_t{},
     token_close_paren());
 
   auto body = std::make_unique<block_node>(

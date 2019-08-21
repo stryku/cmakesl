@@ -237,4 +237,149 @@ TEST_F(NamespacesSmokeTest,
   EXPECT_THAT(result, Eq(42));
 }
 
+TEST_F(NamespacesSmokeTest, FunctionInGlobalNamespaceAccessedByUnqualifiedName)
+{
+  const auto source = "int foo()"
+                      "{"
+                      "    return 42;"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return foo();"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest,
+       FunctionInGlobalNamespaceAccessedByFullyQualifiedName)
+{
+  const auto source = "int foo()"
+                      "{"
+                      "    return 42;"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return ::foo();"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest, FunctionInNamespaceAccessedByQualifiedName)
+{
+  const auto source = "namespace foo"
+                      "{"
+                      "    int bar()"
+                      "    {"
+                      "        return 42;"
+                      "    }"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return foo::bar();"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest, FunctionInNamespaceAccessedByFullyQualifiedName)
+{
+  const auto source = "namespace foo"
+                      "{"
+                      "    int bar()"
+                      "    {"
+                      "        return 42;"
+                      "    }"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return ::foo::bar();"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest, FunctionInSameNamespaceAccessByUnqualifiedName)
+{
+  const auto source = "namespace foo"
+                      "{"
+                      "    int bar()"
+                      "    {"
+                      "        return 42;"
+                      "    }"
+                      "}"
+                      ""
+                      "namespace foo"
+                      "{"
+                      "    int baz = bar();"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return foo::baz;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest, FunctionInNestedNamespaceAccessByUnqualifiedName)
+{
+  const auto source = "namespace foo"
+                      "{"
+                      "    int bar()"
+                      "    {"
+                      "        return 0;"
+                      "    }"
+                      ""
+                      "    namespace baz"
+                      "    {"
+                      "        int bar()"
+                      "        {"
+                      "            return 42;"
+                      "        }"
+                      ""
+                      "        int qux = bar();"
+                      "    }"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return foo::baz::qux;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(NamespacesSmokeTest, FunctionInNestedNamespaceAccessByQualifiedName)
+{
+  const auto source = "namespace foo"
+                      "{"
+                      "    int bar()"
+                      "    {"
+                      "        return 42;"
+                      "    }"
+                      ""
+                      "    namespace baz"
+                      "    {"
+                      "        int bar()"
+                      "        {"
+                      "            return 0;"
+                      "        }"
+                      ""
+                      "        int qux = foo::bar();"
+                      "    }"
+                      "}"
+                      ""
+                      "int main()"
+                      "{"
+                      "    return foo::baz::qux;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }

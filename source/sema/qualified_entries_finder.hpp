@@ -13,10 +13,13 @@ class qualified_entries_finder
 {
 private:
   using token_t = lexer::token;
-  using entries_map_t = std::unordered_map<token_t, Entry>;
+  using entries_map_t = std::unordered_multimap<token_t, Entry>;
   using node_id_t = unsigned;
   static constexpr auto k_bad_id = std::numeric_limits<node_id_t>::max();
   using qualified_names_t = std::vector<ast::name_with_coloncolon>;
+  using search_result_range_t =
+    std::pair<typename entries_map_t ::const_iterator,
+              typename entries_map_t ::const_iterator>;
 
   struct tree_node
   {
@@ -82,29 +85,23 @@ public:
     Entry entry;
   };
 
-  std::optional<entry_info> find(const qualified_names_t& names) const
+  std::vector<entry_info> find(const qualified_names_t& names) const
   {
-    const auto found_it = find_it(names);
+    const auto found_range = find_it(names);
 
-    if (!found_it) {
-      return std::nullopt;
+    if (!found_range) {
+      return {};
     }
 
-    const auto& pair = *found_it;
-    return entry_info{ pair->first, pair->second };
+    return to_entries_info(*found_range);
   }
 
-  std::optional<entry_info> find_in_current_node(
-    const lexer::token& name) const
+  std::vector<entry_info> find_in_current_node(const lexer::token& name) const
   {
     const auto& entries = current_entries();
-    const auto found_it = entries.find(name);
-    if (found_it == std::cend(entries)) {
-      return std::nullopt;
-    }
 
-    const auto& pair = *found_it;
-    return entry_info{ pair.first, pair.second };
+    const auto found_range = entries.equal_range(name);
+    return to_entries_info(found_range);
   }
 
   std::optional<token_t> find_node_registration_token(
@@ -119,6 +116,19 @@ public:
   }
 
 private:
+  std::vector<entry_info> to_entries_info(
+    const search_result_range_t& range) const
+  {
+    std::vector<entry_info> results;
+
+    std::transform(range.first, range.second, std::back_inserter(results),
+                   [](const auto& pair) {
+                     return entry_info{ pair.first, pair.second };
+                   });
+
+    return results;
+  }
+
   tree_node& current_node()
   {
     if (const auto curr_id = current_node_id(); curr_id != k_bad_id) {
@@ -158,13 +168,13 @@ private:
     return names.size() > 1u;
   }
 
-  std::optional<typename entries_map_t::const_iterator> find_it(
+  std::optional<search_result_range_t> find_it(
     const qualified_names_t& names) const
   {
     if (is_qualified_name(names)) {
       return find_qualified(names);
     } else {
-      const auto name = names.front().name.str();
+      const auto name = names.front().name;
       return find(name);
     }
   }
@@ -208,7 +218,7 @@ private:
     return node_id_and_name{ node->name, node->id };
   }
 
-  std::optional<typename entries_map_t::const_iterator> find_qualified(
+  std::optional<search_result_range_t> find_qualified(
     const qualified_names_t& names) const
   {
     const auto found_ctx =
@@ -220,32 +230,23 @@ private:
     const auto node = &m_nodes_container[found_ctx->id];
     const auto looked_identifier_name = names.back().name;
 
-    const auto found = node->entries.find(looked_identifier_name);
-    if (found == std::cend(node->entries)) {
+    return find_in_node(looked_identifier_name, node->entries);
+  }
+
+  std::optional<search_result_range_t> find_in_node(
+    const token_t& name, const entries_map_t& ids) const
+  {
+    const auto found = ids.equal_range(name);
+    if (found.first == std::cend(ids)) {
       return std::nullopt;
     }
 
     return found;
   }
 
-  std::optional<typename entries_map_t::const_iterator> find_in_node(
-    cmsl::string_view name, const entries_map_t& ids) const
+  std::optional<search_result_range_t> find(const token_t& name) const
   {
-    const auto pred = [name](const auto& id_pair) {
-      return id_pair.first.str() == name;
-    };
-
-    const auto found = std::find_if(std::cbegin(ids), std::cend(ids), pred);
-    if (found != std::cend(ids)) {
-      return found;
-    }
-
-    return std::nullopt;
-  }
-
-  std::optional<typename entries_map_t::const_iterator> find(
-    cmsl::string_view name) const
-  {
+    // Try to find in local nodes.
     for (auto node_it = std::crbegin(m_local_nodes);
          node_it != std::crend(m_local_nodes); ++node_it) {
       const auto found = find_in_node(name, *node_it);
@@ -254,6 +255,7 @@ private:
       }
     }
 
+    // If not found, try to find in global nodes.
     auto* current = &current_node();
 
     while (true) {

@@ -19,13 +19,14 @@ source_compiler::source_compiler(
   sema::sema_function_factory& function_factory,
   sema::sema_context_factory& context_factory,
   sema::add_subdirectory_handler& add_subdirectory_handler,
-  sema::types_context& types_ctx)
+  sema::types_context& types_ctx, sema::functions_context& functions_ctx)
   : m_errors_observer{ errors_observer }
   , m_type_factory{ type_factory }
   , m_function_factory{ function_factory }
   , m_context_factory{ context_factory }
   , m_add_subdirectory_handler{ add_subdirectory_handler }
   , m_types_ctx{ types_ctx }
+  , m_functions_ctx{ functions_ctx }
 {
 }
 
@@ -55,6 +56,7 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
                                    m_errors_observer,
                                    *ids_ctx,
                                    m_types_ctx,
+                                   m_functions_ctx,
                                    m_type_factory,
                                    m_function_factory,
                                    m_context_factory,

@@ -116,8 +116,13 @@ bool parser_utils::current_is_type() const
 
 bool parser_utils::current_is_name_of_function_call() const
 {
+  return is_name_of_function_call(curr_type());
+}
+
+bool parser_utils::is_name_of_function_call(token_type_t type) const
+{
   // Constructor of user defined function.
-  return is_builtin_type(curr_type()) || current_is(token_type_t::identifier);
+  return is_builtin_type(type) || type == token_type_t::identifier;
 }
 
 bool parser_utils::type_of_token_is(token_it it, token_type_t token_type) const

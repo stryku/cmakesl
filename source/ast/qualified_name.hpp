@@ -43,5 +43,6 @@ private:
   std::vector<name_with_coloncolon> m_names;
 };
 
+// Todo: should be probably renamed
 using qualified_name_t = std::vector<name_with_coloncolon>;
 }

@@ -12,24 +12,30 @@ void identifiers_context_impl::register_identifier(
 std::optional<identifiers_context_impl::identifier_info>
 identifiers_context_impl::info_of(const qualified_names_t& names) const
 {
-  const auto found = m_contextes_handler.find(names);
-  if (!found) {
+  const auto found_entries = m_contextes_handler.find(names);
+  if (found_entries.empty()) {
     return std::nullopt;
   }
 
-  return found->entry;
+  // Sema prevents from defining multiple identifiers with the same name in one
+  // scope, so we know that at this point there is only one entry in the
+  // vector.
+  return found_entries[0].entry;
 }
 
 std::optional<identifiers_context_impl::token_t>
 identifiers_context_impl::declaration_token_of(
   const qualified_names_t& names) const
 {
-  const auto found = m_contextes_handler.find(names);
-  if (!found) {
-    return {};
+  const auto found_entries = m_contextes_handler.find(names);
+  if (found_entries.empty()) {
+    return std::nullopt;
   }
 
-  return found->registration_token;
+  // Sema prevents from defining multiple identifiers with the same name in one
+  // scope, so we know that at this point there is only one entry in the
+  // vector.
+  return found_entries[0].registration_token;
 }
 
 void identifiers_context_impl::enter_local_ctx()

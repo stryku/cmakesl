@@ -23,8 +23,8 @@ class sema_node;
 class sema_type_factory;
 class sema_function_factory;
 class sema_context_factory;
-class type_references_container;
 class types_context;
+class functions_context;
 
 class sema_builder
 {
@@ -32,6 +32,7 @@ public:
   explicit sema_builder(sema_context& ctx, errors::errors_observer& errs,
                         identifiers_context& ids_context,
                         types_context& ty_context,
+                        functions_context& functions_ctx,
                         sema_type_factory& type_factory,
                         sema_function_factory& function_factory,
                         sema_context_factory& context_factory,
@@ -46,6 +47,7 @@ private:
   errors::errors_observer& m_errs;
   identifiers_context& m_ids_context;
   types_context& m_types_context;
+  functions_context& m_functions_context;
   sema_type_factory& m_type_factory;
   sema_function_factory& m_function_factory;
   sema_context_factory& m_context_factory;
