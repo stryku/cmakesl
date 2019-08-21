@@ -29,7 +29,6 @@
 #include "sema/sema_nodes.hpp"
 #include "sema/sema_type.hpp"
 #include "sema/type_builder.hpp"
-#include "sema/type_references_container.hpp"
 #include "sema/types_context.hpp"
 #include "sema/user_sema_function.hpp"
 #include "sema/variable_initialization_checker.hpp"
@@ -624,23 +623,6 @@ const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(
     }
 
     return found_type;
-
-    //    const auto ctx = search_context.find_ctx_for_type_lookup(name);
-    //    if (!ctx) {
-    //      return nullptr;
-    //    }
-    //
-    //    const auto fully_qualified_name =
-    //      ctx->fully_qualified_name() + "::" + name.to_string();
-    //    const auto found =
-    //      m_type_references_container.find_type(fully_qualified_name);
-    //    if (!found) {
-    //      raise_error(name.source(), name.src_range(),
-    //                  name.to_string() + " type not found.");
-    //      return nullptr;
-    //    }
-    //
-    //    return found;
   }
 
   const auto proper_generic_token_types = { lexer::token_type::kw_list };

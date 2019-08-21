@@ -58,8 +58,6 @@ set(SEMA_SOURCES
     type_builder.cpp
     type_builder.hpp
     type_member_info.hpp
-    type_references_container.cpp
-    type_references_container.hpp
     types_context.cpp
     types_context.hpp
     user_sema_function.hpp

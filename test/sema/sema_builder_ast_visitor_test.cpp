@@ -16,7 +16,6 @@
 #include "errors/errors_observer.hpp"
 #include "sema/builtin_token_provider.hpp"
 #include "sema/factories.hpp"
-#include "sema/type_references_container.hpp"
 #include "sema/types_context.hpp"
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
@@ -94,8 +93,6 @@ const auto tmp_token = token_identifier("");
 class SemaBuilderAstVisitorTest : public ::testing::Test
 {
 protected:
-  // Todo: Remove
-  type_references_container m_type_reference_container;
   std::unique_ptr<sema_type_factory> m_type_factory;
   sema_function_factory m_function_factory;
   sema_context_factory m_context_factory;
@@ -222,8 +219,6 @@ protected:
   {
     return std::make_unique<ast::id_node>(create_qualified_name(name));
   }
-
-  void TearDown() override { m_type_reference_container = {}; }
 };
 
 MATCHER(IsValidType, "")
@@ -369,8 +364,6 @@ TEST_F(
     create_types_factory_and_visitor(errs, ctx, ids_ctx, types_ctx);
   const auto name_token = token_identifier("foo");
 
-  m_type_reference_container.add_type(m_int_type_data.ty);
-
   auto variable_node = create_standalone_variable_declaration_node(
     m_int_type_data.representation, name_token);
 
@@ -451,8 +444,6 @@ TEST_F(
   StrictMock<types_context_mock> types_ctx;
   auto visitor =
     create_types_factory_and_visitor(errs, ctx, ids_ctx, types_ctx);
-
-  m_type_reference_container.add_type(m_int_type_data.ty);
 
   const auto name_token = token_identifier("foo");
 

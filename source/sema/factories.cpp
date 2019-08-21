@@ -11,7 +11,6 @@
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
 #include "sema/type_builder.hpp"
-#include "sema/type_references_container.hpp"
 #include "sema/user_sema_function.hpp"
 
 #include <generated/builtin_token_providers.hpp>
