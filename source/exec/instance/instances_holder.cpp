@@ -7,8 +7,8 @@
 #include <algorithm>
 
 namespace cmsl::exec::inst {
-instances_holder::instances_holder(const sema::sema_context& sema_ctx)
-  : m_sema_ctx{ sema_ctx }
+instances_holder::instances_holder(sema::builtin_types_accessor builtin_types)
+  : m_builtin_types{ builtin_types }
 {
 }
 
@@ -37,7 +37,8 @@ void instances_holder::store(std::unique_ptr<instance> i)
 
 inst::instance* instances_holder::create(instance_value_variant value)
 {
-  auto instance = instance_factory2{}.create(std::move(value), m_sema_ctx);
+  auto instance =
+    instance_factory2{}.create(std::move(value), m_builtin_types);
   auto ptr = instance.get();
   m_instances.emplace_back(std::move(instance));
   return ptr;

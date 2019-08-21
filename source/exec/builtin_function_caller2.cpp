@@ -1347,7 +1347,7 @@ inst::instance* builtin_function_caller2::list_sublist_pos_count(
   const auto& [position, count] =
     get_params<alternative_t::int_, alternative_t::int_>(params);
   auto sublist = list.sublist(position, count);
-  return m_instances.create(std::move(sublist));
+  return m_instances.create(instance.type(), std::move(sublist));
 }
 
 inst::instance* builtin_function_caller2::list_empty(
@@ -1383,7 +1383,7 @@ inst::instance* builtin_function_caller2::list_operator_plus_value(
   auto list_copy = instance.value_cref().get_list_cref();
   auto value = params[0]->copy();
   list_copy.push_back(std::move(value));
-  return m_instances.create(std::move(list_copy));
+  return m_instances.create(instance.type(), std::move(list_copy));
 }
 
 inst::instance* builtin_function_caller2::list_operator_plus_list(
@@ -1392,7 +1392,7 @@ inst::instance* builtin_function_caller2::list_operator_plus_list(
   auto list_copy = instance.value_cref().get_list_cref();
   auto [list_to_append] = get_params<alternative_t::list>(params);
   list_copy.push_back(std::move(list_to_append));
-  return m_instances.create(std::move(list_copy));
+  return m_instances.create(instance.type(), std::move(list_copy));
 }
 
 inst::instance* builtin_function_caller2::list_operator_plus_equal_value(

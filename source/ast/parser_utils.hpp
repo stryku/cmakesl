@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ast/qualified_name.hpp"
 #include "lexer/token.hpp"
 
 #include <optional>
@@ -37,6 +38,7 @@ protected:
   bool current_is_name_of_function_call() const;
   bool type_of_token_is(token_it it, token_type_t token_type) const;
   bool is_builtin_type(token_type_t token_type) const;
+  bool possibly_qualified_name_starts() const;
 
   void adjust_current_iterator(token_it new_current_it);
   token_it current_iterator() const;
@@ -44,6 +46,9 @@ protected:
 
   token_t get_token_for_error_report() const;
   token_t get_token_for_is_at_end_error_report() const;
+
+  std::optional<std::vector<ast::name_with_coloncolon>>
+  parse_possibly_qualified_name();
 
 private:
   parse_errors_observer& m_err_observer;

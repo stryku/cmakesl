@@ -29,7 +29,7 @@ using ::testing::Matcher;
 
 using namespace cmsl::test::common;
 
-const sema::sema_context_impl valid_context;
+const sema::sema_context_impl valid_context{ "" };
 const sema::sema_type valid_type{ valid_context,
                                   ast::type_representation{
                                     token_identifier("foo") },

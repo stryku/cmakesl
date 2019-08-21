@@ -2,8 +2,10 @@
 #include "exec/static_variables_initializer.hpp"
 
 namespace cmsl::exec {
-execution::execution(facade::cmake_facade& cmake_facade)
+execution::execution(facade::cmake_facade& cmake_facade,
+                     sema::builtin_types_accessor builtin_types)
   : m_cmake_facade{ cmake_facade }
+  , m_builtin_types{ builtin_types }
 {
 }
 
@@ -77,7 +79,7 @@ void execution::execute_variable_declaration(
   const sema::variable_declaration_node& node)
 {
   auto& exec_ctx = m_callstack.top().exec_ctx;
-  inst::instances_holder instances{ current_context() };
+  inst::instances_holder instances{ m_builtin_types };
   std::unique_ptr<inst::instance> created_instance;
 
   if (auto initialization = node.initialization()) {
@@ -100,7 +102,7 @@ void execution::execute_node(const sema::sema_node& node)
   } else if (auto ret_node =
                dynamic_cast<const sema::implicit_return_node*>(&node)) {
 
-    inst::instances_holder instances{ current_context() };
+    inst::instances_holder instances{ m_builtin_types };
     auto void_val = instances.create_void();
     m_function_return_value = instances.gather_ownership(void_val);
   } else if (auto var_decl =
@@ -184,7 +186,7 @@ std::unique_ptr<inst::instance> execution::execute_infix_expression(
 std::unique_ptr<inst::instance> execution::execute_infix_expression(
   const sema::sema_node& node)
 {
-  inst::instances_holder instances{ current_context() };
+  inst::instances_holder instances{ m_builtin_types };
   expression_evaluation_context ctx{ *this, instances, *this, m_cmake_facade };
   return execute_infix_expression(std::move(ctx), node);
 }
@@ -192,7 +194,7 @@ std::unique_ptr<inst::instance> execution::execute_infix_expression(
 std::unique_ptr<inst::instance> execution::execute_infix_expression(
   const sema::sema_type& expected_type, const sema::sema_node& node)
 {
-  inst::instances_holder instances{ current_context() };
+  inst::instances_holder instances{ m_builtin_types };
   expression_evaluation_context::expected_types_t types;
   types.push(expected_type);
   expression_evaluation_context ctx{ *this, instances, *this, m_cmake_facade,
@@ -280,7 +282,7 @@ void execution::execute_break_node(const sema::break_node& node)
 bool execution::initialize_static_variables(
   const sema::translation_unit_node& node)
 {
-  static_variables_initializer initializer{ *this, node.context(),
+  static_variables_initializer initializer{ *this, m_builtin_types,
                                             m_cmake_facade };
   node.visit(initializer);
   m_global_variables = initializer.gather_instances();

@@ -24,7 +24,7 @@ private:
 
   bool current_is_generic_type() const;
   bool is_builtin_simple_type(token_type_t token_type) const;
-  std::optional<token_t> eat_simple_type_token();
+  std::optional<ast::qualified_name> eat_simple_type_name();
 
 private:
   parse_errors_observer& m_err_observer;

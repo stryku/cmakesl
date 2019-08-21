@@ -2,6 +2,7 @@
 
 #include "ast/type_representation.hpp"
 #include "lexer/token.hpp"
+#include "sema/builtin_types_accessor.hpp"
 #include "sema/function_signature.hpp"
 #include "sema/sema_context_impl.hpp"
 
@@ -24,6 +25,8 @@ class sema_function;
 class sema_type;
 struct member_info;
 class type_builder;
+class type_references_container;
+class types_context;
 
 template <typename StoredType>
 class factory
@@ -63,14 +66,17 @@ class sema_context_factory : public factory<sema_context>
 public:
   ~sema_context_factory();
 
-  sema_context_impl& create(const sema_context* parent);
+  sema_context_impl& create(std::string name, const sema_context* parent);
 
-  sema_context_impl& create_class(const sema_context* parent);
+  sema_context_impl& create_class(std::string name,
+                                  const sema_context* parent);
 };
 
 class sema_type_factory : public factory<sema_type>
 {
 public:
+  explicit sema_type_factory(types_context& types_ctx);
+
   ~sema_type_factory();
 
   const sema_type& create(const sema_context& ctx,
@@ -89,6 +95,13 @@ public:
 
   const sema_type& create_designated_initializer(
     const sema_context& ctx, ast::type_representation name);
+
+private:
+  template <typename T, typename... Args>
+  const sema_type& create_and_add(const lexer::token& primary_name, Args&&...);
+
+protected:
+  types_context& m_types_ctx;
 };
 
 class sema_generic_type_factory : public sema_type_factory
@@ -99,7 +112,8 @@ public:
     sema_type_factory& type_factory, sema_function_factory& function_factory,
     sema_context_factory& context_factory,
     errors::errors_observer& errors_observer,
-    const builtin_token_provider& builtin_token_provider);
+    const builtin_token_provider& builtin_token_provider,
+    builtin_types_accessor builtin_types, types_context& types_ctx);
 
   const sema_type* create_generic(const ast::type_representation& name);
 
@@ -119,6 +133,7 @@ private:
   sema_context_factory& m_context_factory;
   errors::errors_observer& m_errors_observer;
   const builtin_token_provider& m_builtin_token_provider;
+  builtin_types_accessor m_builtin_types;
 };
 }
 }

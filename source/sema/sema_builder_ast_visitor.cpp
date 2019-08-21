@@ -29,6 +29,7 @@
 #include "sema/sema_nodes.hpp"
 #include "sema/sema_type.hpp"
 #include "sema/type_builder.hpp"
+#include "sema/types_context.hpp"
 #include "sema/user_sema_function.hpp"
 #include "sema/variable_initialization_checker.hpp"
 
@@ -46,7 +47,7 @@ sema_builder_ast_visitor::ids_ctx_guard::ids_ctx_guard(
 }
 
 sema_builder_ast_visitor::ids_ctx_guard::ids_ctx_guard(
-  identifiers_context& ids_context, cmsl::string_view name)
+  identifiers_context& ids_context, token_t name)
   : m_ids_ctx{ ids_context }
 {
   m_ids_ctx.enter_global_ctx(name);
@@ -78,28 +79,30 @@ sema_builder_ast_visitor::ids_ctx_guard::operator=(
 sema_builder_ast_visitor::sema_builder_ast_visitor(
   sema_context& generic_types_context, sema_context& ctx,
   errors::errors_observer& errs, identifiers_context& ids_context,
-  sema_type_factory& type_factory, sema_function_factory& function_factory,
+  types_context& ty_context, sema_type_factory& type_factory,
+  sema_function_factory& function_factory,
   sema_context_factory& context_factory,
   add_subdirectory_handler& add_subdirectory_handler,
   const builtin_token_provider& builtin_token_provider,
-  parsing_context& parsing_ctx)
+  parsing_context& parsing_ctx, builtin_types_accessor builtin_types)
   : m_generic_types_context{ generic_types_context }
   , m_ctx{ ctx }
   , m_errors_observer{ errs }
   , m_ids_context{ ids_context }
+  , m_types_context{ ty_context }
   , m_type_factory{ type_factory }
   , m_function_factory{ function_factory }
   , m_context_factory{ context_factory }
   , m_add_subdirectory_handler{ add_subdirectory_handler }
   , m_builtin_token_provider{ builtin_token_provider }
   , m_parsing_ctx{ parsing_ctx }
+  , m_builtin_types{ builtin_types }
 {
 }
 
 void sema_builder_ast_visitor::visit(const ast::block_node& node)
 {
   auto ig = ids_guard();
-
   std::vector<std::unique_ptr<sema_node>> nodes;
 
   for (const auto& n : node.nodes()) {
@@ -117,15 +120,17 @@ void sema_builder_ast_visitor::visit(const ast::block_node& node)
 void sema_builder_ast_visitor::visit(const ast::class_node& node)
 {
   const auto name = node.name();
-  const auto class_name_representation = ast::type_representation{ name };
-  if (m_ctx.find_type_in_this_scope(class_name_representation) != nullptr) {
+  const auto class_name_representation =
+    ast::type_representation{ ast::qualified_name{ name } };
+  if (m_types_context.find_in_current_scope(name) != nullptr) {
     raise_error(name, "Type redefinition");
     return;
   }
 
-  auto class_ids_guard = global_ids_guard(name.str());
+  auto class_ids_guard = global_ids_guard(name);
 
-  auto& class_context = m_context_factory.create_class(&m_ctx);
+  auto& class_context =
+    m_context_factory.create_class(std::string{ name.str() }, &m_ctx);
 
   auto members =
     collect_class_members_and_add_functions_to_ctx(node, class_context);
@@ -137,6 +142,8 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
   auto& class_type = m_type_factory.create(
     class_context, class_name_representation, std::move(members->info));
   auto& class_type_reference = m_type_factory.create_reference(class_type);
+
+  m_types_context.enter_global_ctx(name);
 
   // Same as with ast context. class_type raw pointer will be valid. We move it
   // to context to make this class findable as a regular type (so e.g. inside
@@ -160,6 +167,9 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
       function_declaration.ast_function_node, *function_declaration.fun,
       std::move(body)));
   }
+
+  // Todo: RAII
+  m_types_context.leave_ctx();
 
   m_result_node = std::make_unique<class_node>(
     node, name, std::move(members->declarations), std::move(functions));
@@ -408,14 +418,14 @@ void sema_builder_ast_visitor::visit(
 
 void sema_builder_ast_visitor::visit(const ast::bool_value_node& node)
 {
-  const auto& type = builtin_types_finder{ m_ctx }.find_bool();
+  const auto& type = m_builtin_types.bool_;
   const auto value = node.token().str() == "true";
   m_result_node = std::make_unique<bool_value_node>(node, type, value);
 }
 
 void sema_builder_ast_visitor::visit(const ast::int_value_node& node)
 {
-  const auto& type = builtin_types_finder{ m_ctx }.find_int();
+  const auto& type = m_builtin_types.int_;
   const auto token = node.token();
   char* end;
   const auto value =
@@ -425,7 +435,7 @@ void sema_builder_ast_visitor::visit(const ast::int_value_node& node)
 
 void sema_builder_ast_visitor::visit(const ast::double_value_node& node)
 {
-  const auto& type = builtin_types_finder{ m_ctx }.find_double();
+  const auto& type = m_builtin_types.double_;
   const auto token = node.token();
   char* end;
   const auto value =
@@ -435,7 +445,7 @@ void sema_builder_ast_visitor::visit(const ast::double_value_node& node)
 
 void sema_builder_ast_visitor::visit(const ast::string_value_node& node)
 {
-  const auto& type = builtin_types_finder{ m_ctx }.find_string();
+  const auto& type = m_builtin_types.string;
 
   // At this point node contains string value including "". We need to get rid
   // of them.
@@ -486,7 +496,10 @@ void sema_builder_ast_visitor::visit(const ast::return_node& node)
 
 void sema_builder_ast_visitor::visit(const ast::translation_unit_node& node)
 {
-  auto ig = global_ids_guard("");
+  static const auto name_token =
+    lexer::make_token(lexer::token_type::identifier, "");
+  auto ig = global_ids_guard(name_token);
+  m_types_context.enter_global_ctx(name_token);
   std::vector<std::unique_ptr<sema_node>> nodes;
 
   for (const auto& n : node.nodes()) {
@@ -497,6 +510,9 @@ void sema_builder_ast_visitor::visit(const ast::translation_unit_node& node)
 
     nodes.emplace_back(std::move(visited_node));
   }
+
+  // Todo: RAII
+  m_types_context.leave_ctx();
 
   m_result_node =
     std::make_unique<translation_unit_node>(node, m_ctx, std::move(nodes));
@@ -593,30 +609,39 @@ void sema_builder_ast_visitor::visit(const ast::while_node& node)
 const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(
   const sema_context& search_context, const ast::type_representation& name)
 {
-  const auto found = search_context.find_type(name);
-  if (found) {
-    return found;
-  }
-
   if (!name.is_generic()) {
-    raise_error(name.primary_name(), name.to_string() + " type not found.");
-    return nullptr;
+    const auto found_type = m_types_context.find(name.qual_name().names());
+
+    if (!found_type) {
+      raise_error(name.source(), name.src_range(),
+                  name.to_string() + " type not found.");
+      return nullptr;
+    }
+
+    if (name.is_reference()) {
+      return search_context.find_reference_for(*found_type);
+    }
+
+    return found_type;
   }
 
   const auto proper_generic_token_types = { lexer::token_type::kw_list };
 
-  if (!contains(proper_generic_token_types, name.primary_name().get_type())) {
-    raise_error(name.primary_name(),
-                "'" + std::string{ name.primary_name().str() } +
+  const auto& primary_name = name.generic_name().primary_name();
+  const auto is_proper_generic_type =
+    contains(proper_generic_token_types, primary_name.get_type());
+  if (!is_proper_generic_type) {
+    raise_error(primary_name,
+                "'" + std::string{ primary_name.str() } +
                   "' is not a generic type.");
     return nullptr;
   }
 
-  auto factory =
-    sema_generic_type_factory{ m_generic_types_context, search_context,
-                               m_type_factory,          m_function_factory,
-                               m_context_factory,       m_errors_observer,
-                               m_builtin_token_provider };
+  auto factory = sema_generic_type_factory{
+    m_generic_types_context,  search_context,    m_type_factory,
+    m_function_factory,       m_context_factory, m_errors_observer,
+    m_builtin_token_provider, m_builtin_types,   m_types_context
+  };
 
   return factory.create_generic(name);
 }
@@ -635,7 +660,7 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::to_expression(
     dynamic_cast<expression_node*>(node.release()));
 }
 
-void sema_builder_ast_visitor::raise_note(const lexer::token token,
+void sema_builder_ast_visitor::raise_note(const lexer::token& token,
                                           const std::string& message)
 {
   raise_note(token.source(), token.src_range(), message);
@@ -648,7 +673,7 @@ void sema_builder_ast_visitor::raise_note(const source_view& source,
   notify_error_observer(source, src_range, message, errors::error_type::note);
 }
 
-void sema_builder_ast_visitor::raise_error(const lexer::token token,
+void sema_builder_ast_visitor::raise_error(const lexer::token& token,
                                            const std::string& message)
 {
   raise_error(token.source(), token.src_range(), message);
@@ -680,13 +705,18 @@ sema_builder_ast_visitor sema_builder_ast_visitor::clone() const
 sema_builder_ast_visitor sema_builder_ast_visitor::clone(
   sema_context& ctx_to_visit) const
 {
-  return sema_builder_ast_visitor{
-    m_generic_types_context,  ctx_to_visit,
-    m_errors_observer,        m_ids_context,
-    m_type_factory,           m_function_factory,
-    m_context_factory,        m_add_subdirectory_handler,
-    m_builtin_token_provider, m_parsing_ctx
-  };
+  return sema_builder_ast_visitor{ m_generic_types_context,
+                                   ctx_to_visit,
+                                   m_errors_observer,
+                                   m_ids_context,
+                                   m_types_context,
+                                   m_type_factory,
+                                   m_function_factory,
+                                   m_context_factory,
+                                   m_add_subdirectory_handler,
+                                   m_builtin_token_provider,
+                                   m_parsing_ctx,
+                                   m_builtin_types };
 }
 
 std::unique_ptr<expression_node> sema_builder_ast_visitor::visit_child_expr(
@@ -749,7 +779,7 @@ sema_builder_ast_visitor::ids_ctx_guard sema_builder_ast_visitor::ids_guard()
 }
 
 sema_builder_ast_visitor::ids_ctx_guard
-sema_builder_ast_visitor::global_ids_guard(cmsl::string_view name)
+sema_builder_ast_visitor::global_ids_guard(lexer::token name)
 {
   return ids_ctx_guard{ m_ids_context, name };
 }
@@ -773,8 +803,9 @@ sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
   for (const auto& param_decl : node.param_declarations()) {
     auto param_type = try_get_or_create_generic_type(ctx, param_decl.ty);
     if (!param_type) {
-      raise_error(param_decl.ty.primary_name(),
-                  param_decl.ty.to_string() + " unknown parameter type");
+      const auto& name = param_decl.ty;
+      raise_error(name.source(), name.src_range(),
+                  name.to_string() + " unknown parameter type");
       return {};
     }
 
@@ -929,8 +960,11 @@ void sema_builder_ast_visitor::visit(const ast::initializer_list_node& node)
                 std::cend(value_type_tokens));
   tokens.emplace_back(make_token(token_type_t::greater, ">"));
 
+  auto generic_name =
+    ast::type_representation::generic_type_name{ std::move(tokens),
+                                                 { value_type->name() } };
   const auto list_type_representation =
-    ast::type_representation{ std::move(tokens), { value_type->name() } };
+    ast::type_representation{ std::move(generic_name) };
 
   auto type = try_get_or_create_generic_type(m_ctx, list_type_representation);
   if (!type) {
@@ -951,7 +985,7 @@ void sema_builder_ast_visitor::add_implicit_return_node_if_need(
   }
 
   const auto& ast_node = block.ast_node();
-  const auto& void_type = builtin_types_finder{ m_ctx }.find_void();
+  const auto& void_type = m_builtin_types.void_;
   auto ret_node = std::make_unique<implicit_return_node>(ast_node, void_type);
 
   auto manipulator = block_node_manipulator{ block };
@@ -1016,10 +1050,8 @@ bool sema_builder_ast_visitor::check_function_return_type(
 const sema_type*
 sema_builder_ast_visitor::try_deduce_currently_parsed_function_return_type()
 {
-  const auto types_finder = builtin_types_finder{ m_ctx };
-
   if (m_parsing_ctx.function_parsing_ctx.return_nodes.empty()) {
-    return &types_finder.find_void();
+    return &m_builtin_types.void_;
   }
 
   bool all_same{ true };
@@ -1065,11 +1097,12 @@ void sema_builder_ast_visitor::visit(
     }
 
     // If type has been found, check whether it is not void.
-    const auto& void_type = builtin_types_finder{ m_ctx }.find_void();
+    const auto& void_type = m_builtin_types.void_;
+    auto void_name = void_type.fully_qualified_name();
+    auto name = type->fully_qualified_name();
     if (*type == void_type) {
-      const auto n = type->name().to_string();
-      const auto n2 = void_type.name().to_string();
-      raise_error(type_representation.primary_name(),
+      raise_error(type_representation.source(),
+                  type_representation.src_range(),
                   "Variable can not be of void type");
       return;
     }
@@ -1078,13 +1111,13 @@ void sema_builder_ast_visitor::visit(
   if (should_deduce_type_from_initialization &&
       node.initialization() == nullptr) {
     raise_error(
-      type_representation.primary_name(),
+      type_representation.source(), type_representation.src_range(),
       "Declaration of a variable with 'auto' type requires an initializer");
     return;
   }
 
   if (type && type->is_reference() && node.initialization() == nullptr) {
-    raise_error(type->name().primary_name(),
+    raise_error(type_representation.source(), type_representation.src_range(),
                 "Declaration of a reference variable requires an initializer");
     return;
   }
@@ -1192,8 +1225,9 @@ void sema_builder_ast_visitor::visit(const ast::namespace_node& node)
 {
   std::stack<ids_ctx_guard> guards;
   for (const auto& name_with_colon : node.names()) {
-    auto ig = global_ids_guard(name_with_colon.name.str());
+    auto ig = global_ids_guard(name_with_colon.name);
     guards.emplace(std::move(ig));
+    m_types_context.enter_global_ctx(name_with_colon.name);
   }
 
   namespace_node::nodes_t nodes;
@@ -1212,6 +1246,8 @@ void sema_builder_ast_visitor::visit(const ast::namespace_node& node)
 
   while (!guards.empty()) {
     guards.pop();
+    // Todo: RAII
+    m_types_context.leave_ctx();
   }
 }
 
@@ -1222,9 +1258,8 @@ void sema_builder_ast_visitor::visit(const ast::ternary_operator_node& node)
     return;
   }
 
-  const auto finder = builtin_types_finder{ m_ctx };
-  const auto& bool_type = finder.find_bool();
-  const auto& bool_ref_type = finder.find_reference_for(bool_type);
+  const auto& bool_type = m_builtin_types.bool_;
+  const auto& bool_ref_type = m_builtin_types.bool_ref;
   if (condition->type() != bool_type && condition->type() != bool_ref_type) {
     const auto src_view = node.question().source();
     const auto range = source_range{ node.condition().src_range() };
@@ -1285,8 +1320,8 @@ void sema_builder_ast_visitor::visit(const ast::ternary_operator_node& node)
 void sema_builder_ast_visitor::visit(
   const ast::designated_initializers_node& node)
 {
-  const auto name = ast::type_representation{ make_token(
-    lexer::token_type::identifier, "designated_initializer") };
+  const auto name = ast::type_representation{ ast::qualified_name{
+    make_token(lexer::token_type::identifier, "designated_initializer") } };
   const auto& designated_type =
     m_type_factory.create_designated_initializer(m_ctx, name);
 

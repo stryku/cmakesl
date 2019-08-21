@@ -66,6 +66,8 @@ public:
 
   const sema_type& referenced_type() const;
 
+  std::string fully_qualified_name() const;
+
 private:
   const sema_context& m_ctx;
   ast::type_representation m_name;

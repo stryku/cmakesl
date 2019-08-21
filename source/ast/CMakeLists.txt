@@ -16,7 +16,6 @@ set(AST_SOURCES
     if_else_node.cpp
     if_else_node.hpp
     infix_nodes.hpp
-    name_with_coloncolon.hpp
     namespace_node.cpp
     namespace_node.hpp
     parameter_declaration.hpp
@@ -25,6 +24,8 @@ set(AST_SOURCES
     parser.hpp
     parser_utils.cpp
     parser_utils.hpp
+    qualified_name.cpp
+    qualified_name.hpp
     return_node.cpp
     return_node.hpp
     ternary_operator_node.cpp

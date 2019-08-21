@@ -34,10 +34,10 @@ struct errors_observer_and_mock
 };
 using errs_t = errors_observer_and_mock;
 
-const sema_context_impl valid_context;
+const sema_context_impl valid_context{ "" };
 const sema_type valid_type{ valid_context,
                             ast::type_representation{
-                              token_identifier("foo") },
+                              ast::qualified_name{ token_identifier("foo") } },
                             {} };
 
 class OverloarResolutionTest : public ::testing::Test
@@ -100,8 +100,8 @@ TEST_F(OverloarResolutionTest, ParamTypesDontMatch_RaiseErrorAndReturnNull)
   auto param_expression = expression_mock();
   auto param_expression_ptr = param_expression.get();
   const sema_type param_type{ valid_context,
-                              ast::type_representation{
-                                token_identifier("param_type") },
+                              ast::type_representation{ ast::qualified_name{
+                                token_identifier("param_type") } },
                               {} };
   std::vector<std::unique_ptr<expression_node>> param_expressions;
   param_expressions.emplace_back(std::move(param_expression));
@@ -217,7 +217,9 @@ TEST_F(OverloarResolutionTest,
   const auto function_name_token = token_identifier("foo");
   const auto param_name_token = token_identifier("param");
   const sema_type bad_function_param_type{
-    valid_context, ast::type_representation{ param_name_token }, {}
+    valid_context,
+    ast::type_representation{ ast::qualified_name{ param_name_token } },
+    {}
   };
   function_signature bad_function_signature{
     function_name_token,
@@ -287,7 +289,9 @@ TEST_F(OverloarResolutionTest, GoodOveloadedFunction_ReturnFunction)
   const auto param_name_token = token_identifier("param");
 
   const sema_type bad_function_param_type{
-    valid_context, ast::type_representation{ param_name_token }, {}
+    valid_context,
+    ast::type_representation{ ast::qualified_name{ param_name_token } },
+    {}
   };
   function_signature bad_function_signature{
     function_name_token,

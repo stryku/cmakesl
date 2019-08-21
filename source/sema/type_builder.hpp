@@ -53,6 +53,13 @@ public:
 
   const sema_context& context();
 
+  struct built_type_info
+  {
+    const sema_type& ty;
+    const sema_type& reference;
+  };
+  built_type_info built_type() const;
+
 private:
   sema_type_factory& m_type_factory;
   sema_function_factory& m_function_factory;
@@ -61,5 +68,7 @@ private:
   sema_context& m_type_ctx;
   ast::type_representation m_name;
   std::vector<member_info> m_members;
+  const sema_type* m_built_type;
+  const sema_type* m_built_type_ref;
 };
 }

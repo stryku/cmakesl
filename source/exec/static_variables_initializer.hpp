@@ -15,11 +15,11 @@ class static_variables_initializer final
   , public identifiers_context
 {
 public:
-  explicit static_variables_initializer(function_caller& caller,
-                                        const sema::sema_context& sema_context,
-                                        facade::cmake_facade& cmake_facade)
+  explicit static_variables_initializer(
+    function_caller& caller, const sema::builtin_types_accessor& builtin_types,
+    facade::cmake_facade& cmake_facade)
     : m_function_caller{ caller }
-    , m_sema_context{ sema_context }
+    , m_builtin_types{ builtin_types }
     , m_cmake_facade{ cmake_facade }
   {
   }
@@ -36,9 +36,10 @@ public:
 
   void visit(const sema::variable_declaration_node& node) override
   {
-    inst::instances_holder instances{ m_sema_context };
+    inst::instances_holder instances{ m_builtin_types };
     expression_evaluation_context ctx{ m_function_caller, instances, *this,
                                        m_cmake_facade };
+    ctx.expected_types.push(node.type());
     std::unique_ptr<inst::instance> created_instance;
 
     if (auto initialization = node.initialization()) {
@@ -60,8 +61,8 @@ public:
 
   void visit(const sema::class_node& node) override
   {
-    // Todo: implement initialization of static members, when static members
-    // are implemented.
+    // Todo: implement initialization of static members, when (and if) static
+    // members are implemented.
   }
 
   void visit(const sema::translation_unit_node& node) override
@@ -86,8 +87,8 @@ public:
 
 private:
   function_caller& m_function_caller;
-  const sema::sema_context& m_sema_context;
   facade::cmake_facade& m_cmake_facade;
+  sema::builtin_types_accessor m_builtin_types;
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>> m_instances;
 };
 }

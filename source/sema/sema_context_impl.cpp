@@ -1,13 +1,16 @@
 #include "sema/sema_context_impl.hpp"
+#include "common/assert.hpp"
 #include "sema/sema_function.hpp"
 
 #include <algorithm>
 
 namespace cmsl::sema {
-sema_context_impl::sema_context_impl(const sema_context* parent,
+sema_context_impl::sema_context_impl(std::string name,
+                                     const sema_context* parent,
                                      context_type context_type)
   : m_parent{ parent }
   , m_context_type{ context_type }
+  , m_name{ std::move(name) }
 {
 }
 
@@ -88,7 +91,9 @@ sema_context_impl::find_function_in_this_scope(const lexer::token& name) const
 
   // Collect constructors.
   // Todo: test ctors collecting.
-  if (auto ty = find_type_in_this_scope(ast::type_representation{ name })) {
+  const auto type_name =
+    ast::type_representation{ ast::qualified_name{ name } };
+  if (auto ty = find_type_in_this_scope(type_name)) {
     const auto& type_ctx = ty->context();
     const auto constructors = type_ctx.find_function_in_this_scope(name);
     result.insert(std::end(result), std::cbegin(constructors),
@@ -135,5 +140,63 @@ std::vector<std::reference_wrapper<const sema_type>> sema_context_impl::types()
                  [](const auto ty) { return std::ref(*ty); });
 
   return result;
+}
+
+std::string sema_context_impl::fully_qualified_name() const
+{
+  const auto name = std::string{ m_name };
+  if (m_parent) {
+    return m_parent->fully_qualified_name() + "::" + name;
+  }
+
+  return name;
+}
+
+const sema_context* sema_context_impl::find_ctx_containing_type(
+  const std::string& name) const
+{
+  //  if (m_name == name) {
+  //    return this;
+  //  }
+
+  const auto fully_qualified_type_name = fully_qualified_name() + "::" + name;
+  for (const auto ty : m_types) {
+    if (ty->fully_qualified_name() == fully_qualified_type_name) {
+      return this;
+    }
+  }
+
+  if (m_parent) {
+    return m_parent->find_ctx_containing_type(name);
+  }
+
+  return nullptr;
+}
+
+const sema_context* sema_context_impl::find_ctx_for_type_lookup(
+  const ast::type_representation& name) const
+{
+  if (!name.is_generic()) {
+    const auto& qual_name = name.qual_name();
+
+    if (qual_name.is_fully_qualified()) {
+      return find_root();
+    }
+
+    return find_ctx_containing_type(name.to_string());
+  } else {
+    CMSL_UNREACHABLE("Trying to find context for a generic type");
+    return nullptr;
+  }
+}
+
+const sema_context* sema_context_impl::find_root() const
+{
+  const sema_context* ctx = this;
+  while (ctx->parent()) {
+    ctx = ctx->parent();
+  }
+
+  return ctx;
 }
 }

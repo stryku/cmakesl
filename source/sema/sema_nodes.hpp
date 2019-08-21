@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ast/ast_node.hpp"
-#include "ast/name_with_coloncolon.hpp"
 #include "ast/namespace_node.hpp"
+#include "ast/qualified_name.hpp"
 #include "common/int_alias.hpp"
 #include "lexer/token.hpp"
 #include "sema/sema_function.hpp"

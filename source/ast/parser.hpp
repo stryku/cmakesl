@@ -49,7 +49,7 @@ public:
   std::unique_ptr<block_node> parse_block();
   std::unique_ptr<break_node> parse_break();
   std::unique_ptr<namespace_node> parse_namespace();
-  std::unique_ptr<id_node> parse_possibly_qualified_name();
+  std::unique_ptr<id_node> parse_identifier();
 
   // Called when condition is already parsed, co current() is question.
   std::unique_ptr<ternary_operator_node> parse_rest_of_ternary_operator(

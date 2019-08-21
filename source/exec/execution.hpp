@@ -9,6 +9,7 @@
 #include "exec/instance/instance_factory.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "sema/builtin_sema_function.hpp"
+#include "sema/builtin_types_accessor.hpp"
 #include "sema/sema_nodes.hpp"
 #include "sema/user_sema_function.hpp"
 
@@ -20,7 +21,8 @@ class execution
   , public function_caller
 {
 public:
-  explicit execution(facade::cmake_facade& cmake_facade);
+  explicit execution(facade::cmake_facade& cmake_facade,
+                     sema::builtin_types_accessor builtin_types);
 
   bool initialize_static_variables(const sema::translation_unit_node& node);
 
@@ -78,6 +80,7 @@ private:
   };
 
   facade::cmake_facade& m_cmake_facade;
+  sema::builtin_types_accessor m_builtin_types;
   std::unique_ptr<inst::instance> m_function_return_value;
   std::stack<callstack_frame> m_callstack;
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>>

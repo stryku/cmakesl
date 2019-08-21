@@ -44,7 +44,7 @@ void variable_declaration_node::visit(ast_node_visitor& visitor) const
 
 source_location variable_declaration_node::begin_location() const
 {
-  return m_type.tokens().front().src_range().begin;
+  return m_type.src_range().begin;
 }
 
 source_location variable_declaration_node::end_location() const

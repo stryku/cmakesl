@@ -2,6 +2,7 @@
 
 #include "builtin_function_kind.hpp"
 #include "function_signature.hpp"
+#include "sema/builtin_types_accessor.hpp"
 #include "sema/sema_context_impl.hpp"
 
 namespace cmsl {
@@ -20,6 +21,8 @@ class sema_type_factory;
 class sema_context_factory;
 enum class builtin_function_kind;
 class type_builder;
+class type_references_container;
+class types_context;
 
 class builtin_sema_context : public sema_context_impl
 {
@@ -28,7 +31,10 @@ public:
     sema_type_factory& type_factory, sema_function_factory& function_factory,
     sema_context_factory& context_factory,
     errors::errors_observer& errors_observer,
-    const builtin_token_provider& builtin_token_provider);
+    const builtin_token_provider& builtin_token_provider,
+    types_context& types_ctx);
+
+  builtin_types_accessor builtin_types() const;
 
 private:
   using token_type_t = lexer::token_type;
@@ -70,7 +76,7 @@ private:
   void add_executable_member_functions(type_builder& project_manipulator);
   type_builder add_project_type();
   void add_project_member_functions(type_builder& project_manipulator);
-  void add_void_type();
+  type_builder add_void_type();
 
   template <unsigned N>
   lexer::token make_token(token_type_t token_type, const char (&tok)[N]);
@@ -87,6 +93,9 @@ private:
   sema_context_factory& m_context_factory;
   errors::errors_observer& m_errors_observer;
   const builtin_token_provider& m_builtin_token_provider;
+  types_context& m_types_ctx;
+
+  std::unique_ptr<builtin_types_accessor> m_builtin_types;
 };
 }
 }

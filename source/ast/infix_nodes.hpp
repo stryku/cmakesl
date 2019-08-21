@@ -2,7 +2,7 @@
 
 #include "ast/ast_node.hpp"
 #include "ast/ast_node_visitor.hpp"
-#include "ast/name_with_coloncolon.hpp"
+#include "ast/qualified_name.hpp"
 #include "lexer/token.hpp"
 
 #include <memory>

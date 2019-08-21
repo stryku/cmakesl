@@ -25,5 +25,11 @@ public:
   MOCK_CONST_METHOD0(type, context_type());
   MOCK_CONST_METHOD0(types,
                      std::vector<std::reference_wrapper<const sema_type>>());
+  MOCK_CONST_METHOD0(fully_qualified_name, std::string());
+  MOCK_CONST_METHOD1(find_ctx_for_type_lookup,
+                     const sema_context*(const ast::type_representation&));
+  MOCK_CONST_METHOD1(find_ctx_containing_type,
+                     const sema_context*(const std::string&));
+  MOCK_CONST_METHOD0(parent, const sema_context*());
 };
 }

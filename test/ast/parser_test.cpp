@@ -1099,7 +1099,8 @@ TEST_P(Type_SingleToken, GetTypeReference)
 {
   const auto token = token_kw_int();
 
-  const auto expected_reference = type_representation{ token };
+  const auto expected_reference =
+    type_representation{ ast::qualified_name{ token } };
 
   const auto tokens = tokens_container_t{ token };
   auto parser =
@@ -1130,11 +1131,15 @@ TEST_F(ParserTest, Type_GenericType_GetTypeReference)
   const auto greater_token =
     token_from_larger_source(source, token_type_t::greater, 8u, 9u);
 
-  const auto value_type_representation = type_representation{ int_token };
+  const auto value_type_representation =
+    type_representation{ ast::qualified_name{ int_token } };
   const auto expected_type_tokens =
     tokens_container_t{ list_token, less_token, int_token, greater_token };
+  auto generic_name =
+    type_representation::generic_type_name{ expected_type_tokens,
+                                            { value_type_representation } };
   const auto expected_reference =
-    type_representation{ expected_type_tokens, { value_type_representation } };
+    type_representation{ std::move(generic_name) };
 
   auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" },
                           expected_type_tokens };
@@ -1164,13 +1169,15 @@ TEST_F(ParserTest, Type_NestedGenericType_GetTypeReference)
 
   // foo
   const auto nested_value_type_representation =
-    type_representation{ foo_token };
+    type_representation{ ast::qualified_name{ foo_token } };
 
   // list<foo>
+  auto list_foo_generic_name = type_representation::generic_type_name{
+    { nested_list_token, nested_less_token, foo_token, nested_greater_token },
+    { nested_value_type_representation }
+  };
   const auto value_type_representation =
-    type_representation{ { nested_list_token, nested_less_token, foo_token,
-                           nested_greater_token },
-                         { nested_value_type_representation } };
+    type_representation{ std::move(list_foo_generic_name) };
 
   // list<list<foo>>
   const auto expected_type_tokens = tokens_container_t{
@@ -1184,8 +1191,11 @@ TEST_F(ParserTest, Type_NestedGenericType_GetTypeReference)
     greater_token
     // clang-format on
   };
+  auto list_list_foo_generic_name =
+    type_representation::generic_type_name{ expected_type_tokens,
+                                            { value_type_representation } };
   const auto expected_representation =
-    type_representation{ expected_type_tokens, { value_type_representation } };
+    type_representation{ std::move(list_list_foo_generic_name) };
 
   auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" },
                           expected_type_tokens };
@@ -1201,7 +1211,8 @@ TEST_F(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
   const auto type_token = token_kw_int();
   const auto name_token = token_identifier("foo");
 
-  const auto type_repr = type_representation{ type_token };
+  const auto type_repr =
+    type_representation{ ast::qualified_name{ type_token } };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
     type_repr, name_token, std::nullopt);
@@ -1232,12 +1243,14 @@ TEST_F(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
     token_from_larger_source(source, token_type_t::greater, 8u, 9u);
   const auto name_token = token_identifier("foo");
 
-  const auto value_type_representation = type_representation{ int_token };
+  const auto value_type_representation =
+    type_representation{ ast::qualified_name{ int_token } };
   const auto representation_tokens =
     tokens_container_t{ list_token, less_token, int_token, greater_token };
-  const auto representation =
-    type_representation{ representation_tokens,
-                         { value_type_representation } };
+  auto generic_name =
+    type_representation::generic_type_name{ representation_tokens,
+                                            { value_type_representation } };
+  const auto representation = type_representation{ std::move(generic_name) };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
     representation, name_token, std::nullopt);
@@ -1270,7 +1283,8 @@ TEST_F(ParserTest,
   const auto name_token = token_identifier("foo");
   const auto int_expr_token = token_integer("42");
 
-  const auto representation = type_representation{ type_token };
+  const auto representation =
+    type_representation{ ast::qualified_name{ type_token } };
 
   auto expr = std::make_unique<int_value_node>(int_expr_token);
   auto initialization =
@@ -1316,12 +1330,14 @@ TEST_F(ParserTest,
   const auto name_token = token_identifier("foo");
   const auto int_expr_token = token_integer("42");
 
-  const auto value_type_representation = type_representation{ int_token };
+  const auto value_type_representation =
+    type_representation{ ast::qualified_name{ int_token } };
   const auto representation_tokens =
     tokens_container_t{ list_token, less_token, int_token, greater_token };
-  const auto representation =
-    type_representation{ representation_tokens,
-                         { value_type_representation } };
+  auto generic_name =
+    type_representation::generic_type_name{ representation_tokens,
+                                            { value_type_representation } };
+  const auto representation = type_representation{ std::move(generic_name) };
 
   auto expr = std::make_unique<int_value_node>(int_expr_token);
   auto initialization =
@@ -1375,7 +1391,8 @@ TEST_F(ParserTest, Block_VariableDeclaration_GetBlock)
   // { foo bar; }
   const auto variable_type_token = token_identifier("foo");
   const auto variable_name_token = token_identifier("bar");
-  const auto variable_type_ref = type_representation{ variable_type_token };
+  const auto variable_type_ref =
+    type_representation{ ast::qualified_name{ variable_type_token } };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
     variable_type_ref, variable_name_token, std::nullopt);
@@ -1631,7 +1648,8 @@ TEST_F(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
   // double foo() {}
   const auto function_type_token = token_kw_double();
   const auto function_name_token = token_identifier("foo");
-  const auto function_type_ref = type_representation{ function_type_token };
+  const auto function_type_ref =
+    type_representation{ ast::qualified_name{ function_type_token } };
   auto function_block_node =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto expected_ast = std::make_unique<user_function_node>(
@@ -1661,11 +1679,13 @@ TEST_F(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
   // double foo(bar baz) {}
   const auto function_type_token = token_kw_double();
   const auto function_name_token = token_identifier("foo");
-  const auto function_type_ref = type_representation{ function_type_token };
+  const auto function_type_ref =
+    type_representation{ ast::qualified_name{ function_type_token } };
 
   const auto param_type_token = token_identifier("bar");
   const auto param_name_token = token_identifier("baz");
-  const auto param_type_ref = type_representation{ param_type_token };
+  const auto param_type_ref =
+    type_representation{ ast::qualified_name{ param_type_token } };
 
   user_function_node::params_t params{ param_declaration{ param_type_ref,
                                                           param_name_token } };
@@ -1703,15 +1723,18 @@ TEST_F(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
   // double foo(bar baz, qux out_of_fancy_identifiers) {}
   const auto function_type_token = token_kw_double();
   const auto function_name_token = token_identifier("foo");
-  const auto function_type_ref = type_representation{ function_type_token };
+  const auto function_type_ref =
+    type_representation{ ast::qualified_name{ function_type_token } };
 
   const auto param_type_token = token_identifier("bar");
   const auto param_name_token = token_identifier("baz");
-  const auto param_type_ref = type_representation{ param_type_token };
+  const auto param_type_ref =
+    type_representation{ ast::qualified_name{ param_type_token } };
 
   const auto param2_type_token = token_identifier("qux");
   const auto param2_name_token = token_identifier("out_of_fancy_identifiers");
-  const auto param2_type_ref = type_representation{ param2_type_token };
+  const auto param2_type_ref =
+    type_representation{ ast::qualified_name{ param2_type_token } };
 
   user_function_node::params_t params{
     param_declaration{ param_type_ref, param_name_token },
@@ -1782,7 +1805,8 @@ TEST_F(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
   const auto name_token = token_identifier("foo");
   const auto variable_type_token = token_kw_int();
   const auto variable_name_token = token_identifier("bar");
-  const auto variable_type_ref = type_representation{ variable_type_token };
+  const auto variable_type_ref =
+    type_representation{ ast::qualified_name{ variable_type_token } };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
     variable_type_ref, variable_name_token, std::nullopt);
@@ -1825,7 +1849,8 @@ TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
 
   const auto function_type_token = token_kw_double();
   const auto function_name_token = token_identifier("bar");
-  const auto function_type_ref = type_representation{ function_type_token };
+  const auto function_type_ref =
+    type_representation{ ast::qualified_name{ function_type_token } };
   auto function_block_node =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto fun_node = std::make_unique<user_function_node>(
@@ -1834,7 +1859,8 @@ TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
 
   const auto variable_type_token = token_identifier("baz");
   const auto variable_name_token = token_identifier("qux");
-  const auto variable_type_ref = type_representation{ variable_type_token };
+  const auto variable_type_ref =
+    type_representation{ ast::qualified_name{ variable_type_token } };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
     variable_type_ref, variable_name_token, std::nullopt);
@@ -1988,7 +2014,8 @@ TEST_F(ParserTest,
 {
   // for(int foo;;) {}
   const auto int_token = token_kw_int();
-  const auto int_representation = type_representation{ int_token };
+  const auto int_representation =
+    type_representation{ ast::qualified_name{ int_token } };
   const auto foo_token = token_identifier("foo");
 
   auto foo_declaration = std::make_unique<variable_declaration_node>(
@@ -2036,7 +2063,8 @@ TEST_F(
 {
   // for(int foo = 42;;) {}
   const auto int_token = token_kw_int();
-  const auto int_representation = type_representation{ int_token };
+  const auto int_representation =
+    type_representation{ ast::qualified_name{ int_token } };
   const auto foo_token = token_identifier("foo");
   const auto equal_token = token_equal();
   const auto value_token = token_integer("42");

@@ -15,7 +15,24 @@ dumper::ident_guard::ident_guard(std::string& ident)
 
 dumper::ident_guard::~ident_guard()
 {
-  m_ident.pop_back();
+  if (m_valid) {
+    m_ident.pop_back();
+  }
+}
+
+dumper::ident_guard::ident_guard(dumper::ident_guard&& other)
+  : m_ident{ other.m_ident }
+  , m_valid{ other.m_valid }
+{
+  other.m_valid = false;
+}
+
+dumper::ident_guard& dumper::ident_guard::operator=(
+  dumper::ident_guard&& other)
+{
+  m_valid = other.m_valid;
+  other.m_valid = false;
+  return *this;
 }
 
 dumper::dumper(std::ostream& os)

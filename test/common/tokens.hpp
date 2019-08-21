@@ -65,6 +65,7 @@ token_t token_kw_true();
 token_t token_kw_false();
 token_t token_kw_string();
 token_t token_kw_list();
+token_t token_kw_version();
 token_t token_kw_project();
 token_t token_kw_library();
 token_t token_kw_executable();

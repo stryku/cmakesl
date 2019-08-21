@@ -1,4 +1,5 @@
 #include "instance_factory.hpp"
+#include <sema/builtin_types_accessor.hpp>
 
 #include "common/assert.hpp"
 #include "exec/instance/complex_unnamed_instance.hpp"
@@ -9,32 +10,30 @@
 
 namespace cmsl::exec::inst {
 std::unique_ptr<instance> instance_factory2::create(
-  instance_value_variant value, const sema::sema_context& ctx) const
+  instance_value_variant value,
+  const sema::builtin_types_accessor& builtin_types) const
 {
-  const auto type_getter = [&value, &ctx]() -> const sema::sema_type& {
-    sema::builtin_types_finder finder{ ctx };
+  const auto type_getter = [&value,
+                            &builtin_types]() -> const sema::sema_type& {
     switch (value.which()) {
       // Todo: cache types, don't find it over every time.
       case instance_value_variant::which_t::bool_: {
-        return finder.find_bool();
+        return builtin_types.bool_;
       }
       case instance_value_variant::which_t::int_: {
-        return finder.find_int();
+        return builtin_types.int_;
       }
       case instance_value_variant::which_t::double_: {
-        return finder.find_double();
+        return builtin_types.double_;
       }
       case instance_value_variant::which_t::string: {
-        return finder.find_string();
+        return builtin_types.string;
       }
       case instance_value_variant::which_t::library: {
-        return finder.find_library();
+        return builtin_types.library;
       }
       case instance_value_variant::which_t::executable: {
-        return finder.find_executable();
-      }
-      case instance_value_variant::which_t::list: {
-        return finder.find_string();
+        return builtin_types.executable;
       }
       default:
         CMSL_UNREACHABLE("Unknown type requested");

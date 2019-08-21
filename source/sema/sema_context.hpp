@@ -49,6 +49,16 @@ public:
   virtual context_type type() const = 0;
   virtual std::vector<std::reference_wrapper<const sema_type>> types()
     const = 0;
+  virtual std::string fully_qualified_name() const = 0;
+
+  // Returns a parent context, which contains context of the searched type.
+  virtual const sema_context*
+  find_ctx_for_type_lookup( // Todo: change name to something like
+                            // find_ctx_containing_type
+    const ast::type_representation& name) const = 0;
+  virtual const sema_context* find_ctx_containing_type(
+    const std::string& name) const = 0;
+  virtual const sema_context* parent() const = 0;
 };
 }
 }

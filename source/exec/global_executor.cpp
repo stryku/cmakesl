@@ -26,6 +26,7 @@ global_executor::global_executor(const std::string& root_path,
                                  facade::cmake_facade& cmake_facade)
   : m_root_path{ root_path }
   , m_cmake_facade{ cmake_facade }
+  , m_type_factory{ m_types_context }
 {
   m_cmake_facade.go_into_subdirectory(m_root_path);
 }
@@ -34,8 +35,10 @@ global_executor::~global_executor() = default;
 
 int global_executor::execute(std::string source)
 {
-  source_compiler compiler{ m_errors_observer, m_type_factory,
-                            m_function_factory, m_context_factory, *this };
+  source_compiler compiler{
+    m_errors_observer, m_type_factory, m_function_factory,
+    m_context_factory, *this,          m_types_context
+  };
   const auto source_path = m_root_path + "/CMakeLists.cmsl";
   const auto src_view = source_view{ source_path, source };
 
@@ -45,6 +48,8 @@ int global_executor::execute(std::string source)
     raise_unsuccessful_compilation_error(source_path);
     return -1;
   }
+
+  const auto builtin_types = compiled->builtin_types();
 
   const auto main_function = compiled->get_main();
   if (!main_function) {
@@ -57,7 +62,7 @@ int global_executor::execute(std::string source)
   const auto casted =
     dynamic_cast<const sema::user_sema_function*>(main_function);
 
-  execution e{ m_cmake_facade };
+  execution e{ m_cmake_facade, compiled->builtin_types() };
 
   const auto translation_unit =
     dynamic_cast<const sema::translation_unit_node*>(&compiled->sema_tree());
@@ -65,7 +70,7 @@ int global_executor::execute(std::string source)
 
   m_compiled_sources.emplace_back(std::move(compiled));
 
-  inst::instances_holder instances{ global_context };
+  inst::instances_holder instances{ builtin_types };
   auto main_result = e.call(*casted, {}, instances);
   return main_result->value_cref().get_int();
 }
@@ -90,8 +95,10 @@ const sema::sema_function* global_executor::handle_add_subdirectory(
 
   m_sources.emplace_back(std::move(source));
 
-  source_compiler compiler{ m_errors_observer, m_type_factory,
-                            m_function_factory, m_context_factory, *this };
+  source_compiler compiler{
+    m_errors_observer, m_type_factory, m_function_factory,
+    m_context_factory, *this,          m_types_context
+  };
 
   auto compiled = compiler.compile(src_view);
   const auto main_function = compiled->get_main();

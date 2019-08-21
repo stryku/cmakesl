@@ -57,11 +57,12 @@ private:
     ident_guard(const ident_guard&) = delete;
     ident_guard& operator=(const ident_guard&) = delete;
 
-    ident_guard(ident_guard&&) = default;
-    ident_guard& operator=(ident_guard&&) = default;
+    ident_guard(ident_guard&& other);
+    ident_guard& operator=(ident_guard&& other);
 
   private:
     std::string& m_ident;
+    bool m_valid{ true };
   };
 
   ident_guard ident();

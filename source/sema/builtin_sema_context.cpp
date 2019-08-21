@@ -14,12 +14,15 @@ builtin_sema_context::builtin_sema_context(
   sema_type_factory& type_factory, sema_function_factory& function_factory,
   sema_context_factory& context_factory,
   errors::errors_observer& errors_observer,
-  const builtin_token_provider& builtin_token_provider)
-  : m_type_factory{ type_factory }
+  const builtin_token_provider& builtin_token_provider,
+  types_context& types_ctx)
+  : sema_context_impl{ "" }
+  , m_type_factory{ type_factory }
   , m_function_factory{ function_factory }
   , m_context_factory{ context_factory }
   , m_errors_observer{ errors_observer }
   , m_builtin_token_provider{ builtin_token_provider }
+  , m_types_ctx{ types_ctx }
 {
   add_types();
   add_functions();
@@ -51,7 +54,38 @@ void builtin_sema_context::add_types()
   auto library_manipulator = add_library_type();
   auto executable_manipulator = add_executable_type();
   auto project_manipulator = add_project_type();
-  add_void_type();
+  auto void_manipulator = add_void_type();
+
+  const auto& [void_, _] = void_manipulator.built_type();
+  const auto& [bool_, bool_ref] = bool_manipulator.built_type();
+  const auto& [int_, int_ref] = int_manipulator.built_type();
+  const auto& [double_, double_ref] = double_manipulator.built_type();
+  const auto& [string, string_ref] = string_manipulator.built_type();
+  const auto& [version, version_ref] = version_manipulator.built_type();
+  const auto& [library, library_ref] = library_manipulator.built_type();
+  const auto& [executable, executable_ref] =
+    executable_manipulator.built_type();
+  const auto& [project, project_ref] = project_manipulator.built_type();
+
+  const auto types = builtin_types_accessor{ .void_ = void_,
+                                             .bool_ = bool_,
+                                             .bool_ref = bool_ref,
+                                             .int_ = int_,
+                                             .int_ref = int_ref,
+                                             .double_ = double_,
+                                             .double_ref = double_ref,
+                                             .string = string,
+                                             .string_ref = string_ref,
+                                             .version = version,
+                                             .version_ref = version_ref,
+                                             .library = library,
+                                             .library_ref = library_ref,
+                                             .executable = executable,
+                                             .executable_ref = executable_ref,
+                                             .project = project,
+                                             .project_ref = project_ref };
+
+  m_builtin_types = std::make_unique<builtin_types_accessor>(types);
 
   add_bool_member_functions(bool_manipulator);
   add_int_member_functions(int_manipulator);
@@ -65,9 +99,8 @@ void builtin_sema_context::add_types()
 
 void builtin_sema_context::add_functions()
 {
-  const auto types_finder = builtin_types_finder{ *this };
-  const auto& version_type = types_finder.find_version();
-  const auto& void_type = types_finder.find_void();
+  const auto& version_type = m_builtin_types->version;
+  const auto& void_type = m_builtin_types->void_;
 
   const auto functions = { builtin_function_info{
     // void cmake_minimum_required(version)
@@ -104,11 +137,10 @@ type_builder builtin_sema_context::add_bool_type()
 void builtin_sema_context::add_bool_member_functions(
   type_builder& bool_manipulator)
 {
-  const auto types_finder = builtin_types_finder{ *this };
-  const auto& int_type = types_finder.find_int();
-  const auto& bool_type = types_finder.find_bool();
-  const auto& string_type = types_finder.find_string();
-  const auto& bool_reference_type = types_finder.find_reference_for(bool_type);
+  const auto& int_type = m_builtin_types->int_;
+  const auto& bool_type = m_builtin_types->bool_;
+  const auto& string_type = m_builtin_types->string;
+  const auto& bool_reference_type = m_builtin_types->bool_ref;
 
   const auto token_provider = m_builtin_token_provider.bool_();
 
@@ -177,12 +209,11 @@ type_builder builtin_sema_context::add_int_type()
 void builtin_sema_context::add_int_member_functions(
   type_builder& int_manipulator)
 {
-  const auto types_finder = builtin_types_finder{ *this };
-  const auto& int_type = types_finder.find_int();
-  const auto& int_reference_type = types_finder.find_reference_for(int_type);
-  const auto& bool_type = types_finder.find_bool();
-  const auto& double_type = types_finder.find_double();
-  const auto& string_type = types_finder.find_string();
+  const auto& int_type = m_builtin_types->int_;
+  const auto& int_reference_type = m_builtin_types->int_ref;
+  const auto& bool_type = m_builtin_types->bool_;
+  const auto& double_type = m_builtin_types->double_;
+  const auto& string_type = m_builtin_types->string;
 
   const auto token_provider = m_builtin_token_provider.int_();
 
@@ -328,13 +359,11 @@ type_builder builtin_sema_context::add_double_type()
 void builtin_sema_context::add_double_member_functions(
   type_builder& double_manipulator)
 {
-  const auto types_finder = builtin_types_finder{ *this };
-  const auto& int_type = types_finder.find_int();
-  const auto& bool_type = types_finder.find_bool();
-  const auto& double_type = types_finder.find_double();
-  const auto& double_reference_type =
-    types_finder.find_reference_for(double_type);
-  const auto& string_type = types_finder.find_string();
+  const auto& int_type = m_builtin_types->int_;
+  const auto& bool_type = m_builtin_types->bool_;
+  const auto& double_type = m_builtin_types->double_;
+  const auto& double_reference_type = m_builtin_types->double_ref;
+  const auto& string_type = m_builtin_types->string;
 
   const auto token_provider = m_builtin_token_provider.double_();
 
@@ -465,13 +494,11 @@ type_builder builtin_sema_context::add_string_type()
 void builtin_sema_context::add_string_member_functions(
   type_builder& string_manipulator)
 {
-  const auto types_finder = builtin_types_finder{ *this };
-  const auto& int_type = types_finder.find_int();
-  const auto& bool_type = types_finder.find_bool();
-  const auto& string_type = types_finder.find_string();
-  const auto& string_reference_type =
-    types_finder.find_reference_for(string_type);
-  const auto& void_type = types_finder.find_string();
+  const auto& int_type = m_builtin_types->int_;
+  const auto& bool_type = m_builtin_types->bool_;
+  const auto& string_type = m_builtin_types->string;
+  const auto& string_reference_type = m_builtin_types->string_ref;
+  const auto& void_type = m_builtin_types->string;
 
   const auto token_provider = m_builtin_token_provider.string();
 
@@ -726,11 +753,10 @@ type_builder builtin_sema_context::add_version_type()
 void builtin_sema_context::add_version_member_functions(
   type_builder& string_manipulator)
 {
-  const auto types_finder = builtin_types_finder{ *this };
-  const auto& int_type = types_finder.find_int();
-  const auto& bool_type = types_finder.find_bool();
-  const auto& string_type = types_finder.find_string();
-  const auto& version_type = types_finder.find_version();
+  const auto& int_type = m_builtin_types->int_;
+  const auto& bool_type = m_builtin_types->bool_;
+  const auto& string_type = m_builtin_types->string;
+  const auto& version_type = m_builtin_types->version;
 
   const auto token_provider = m_builtin_token_provider.version();
 
@@ -845,23 +871,25 @@ type_builder builtin_sema_context::add_project_type()
 void builtin_sema_context::add_project_member_functions(
   type_builder& project_manipulator)
 {
-  const auto types_finder = builtin_types_finder{ *this };
-  const auto& string_type = types_finder.find_string();
-  const auto& project_type = types_finder.find_project();
-  const auto& library_type = types_finder.find_library();
-  const auto& executable_type = types_finder.find_executable();
+  const auto& string_type = m_builtin_types->string;
+  const auto& project_type = m_builtin_types->project;
+  const auto& library_type = m_builtin_types->library;
+  const auto& executable_type = m_builtin_types->executable;
 
   const auto token_provider = m_builtin_token_provider.project();
 
   const auto string_token = make_token(token_type_t::kw_string, "string");
   const auto string_type_representation =
-    ast::type_representation{ string_token };
+    ast::type_representation{ ast::qualified_name{ string_token } };
+
+  auto generic_name = ast::type_representation::generic_type_name{
+    { make_token(token_type_t::kw_list, "list"),
+      make_token(token_type_t::less, "<"), string_token,
+      make_token(token_type_t::greater, ">") },
+    { string_type_representation }
+  };
   const auto sources_list_type_name_representation =
-    ast::type_representation{ { make_token(token_type_t::kw_list, "list"),
-                                make_token(token_type_t::less, "<"),
-                                string_token,
-                                make_token(token_type_t::greater, ">") },
-                              { string_type_representation } };
+    ast::type_representation{ generic_name };
   const auto& sources_type =
     get_or_create_generic_type(sources_list_type_name_representation);
 
@@ -907,10 +935,9 @@ type_builder builtin_sema_context::add_library_type()
 void builtin_sema_context::add_library_member_functions(
   type_builder& project_manipulator)
 {
-  const auto types_finder = builtin_types_finder{ *this };
-  const auto& string_type = types_finder.find_string();
-  const auto& library_type = types_finder.find_library();
-  const auto& void_type = types_finder.find_void();
+  const auto& string_type = m_builtin_types->string;
+  const auto& library_type = m_builtin_types->library;
+  const auto& void_type = m_builtin_types->void_;
 
   const auto token_provider = m_builtin_token_provider.library();
 
@@ -940,10 +967,9 @@ type_builder builtin_sema_context::add_executable_type()
 void builtin_sema_context::add_executable_member_functions(
   type_builder& project_manipulator)
 {
-  const auto types_finder = builtin_types_finder{ *this };
-  const auto& string_type = types_finder.find_string();
-  const auto& library_type = types_finder.find_library();
-  const auto& void_type = types_finder.find_void();
+  const auto& string_type = m_builtin_types->string;
+  const auto& library_type = m_builtin_types->library;
+  const auto& void_type = m_builtin_types->void_;
 
   const auto token_provider = m_builtin_token_provider.executable();
 
@@ -977,21 +1003,29 @@ const sema_type& builtin_sema_context::get_or_create_generic_type(
                                             m_function_factory,
                                             m_context_factory,
                                             m_errors_observer,
-                                            m_builtin_token_provider };
+                                            m_builtin_token_provider,
+                                            *m_builtin_types,
+                                            m_types_ctx };
   return *factory.create_generic(type_representation);
 }
-void builtin_sema_context::add_void_type()
+type_builder builtin_sema_context::add_void_type()
 {
   static const auto token = m_builtin_token_provider.void_().name();
-  add_type(token);
+  return add_type(token);
 }
 
 type_builder builtin_sema_context::add_type(lexer::token name_token)
 {
-  const auto name_representation = ast::type_representation{ name_token };
+  const auto name_representation =
+    ast::type_representation{ ast::qualified_name{ name_token } };
   type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
                         *this, name_representation };
   builder.build_builtin_and_register_in_context();
   return builder;
+}
+
+builtin_types_accessor builtin_sema_context::builtin_types() const
+{
+  return *m_builtin_types;
 }
 }

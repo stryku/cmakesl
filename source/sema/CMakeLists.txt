@@ -25,6 +25,7 @@ set(SEMA_SOURCES
     builtin_sema_function.hpp
     builtin_token_provider.cpp
     builtin_token_provider.hpp
+    builtin_types_accessor.hpp
     builtin_types_finder.hpp
     dumper.cpp
     dumper.hpp
@@ -38,6 +39,7 @@ set(SEMA_SOURCES
     identifiers_context.hpp
     overload_resolution.cpp
     overload_resolution.hpp
+    qualified_entries_finder.hpp
     sema_builder.cpp
     sema_builder.hpp
     sema_builder_ast_visitor.cpp
@@ -56,6 +58,8 @@ set(SEMA_SOURCES
     type_builder.cpp
     type_builder.hpp
     type_member_info.hpp
+    types_context.cpp
+    types_context.hpp
     user_sema_function.hpp
     variable_initialization_checker.cpp
     variable_initialization_checker.hpp
