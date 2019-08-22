@@ -31,8 +31,13 @@ set(SEMA_SOURCES
     dumper.hpp
     factories.cpp
     factories.hpp
+    failed_initialization_errors_reporters.cpp
+    failed_initialization_errors_reporters.hpp
     function_lookup_result.hpp
+    function_signature.cpp
     function_signature.hpp
+    functions_context.cpp
+    functions_context.hpp
     homogeneous_generic_type.cpp
     homogeneous_generic_type.hpp
     identifiers_context.cpp
@@ -63,8 +68,6 @@ set(SEMA_SOURCES
     user_sema_function.hpp
     variable_initialization_checker.cpp
     variable_initialization_checker.hpp
-    failed_initialization_errors_reporters.cpp
-    failed_initialization_errors_reporters.hpp
     variable_initialization_issue.hpp
 
     ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp

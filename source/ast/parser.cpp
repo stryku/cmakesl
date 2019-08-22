@@ -532,7 +532,7 @@ std::unique_ptr<ast_node> parser::parse_operator(unsigned precedence)
                                                        *member_name);
       } else // class member function call
       {
-        auto vals = get_function_call_values();
+        auto vals = get_member_function_call_values();
         if (!vals) {
           return nullptr;
         }
@@ -578,8 +578,38 @@ bool parser::current_is_class_member_access() const
 
 bool parser::current_is_function_call() const
 {
-  return current_is_name_of_function_call() &&
-    next_is(token_type_t::open_paren);
+  if (!current_is_name_of_function_call()) {
+    if (!current_is(token_type_t::coloncolon)) {
+      return false;
+    }
+  }
+
+  auto counter = 0u;
+
+  // If global access, e.g. ::foo::bar::...
+  if (!current_is_name_of_function_call()) {
+    // Skip the global ::.
+    ++counter;
+  }
+
+  while (is_name_of_function_call(peek(counter))) {
+    // Skip the name.
+    ++counter;
+
+    const auto next_type = peek(counter);
+    if (next_type == token_type_t::open_paren) {
+      return true;
+    }
+
+    if (next_type != token_type_t::coloncolon) {
+      return false;
+    }
+
+    // Skip the ::.
+    ++counter;
+  }
+
+  return false;
 }
 
 bool parser::current_is_fundamental_value() const
@@ -661,7 +691,7 @@ std::unique_ptr<ast_node> parser::parse_expr()
         std::move(operator_expr), *dot, *member_name);
     } else // class member function call
     {
-      auto vals = get_function_call_values();
+      auto vals = get_member_function_call_values();
 
       if (!vals) {
         return nullptr;
@@ -678,21 +708,48 @@ std::unique_ptr<ast_node> parser::parse_expr()
   return operator_expr;
 }
 
-std::optional<parser::function_call_values> parser::get_function_call_values()
+std::optional<parser::member_function_call_values>
+parser::get_member_function_call_values()
 {
-  function_call_values vals;
+  member_function_call_values vals;
 
   const auto name = *eat_function_call_name();
   auto params = parameter_list();
   if (!params) {
-    return {};
+    return std::nullopt;
   }
 
   std::move(*params);
 
-  return function_call_values{ name, params->open_paren,
-                               std::move(params->params),
-                               params->close_paren };
+  return member_function_call_values{
+    params->open_paren,
+    std::move(params->params),
+    params->close_paren,
+    name,
+  };
+}
+
+std::optional<parser::standalone_function_call_values>
+parser::get_standalone_function_call_values()
+{
+  standalone_function_call_values vals;
+
+  auto names = parse_possibly_qualified_name();
+  if (!names) {
+    return std::nullopt;
+  }
+
+  auto params = parameter_list();
+  if (!params) {
+    return std::nullopt;
+  }
+
+  std::move(*params);
+
+  return standalone_function_call_values{ params->open_paren,
+                                          std::move(params->params),
+                                          params->close_paren,
+                                          std::move(*names) };
 }
 
 std::optional<std::vector<std::unique_ptr<ast_node>>>
@@ -744,13 +801,14 @@ std::optional<parser::call_param_list_values> parser::parameter_list()
 
 std::unique_ptr<ast_node> parser::function_call()
 {
-  auto vals = get_function_call_values();
+  auto vals = get_standalone_function_call_values();
   if (!vals) {
     return nullptr;
   }
 
   return std::make_unique<function_call_node>(
-    vals->name, vals->open_paren, std::move(vals->params), vals->close_paren);
+    std::move(vals->names), vals->open_paren, std::move(vals->params),
+    vals->close_paren);
 }
 
 bool parser::function_declaration_starts() const

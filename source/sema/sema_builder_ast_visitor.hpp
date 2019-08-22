@@ -42,7 +42,7 @@ class block_node;
 class return_node;
 class sema_context_impl;
 struct function_signature;
-class type_references_container;
+class functions_context;
 
 struct function_parsing_context
 {
@@ -73,8 +73,8 @@ public:
   explicit sema_builder_ast_visitor(
     sema_context& generic_types_context, sema_context& ctx,
     errors::errors_observer& errs, identifiers_context& ids_context,
-    types_context& ty_context, sema_type_factory& type_factory,
-    sema_function_factory& function_factory,
+    types_context& ty_context, functions_context& functions_ctx,
+    sema_type_factory& type_factory, sema_function_factory& function_factory,
     sema_context_factory& context_factory,
     add_subdirectory_handler& add_subdirectory_handler,
     const builtin_token_provider& builtin_token_provider,
@@ -107,6 +107,9 @@ public:
   void visit(const ast::designated_initializers_node& node) override;
 
 private:
+  function_lookup_result_t find_functions(
+    const std::vector<ast::name_with_coloncolon>& names);
+
   const sema_type* try_get_or_create_generic_type(
     const sema_context& search_context, const ast::type_representation& name);
 
@@ -126,6 +129,8 @@ private:
   void raise_error(const lexer::token& token, const std::string& message);
   void raise_error(const source_view& source, const source_range& src_range,
                    const std::string& message);
+  // Returns true if redefined.
+  bool raise_error_if_function_redefined(const function_signature& signature);
 
   void notify_error_observer(const source_view& source,
                              const source_range& src_range,
@@ -219,6 +224,7 @@ private:
   errors::errors_observer& m_errors_observer;
   identifiers_context& m_ids_context;
   types_context& m_types_context;
+  functions_context& m_functions_context;
   sema_type_factory& m_type_factory;
   sema_function_factory& m_function_factory;
   sema_context_factory& m_context_factory;

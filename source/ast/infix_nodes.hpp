@@ -116,11 +116,16 @@ private:
 class function_call_node : public call_node
 {
 public:
-  explicit function_call_node(token_t name, token_t open_paren,
-                              params_t params, token_t close_paren)
-    : call_node{ name, open_paren, std::move(params), close_paren }
+  explicit function_call_node(std::vector<name_with_coloncolon> names,
+                              token_t open_paren, params_t params,
+                              token_t close_paren)
+    : call_node{ names.back().name, open_paren, std::move(params),
+                 close_paren }
+    , m_names{ std::move(names) }
   {
   }
+
+  const std::vector<name_with_coloncolon>& names() const { return m_names; }
 
   void visit(ast_node_visitor& visitor) const override
   {
@@ -136,6 +141,9 @@ public:
   {
     return close_paren().src_range().end;
   }
+
+private:
+  std::vector<name_with_coloncolon> m_names;
 };
 
 class member_function_call_node : public call_node

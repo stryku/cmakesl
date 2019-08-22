@@ -13,23 +13,33 @@ void types_context_impl::register_type(const lexer::token& name,
 const sema_type* types_context_impl::find(
   const std::vector<ast::name_with_coloncolon>& names) const
 {
-  const auto found = m_types_finder.find(names);
-  if (!found) {
+  const auto found_entries = m_types_finder.find(names);
+  if (found_entries.empty()) {
     return nullptr;
   }
 
-  return &found->entry.ty;
+  // At this point the only entries in the vector should be the type and its
+  // reference. Return the type that is not the reference.
+  if (!found_entries[0].entry.ty.is_reference()) {
+    return &found_entries[0].entry.ty;
+  } else {
+    return &found_entries[1].entry.ty;
+  }
 }
 
 const sema_type* types_context_impl::find_in_current_scope(
   const lexer::token& name) const
 {
-  const auto found = m_types_finder.find_in_current_node(name);
-  if (!found) {
+  const auto found_entries = m_types_finder.find_in_current_node(name);
+  if (found_entries.empty()) {
     return nullptr;
   }
 
-  return &found->entry.ty;
+  if (!found_entries[0].entry.ty.is_reference()) {
+    return &found_entries[0].entry.ty;
+  } else {
+    return &found_entries[1].entry.ty;
+  }
 }
 
 void types_context_impl::enter_global_ctx(const lexer::token& name)

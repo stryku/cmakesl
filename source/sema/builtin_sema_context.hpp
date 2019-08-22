@@ -21,7 +21,6 @@ class sema_type_factory;
 class sema_context_factory;
 enum class builtin_function_kind;
 class type_builder;
-class type_references_container;
 class types_context;
 
 class builtin_sema_context : public sema_context_impl

@@ -15,6 +15,7 @@ class sema_type_factory;
 class sema_function_factory;
 class sema_context_factory;
 class types_context;
+class functions_context;
 }
 
 namespace exec {
@@ -29,7 +30,7 @@ public:
     sema::sema_function_factory& function_factory,
     sema::sema_context_factory& context_factory,
     sema::add_subdirectory_handler& add_subdirectory_handler,
-    sema::types_context& types_ctx);
+    sema::types_context& types_ctx, sema::functions_context& functions_ctx);
 
   std::unique_ptr<compiled_source> compile(source_view source);
 
@@ -40,6 +41,7 @@ private:
   sema::sema_context_factory& m_context_factory;
   sema::add_subdirectory_handler& m_add_subdirectory_handler;
   sema::types_context& m_types_ctx;
+  sema::functions_context& m_functions_ctx;
 };
 }
 }

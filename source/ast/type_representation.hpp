@@ -43,28 +43,6 @@ public:
   {
   };
 
-  //  explicit type_representation(
-  //    qualified_name_t qualified_name, lexer::token primary_name,
-  //    lexer::token reference_token,
-  //    std::vector<type_representation> nested_types = {});
-  //  explicit type_representation(
-  //    qualified_name_t qualified_name, lexer::token_container_t tokens,
-  //    lexer::token reference_token,
-  //    std::vector<type_representation> nested_types = {});
-  //
-  //  explicit type_representation(
-  //    qualified_name_t qualified_name, lexer::token primary_name,
-  //    is_reference_tag, std::vector<type_representation> nested_types = {});
-  //  explicit type_representation(
-  //    qualified_name_t qualified_name, lexer::token_container_t tokens,
-  //    is_reference_tag, std::vector<type_representation> nested_types = {});
-  //  explicit type_representation(
-  //    qualified_name_t qualified_name, lexer::token primary_name,
-  //    std::vector<type_representation> nested_types = {});
-  //  explicit type_representation(
-  //    qualified_name_t qualified_name, lexer::token_container_t tokens,
-  //    std::vector<type_representation> nested_types = {});
-
   explicit type_representation(lexer::token name);
   type_representation(lexer::token name, is_reference_tag);
 
@@ -77,7 +55,6 @@ public:
   explicit type_representation(name_t name);
   type_representation(name_t name, is_reference_tag);
 
-  //  lexer::token primary_name() const;
   const std::vector<type_representation>& nested_types() const;
   lexer::token_container_t tokens() const;
   const qualified_name& qual_name() const;
@@ -103,14 +80,8 @@ public:
 
 private:
   name_t m_name;
-
-  //  qualified_name_t m_qualified_name;
-  //  lexer::token_container_t m_tokens;
   std::optional<lexer::token> m_reference_token;
   bool m_is_reference{ false };
-
-  // 'template parameters' of generic types.
-  //  std::vector<type_representation> m_nested_types;
 };
 }
 

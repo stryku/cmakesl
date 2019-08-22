@@ -13,6 +13,7 @@ public:
   virtual void register_type(const lexer::token& name,
                              const sema_type& ty) = 0;
 
+  // Returns the non-reference type.
   virtual const sema_type* find(
     const std::vector<ast::name_with_coloncolon>& names) const = 0;
 

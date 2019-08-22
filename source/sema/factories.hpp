@@ -25,7 +25,6 @@ class sema_function;
 class sema_type;
 struct member_info;
 class type_builder;
-class type_references_container;
 class types_context;
 
 template <typename StoredType>
