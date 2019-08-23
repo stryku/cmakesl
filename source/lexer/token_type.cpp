@@ -139,4 +139,30 @@ std::string to_string(lexer::token_type type)
       return "UNDEFINED";
   }
 }
+
+namespace lexer {
+
+namespace details {
+bool is_between(token_type begin, token_type end, token_type value)
+{
+  const auto int_value = static_cast<int>(value);
+
+  return static_cast<int>(begin) < int_value &&
+    int_value < static_cast<int>(end);
+}
+}
+
+bool is_builtin_type(token_type type)
+{
+  return details::is_between(token_type::_builtin_types_begin,
+                             token_type::_builtin_types_end, type);
+}
+
+bool is_unary_operator(token_type type)
+{
+  return details::is_between(token_type::_unary_operators_begin,
+                             token_type::_unary_operators_end, type);
+}
+}
+
 }
