@@ -28,11 +28,11 @@ public:
   // Todo: use small vector
   const sema_function* choose(
     const function_lookup_result_t& functions,
-    const std::vector<std::unique_ptr<expression_node>>& call_parameters)
+    const std::vector<std::unique_ptr<expression_node>>& call_parameters = {})
     const;
   const sema_function* choose(
     const single_scope_function_lookup_result_t& functions,
-    const std::vector<std::unique_ptr<expression_node>>& call_parameters)
+    const std::vector<std::unique_ptr<expression_node>>& call_parameters = {})
     const;
   const sema_function* choose(
     const single_scope_function_lookup_result_t& functions,
@@ -51,19 +51,6 @@ private:
       unsigned got{ 0u };
     };
 
-    //    struct param_types_dont_match
-    //    {
-    //      struct mismatched_type_info
-    //      {
-    //        unsigned position;
-    //        const sema_type& expected;
-    //        const sema_type& got;
-    //      };
-    //
-    //       Todo: use small vector
-    //      std::vector<mismatched_type_info> info;
-    //    };
-
     struct params_initialization_failed
     {
       struct param_initialization_info
@@ -79,7 +66,6 @@ private:
 
   using match_result_variant_t =
     std::variant<match_result::ok, match_result::wrong_parameters_count,
-                 //                 match_result::param_types_dont_match,
                  match_result::params_initialization_failed>;
 
   struct function_match_result

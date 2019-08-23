@@ -50,6 +50,8 @@ private:
                                           const params_t& params);
   inst::instance* bool_operator_amp_amp(inst::instance& instance,
                                         const params_t& params);
+  inst::instance* bool_operator_unary_exclaim(inst::instance& instance,
+                                              const params_t& params);
   inst::instance* bool_to_string(inst::instance& instance,
                                  const params_t& params);
 
@@ -62,8 +64,14 @@ private:
                                   const params_t& params);
   inst::instance* int_operator_plus(inst::instance& instance,
                                     const params_t& params);
+  inst::instance* int_operator_unary_plusplus(inst::instance& instance,
+                                              const params_t& params);
   inst::instance* int_operator_minus(inst::instance& instance,
                                      const params_t& params);
+  inst::instance* int_operator_unary_minus(inst::instance& instance,
+                                           const params_t& params);
+  inst::instance* int_operator_unary_minusminus(inst::instance& instance,
+                                                const params_t& params);
   inst::instance* int_operator_star(inst::instance& instance,
                                     const params_t& params);
   inst::instance* int_operator_slash(inst::instance& instance,
@@ -99,8 +107,14 @@ private:
                                   const params_t& params);
   inst::instance* double_operator_plus(inst::instance& instance,
                                        const params_t& params);
+  inst::instance* double_operator_unary_plusplus(inst::instance& instance,
+                                                 const params_t& params);
   inst::instance* double_operator_minus(inst::instance& instance,
                                         const params_t& params);
+  inst::instance* double_operator_unary_minus(inst::instance& instance,
+                                              const params_t& params);
+  inst::instance* double_operator_unary_minusminus(inst::instance& instance,
+                                                   const params_t& params);
   inst::instance* double_operator_star(inst::instance& instance,
                                        const params_t& params);
   inst::instance* double_operator_slash(inst::instance& instance,

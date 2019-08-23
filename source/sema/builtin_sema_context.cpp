@@ -191,6 +191,11 @@ void builtin_sema_context::add_bool_member_functions(
         token_provider.operator_amp_amp(),
         { parameter_declaration{ bool_type, make_id_token("") } } },
       builtin_function_kind::bool_operator_amp_amp },
+    builtin_function_info{
+      // operator!()
+      bool_type,
+      function_signature{ token_provider.operator_unary_exclaim(), {} },
+      builtin_function_kind::bool_operator_unary_exclaim },
     builtin_function_info{ // to_string()
                            string_type,
                            function_signature{ token_provider.to_string() },
@@ -255,12 +260,27 @@ void builtin_sema_context::add_int_member_functions(
         { parameter_declaration{ int_type, make_id_token("") } } },
       builtin_function_kind::int_operator_plus },
     builtin_function_info{
+      // operator++()
+      int_reference_type,
+      function_signature{ token_provider.operator_unary_plusplus(), {} },
+      builtin_function_kind::int_operator_unary_plusplus },
+    builtin_function_info{
       // operator-(int)
       int_type,
       function_signature{
         token_provider.operator_minus(),
         { parameter_declaration{ int_type, make_id_token("") } } },
       builtin_function_kind::int_operator_minus },
+    builtin_function_info{
+      // operator-()
+      int_type,
+      function_signature{ token_provider.operator_unary_minus(), {} },
+      builtin_function_kind::int_operator_unary_minus },
+    builtin_function_info{
+      // operator--()
+      int_reference_type,
+      function_signature{ token_provider.operator_unary_minusminus(), {} },
+      builtin_function_kind::int_operator_unary_minusminus },
     builtin_function_info{
       // operator*(int)
       int_type,
@@ -394,12 +414,27 @@ void builtin_sema_context::add_double_member_functions(
         { parameter_declaration{ double_type, make_id_token("") } } },
       builtin_function_kind::double_operator_plus },
     builtin_function_info{
+      // operator++()
+      double_reference_type,
+      function_signature{ token_provider.operator_unary_plusplus(), {} },
+      builtin_function_kind::double_operator_unary_plusplus },
+    builtin_function_info{
       // operator-(double)
       double_type,
       function_signature{
         token_provider.operator_minus(),
         { parameter_declaration{ double_type, make_id_token("") } } },
       builtin_function_kind::double_operator_minus },
+    builtin_function_info{
+      // operator-()
+      double_type,
+      function_signature{ token_provider.operator_unary_minus(), {} },
+      builtin_function_kind::double_operator_unary_minus },
+    builtin_function_info{
+      // operator--()
+      double_reference_type,
+      function_signature{ token_provider.operator_unary_minusminus(), {} },
+      builtin_function_kind::double_operator_unary_minusminus },
     builtin_function_info{
       // operator*(double)
       double_type,

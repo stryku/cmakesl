@@ -2074,4 +2074,50 @@ TEST_F(SemaBuilderAstVisitorTest,
   ASSERT_THAT(visitor.m_result_node, IsNull());
 }
 
+TEST_F(SemaBuilderAstVisitorTest, Visit_UnaryOperatorNode)
+{
+  // -foo
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  StrictMock<sema_function_mock> operator_function;
+  StrictMock<types_context_mock> types_ctx;
+  StrictMock<functions_context_mock> functions_ctx;
+  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
+                                                  types_ctx, functions_ctx);
+
+  const sema_type foo_type{
+    ctx, ast::type_representation{ token_identifier("foo_type") }, {}
+  };
+  const auto foo_token = token_identifier("foo");
+  auto foo_node = create_ast_id_node(foo_token);
+
+  const auto operator_token = token_minus();
+
+  ast::unary_operator node{ operator_token, std::move(foo_node) };
+
+  auto expected_info = identifiers_context::identifier_info{ foo_type, 0u };
+  EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(expected_info));
+
+  const auto expected_signature = function_signature{ operator_token, {} };
+  EXPECT_CALL(operator_function, signature())
+    .WillOnce(ReturnRef(expected_signature));
+
+  EXPECT_CALL(operator_function, return_type()).WillOnce(ReturnRef(foo_type));
+
+  // Find operator member function.
+  const auto lookup_result =
+    single_scope_function_lookup_result_t{ &operator_function };
+  EXPECT_CALL(ctx, find_function_in_this_scope(operator_token))
+    .WillOnce(Return(lookup_result));
+
+  visitor.visit(node);
+
+  ASSERT_THAT(visitor.m_result_node, NotNull());
+
+  const auto casted_node =
+    dynamic_cast<unary_operator_node*>(visitor.m_result_node.get());
+  ASSERT_THAT(casted_node, NotNull());
+  EXPECT_THAT(&casted_node->type(), Eq(&foo_type));
+}
 }

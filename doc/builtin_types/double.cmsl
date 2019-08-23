@@ -30,6 +30,14 @@ public:
    */
   double operator+(double value);
 
+  /** \brief Pre-increment operator.
+   *
+   * Increments value of the currently held value.
+   *
+   * \return A reference to the lhs instance.
+   */
+  double& operator++();
+
   /** \brief Subtraction operator.
    *
    * Subtracts value of rhs from value of lhs and returns a new double
@@ -39,6 +47,22 @@ public:
    * \return A new double with the subtraction result.
    */
   double operator-(double value);
+
+  /** \brief Unary minus operator.
+   *
+   * Produces negated value of currently held value.
+   *
+   * \return A new int with a negation of currently held value.
+   */
+  double operator-();
+
+  /** \brief Pre-decrement operator.
+   *
+   * Decrements value of the currently held value.
+   *
+   * \return A reference to the lhs instance.
+   */
+  double& operator--();
 
   /** \brief Multiplication operator.
    *

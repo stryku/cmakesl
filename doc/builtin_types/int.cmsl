@@ -51,6 +51,15 @@ public:
    */
   int operator+(int rhs);
 
+  /** \brief Pre-increment operator.
+   *
+   * Increments value of the currently held value. Behaviour is undefined in
+   * case of overflow.
+   *
+   * \return A reference to the lhs instance.
+   */
+  int& operator++();
+
   /** \brief Subtraction operator.
    *
    * Substracts value of rhs from value of lhs and returns a new int
@@ -60,6 +69,23 @@ public:
    * \return A new int with the subtraction result.
    */
   int operator-(int rhs);
+
+  /** \brief Unary minus operator.
+   *
+   * Produces negated value of currently held value.
+   *
+   * \return A new int with a negation of currently held value.
+   */
+  int operator-();
+
+  /** \brief Pre-decrement operator.
+   *
+   * Decrements value of the currently held value. Behavious is undefined in
+   * case of underflow.
+   *
+   * \return A reference to the lhs instance.
+   */
+  int& operator--();
 
   /** \brief Multiplication operator.
    *

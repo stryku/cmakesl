@@ -87,6 +87,26 @@ TEST_F(BoolTypeSmokeTest, OperatorPipePipe)
   EXPECT_THAT(result, Eq(1));
 }
 
+TEST_F(BoolTypeSmokeTest, OperatorUnaryExclaimFalse)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    return int(!false);"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(1));
+}
+
+TEST_F(BoolTypeSmokeTest, OperatorUnaryExclaimTrue)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    return int(!true);"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(0));
+}
+
 TEST_F(BoolTypeSmokeTest, OperatorAmpAmp)
 {
   const auto source = "int main()"

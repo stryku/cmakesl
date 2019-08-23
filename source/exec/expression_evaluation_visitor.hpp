@@ -198,6 +198,19 @@ public:
     result = instance;
   }
 
+  void visit(const sema::unary_operator_node& node) override
+  {
+    auto lhs_result = evaluate_child(node.expression());
+    const auto& operator_function = node.function();
+
+    // Todo: use small vector.
+    std::vector<inst::instance*> params;
+    auto result_instance = m_ctx.caller.call_member(
+      *lhs_result, operator_function, std::move(params), m_ctx.instances);
+    result = result_instance.get();
+    m_ctx.instances.store(std::move(result_instance));
+  }
+
 public:
   inst::instance* result;
 

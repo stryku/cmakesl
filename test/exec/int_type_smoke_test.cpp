@@ -72,11 +72,55 @@ TEST_F(IntTypeSmokeTest, OperatorPlus)
   EXPECT_THAT(result, Eq(42));
 }
 
+TEST_F(IntTypeSmokeTest, OperatorPlusPlus)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    int foo = 40;"
+                      "    ++foo;"
+                      "    return ++foo;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
 TEST_F(IntTypeSmokeTest, OperatorMinus)
 {
   const auto source = "int main()"
                       "{"
                       "    return 100 - 58;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(IntTypeSmokeTest, OperatorUnaryMinus)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    return -42;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(-42));
+}
+
+TEST_F(IntTypeSmokeTest, OperatorUnaryMinusAsFactor)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    return 100 + -58;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(IntTypeSmokeTest, OperatorMinusMinus)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    int foo = 44;"
+                      "    --foo;"
+                      "    return --foo;"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));

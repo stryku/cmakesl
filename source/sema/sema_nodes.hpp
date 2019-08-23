@@ -837,4 +837,38 @@ private:
   initializers_t m_initializers;
 };
 
+class unary_operator_node : public expression_node
+{
+public:
+  explicit unary_operator_node(const ast::ast_node& ast_node, token_t op,
+                               std::unique_ptr<expression_node> expression,
+                               const sema_function& function)
+    : expression_node{ ast_node }
+    , m_expression{ std::move(expression) }
+    , m_function{ function }
+  {
+    m_expression->set_parent(*this, passkey{});
+  }
+
+  const token_t& operator_() const { return m_operator; }
+
+  const expression_node& expression() const { return *m_expression; }
+
+  const sema_function& function() const { return m_function; }
+
+  const sema_type& type() const override { return m_function.return_type(); }
+
+  bool produces_temporary_value() const override
+  {
+    return !m_function.return_type().is_reference();
+  }
+
+  VISIT_METHOD
+
+private:
+  token_t m_operator;
+  std::unique_ptr<expression_node> m_expression;
+  const sema_function& m_function;
+};
+
 }

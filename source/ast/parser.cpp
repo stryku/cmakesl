@@ -662,6 +662,9 @@ std::unique_ptr<ast_node> parser::fundamental_value()
 
 std::unique_ptr<ast_node> parser::parse_factor()
 {
+  if (current_is_unary_operator()) {
+    return parse_unary_operator();
+  }
   if (current_is_function_call()) {
     return function_call();
   } else if (current_is_fundamental_value()) {
@@ -1149,5 +1152,22 @@ parser::parse_designated_initializers()
 
   return std::make_unique<designated_initializers_node>(
     *open_brace, std::move(initializers), *close_brace);
+}
+
+std::unique_ptr<ast_node> parser::parse_unary_operator()
+{
+  const auto op = eat();
+  if (!op) {
+    m_errors_reporter.raise_expected_unary_operator(
+      get_token_for_error_report());
+    return nullptr;
+  }
+
+  auto expression = parse_expr();
+  if (!expression) {
+    return nullptr;
+  }
+
+  return std::make_unique<unary_operator>(*op, std::move(expression));
 }
 }

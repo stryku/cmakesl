@@ -500,4 +500,18 @@ void dumper::visit(const designated_initializers_node& node)
   }
 }
 
+void dumper::visit(const unary_operator_node& node)
+{
+  out() << "-unary operator";
+  auto ig = ident();
+
+  dump_type(node.type());
+  out() << "-operator: " << node.operator_().str();
+
+  {
+    out() << "-expression:";
+    auto expression_guard = ident();
+    node.expression().visit(*this);
+  }
+}
 }

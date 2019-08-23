@@ -49,12 +49,18 @@ public:
    */
   bool operator||(bool rhs);
 
+  /** \brief A negation operator.
+   *
+   * \return A negated value of currently held value.
+   */
+  bool operator&&(bool rhs);
+
   /** \brief An and operator.
    *
    * \param rhs The second value to be checked.
    * \return true if lhs and rhs hold true value, false, otherwise.
    */
-  bool operator&&(bool rhs);
+  bool operator!();
 
   /** \brief To string converter.
    *

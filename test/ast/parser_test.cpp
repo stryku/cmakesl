@@ -311,6 +311,17 @@ public:
     m_result += '}';
   }
 
+  void visit(const unary_operator& node) override
+  {
+    m_result += "unary operator{operator:";
+    m_result += node.operator_().str();
+
+    m_result += ";expression:";
+    node.expression().visit(*this);
+
+    m_result += '}';
+  }
+
   std::string result() const { return m_result; }
 
 private:
@@ -2463,4 +2474,28 @@ TEST_F(ParserTest, DesignatedInitializers_GetDesignatedInitializers)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
+TEST_F(ParserTest, UnaryOperator_GetUnaryOperator)
+{
+  // -foo
+  const auto foo_token = token_identifier("foo");
+
+  auto foo_node = create_id_node_ptr(foo_token);
+
+  auto expected_ast =
+    std::make_unique<unary_operator>(token_minus(), std::move(foo_node));
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_minus(),
+    foo_token
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_expr();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
 }

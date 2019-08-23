@@ -1377,4 +1377,23 @@ function_lookup_result_t sema_builder_ast_visitor::find_functions(
   return result;
 }
 
+void sema_builder_ast_visitor::visit(const ast::unary_operator& node)
+{
+  auto expression = visit_child_expr(node.expression());
+  if (!expression) {
+    return;
+  }
+
+  const auto found_functions =
+    expression->type().context().find_function_in_this_scope(node.operator_());
+  overload_resolution resolution{ m_errors_observer, node.operator_() };
+  const auto chosen_function = resolution.choose(found_functions);
+  if (!chosen_function) {
+    return;
+  }
+
+  m_result_node = std::make_unique<unary_operator_node>(
+    node, node.operator_(), std::move(expression), *chosen_function);
+}
+
 }
