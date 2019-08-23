@@ -55,6 +55,7 @@ std::unique_ptr<inst::instance> builtin_function_caller2::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_operator_equal_equal);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_operator_pipe_pipe);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_operator_amp_amp);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_operator_unary_exclaim);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_to_string);
 
     // int
@@ -63,7 +64,10 @@ std::unique_ptr<inst::instance> builtin_function_caller2::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_ctor_int);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_ctor_double);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_plus);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_unary_plusplus);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_minus);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_unary_minus);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_unary_minusminus);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_star);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_slash);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_equal);
@@ -83,7 +87,10 @@ std::unique_ptr<inst::instance> builtin_function_caller2::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_ctor_double);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_ctor_int);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_plus);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_unary_plusplus);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_minus);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_unary_minus);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_unary_minusminus);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_star);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_slash);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_equal);
@@ -232,6 +239,21 @@ inst::instance* builtin_function_caller2::int_operator_minus(
   return m_instances.create(lhs - rhs);
 }
 
+inst::instance* builtin_function_caller2::int_operator_unary_minus(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto value = instance.value_cref().get_int();
+  return m_instances.create(-1 * value);
+}
+
+inst::instance* builtin_function_caller2::int_operator_unary_minusminus(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto val = instance.value_ref().get_int();
+  instance.value_ref() = val - 1;
+  return m_instances.create_reference(instance);
+}
+
 inst::instance* builtin_function_caller2::int_operator_equal(
   inst::instance& instance, const builtin_function_caller2::params_t& params)
 {
@@ -300,6 +322,14 @@ inst::instance* builtin_function_caller2::int_operator_plus(
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs + rhs);
+}
+
+inst::instance* builtin_function_caller2::int_operator_unary_plusplus(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto val = instance.value_ref().get_int();
+  instance.value_ref() = int_t{ val + 1 };
+  return m_instances.create_reference(instance);
 }
 
 inst::instance* builtin_function_caller2::int_operator_plus_equal(
@@ -429,6 +459,13 @@ inst::instance* builtin_function_caller2::bool_operator_amp_amp(
   return m_instances.create(lhs && rhs);
 }
 
+inst::instance* builtin_function_caller2::bool_operator_unary_exclaim(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto lhs = instance.value_cref().get_bool();
+  return m_instances.create(!lhs);
+}
+
 inst::instance* builtin_function_caller2::bool_to_string(
   inst::instance& instance, const builtin_function_caller2::params_t&)
 {
@@ -476,12 +513,35 @@ inst::instance* builtin_function_caller2::double_operator_plus(
   return m_instances.create(lhs + rhs);
 }
 
+inst::instance* builtin_function_caller2::double_operator_unary_plusplus(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto val = instance.value_ref().get_double();
+  instance.value_ref() = val + 1.0;
+  return m_instances.create_reference(instance);
+}
+
 inst::instance* builtin_function_caller2::double_operator_minus(
   inst::instance& instance, const builtin_function_caller2::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   return m_instances.create(lhs - rhs);
+}
+
+inst::instance* builtin_function_caller2::double_operator_unary_minus(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto value = instance.value_ref().get_double();
+  return m_instances.create(-1 * value);
+}
+
+inst::instance* builtin_function_caller2::double_operator_unary_minusminus(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto val = instance.value_ref().get_double();
+  instance.value_ref() = val - 1.0;
+  return m_instances.create_reference(instance);
 }
 
 inst::instance* builtin_function_caller2::double_operator_star(

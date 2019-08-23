@@ -198,6 +198,11 @@ public:
     // Todo: this could point to main function of added subdirectory.
   }
 
+  void visit(const sema::unary_operator_node& node) override
+  {
+    // Todo: implement
+  }
+
   const std::vector<cmsl_index_entry>& result() const
   {
     return m_intermediate_entries;
@@ -216,16 +221,6 @@ private:
       param->visit(*this);
     }
   }
-
-  //  void add_type_entry(const ast::type_representation& type_representation,
-  //                      const sema::sema_type& type)
-  //  {
-  //
-  //    add_entry(type_representation.primary_name(),
-  //    cmsl_index_entry_type::type,
-  //              type.name().primary_name().source().path(),
-  //              type.name().primary_name().src_range().begin.absolute);
-  //  }
 
   void add_type_entry(const ast::type_representation& type_representation,
                       const sema::sema_type& type)

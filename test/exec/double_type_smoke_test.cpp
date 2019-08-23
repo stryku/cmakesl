@@ -50,11 +50,45 @@ TEST_F(DoubleTypeSmokeTest, OperatorPlus)
   EXPECT_THAT(result, Eq(42));
 }
 
+TEST_F(DoubleTypeSmokeTest, OperatorUnaryPlusPlus)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    double foo = 40.0;"
+                      "    ++foo;"
+                      "    return int(++foo);"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
 TEST_F(DoubleTypeSmokeTest, OperatorMinus)
 {
   const auto source = "int main()"
                       "{"
                       "    return int(44.123 - 2.123);"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(DoubleTypeSmokeTest, OperatorUnaryMinus)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    return int(-42.0);"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(-42));
+}
+
+TEST_F(DoubleTypeSmokeTest, OperatorUnaryMinusMinus)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    double foo = 44.0;"
+                      "    --foo;"
+                      "    return int(--foo);"
                       "}";
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));

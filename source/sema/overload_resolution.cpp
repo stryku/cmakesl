@@ -106,9 +106,6 @@ overload_resolution::match_result_variant_t overload_resolution::params_match(
     };
   }
 
-  //  std::vector<match_result::param_types_dont_match::mismatched_type_info>
-  //    mismatched_types;
-
   std::vector<
     match_result::params_initialization_failed::param_initialization_info>
     initialization_failed_info;
@@ -181,35 +178,8 @@ void overload_resolution::error_notes_reporter::operator()(
     }
   }
 
-  /*
-
-  auto err = create_note_basics();
-
-  ////////////
-
-  auto err = create_note_basics();
-  const std::string parameters_str =
-    result.info.size() > 1u ? "parameters" : "parameter";
-  const auto position_str =
-    result.info.size() > 1u ? "positions " : "position ";
-  const auto suffix_str =
-    result.info.size() > 1u ? " do not match" : " does not match";
-
-  err.message += "Type of " + parameters_str + " at " + position_str;
-
-  std::string separator{ "" };
-  for (const auto& info : result.info) {
-    err.message += separator + std::to_string(info.position);
-    separator = ", ";
-  }
-
-  err.message += suffix_str;
-
-  m_errs.nofify_error(err);
-
   // Todo: would be nice to create notes about expected and got types, with
   // expressions indication.
-   */
 }
 
 errors::error overload_resolution::error_notes_reporter::create_note_basics()

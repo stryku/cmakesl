@@ -204,4 +204,9 @@ bool parser_utils::possibly_qualified_name_starts() const
   return current_is(token_type_t::identifier) ||
     current_is(token_type_t::coloncolon);
 }
+
+bool parser_utils::current_is_unary_operator() const
+{
+  return lexer::is_unary_operator(curr_type());
+}
 }

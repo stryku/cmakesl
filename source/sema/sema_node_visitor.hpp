@@ -32,6 +32,7 @@ class break_node;
 class namespace_node;
 class ternary_operator_node;
 class designated_initializers_node;
+class unary_operator_node;
 
 class sema_node_visitor
 {
@@ -68,6 +69,7 @@ public:
   virtual void visit(const namespace_node& node) = 0;
   virtual void visit(const ternary_operator_node& node) = 0;
   virtual void visit(const designated_initializers_node& node) = 0;
+  virtual void visit(const unary_operator_node& node) = 0;
 };
 
 class empty_sema_node_visitor : public sema_node_visitor
@@ -105,5 +107,6 @@ public:
   virtual void visit(const namespace_node&) override {}
   virtual void visit(const ternary_operator_node&) override {}
   virtual void visit(const designated_initializers_node&) override {}
+  virtual void visit(const unary_operator_node&) override {}
 };
 }

@@ -60,6 +60,8 @@ public:
   std::unique_ptr<designated_initializers_node>
   parse_designated_initializers();
 
+  std::unique_ptr<ast_node> parse_unary_operator();
+
 private:
   struct function_call_values
   {

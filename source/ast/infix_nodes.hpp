@@ -342,4 +342,37 @@ private:
   std::vector<std::unique_ptr<ast_node>> m_values;
   token_t m_close_brace;
 };
+
+class unary_operator : public ast_node
+{
+public:
+  explicit unary_operator(token_t op, std::unique_ptr<ast_node> expression)
+    : m_operator{ op }
+    , m_expression{ std::move(expression) }
+  {
+  }
+
+  const token_t& operator_() const { return m_operator; }
+
+  const ast_node& expression() const { return *m_expression; }
+
+  void visit(ast_node_visitor& visitor) const override
+  {
+    visitor.visit(*this);
+  }
+
+  source_location begin_location() const override
+  {
+    return m_operator.src_range().begin;
+  }
+
+  source_location end_location() const override
+  {
+    return m_expression->end_location();
+  }
+
+private:
+  token_t m_operator;
+  std::unique_ptr<ast_node> m_expression;
+};
 }

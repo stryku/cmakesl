@@ -105,6 +105,7 @@ public:
   void visit(const ast::namespace_node& node) override;
   void visit(const ast::ternary_operator_node& node) override;
   void visit(const ast::designated_initializers_node& node) override;
+  void visit(const ast::unary_operator& node) override;
 
 private:
   function_lookup_result_t find_functions(
