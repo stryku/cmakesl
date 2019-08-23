@@ -96,22 +96,10 @@ bool parser_utils::current_is(token_type_t token_type) const
   return curr_type() == token_type;
 }
 
-bool parser_utils::is_builtin_type(token_type_t token_type) const
-{
-  const auto simple_types = {
-    token_type_t::kw_int,     token_type_t::kw_double,
-    token_type_t::kw_bool,    token_type_t::kw_string,
-    token_type_t::kw_version, token_type_t::kw_list,
-    token_type_t::kw_library, token_type_t::kw_executable,
-    token_type_t::kw_void
-  };
-
-  return cmsl::contains(simple_types, token_type);
-}
-
 bool parser_utils::current_is_type() const
 {
-  return is_builtin_type(curr_type()) || current_is(token_type_t::identifier);
+  return lexer::is_builtin_type(curr_type()) ||
+    current_is(token_type_t::identifier);
 }
 
 bool parser_utils::current_is_name_of_function_call() const
@@ -122,7 +110,7 @@ bool parser_utils::current_is_name_of_function_call() const
 bool parser_utils::is_name_of_function_call(token_type_t type) const
 {
   // Constructor of user defined function.
-  return is_builtin_type(type) || type == token_type_t::identifier;
+  return lexer::is_builtin_type(type) || type == token_type_t::identifier;
 }
 
 bool parser_utils::type_of_token_is(token_it it, token_type_t token_type) const

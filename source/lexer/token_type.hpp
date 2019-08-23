@@ -9,6 +9,7 @@ enum class token_type
   undef,
   integer,
   double_,
+  string,
   dot,
   open_brace,
   close_brace,
@@ -18,13 +19,11 @@ enum class token_type
   close_paren,
   identifier,
 
+  _operators_begin,
+
   equal,
   equalequal,
-  minus,
-  minusminus,
   minusequal,
-  plus,
-  plusplus,
   plusequal,
   amp,
   ampamp,
@@ -40,7 +39,6 @@ enum class token_type
   percent,
   percentequal,
 
-  exclaim,
   exclaimequal,
   xor_,
   xorequal,
@@ -48,13 +46,28 @@ enum class token_type
   lessequal,
   greater,
   greaterequal,
-  string,
-  semicolon,
   coloncolon,
   question,
   colon,
 
+  _unary_operators_begin,
+
+  plus,
+  plusplus,
+  minus,
+  minusminus,
+  exclaim,
+  
+  _unary_operators_end,
+
+  _operators_end,
+
+  semicolon,
   comma,
+
+  _keywords_begin,
+
+  _builtin_types_begin,
 
   kw_void,
   kw_int,
@@ -69,6 +82,8 @@ enum class token_type
   kw_executable,
   kw_project,
 
+  _builtin_types_end,
+
   kw_return,
   kw_class,
   kw_if,
@@ -77,8 +92,13 @@ enum class token_type
   kw_auto,
   kw_for,
   kw_break,
-  kw_namespace
+  kw_namespace,
+
+  _keywords_end
 };
+
+bool is_builtin_type(token_type type);
+bool is_unary_operator(token_type type);
 }
 
 std::string to_string(lexer::token_type type);

@@ -38,7 +38,6 @@ protected:
   bool current_is_name_of_function_call() const;
   bool is_name_of_function_call(token_type_t type) const;
   bool type_of_token_is(token_it it, token_type_t token_type) const;
-  bool is_builtin_type(token_type_t token_type) const;
   bool possibly_qualified_name_starts() const;
 
   void adjust_current_iterator(token_it new_current_it);
