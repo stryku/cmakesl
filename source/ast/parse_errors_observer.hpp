@@ -24,6 +24,7 @@ public:
   virtual void raise_expected_expression(lexer::token token) = 0;
   virtual void raise_expected_designated_initializer(lexer::token token) = 0;
   virtual void raise_expected_unary_operator(lexer::token token) = 0;
+  virtual void raise_expected_enumerator(lexer::token token) = 0;
 };
 
 class parse_errors_reporter : public parse_errors_observer
@@ -93,6 +94,11 @@ public:
     raise(token, "expected unary operator");
   }
 
+  void raise_expected_enumerator(lexer::token token) override
+  {
+    raise(token, "expected enumerator name");
+  }
+
 private:
   void raise(lexer::token token, std::string message)
   {
@@ -122,5 +128,6 @@ public:
   void raise_expected_expression(lexer::token) override {}
   void raise_expected_designated_initializer(lexer::token) override {}
   void raise_expected_unary_operator(lexer::token) override {}
+  void raise_expected_enumerator(lexer::token) override {}
 };
 }

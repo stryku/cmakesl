@@ -55,6 +55,7 @@ const tokens_str_t& operators_str()
                               { token_type_t::kw_double, "double" },
                               { token_type_t::kw_return, "return" },
                               { token_type_t::kw_class, "class" },
+                              { token_type_t::kw_enum, "enum" },
                               { token_type_t::kw_if, "if" },
                               { token_type_t::kw_else, "else" },
                               { token_type_t::kw_while, "while" },
@@ -354,10 +355,13 @@ token_t token_kw_return()
 {
   return details::simple_token(token_type_t::kw_return);
 }
-
 token_t token_kw_class()
 {
   return details::simple_token(token_type_t::kw_class);
+}
+token_t token_kw_enum()
+{
+  return details::simple_token(token_type_t::kw_enum);
 }
 
 token_t token_kw_if()

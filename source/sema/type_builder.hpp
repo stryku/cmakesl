@@ -3,6 +3,7 @@
 #include "ast/type_representation.hpp"
 
 #include "sema/function_signature.hpp"
+#include "sema_context.hpp"
 
 namespace cmsl::sema {
 struct member_info;
@@ -27,7 +28,9 @@ public:
                         sema_function_factory& function_factory,
                         sema_context_factory& context_factory,
                         sema_context& parent_ctx,
-                        ast::type_representation name);
+                        ast::type_representation name,
+                        sema_context::context_type ctx_type =
+                          sema::sema_context::context_type::class_);
 
   type_builder& with_member(const member_info& member);
   type_builder& with_user_function(const sema_type& return_type,
@@ -47,6 +50,8 @@ public:
   }
 
   const sema_type& build_and_register_in_context();
+  const sema_type& build_enum_and_register_in_context(
+    std::vector<lexer::token> enumerators);
   const sema_type& build_builtin_and_register_in_context();
   const sema_type& build_homogeneous_generic_and_register_in_context(
     const sema_type& value_type);

@@ -27,6 +27,7 @@ class namespace_node;
 class ternary_operator_node;
 class designated_initializers_node;
 class unary_operator;
+class enum_node;
 
 class ast_node_visitor
 {
@@ -59,5 +60,6 @@ public:
   virtual void visit(const ternary_operator_node& node) = 0;
   virtual void visit(const designated_initializers_node& node) = 0;
   virtual void visit(const unary_operator& node) = 0;
+  virtual void visit(const enum_node& node) = 0;
 };
 }

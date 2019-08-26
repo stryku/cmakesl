@@ -4,6 +4,7 @@
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/designated_initializers_node.hpp"
+#include "ast/enum_node.hpp"
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
@@ -318,6 +319,20 @@ public:
 
     m_result += ";expression:";
     node.expression().visit(*this);
+
+    m_result += '}';
+  }
+
+  void visit(const enum_node& node) override
+  {
+    m_result += "enum{name:";
+    m_result += node.name().str();
+
+    m_result += ";enumerators:";
+    for (const auto& enumerator : node.enumerators()) {
+      m_result += enumerator.str();
+      m_result += ',';
+    }
 
     m_result += '}';
   }
@@ -2494,6 +2509,72 @@ TEST_F(ParserTest, UnaryOperator_GetUnaryOperator)
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest, EmptyEnum_GetEnum)
+{
+  // enum foo{}
+  const auto foo_token = token_identifier("foo");
+
+  auto expected_ast = std::make_unique<enum_node>(
+    token_kw_enum(), foo_token, token_open_brace(), std::vector<token_t>{},
+    token_close_brace(), token_semicolon());
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_enum(),
+    foo_token,
+    token_open_brace(),
+    token_close_brace(),
+    token_semicolon()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_enum();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest, EnumWithoutInitializers_GetEnum)
+{
+  // enum foo{ bar, baz, qux }
+  const auto foo_token = token_identifier("foo");
+  const auto bar_token = token_identifier("bar");
+  const auto baz_token = token_identifier("baz");
+  const auto qux_token = token_identifier("qux");
+
+  std::vector<token_t> enumerators;
+  enumerators.emplace_back(bar_token);
+  enumerators.emplace_back(baz_token);
+  enumerators.emplace_back(qux_token);
+
+  auto expected_ast = std::make_unique<enum_node>(
+    token_kw_enum(), foo_token, token_open_brace(), std::move(enumerators),
+    token_close_brace(), token_semicolon());
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_enum(),
+    foo_token,
+    token_open_brace(),
+    bar_token,
+    token_comma(),
+    baz_token,
+    token_comma(),
+    qux_token,
+    token_close_brace(),token_semicolon()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_enum();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));

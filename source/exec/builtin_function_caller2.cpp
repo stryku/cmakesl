@@ -5,6 +5,7 @@
 #include "exec/instance/instances_holder.hpp"
 #include "exec/parameter_alternatives_getter.hpp"
 #include "sema/builtin_function_kind.hpp"
+#include "sema/enum_type.hpp"
 
 #include "cmake_facade.hpp"
 #include <algorithm>
@@ -205,6 +206,11 @@ std::unique_ptr<inst::instance> builtin_function_caller2::call_member(
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_name);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_link_to);
+
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_to_string);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_operator_equal);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_operator_equalequal);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_operator_exclaimequal);
 
     default:
       CMSL_UNREACHABLE("Calling unimplemented member function");
@@ -1563,5 +1569,40 @@ inst::instance* builtin_function_caller2::executable_link_to(
   const auto& [library] = get_params<alternative_t::library>(params);
   target.link_to(m_cmake_facade, library);
   return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller2::enum_to_string(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto& enum_type = static_cast<const sema::enum_type&>(instance.type());
+  const auto enum_value = instance.value_cref().get_enum_constant();
+  const auto enum_value_name = enum_type.enumerator(enum_value.value).str();
+  return m_instances.create(std::string{ enum_value_name });
+}
+
+inst::instance* builtin_function_caller2::enum_operator_equal(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto& [enum_value] = get_params<alternative_t::enum_>(params);
+  instance.assign(enum_value);
+  return m_instances.create_reference(instance);
+}
+
+inst::instance* builtin_function_caller2::enum_operator_equalequal(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto& [rhs] = get_params<alternative_t::enum_>(params);
+  const auto& lhs = instance.value_cref().get_enum_constant();
+  const auto result = (lhs.value == rhs.value);
+  return m_instances.create(result);
+}
+
+inst::instance* builtin_function_caller2::enum_operator_exclaimequal(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto& [rhs] = get_params<alternative_t::enum_>(params);
+  const auto& lhs = instance.value_cref().get_enum_constant();
+  const auto result = (lhs.value != rhs.value);
+  return m_instances.create(result);
 }
 }

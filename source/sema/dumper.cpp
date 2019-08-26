@@ -104,6 +104,17 @@ void dumper::visit(const id_node& node)
   out() << "-index: " << node.index();
 }
 
+void dumper::visit(const enum_constant_access_node& node)
+{
+  out() << "-enum constant";
+  auto ig = ident();
+
+  dump_type(node.type());
+  dump_qualified_name(node.names());
+  out() << "-value: " << node.value();
+  out() << "-index: " << node.index();
+}
+
 void dumper::visit(const return_node& node)
 {
   out() << "-return";
@@ -512,6 +523,21 @@ void dumper::visit(const unary_operator_node& node)
     out() << "-expression:";
     auto expression_guard = ident();
     node.expression().visit(*this);
+  }
+}
+
+void dumper::visit(const enum_node& node)
+{
+  out() << "-enum";
+  auto ig = ident();
+
+  out() << "-name: " << node.name().str();
+  {
+    out() << "-enumerators";
+    auto enumerators_guard = ident();
+    for (const auto& e : node.enumerators()) {
+      out() << '-' << e.str();
+    }
   }
 }
 }

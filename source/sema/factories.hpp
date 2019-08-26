@@ -65,10 +65,14 @@ class sema_context_factory : public factory<sema_context>
 public:
   ~sema_context_factory();
 
-  sema_context_impl& create(std::string name, const sema_context* parent);
+  sema_context_impl& create(
+    std::string name, const sema_context* parent,
+    sema_context::context_type type = sema_context::context_type::namespace_);
 
   sema_context_impl& create_class(std::string name,
                                   const sema_context* parent);
+
+  sema_context_impl& create_enum(std::string name, const sema_context* parent);
 };
 
 class sema_type_factory : public factory<sema_type>
@@ -94,6 +98,10 @@ public:
 
   const sema_type& create_designated_initializer(
     const sema_context& ctx, ast::type_representation name);
+
+  const sema_type& create_enum(const sema_context& ctx,
+                               ast::type_representation name,
+                               std::vector<lexer::token> enumerators);
 
 private:
   template <typename T, typename... Args>

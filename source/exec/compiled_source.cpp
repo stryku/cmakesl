@@ -1,6 +1,7 @@
 #include "exec/compiled_source.hpp"
 #include "ast/ast_node.hpp"
 #include "sema/builtin_token_provider.hpp"
+#include "sema/enum_values_context.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_node.hpp"
@@ -12,6 +13,7 @@ compiled_source::compiled_source(
   const sema::sema_context& global_context,
   std::unique_ptr<sema::sema_node> sema_tree, source_view source,
   std::unique_ptr<sema::builtin_token_provider> builtin_token_provider,
+  std::unique_ptr<sema::enum_values_context> enums_ctx,
   std::unique_ptr<sema::identifiers_context> ids_ctx,
   sema::builtin_types_accessor builtin_types)
   : m_ast_tree{ std::move(ast_tree) }
@@ -21,6 +23,7 @@ compiled_source::compiled_source(
   , m_source{ source }
   , m_builtin_token_provider{ std::move(builtin_token_provider) }
   , m_ids_ctx{ std::move(ids_ctx) }
+  , m_enums_ctx{ std::move(enums_ctx) }
   , m_builtin_types{ builtin_types }
 {
 }

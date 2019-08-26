@@ -57,7 +57,7 @@ enum class token_type
   minus,
   minusminus,
   exclaim,
-  
+
   _unary_operators_end,
 
   _operators_end,
@@ -86,6 +86,7 @@ enum class token_type
 
   kw_return,
   kw_class,
+  kw_enum,
   kw_if,
   kw_else,
   kw_while,

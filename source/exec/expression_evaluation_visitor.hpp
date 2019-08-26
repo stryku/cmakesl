@@ -43,6 +43,12 @@ public:
     result = m_ctx.instances.create(std::string{ node.value() });
   }
 
+  void visit(const sema::enum_constant_access_node& node) override
+  {
+    result = m_ctx.instances.create(node.type(),
+                                    inst::enum_constant_value{ node.value() });
+  }
+
   void visit(const sema::id_node& node) override
   {
     const auto str = node.names().back().name.str();

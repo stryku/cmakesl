@@ -3,6 +3,7 @@ cmsl_add_test(
         sema
     SOURCES
         mock/add_subdirectory_semantic_handler_mock.hpp
+        mock/enum_values_context_mock.hpp
         mock/expression_node_mock.hpp
         mock/identifiers_context_mock.hpp
         mock/sema_context_mock.hpp

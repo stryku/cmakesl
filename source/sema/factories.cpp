@@ -7,6 +7,7 @@
 #include "sema/builtin_sema_function.hpp"
 #include "sema/builtin_token_provider.hpp"
 #include "sema/builtin_types_finder.hpp"
+#include "sema/enum_type.hpp"
 #include "sema/homogeneous_generic_type.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
@@ -41,11 +42,11 @@ sema_function_factory::~sema_function_factory()
 {
 }
 
-sema_context_impl& sema_context_factory::create(std::string name,
-                                                const sema_context* parent)
+sema_context_impl& sema_context_factory::create(
+  std::string name, const sema_context* parent,
+  sema_context::context_type type)
 {
-  return create_impl<sema_context_impl>(
-    name, parent, sema_context::context_type::namespace_);
+  return create_impl<sema_context_impl>(name, parent, type);
 }
 
 sema_context_impl& sema_context_factory::create_class(
@@ -53,6 +54,13 @@ sema_context_impl& sema_context_factory::create_class(
 {
   return create_impl<sema_context_impl>(name, parent,
                                         sema_context::context_type::class_);
+}
+
+sema_context_impl& sema_context_factory::create_enum(
+  std::string name, const sema_context* parent)
+{
+  return create_impl<sema_context_impl>(name, parent,
+                                        sema_context::context_type::enum_);
 }
 
 sema_context_factory::~sema_context_factory()
@@ -113,6 +121,14 @@ const sema_type& sema_type_factory::create_designated_initializer(
   return create_and_add<sema_type>(name.primary_name_token(),
                                    sema_type::designated_initializer_tag{},
                                    ctx, name);
+}
+
+const sema_type& sema_type_factory::create_enum(
+  const sema_context& ctx, ast::type_representation name,
+  std::vector<lexer::token> enumerators)
+{
+  return create_and_add<enum_type>(name.primary_name_token(), ctx, name,
+                                   std::move(enumerators));
 }
 
 template <typename T, typename... Args>

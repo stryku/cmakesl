@@ -43,6 +43,12 @@ decltype(auto) get_param<index_t::double_>(const inst::instance& instance)
 }
 
 template <>
+decltype(auto) get_param<index_t::enum_>(const inst::instance& instance)
+{
+  return instance.value_cref().get_enum_constant();
+}
+
+template <>
 decltype(auto) get_param<index_t::string>(const inst::instance& instance)
 {
   return instance.value_cref().get_string_cref();

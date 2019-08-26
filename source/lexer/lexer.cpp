@@ -349,6 +349,7 @@ lexer::keyword_tokens_t lexer::create_keyword_tokens() const
   tokens["project"] = token_type::kw_project;
   tokens["return"] = token_type::kw_return;
   tokens["class"] = token_type::kw_class;
+  tokens["enum"] = token_type::kw_enum;
   tokens["if"] = token_type::kw_if;
   tokens["else"] = token_type::kw_else;
   tokens["while"] = token_type::kw_while;

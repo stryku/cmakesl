@@ -9,6 +9,7 @@ cmsl_add_test(
         class_smoke_test.cpp
         designated_initializers_smoke_test.cpp
         double_type_smoke_test.cpp
+        enum_smoke_test.cpp
         expression_evaluation_visitor_test.cpp
         for_loop_smoke_test.cpp
         function_smoke_test.cpp

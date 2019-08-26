@@ -47,6 +47,8 @@ public:
   void visit(const ternary_operator_node& node) override;
   void visit(const designated_initializers_node& node) override;
   void visit(const unary_operator_node& node) override;
+  void visit(const enum_node& node) override;
+  void visit(const enum_constant_access_node& node) override;
 
 private:
   class ident_guard
