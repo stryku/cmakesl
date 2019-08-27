@@ -38,8 +38,7 @@ TEST_F(ClassSmokeTest, MemberAssignment)
   EXPECT_THAT(result, Eq(42));
 }
 
-// Enable when #64 is implemented
-TEST_F(ClassSmokeTest, DISABLED_ComplexMemberAssignment)
+TEST_F(ClassSmokeTest, ComplexMemberAssignment)
 {
   const auto source = "class Foo"
                       "{"

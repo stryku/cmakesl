@@ -200,6 +200,9 @@ private:
 
   bool is_inside_loop() const;
 
+  void add_user_type_default_methods(const sema_type& class_ty,
+                                     sema_context& class_ctx);
+
 public:
   std::unique_ptr<sema_node> m_result_node;
 

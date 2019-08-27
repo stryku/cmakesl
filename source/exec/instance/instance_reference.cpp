@@ -65,4 +65,9 @@ const sema::sema_type& instance_reference::type() const
 {
   return m_instance.type();
 }
+
+void instance_reference::assign(std::unique_ptr<instance> val)
+{
+  m_instance.assign(std::move(val));
+}
 }

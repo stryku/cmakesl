@@ -99,4 +99,12 @@ const sema::sema_type& simple_unnamed_instance::type() const
 {
   return m_sema_type;
 }
+
+void simple_unnamed_instance::assign(std::unique_ptr<instance> val)
+{
+  // If we're here, we know that the val is an object of
+  // simple_unnamed_instance type, so the static_cast is safe.
+  auto casted_instance = static_cast<simple_unnamed_instance*>(val.get());
+  m_data = std::move(casted_instance->m_data);
+}
 }

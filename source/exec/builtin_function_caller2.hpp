@@ -331,6 +331,9 @@ private:
   inst::instance* enum_operator_exclaimequal(inst::instance& instance,
                                              const params_t& params);
 
+  inst::instance* user_type_operator_equal(inst::instance& instance,
+                                           const params_t& params);
+
   inst::instance* cmake_minimum_required(const params_t& params);
 
 private:
