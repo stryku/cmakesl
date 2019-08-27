@@ -167,6 +167,8 @@ enum class builtin_function_kind
   enum_to_string,
   enum_operator_equalequal,
   enum_operator_exclaimequal,
-  enum_operator_equal
+  enum_operator_equal,
+
+  user_type_operator_equal
 };
 }

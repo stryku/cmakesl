@@ -139,6 +139,8 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
       std::move(body)));
   }
 
+  add_user_type_default_methods(class_type, class_context);
+
   m_result_node = std::make_unique<class_node>(
     node, name, std::move(members->declarations), std::move(functions));
 }
@@ -1460,5 +1462,31 @@ const sema_type& sema_builder_ast_visitor::create_enum_type(
   builder.with_builtin_functions(functions);
 
   return enum_type;
+}
+
+void sema_builder_ast_visitor::add_user_type_default_methods(
+  const sema_type& class_ty, sema_context& class_ctx)
+{
+  const auto& class_ref_ty = *class_ctx.find_reference_for(class_ty);
+
+  const auto dummy_param_name_token =
+    lexer::make_token(lexer::token_type::identifier, "");
+
+  auto functions = {
+    type_builder::builtin_function_info{
+      // operator=(val)
+      class_ref_ty,
+      function_signature{
+        lexer::make_token(lexer::token_type::identifier, "="),
+        { parameter_declaration{ class_ref_ty, dummy_param_name_token,
+                                 m_identifier_index++ } } },
+      builtin_function_kind::user_type_operator_equal },
+  };
+
+  for (auto& f : functions) {
+    const auto& function = m_function_factory.create_builtin(
+      class_ctx, f.return_type, std::move(f.signature), f.kind);
+    class_ctx.add_function(function);
+  }
 }
 }

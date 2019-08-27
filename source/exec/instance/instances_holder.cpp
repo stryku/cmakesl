@@ -21,7 +21,7 @@ std::unique_ptr<instance> instances_holder::gather_ownership(
 
   if (found == std::end(m_instances)) {
     CMSL_UNREACHABLE("Gathering instance that doesn't belong to this "
-                     "instances holder instance");
+                     "instances holder");
     return nullptr;
   }
 

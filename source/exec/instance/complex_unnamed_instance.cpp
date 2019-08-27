@@ -136,4 +136,12 @@ complex_unnamed_instance::create_init_members() const
 
   return members;
 }
+
+void complex_unnamed_instance::assign(std::unique_ptr<instance> val)
+{
+  // If we're here, we know that the val is an object of
+  // complex_unnamed_instance type, so the static_cast is safe.
+  auto casted_instance = static_cast<complex_unnamed_instance*>(val.get());
+  m_members = std::move(casted_instance->m_members);
+}
 }

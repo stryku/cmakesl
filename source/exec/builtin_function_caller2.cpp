@@ -212,6 +212,8 @@ std::unique_ptr<inst::instance> builtin_function_caller2::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_operator_equalequal);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_operator_exclaimequal);
 
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(user_type_operator_equal);
+
     default:
       CMSL_UNREACHABLE("Calling unimplemented member function");
       return nullptr;
@@ -1604,5 +1606,12 @@ inst::instance* builtin_function_caller2::enum_operator_exclaimequal(
   const auto& lhs = instance.value_cref().get_enum_constant();
   const auto result = (lhs.value != rhs.value);
   return m_instances.create(result);
+}
+
+inst::instance* builtin_function_caller2::user_type_operator_equal(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  instance.assign(params[0]->copy());
+  return m_instances.create_reference(instance);
 }
 }
