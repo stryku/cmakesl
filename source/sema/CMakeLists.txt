@@ -29,6 +29,9 @@ set(SEMA_SOURCES
     builtin_types_finder.hpp
     dumper.cpp
     dumper.hpp
+    enum_type.hpp
+    enum_values_context.cpp
+    enum_values_context.hpp
     factories.cpp
     factories.hpp
     failed_initialization_errors_reporters.cpp

@@ -43,6 +43,7 @@ class return_node;
 class sema_context_impl;
 struct function_signature;
 class functions_context;
+class enum_values_context;
 
 struct function_parsing_context
 {
@@ -72,9 +73,10 @@ private:
 public:
   explicit sema_builder_ast_visitor(
     sema_context& generic_types_context, sema_context& ctx,
-    errors::errors_observer& errs, identifiers_context& ids_context,
-    types_context& ty_context, functions_context& functions_ctx,
-    sema_type_factory& type_factory, sema_function_factory& function_factory,
+    errors::errors_observer& errs, enum_values_context& enums_context,
+    identifiers_context& ids_context, types_context& ty_context,
+    functions_context& functions_ctx, sema_type_factory& type_factory,
+    sema_function_factory& function_factory,
     sema_context_factory& context_factory,
     add_subdirectory_handler& add_subdirectory_handler,
     const builtin_token_provider& builtin_token_provider,
@@ -106,6 +108,7 @@ public:
   void visit(const ast::ternary_operator_node& node) override;
   void visit(const ast::designated_initializers_node& node) override;
   void visit(const ast::unary_operator& node) override;
+  void visit(const ast::enum_node& node) override;
 
 private:
   function_lookup_result_t find_functions(
@@ -113,6 +116,8 @@ private:
 
   const sema_type* try_get_or_create_generic_type(
     const sema_context& search_context, const ast::type_representation& name);
+
+  const sema_type& create_enum_type(const ast::enum_node& node);
 
   std::unique_ptr<expression_node> build_function_call(
     const ast::function_call_node& node);
@@ -223,6 +228,7 @@ private:
   sema_context& m_generic_types_context;
   sema_context& m_ctx;
   errors::errors_observer& m_errors_observer;
+  enum_values_context& m_enums_context;
   identifiers_context& m_ids_context;
   types_context& m_types_context;
   functions_context& m_functions_context;

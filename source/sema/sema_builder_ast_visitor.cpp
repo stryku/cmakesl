@@ -4,6 +4,7 @@
 #include "ast/break_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/enum_node.hpp"
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
@@ -14,13 +15,16 @@
 #include "ast/user_function_node.hpp"
 #include "ast/variable_declaration_node.hpp"
 #include "ast/while_node.hpp"
+#include "builtin_function_kind.hpp"
 #include "common/algorithm.hpp"
 #include "common/assert.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
 #include "sema/add_subdirectory_handler.hpp"
 #include "sema/block_node_manipulator.hpp"
+#include "sema/builtin_sema_function.hpp"
 #include "sema/builtin_types_finder.hpp"
+#include "sema/enum_values_context.hpp"
 #include "sema/factories.hpp"
 #include "sema/failed_initialization_errors_reporters.hpp"
 #include "sema/functions_context.hpp"
@@ -36,6 +40,7 @@
 
 #include <ast/designated_initializers_node.hpp>
 #include <stack>
+#include <unordered_set>
 
 namespace cmsl::sema {
 unsigned sema_builder_ast_visitor::m_identifier_index = 0u;
@@ -79,9 +84,10 @@ sema_builder_ast_visitor::ids_ctx_guard::operator=(
 
 sema_builder_ast_visitor::sema_builder_ast_visitor(
   sema_context& generic_types_context, sema_context& ctx,
-  errors::errors_observer& errs, identifiers_context& ids_context,
-  types_context& ty_context, functions_context& functions_ctx,
-  sema_type_factory& type_factory, sema_function_factory& function_factory,
+  errors::errors_observer& errs, enum_values_context& enums_context,
+  identifiers_context& ids_context, types_context& ty_context,
+  functions_context& functions_ctx, sema_type_factory& type_factory,
+  sema_function_factory& function_factory,
   sema_context_factory& context_factory,
   add_subdirectory_handler& add_subdirectory_handler,
   const builtin_token_provider& builtin_token_provider,
@@ -90,6 +96,7 @@ sema_builder_ast_visitor::sema_builder_ast_visitor(
   , m_ctx{ ctx }
   , m_errors_observer{ errs }
   , m_ids_context{ ids_context }
+  , m_enums_context{ enums_context }
   , m_types_context{ ty_context }
   , m_functions_context{ functions_ctx }
   , m_type_factory{ type_factory }
@@ -131,6 +138,7 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
 
   auto class_ids_guard = global_ids_guard(name);
   m_functions_context.enter_global_ctx(name);
+  m_enums_context.enter_global_ctx(name);
 
   auto& class_context =
     m_context_factory.create_class(std::string{ name.str() }, &m_ctx);
@@ -174,6 +182,7 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
   // Todo: RAII
   m_types_context.leave_ctx();
   m_functions_context.leave_ctx();
+  m_enums_context.leave_ctx();
 
   m_result_node = std::make_unique<class_node>(
     node, name, std::move(members->declarations), std::move(functions));
@@ -466,16 +475,19 @@ void sema_builder_ast_visitor::visit(const ast::id_node& node)
 {
   const auto& names = node.names();
   const auto id_token = names.back().name;
-  const auto info = m_ids_context.info_of(names);
 
-  if (!info) {
-    raise_error(id_token,
-                std::string{ id_token.str() } + " identifier not found");
+  if (const auto info = m_ids_context.info_of(names)) {
+    m_result_node =
+      std::make_unique<id_node>(node, info->type, names, info->index);
+    return;
+  } else if (const auto enum_info = m_enums_context.info_of(names)) {
+    m_result_node = std::make_unique<enum_constant_access_node>(
+      node, enum_info->type, names, enum_info->value, enum_info->index);
     return;
   }
 
-  m_result_node =
-    std::make_unique<id_node>(node, info->type, names, info->index);
+  raise_error(id_token,
+              std::string{ id_token.str() } + " identifier not found");
 }
 
 void sema_builder_ast_visitor::visit(const ast::return_node& node)
@@ -709,15 +721,20 @@ sema_builder_ast_visitor sema_builder_ast_visitor::clone() const
 sema_builder_ast_visitor sema_builder_ast_visitor::clone(
   sema_context& ctx_to_visit) const
 {
-  return sema_builder_ast_visitor{
-    m_generic_types_context,  ctx_to_visit,
-    m_errors_observer,        m_ids_context,
-    m_types_context,          m_functions_context,
-    m_type_factory,           m_function_factory,
-    m_context_factory,        m_add_subdirectory_handler,
-    m_builtin_token_provider, m_parsing_ctx,
-    m_builtin_types
-  };
+  return sema_builder_ast_visitor{ m_generic_types_context,
+                                   ctx_to_visit,
+                                   m_errors_observer,
+                                   m_enums_context,
+                                   m_ids_context,
+                                   m_types_context,
+                                   m_functions_context,
+                                   m_type_factory,
+                                   m_function_factory,
+                                   m_context_factory,
+                                   m_add_subdirectory_handler,
+                                   m_builtin_token_provider,
+                                   m_parsing_ctx,
+                                   m_builtin_types };
 }
 
 std::unique_ptr<expression_node> sema_builder_ast_visitor::visit_child_expr(
@@ -1235,6 +1252,7 @@ void sema_builder_ast_visitor::visit(const ast::namespace_node& node)
     guards.emplace(std::move(ig));
     m_types_context.enter_global_ctx(name_with_colon.name);
     m_functions_context.enter_global_ctx(name_with_colon.name);
+    m_enums_context.enter_global_ctx(name_with_colon.name);
   }
 
   namespace_node::nodes_t nodes;
@@ -1256,6 +1274,7 @@ void sema_builder_ast_visitor::visit(const ast::namespace_node& node)
     // Todo: RAII
     m_types_context.leave_ctx();
     m_functions_context.leave_ctx();
+    m_enums_context.leave_ctx();
   }
 }
 
@@ -1396,4 +1415,113 @@ void sema_builder_ast_visitor::visit(const ast::unary_operator& node)
     node, node.operator_(), std::move(expression), *chosen_function);
 }
 
+void sema_builder_ast_visitor::visit(const ast::enum_node& node)
+{
+  const auto& name = node.name();
+  const auto name_representation =
+    ast::type_representation{ ast::qualified_name{ name } };
+
+  if (const auto found = m_types_context.find_in_current_scope(name);
+      found != nullptr) {
+    raise_error(name, "type redefinition");
+    raise_note(found->name().primary_name_token(), "previously defined here");
+    return;
+  }
+
+  // Create context and type
+  const auto& enum_type = create_enum_type(node);
+  m_functions_context.enter_global_ctx(name);
+
+  // Create enum constants
+  {
+    m_enums_context.enter_global_ctx(name);
+
+    std::unordered_set<lexer::token> seen_enumerators;
+    unsigned value{};
+
+    for (const auto& enumerator : node.enumerators()) {
+      const auto found = seen_enumerators.find(enumerator);
+      if (found != std::cend(seen_enumerators)) {
+        raise_error(enumerator, "enumerator redefinition");
+        raise_note(*found, "previously defined here");
+        return;
+      }
+
+      seen_enumerators.insert(enumerator);
+
+      const auto enum_value_index = m_identifier_index++;
+      const auto enum_value = value++;
+      m_enums_context.register_identifier(
+        enumerator,
+        enum_values_context::enum_value_info{ enum_type, enum_value,
+                                              enum_value_index });
+    }
+
+    m_enums_context.leave_ctx();
+  }
+
+  m_functions_context.leave_ctx();
+
+  m_result_node = std::make_unique<enum_node>(node, name, node.enumerators());
+}
+
+const sema_type& sema_builder_ast_visitor::create_enum_type(
+  const ast::enum_node& node)
+{
+  const auto& name = node.name();
+  const auto name_representation =
+    ast::type_representation{ ast::qualified_name{ name } };
+  type_builder builder{
+    m_type_factory, m_function_factory,  m_context_factory,
+    m_ctx,          name_representation, sema_context::context_type ::enum_
+  };
+
+  const auto& enum_type =
+    builder.build_enum_and_register_in_context(node.enumerators());
+  const auto& enum_ref_type = builder.built_type().reference;
+
+  const auto& string_type = m_builtin_types.string;
+  const auto& bool_type = m_builtin_types.bool_;
+
+  const auto dummy_param_name_token =
+    lexer::make_token(lexer::token_type::identifier, "");
+
+  auto functions = {
+    type_builder::builtin_function_info{
+      // to_string()
+      string_type,
+      function_signature{
+        lexer::make_token(lexer::token_type::identifier, "to_string") },
+      builtin_function_kind::enum_to_string },
+    type_builder::builtin_function_info{
+      // operator==(enum)
+      bool_type,
+      function_signature{
+        lexer::make_token(lexer::token_type::equalequal, "=="),
+        { parameter_declaration{ enum_type, dummy_param_name_token,
+                                 m_identifier_index++ } } },
+      builtin_function_kind::enum_operator_equalequal,
+    },
+    type_builder::builtin_function_info{
+      // operator!=(enum)
+      bool_type,
+      function_signature{
+        lexer::make_token(lexer::token_type::exclaimequal, "!="),
+        { parameter_declaration{ enum_type, dummy_param_name_token,
+                                 m_identifier_index++ } } },
+      builtin_function_kind::enum_operator_exclaimequal },
+    type_builder::builtin_function_info{
+      // operator=(enum)
+      enum_ref_type,
+      function_signature{
+        lexer::make_token(lexer::token_type::equal, "="),
+        { parameter_declaration{ enum_type, dummy_param_name_token,
+                                 m_identifier_index++ } } },
+      builtin_function_kind::enum_operator_equal }
+  };
+
+  builder.with_builtin_functions(functions);
+
+  return enum_type;
+}
 }

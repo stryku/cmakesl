@@ -4,6 +4,7 @@
 #include "ast/break_node.hpp"
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
+#include "ast/enum_node.hpp"
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/infix_nodes.hpp"
@@ -20,6 +21,7 @@
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
 #include "test/sema/mock/add_subdirectory_semantic_handler_mock.hpp"
+#include "test/sema/mock/enum_values_context_mock.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"
 #include "test/sema/mock/functions_context_mock.hpp"
 #include "test/sema/mock/identifiers_context_mock.hpp"
@@ -112,17 +114,18 @@ protected:
   type_data m_project_type_data = create_type_data(token_kw_project());
 
   sema_builder_ast_visitor create_types_factory_and_visitor(
-    errs_t& errs, sema_context& ctx, identifiers_context& ids_ctx,
-    types_context& types_ctx, functions_context& functions_ctx)
+    errs_t& errs, sema_context& ctx, enum_values_context& enums_ctx,
+    identifiers_context& ids_ctx, types_context& types_ctx,
+    functions_context& functions_ctx)
   {
-    return create_types_factory_and_visitor(errs, ctx, ids_ctx, types_ctx,
-                                            functions_ctx, m_parsing_ctx);
+    return create_types_factory_and_visitor(
+      errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx, m_parsing_ctx);
   }
 
   sema_builder_ast_visitor create_types_factory_and_visitor(
-    errs_t& errs, sema_context& ctx, identifiers_context& ids_ctx,
-    types_context& types_ctx, functions_context& functions_ctx,
-    parsing_context& m_parsing_ctx)
+    errs_t& errs, sema_context& ctx, enum_values_context& enums_ctx,
+    identifiers_context& ids_ctx, types_context& types_ctx,
+    functions_context& functions_ctx, parsing_context& m_parsing_ctx)
   {
     m_type_factory = std::make_unique<sema_type_factory>(types_ctx);
 
@@ -148,6 +151,7 @@ protected:
     return sema_builder_ast_visitor{ ctx,
                                      ctx,
                                      errs.observer,
+                                     enums_ctx,
                                      ids_ctx,
                                      types_ctx,
                                      functions_ctx,
@@ -243,8 +247,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_BoolValue_GetCorrectBoolValue)
   identifiers_context_mock ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto value = true;
   const auto token = token_kw_true();
@@ -267,8 +272,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IntValue_GetCorrectIntValue)
   identifiers_context_mock ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto value = int_t{ 42 };
   const auto token = token_integer("42");
@@ -291,8 +297,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_DoubleValue_GetCorrectDoubleValue)
   identifiers_context_mock ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto value = double{ 4.2 };
   const auto token = token_double("4.2");
@@ -315,8 +322,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_StringValue_GetCorrectStringValue)
   identifiers_context_mock ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto token = token_string("\"42\"");
   ast::string_value_node node(token);
@@ -338,8 +346,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Identifier_GetCorrectIdentifierNode)
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto id_token = token_identifier("foo");
   const auto q_name = create_qualified_name(id_token);
@@ -371,8 +380,9 @@ TEST_F(
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
   const auto name_token = token_identifier("foo");
 
   auto variable_node = create_standalone_variable_declaration_node(
@@ -406,8 +416,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
   const auto type_ref = ast::type_representation{ token_kw_auto() };
   const auto name_token = token_identifier("foo");
 
@@ -429,8 +440,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
   const auto type_ref = ast::type_representation{ token_kw_void() };
   const auto name_token = token_identifier("foo");
 
@@ -456,8 +468,9 @@ TEST_F(
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto name_token = token_identifier("foo");
 
@@ -504,8 +517,9 @@ TEST_F(
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
   const auto type_representation =
     ast::type_representation{ token_kw_auto(),
                               ast::type_representation::is_reference_tag{} };
@@ -556,8 +570,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Return)
   parsing_context parsing_ctx{ function_parsing_ctx };
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
+  enum_values_context_mock enums_ctx;
   auto visitor = create_types_factory_and_visitor(
-    errs, ctx, ids_ctx, types_ctx, functions_ctx, parsing_ctx);
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx, parsing_ctx);
 
   auto expr_node = std::make_unique<ast::int_value_node>(token_integer("42"));
   ast::return_node ret_node(tmp_token, std::move(expr_node), tmp_token);
@@ -592,8 +607,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_ReturnWithMismatchedType_ReportsError)
   parsing_context parsing_ctx{ function_parsing_ctx };
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
+  enum_values_context_mock enums_ctx;
   auto visitor = create_types_factory_and_visitor(
-    errs, ctx, ids_ctx, types_ctx, functions_ctx, parsing_ctx);
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx, parsing_ctx);
 
   auto expr_node = std::make_unique<ast::int_value_node>(token_integer("42"));
   ast::return_node ret_node(tmp_token, std::move(expr_node), tmp_token);
@@ -623,8 +639,9 @@ TEST_F(
   StrictMock<sema_function_mock> function_mock;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto fun_name_token = token_identifier("foo");
   const auto qualified_fun_name = create_qualified_name(fun_name_token);
@@ -670,8 +687,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<sema_function_mock> function_mock;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   // It's crucial that fun name token has different text than
   // valid_type_data.ty's name. Thanks to that we're not going to call a
@@ -743,8 +761,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<sema_function_mock> function_mock;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto fun_name_token = token_identifier("add_subdirectory");
   const auto name_param_token = token_string("\"subdir\"");
@@ -802,8 +821,9 @@ TEST_F(
   StrictMock<sema_function_mock> function_mock;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   // It's crucial that fun name token has same text as valid_type_data.ty's
   // name. Thanks to that we're going to call a constructor.
@@ -852,8 +872,9 @@ TEST_F(
   StrictMock<sema_function_mock> function_mock;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto lhs_id_token = token_identifier("foo");
   const sema_type lhs_type{ ctx,
@@ -904,8 +925,9 @@ TEST_F(
   StrictMock<sema_function_mock> function_mock;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto lhs_id_token = token_identifier("foo");
   const sema_type lhs_type{ ctx,
@@ -976,8 +998,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Block_GetBlockNode)
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto block = create_block_node_ptr();
 
@@ -1004,8 +1027,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto name_token = token_identifier("bar");
   auto block = create_block_node_ptr();
@@ -1049,8 +1073,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto name_token = token_identifier("bar");
   auto param_name_token = token_identifier("baz");
@@ -1101,8 +1126,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto name_token = token_identifier("foo");
   auto block = create_block_node_ptr();
@@ -1151,8 +1177,9 @@ TEST_F(
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto name_token = token_identifier("foo");
   auto block_subnode = create_block_node_ptr();
@@ -1202,8 +1229,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_ClassEmpty_GetEmptyClassNode)
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto class_name_token = token_identifier("foo");
 
@@ -1251,8 +1279,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto class_name_token = token_identifier("foo");
   const auto member_name_token = token_identifier("bar");
@@ -1312,8 +1341,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto class_name_token = token_identifier("foo");
 
@@ -1380,8 +1410,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto class_name_token = token_identifier("foo");
 
@@ -1454,8 +1485,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_WhileNode)
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
   auto condition_ast_node = create_ast_id_node(condition_identifier_token);
@@ -1488,8 +1520,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfNode_GetIfNode)
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
   auto condition_ast_node = create_ast_id_node(condition_identifier_token);
@@ -1531,8 +1564,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseNode_GetIfElseNode)
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
   auto condition_ast_node = create_ast_id_node(condition_identifier_token);
@@ -1578,8 +1612,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfNode_GetIfElseIfNode)
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
   auto condition_ast_node = create_ast_id_node(condition_identifier_token);
@@ -1629,8 +1664,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfElseNode_GetIfElseIfElseNode)
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto condition_identifier_token = token_identifier("foo");
   auto condition_ast_node = create_ast_id_node(condition_identifier_token);
@@ -1685,8 +1721,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto lhs_id_token = token_identifier("foo");
   auto lhs_node = create_ast_id_node(lhs_id_token);
@@ -1723,8 +1760,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
   NiceMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto variable_name_token = token_identifier("foo");
   auto variable_declaration_ast_node =
@@ -1806,8 +1844,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_BinaryOperatorNode)
   StrictMock<sema_function_mock> operator_function;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const sema_type lhs_and_rhs_type{ ctx,
                                     ast::type_representation{ token_kw_int() },
@@ -1861,8 +1900,9 @@ TEST_F(
   StrictMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto body = create_block_node_ptr();
 
@@ -1898,8 +1938,9 @@ TEST_F(
   StrictMock<sema_function_mock> function_mock;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto variable_name_token = token_identifier("foo");
   auto var_decl = std::make_unique<ast::variable_declaration_node>(
@@ -1971,8 +2012,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   NiceMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto break_ =
     std::make_unique<ast::break_node>(token_kw_break(), token_semicolon());
@@ -1996,8 +2038,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_TernaryOperator_GetTernaryOperator)
   NiceMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto condition = std::make_unique<ast::bool_value_node>(token_kw_false());
   auto true_ = std::make_unique<ast::int_value_node>(token_integer("12"));
@@ -2024,8 +2067,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   NiceMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto condition = std::make_unique<ast::int_value_node>(token_integer("12"));
   auto true_ = std::make_unique<ast::int_value_node>(token_integer("12"));
@@ -2055,8 +2099,9 @@ TEST_F(SemaBuilderAstVisitorTest,
   NiceMock<identifiers_context_mock> ids_ctx;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto condition = std::make_unique<ast::bool_value_node>(token_kw_false());
   auto true_ =
@@ -2083,8 +2128,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_UnaryOperatorNode)
   StrictMock<sema_function_mock> operator_function;
   StrictMock<types_context_mock> types_ctx;
   StrictMock<functions_context_mock> functions_ctx;
-  auto visitor = create_types_factory_and_visitor(errs, ctx, ids_ctx,
-                                                  types_ctx, functions_ctx);
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const sema_type foo_type{
     ctx, ast::type_representation{ token_identifier("foo_type") }, {}
@@ -2119,5 +2165,78 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_UnaryOperatorNode)
     dynamic_cast<unary_operator_node*>(visitor.m_result_node.get());
   ASSERT_THAT(casted_node, NotNull());
   EXPECT_THAT(&casted_node->type(), Eq(&foo_type));
+}
+
+TEST_F(SemaBuilderAstVisitorTest, Visit_Enum)
+{
+  // enum foo{ bar, baz };
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  StrictMock<types_context_mock> types_ctx;
+  StrictMock<functions_context_mock> functions_ctx;
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
+
+  const auto foo_token = token_identifier("foo");
+  const auto bar_token = token_identifier("bar");
+  const auto baz_token = token_identifier("baz");
+
+  ast::enum_node node{ token_kw_enum(),     foo_token,
+                       token_open_brace(),  { bar_token, baz_token },
+                       token_close_brace(), token_semicolon() };
+
+  EXPECT_CALL(types_ctx, find_in_current_scope(_))
+    .WillRepeatedly(Return(nullptr));
+
+  EXPECT_CALL(types_ctx, register_type(_, _))
+    .Times(2); // Enum type and its reference
+
+  EXPECT_CALL(ctx, add_type(_)).Times(2); // Enum type and its reference
+
+  EXPECT_CALL(functions_ctx, enter_global_ctx(foo_token));
+  EXPECT_CALL(functions_ctx, leave_ctx());
+  EXPECT_CALL(enums_ctx, enter_global_ctx(foo_token));
+  EXPECT_CALL(enums_ctx, register_identifier(bar_token, _));
+  EXPECT_CALL(enums_ctx, register_identifier(baz_token, _));
+  EXPECT_CALL(enums_ctx, leave_ctx());
+
+  visitor.visit(node);
+
+  ASSERT_THAT(visitor.m_result_node, NotNull());
+
+  const auto casted_node =
+    dynamic_cast<enum_node*>(visitor.m_result_node.get());
+  ASSERT_THAT(casted_node, NotNull());
+}
+
+TEST_F(SemaBuilderAstVisitorTest, Visit_Enum_TypeRedefinition_ReportError)
+{
+  // enum foo{};
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  StrictMock<types_context_mock> types_ctx;
+  StrictMock<functions_context_mock> functions_ctx;
+  enum_values_context_mock enums_ctx;
+  auto visitor = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
+
+  const auto foo_token = token_identifier("foo");
+
+  ast::enum_node node{ token_kw_enum(),     foo_token,
+                       token_open_brace(),  {},
+                       token_close_brace(), token_semicolon() };
+
+  EXPECT_CALL(types_ctx, find_in_current_scope(_))
+    .WillRepeatedly(Return(&valid_type_data.ty));
+
+  // It reports error and a note.
+  EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
+
+  visitor.visit(node);
+
+  ASSERT_THAT(visitor.m_result_node, IsNull());
 }
 }

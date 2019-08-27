@@ -27,7 +27,8 @@ public:
   enum class context_type
   {
     namespace_,
-    class_
+    class_,
+    enum_
   };
 
   virtual ~sema_context() = default;

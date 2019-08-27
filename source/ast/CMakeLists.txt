@@ -11,6 +11,8 @@ set(AST_SOURCES
     conditional_node.hpp
     designated_initializers_node.cpp
     designated_initializers_node.hpp
+    enum_node.cpp
+    enum_node.hpp
     for_node.cpp
     for_node.hpp
     if_else_node.cpp

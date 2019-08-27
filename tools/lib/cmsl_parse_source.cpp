@@ -7,6 +7,7 @@
 #include "sema/add_subdirectory_handler.hpp"
 #include "sema/builtin_sema_context.hpp"
 #include "sema/builtin_token_provider.hpp"
+#include "sema/enum_values_context.hpp"
 #include "sema/functions_context.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/sema_builder.hpp"
@@ -66,11 +67,13 @@ cmsl_parsed_source* cmsl_parse_source(
     "", parsed_source->builtin_context.get());
 
   cmsl::sema::identifiers_context_impl ids_ctx;
+  cmsl::sema::enum_values_context_impl enums_context;
   cmsl::sema::types_context_impl types_context;
   cmsl::sema::functions_context_impl functions_ctx;
   cmsl::sema::sema_builder sema_builder{
     global_context,
     parsed_source->context.errors_observer,
+    enums_context,
     ids_ctx,
     types_context,
     functions_ctx,

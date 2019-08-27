@@ -283,6 +283,7 @@ const auto values =
                   PureKeywordState{ "project", token_type::kw_project },
                   PureKeywordState{ "return", token_type::kw_return },
                   PureKeywordState{ "class", token_type::kw_class },
+                  PureKeywordState{ "enum", token_type::kw_enum },
                   PureKeywordState{ "if", token_type::kw_if },
                   PureKeywordState{ "else", token_type::kw_else },
                   PureKeywordState{ "while", token_type::kw_while },

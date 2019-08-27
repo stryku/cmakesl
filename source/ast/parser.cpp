@@ -19,6 +19,7 @@
 #include "ast/while_node.hpp"
 #include "common/algorithm.hpp"
 #include "common/assert.hpp"
+#include "enum_node.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
 
@@ -1014,6 +1015,8 @@ parser::parse_top_level_nodes(StopCondition&& stop_condition)
       node = parse_function();
     } else if (current_is(token_type_t::kw_class)) {
       node = parse_class();
+    } else if (current_is(token_type_t::kw_enum)) {
+      node = parse_enum();
     } else if (current_is(token_type_t::kw_namespace)) {
       node = parse_namespace();
     } else {
@@ -1169,5 +1172,58 @@ std::unique_ptr<ast_node> parser::parse_unary_operator()
   }
 
   return std::make_unique<unary_operator>(*op, std::move(expression));
+}
+
+std::unique_ptr<enum_node> parser::parse_enum()
+{
+  const auto enum_kw = eat(token_type_t::kw_enum);
+  if (!enum_kw) {
+    return nullptr;
+  }
+
+  const auto name = eat(token_type_t::identifier);
+  if (!name) {
+    return nullptr;
+  }
+
+  const auto open_brace = eat(token_type_t::open_brace);
+  if (!open_brace) {
+    return nullptr;
+  }
+
+  std::vector<token_t> enumerators;
+
+  while (!current_is(token_type_t::close_brace)) {
+    const auto enumerator_name = eat(token_type_t::identifier);
+    if (!enumerator_name) {
+      return nullptr;
+    }
+
+    enumerators.emplace_back(*enumerator_name);
+
+    if (try_eat(token_type_t::comma)) {
+      if (current_is(token_type_t::close_brace)) {
+        m_errors_reporter.raise_expected_enumerator(
+          get_token_for_error_report());
+        return nullptr;
+      }
+    } else {
+      break;
+    }
+  }
+
+  const auto close_brace = eat(token_type_t::close_brace);
+  if (!close_brace) {
+    return nullptr;
+  }
+
+  const auto semicolon = eat(token_type_t::semicolon);
+  if (!semicolon) {
+    return nullptr;
+  }
+
+  return std::make_unique<enum_node>(*enum_kw, *name, *open_brace,
+                                     std::move(enumerators), *close_brace,
+                                     *semicolon);
 }
 }

@@ -9,13 +9,14 @@ type_builder::type_builder(sema_type_factory& type_factory,
                            sema_function_factory& function_factory,
                            sema_context_factory& context_factory,
                            sema_context& current_ctx,
-                           ast::type_representation name)
+                           ast::type_representation name,
+                           sema_context::context_type ctx_type)
   : m_type_factory{ type_factory }
   , m_function_factory{ function_factory }
   , m_context_factory{ context_factory }
   , m_current_ctx{ current_ctx }
-  , m_type_ctx{ m_context_factory.create_class(name.unqualified_name(),
-                                               &current_ctx) }
+  , m_type_ctx{ m_context_factory.create(name.unqualified_name(), &current_ctx,
+                                         ctx_type) }
   , m_name{ std::move(name) }
 {
 }
@@ -49,6 +50,21 @@ const sema_type& type_builder::build_and_register_in_context()
 {
   const auto& type =
     m_type_factory.create(m_type_ctx, m_name, std::move(m_members));
+  const auto& reference_type = m_type_factory.create_reference(type);
+  m_current_ctx.add_type(type);
+  m_current_ctx.add_type(reference_type);
+
+  m_built_type = &type;
+  m_built_type_ref = &reference_type;
+
+  return type;
+}
+
+const sema_type& type_builder::build_enum_and_register_in_context(
+  std::vector<lexer::token> enumerators)
+{
+  const auto& type =
+    m_type_factory.create_enum(m_type_ctx, m_name, std::move(enumerators));
   const auto& reference_type = m_type_factory.create_reference(type);
   m_current_ctx.add_type(type);
   m_current_ctx.add_type(reference_type);

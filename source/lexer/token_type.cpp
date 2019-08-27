@@ -118,6 +118,8 @@ std::string to_string(lexer::token_type type)
       return "return keyword";
     case lexer::token_type::kw_class:
       return "class keyword";
+    case lexer::token_type::kw_enum:
+      return "enum keyword";
     case lexer::token_type::kw_if:
       return "if keyword";
     case lexer::token_type::kw_else:

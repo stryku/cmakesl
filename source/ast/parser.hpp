@@ -24,6 +24,7 @@ class namespace_node;
 class id_node;
 class ternary_operator_node;
 class designated_initializers_node;
+class enum_node;
 
 class parser : public parser_utils
 {
@@ -61,6 +62,8 @@ public:
   parse_designated_initializers();
 
   std::unique_ptr<ast_node> parse_unary_operator();
+
+  std::unique_ptr<enum_node> parse_enum();
 
 private:
   struct function_call_values

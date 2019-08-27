@@ -25,11 +25,13 @@ class sema_function_factory;
 class sema_context_factory;
 class types_context;
 class functions_context;
+class enum_values_context;
 
 class sema_builder
 {
 public:
   explicit sema_builder(sema_context& ctx, errors::errors_observer& errs,
+                        enum_values_context& enums_context,
                         identifiers_context& ids_context,
                         types_context& ty_context,
                         functions_context& functions_ctx,
@@ -45,6 +47,7 @@ public:
 private:
   sema_context& m_ctx;
   errors::errors_observer& m_errs;
+  enum_values_context& m_enums_context;
   identifiers_context& m_ids_context;
   types_context& m_types_context;
   functions_context& m_functions_context;

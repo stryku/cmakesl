@@ -132,6 +132,42 @@ private:
   const unsigned m_index;
 };
 
+class enum_constant_access_node : public expression_node
+{
+public:
+  explicit enum_constant_access_node(
+    const ast::ast_node& ast_node, const sema_type& t,
+    std::vector<ast::name_with_coloncolon> names, unsigned enum_value,
+    unsigned index)
+    : expression_node{ ast_node }
+    , m_type{ t }
+    , m_names{ std::move(names) }
+    , m_value{ enum_value }
+    , m_index{ index }
+  {
+  }
+
+  const sema_type& type() const override { return m_type; }
+
+  bool produces_temporary_value() const override { return false; }
+
+  const std::vector<ast::name_with_coloncolon>& names() const
+  {
+    return m_names;
+  }
+
+  unsigned value() const { return m_value; }
+  unsigned index() const { return m_index; }
+
+  VISIT_METHOD
+
+private:
+  const sema_type& m_type;
+  std::vector<ast::name_with_coloncolon> m_names;
+  const unsigned m_value;
+  const unsigned m_index;
+};
+
 // Todo: handle return without expression when implementing void type.
 class return_node : public expression_node
 {
@@ -757,6 +793,9 @@ public:
     , m_names{ std::move(names) }
     , m_nodes{ std::move(nodes) }
   {
+    for (auto& node : m_nodes) {
+      node->set_parent(*this, passkey{});
+    }
   }
 
   VISIT_METHOD
@@ -782,6 +821,9 @@ public:
     , m_true{ std::move(true_) }
     , m_false{ std::move(false_) }
   {
+    m_condition->set_parent(*this, passkey{});
+    m_true->set_parent(*this, passkey{});
+    m_false->set_parent(*this, passkey{});
   }
 
   const expression_node& condition() const { return *m_condition; }
@@ -822,6 +864,11 @@ public:
     , m_type{ ty }
     , m_initializers{ std::move(initializers) }
   {
+    for (auto& init : m_initializers) {
+      if (init.init) {
+        init.init->set_parent(*this, passkey{});
+      }
+    }
   }
 
   const initializers_t& initializers() const { return m_initializers; }
@@ -869,6 +916,30 @@ private:
   token_t m_operator;
   std::unique_ptr<expression_node> m_expression;
   const sema_function& m_function;
+};
+
+class enum_node : public sema_node
+{
+public:
+  explicit enum_node(const ast::ast_node& ast_node, lexer::token name,
+                     std::vector<lexer::token> enumerators)
+    : sema_node{ ast_node }
+    , m_name{ name }
+    , m_enumerators{ std::move(enumerators) }
+  {
+  }
+
+  const lexer::token& name() const { return m_name; }
+  const std::vector<lexer::token>& enumerators() const
+  {
+    return m_enumerators;
+  }
+
+  VISIT_METHOD
+
+private:
+  lexer::token m_name;
+  std::vector<lexer::token> m_enumerators;
 };
 
 }

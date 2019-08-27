@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/int_alias.hpp"
+#include "exec/instance/enum_constant_value.hpp"
 #include "exec/instance/instance_value_alternative.hpp"
 #include "exec/instance/list_value.hpp"
 #include "exec/instance/project_value.hpp"
@@ -17,9 +18,9 @@ class instance;
 class instance_value_variant
 {
 private:
-  using value_t =
-    std::variant<bool, int_t, double, std::string, version_value, list_value,
-                 project_value, library_value, executable_value>;
+  using value_t = std::variant<bool, int_t, double, enum_constant_value,
+                               std::string, version_value, list_value,
+                               project_value, library_value, executable_value>;
 
 public:
   using which_t = instance_value_alternative;
@@ -31,6 +32,7 @@ public:
   instance_value_variant(int_t val);
 
   instance_value_variant(double val);
+  instance_value_variant(enum_constant_value val);
 
   // Prevent conversion from const char* to bool.
   instance_value_variant(const char* value);
@@ -53,6 +55,9 @@ public:
 
   double get_double() const;
   void set_double(double value);
+
+  enum_constant_value get_enum_constant() const;
+  void set_enum_constant(enum_constant_value value);
 
   const std::string& get_string_cref() const;
   std::string& get_string_ref();

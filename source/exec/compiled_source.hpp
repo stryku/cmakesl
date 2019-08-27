@@ -17,6 +17,7 @@ class sema_function;
 class sema_context;
 class identifiers_context;
 class types_context;
+class enum_values_context;
 }
 
 namespace exec {
@@ -29,6 +30,7 @@ public:
     const sema::sema_context& global_context,
     std::unique_ptr<sema::sema_node> sema_tree, source_view source,
     std::unique_ptr<sema::builtin_token_provider> builtin_token_provider,
+    std::unique_ptr<sema::enum_values_context> enums_ctx,
     std::unique_ptr<sema::identifiers_context> ids_ctx,
     sema::builtin_types_accessor builtin_types);
   ~compiled_source();
@@ -48,6 +50,7 @@ private:
   std::unique_ptr<sema::sema_node> m_sema_tree;
   source_view m_source;
   std::unique_ptr<sema::builtin_token_provider> m_builtin_token_provider;
+  std::unique_ptr<sema::enum_values_context> m_enums_ctx;
   std::unique_ptr<sema::identifiers_context> m_ids_ctx;
   sema::builtin_types_accessor m_builtin_types;
 };

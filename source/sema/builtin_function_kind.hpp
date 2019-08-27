@@ -162,6 +162,11 @@ enum class builtin_function_kind
   library_link_to,
 
   executable_name,
-  executable_link_to
+  executable_link_to,
+
+  enum_to_string,
+  enum_operator_equalequal,
+  enum_operator_exclaimequal,
+  enum_operator_equal
 };
 }

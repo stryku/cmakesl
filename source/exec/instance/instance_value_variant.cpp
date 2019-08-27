@@ -24,6 +24,11 @@ instance_value_variant::instance_value_variant(double val)
 {
 }
 
+instance_value_variant::instance_value_variant(enum_constant_value val)
+  : m_value{ val }
+{
+}
+
 // Prevent conversion from const char* to bool.
 instance_value_variant::instance_value_variant(const char* value)
   : instance_value_variant{ std::string{ value } }
@@ -95,6 +100,16 @@ void instance_value_variant::set_double(double value)
   m_value = value;
 }
 
+enum_constant_value instance_value_variant::get_enum_constant() const
+{
+  return std::get<enum_constant_value>(m_value);
+}
+
+void instance_value_variant::set_enum_constant(enum_constant_value value)
+{
+  m_value = value;
+}
+
 const std::string& instance_value_variant::get_string_cref() const
 {
   return std::get<std::string>(m_value);
@@ -122,6 +137,8 @@ void instance_value_variant::set_string(std::string value)
       return get_int() op rhs.get_int();                                      \
     case which_t::double_:                                                    \
       return get_double() op rhs.get_double();                                \
+    case which_t::enum_:                                                      \
+      return get_enum_constant().value op rhs.get_enum_constant().value;      \
     case which_t::string:                                                     \
       return get_string_cref() op rhs.get_string_cref();                      \
     case which_t::version:                                                    \

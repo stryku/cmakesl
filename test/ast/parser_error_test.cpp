@@ -1,10 +1,10 @@
 #include "ast/ast_node.hpp"
 #include "ast/block_node.hpp"
 #include "ast/designated_initializers_node.hpp"
+#include "ast/enum_node.hpp"
 #include "ast/parser.hpp"
 #include "ast/variable_declaration_node.cpp"
 #include "errors/errors_observer.hpp"
-
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
 
@@ -572,5 +572,55 @@ const auto values = Values(
                       qux_token, cb }); // { .foo = , .baz = qux }
 
 INSTANTIATE_TEST_CASE_P(ParserErrorTest, DesignatedInitializers, values);
+}
+
+namespace enums {
+using Enum = TestWithParam<tokens_container_t>;
+
+TEST_P(Enum, Malformed_ReportError)
+{
+  errs_t errs;
+  EXPECT_CALL(errs.mock, notify_error(_));
+
+  const auto tokens = GetParam();
+  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  auto result = p.parse_enum();
+
+  EXPECT_THAT(result, IsNull());
+}
+
+const auto ob = token_open_brace();
+const auto cb = token_close_brace();
+const auto sc = token_semicolon();
+const auto comma = token_comma();
+const auto en = token_kw_enum();
+const auto foo_token = token_identifier("foo");
+const auto bar_token = token_identifier("bar");
+const auto baz_token = token_identifier("baz");
+const auto qux_token = token_identifier("qux");
+
+const auto values = Values(
+  tokens_container_t{ en },                               // enum
+  tokens_container_t{ en, ob },                           // enum {
+  tokens_container_t{ en, cb },                           // enum }
+  tokens_container_t{ en, ob, cb },                       // enum {}
+  tokens_container_t{ en, ob, cb, sc },                   // enum {};
+  tokens_container_t{ en, foo_token, ob },                // enum foo {
+  tokens_container_t{ en, foo_token, cb },                // enum foo }
+  tokens_container_t{ en, foo_token, ob, cb },            // enum foo {}
+  tokens_container_t{ en, foo_token, ob, comma, cb, sc }, // enum foo {,};
+  tokens_container_t{ en, foo_token, ob, bar_token, comma, cb,
+                      sc }, // enum foo {bar,};
+  tokens_container_t{ en, foo_token, ob, comma, bar_token, cb,
+                      sc }, // enum foo {,bar};
+  tokens_container_t{ en, foo_token, ob, bar_token, comma, baz_token, comma,
+                      cb, sc }, // enum foo {bar, baz,};
+  tokens_container_t{ en, foo_token, ob, bar_token, comma, baz_token,
+                      comma }, // enum foo {bar, baz,
+  tokens_container_t{ en, foo_token, ob, bar_token, comma, comma, baz_token,
+                      cb, sc }); // enum foo {bar, ,baz};
+
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, Enum, values);
+
 }
 }
