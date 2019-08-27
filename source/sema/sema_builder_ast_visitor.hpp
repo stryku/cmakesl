@@ -2,6 +2,7 @@
 
 #include "ast/ast_node_visitor.hpp"
 #include "sema/builtin_types_accessor.hpp"
+#include "sema/qualified_contextes.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_node.hpp"
 #include "sema/type_member_info.hpp"
@@ -160,28 +161,6 @@ private:
   std::optional<param_expressions_t> get_function_call_params(
     const std::vector<std::unique_ptr<ast::ast_node>>& passed_params);
 
-  class ids_ctx_guard
-  {
-  public:
-    explicit ids_ctx_guard(identifiers_context& ids_context);
-    explicit ids_ctx_guard(identifiers_context& ids_context,
-                           lexer::token name);
-    ~ids_ctx_guard();
-
-    ids_ctx_guard(ids_ctx_guard&&);
-    ids_ctx_guard& operator=(ids_ctx_guard&&);
-
-    ids_ctx_guard(const ids_ctx_guard&) = delete;
-    ids_ctx_guard& operator=(const ids_ctx_guard&) = delete;
-
-  private:
-    identifiers_context& m_ids_ctx;
-    bool m_valid{ true };
-  };
-
-  ids_ctx_guard ids_guard();
-  ids_ctx_guard global_ids_guard(lexer::token name);
-
   struct function_declaration
   {
     const ast::user_function_node& ast_function_node;
@@ -228,10 +207,7 @@ private:
   sema_context& m_generic_types_context;
   sema_context& m_ctx;
   errors::errors_observer& m_errors_observer;
-  enum_values_context& m_enums_context;
-  identifiers_context& m_ids_context;
-  types_context& m_types_context;
-  functions_context& m_functions_context;
+  qualified_contextes m_qualified_ctxs;
   sema_type_factory& m_type_factory;
   sema_function_factory& m_function_factory;
   sema_context_factory& m_context_factory;

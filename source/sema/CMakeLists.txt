@@ -47,6 +47,7 @@ set(SEMA_SOURCES
     identifiers_context.hpp
     overload_resolution.cpp
     overload_resolution.hpp
+    qualified_contextes.hpp
     qualified_entries_finder.hpp
     sema_builder.cpp
     sema_builder.hpp
