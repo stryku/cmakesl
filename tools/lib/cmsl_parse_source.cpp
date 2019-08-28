@@ -56,8 +56,8 @@ cmsl_parsed_source* cmsl_parse_source(
     parsed_source->context.function_factory,
     parsed_source->context.context_factory,
     parsed_source->context.errors_observer,
-    *(parsed_source->builtin_token_provider),
-    parsed_source->context.types_ctx);
+    *(parsed_source->builtin_token_provider), parsed_source->context.types_ctx,
+    parsed_source->context.functions_ctx);
 
   auto builtin_types = builtin_ctx->builtin_types();
 
@@ -68,15 +68,14 @@ cmsl_parsed_source* cmsl_parse_source(
 
   cmsl::sema::identifiers_context_impl ids_ctx;
   cmsl::sema::enum_values_context_impl enums_context;
-  cmsl::sema::types_context_impl types_context;
   cmsl::sema::functions_context_impl functions_ctx;
   cmsl::sema::sema_builder sema_builder{
     global_context,
     parsed_source->context.errors_observer,
     enums_context,
     ids_ctx,
-    types_context,
-    functions_ctx,
+    parsed_source->context.types_ctx,
+    parsed_source->context.functions_ctx,
     parsed_source->context.type_factory,
     parsed_source->context.function_factory,
     parsed_source->context.context_factory,

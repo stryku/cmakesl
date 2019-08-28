@@ -6,6 +6,12 @@ enum class builtin_function_kind
   // Stand-alone functions:
   cmake_minimum_required,
 
+  // cmake namespace functions:
+  cmake_message,
+  cmake_warning,
+  cmake_error,
+  cmake_fatal_error,
+
   // Class methods:
 
   bool_ctor,

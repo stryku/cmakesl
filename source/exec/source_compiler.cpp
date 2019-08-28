@@ -46,7 +46,7 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
 
   auto builtin_context = std::make_unique<sema::builtin_sema_context>(
     m_type_factory, m_function_factory, m_context_factory, m_errors_observer,
-    *builtin_token_provider, m_types_ctx);
+    *builtin_token_provider, m_types_ctx, m_functions_ctx);
   const auto builtin_types = builtin_context->builtin_types();
 
   auto& global_context = m_context_factory.create("", builtin_context.get());

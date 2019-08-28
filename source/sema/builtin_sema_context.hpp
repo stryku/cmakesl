@@ -1,8 +1,8 @@
 #pragma once
 
-#include "builtin_function_kind.hpp"
-#include "function_signature.hpp"
+#include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_accessor.hpp"
+#include "sema/function_signature.hpp"
 #include "sema/sema_context_impl.hpp"
 
 namespace cmsl {
@@ -22,6 +22,7 @@ class sema_context_factory;
 enum class builtin_function_kind;
 class type_builder;
 class types_context;
+class functions_context;
 
 class builtin_sema_context : public sema_context_impl
 {
@@ -31,7 +32,7 @@ public:
     sema_context_factory& context_factory,
     errors::errors_observer& errors_observer,
     const builtin_token_provider& builtin_token_provider,
-    types_context& types_ctx);
+    types_context& types_ctx, functions_context& functions_ctx);
 
   builtin_types_accessor builtin_types() const;
 
@@ -52,6 +53,8 @@ private:
   // `string`, and string has method `bool empty()` which returns `bool`
   void add_types();
   void add_functions();
+
+  void add_cmake_namespace_context(functions_context& functions_ctx);
 
   template <typename Functions>
   void add_type_member_functions(type_builder& manipulator,
@@ -97,6 +100,8 @@ private:
   types_context& m_types_ctx;
 
   std::unique_ptr<builtin_types_accessor> m_builtin_types;
+
+  std::unique_ptr<sema_context> m_cmake_namespace_context;
 };
 }
 }

@@ -1,0 +1,7 @@
+namespace cmake {
+
+void message(string msg);
+void warning(string msg);
+void error(string msg);
+void fatal_error(string msg);
+}
