@@ -75,6 +75,8 @@ private:
   void add_executable_member_functions(type_builder& project_manipulator);
   type_builder add_project_type();
   void add_project_member_functions(type_builder& project_manipulator);
+  type_builder add_option_type();
+  void add_option_member_functions(type_builder& project_manipulator);
   type_builder add_void_type();
 
   template <unsigned N>

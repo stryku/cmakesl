@@ -22,5 +22,7 @@ struct builtin_types_accessor
   const sema_type& executable_ref;
   const sema_type& project;
   const sema_type& project_ref;
+  const sema_type& option;
+  const sema_type& option_ref;
 };
 }

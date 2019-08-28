@@ -54,6 +54,7 @@ void builtin_sema_context::add_types()
   auto library_manipulator = add_library_type();
   auto executable_manipulator = add_executable_type();
   auto project_manipulator = add_project_type();
+  auto option_manipulator = add_option_type();
   auto void_manipulator = add_void_type();
 
   const auto& [void_, _] = void_manipulator.built_type();
@@ -66,6 +67,7 @@ void builtin_sema_context::add_types()
   const auto& [executable, executable_ref] =
     executable_manipulator.built_type();
   const auto& [project, project_ref] = project_manipulator.built_type();
+  const auto& [option, option_ref] = option_manipulator.built_type();
 
   const auto types = builtin_types_accessor{ .void_ = void_,
                                              .bool_ = bool_,
@@ -83,7 +85,9 @@ void builtin_sema_context::add_types()
                                              .executable = executable,
                                              .executable_ref = executable_ref,
                                              .project = project,
-                                             .project_ref = project_ref };
+                                             .project_ref = project_ref,
+                                             .option = option,
+                                             .option_ref = option_ref };
 
   m_builtin_types = std::make_unique<builtin_types_accessor>(types);
 
@@ -95,6 +99,7 @@ void builtin_sema_context::add_types()
   add_library_member_functions(library_manipulator);
   add_executable_member_functions(executable_manipulator);
   add_project_member_functions(project_manipulator);
+  add_option_member_functions(option_manipulator);
 }
 
 void builtin_sema_context::add_functions()
@@ -1062,5 +1067,45 @@ type_builder builtin_sema_context::add_type(lexer::token name_token)
 builtin_types_accessor builtin_sema_context::builtin_types() const
 {
   return *m_builtin_types;
+}
+
+type_builder builtin_sema_context::add_option_type()
+{
+  static const auto token = m_builtin_token_provider.option().name();
+  return add_type(token);
+}
+
+void builtin_sema_context::add_option_member_functions(
+  type_builder& project_manipulator)
+{
+  const auto& string_type = m_builtin_types->string;
+  const auto& bool_type = m_builtin_types->bool_;
+  const auto& option_type = m_builtin_types->option;
+
+  const auto token_provider = m_builtin_token_provider.option();
+
+  const auto functions = {
+    builtin_function_info{
+      // option(string description)
+      option_type,
+      function_signature{
+        token_provider.constructor_description(),
+        { parameter_declaration{ string_type, make_id_token("") } } },
+      builtin_function_kind::option_ctor_description },
+    builtin_function_info{
+      // option(string description, bool value)
+      option_type,
+      function_signature{
+        token_provider.constructor_description_value(),
+        { parameter_declaration{ string_type, make_id_token("") },
+          parameter_declaration{ bool_type, make_id_token("") } } },
+      builtin_function_kind::option_ctor_description_value },
+    builtin_function_info{ // bool value()
+                           bool_type,
+                           function_signature{ token_provider.value() },
+                           builtin_function_kind::option_value }
+  };
+
+  add_type_member_functions(project_manipulator, functions);
 }
 }

@@ -77,6 +77,12 @@ decltype(auto) get_param<index_t::executable>(const inst::instance& instance)
 {
   return instance.value_cref().get_executable_cref();
 }
+
+template <>
+decltype(auto) get_param<index_t::option>(const inst::instance& instance)
+{
+  return instance.value_cref().get_option_cref();
+}
 }
 
 template <inst::instance_value_alternative... Alternatives>

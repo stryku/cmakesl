@@ -20,6 +20,7 @@ set(EXEC_SOURCES
     static_variables_initializer.hpp
     instance/complex_unnamed_instance.cpp
     instance/complex_unnamed_instance.hpp
+    instance/enum_constant_value.hpp
     instance/instance.hpp
     instance/instance_factory.cpp
     instance/instance_factory.hpp
@@ -33,6 +34,8 @@ set(EXEC_SOURCES
     instance/instances_holder_interface.hpp
     instance/list_value.cpp
     instance/list_value.hpp
+    instance/option_value.cpp
+    instance/option_value.hpp
     instance/project_value.cpp
     instance/project_value.hpp
     instance/simple_unnamed_instance.cpp

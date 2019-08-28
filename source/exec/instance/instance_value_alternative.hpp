@@ -12,6 +12,7 @@ enum class instance_value_alternative
   list,
   project,
   library,
-  executable
+  executable,
+  option
 };
 }

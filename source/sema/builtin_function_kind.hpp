@@ -169,6 +169,10 @@ enum class builtin_function_kind
   enum_operator_exclaimequal,
   enum_operator_equal,
 
-  user_type_operator_equal
+  user_type_operator_equal,
+
+  option_ctor_description,
+  option_ctor_description_value,
+  option_value
 };
 }

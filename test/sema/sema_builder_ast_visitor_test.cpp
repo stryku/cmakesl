@@ -146,7 +146,9 @@ protected:
                               .executable = m_executable_type_data.ty,
                               .executable_ref = valid_type_data.ty,
                               .project = m_project_type_data.ty,
-                              .project_ref = valid_type_data.ty };
+                              .project_ref = valid_type_data.ty,
+                              .option = m_project_type_data.ty,
+                              .option_ref = valid_type_data.ty };
 
     return sema_builder_ast_visitor{ ctx,
                                      ctx,
