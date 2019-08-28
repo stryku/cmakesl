@@ -234,6 +234,10 @@ std::unique_ptr<inst::instance> builtin_function_caller2::call(
 
   switch (function_kind) {
     CASE_BUILTIN_FUNCTION_CALL(cmake_minimum_required);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_message);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_warning);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_error);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_fatal_error);
 
     default:
       CMSL_UNREACHABLE("Calling unimplemented function");
@@ -1641,5 +1645,36 @@ inst::instance* builtin_function_caller2::option_value(
 {
   const auto value = instance.value_cref().get_option_cref().value();
   return m_instances.create(value);
+}
+inst::instance* builtin_function_caller2::cmake_message(
+  const builtin_function_caller2::params_t& params)
+{
+  const auto& [message] = get_params<alternative_t::string>(params);
+  m_cmake_facade.message(message);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller2::cmake_warning(
+  const builtin_function_caller2::params_t& params)
+{
+  const auto& [message] = get_params<alternative_t::string>(params);
+  m_cmake_facade.warning(message);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller2::cmake_error(
+  const builtin_function_caller2::params_t& params)
+{
+  const auto& [message] = get_params<alternative_t::string>(params);
+  m_cmake_facade.error(message);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller2::cmake_fatal_error(
+  const builtin_function_caller2::params_t& params)
+{
+  const auto& [message] = get_params<alternative_t::string>(params);
+  m_cmake_facade.fatal_error(message);
+  return m_instances.create_void();
 }
 }

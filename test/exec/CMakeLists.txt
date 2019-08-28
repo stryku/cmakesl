@@ -7,6 +7,7 @@ cmsl_add_test(
         break_smoke_test.cpp
         builtin_function_caller2_test.cpp
         class_smoke_test.cpp
+        cmake_namespace_smoke_test.cpp
         designated_initializers_smoke_test.cpp
         double_type_smoke_test.cpp
         enum_smoke_test.cpp

@@ -1,5 +1,6 @@
 #include "sema/builtin_sema_context.hpp"
 #include "common/assert.hpp"
+#include "sema/builtin_cmake_namespace_context.hpp"
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_sema_function.hpp"
 #include "sema/builtin_token_provider.hpp"
@@ -15,7 +16,7 @@ builtin_sema_context::builtin_sema_context(
   sema_context_factory& context_factory,
   errors::errors_observer& errors_observer,
   const builtin_token_provider& builtin_token_provider,
-  types_context& types_ctx)
+  types_context& types_ctx, functions_context& functions_ctx)
   : sema_context_impl{ "" }
   , m_type_factory{ type_factory }
   , m_function_factory{ function_factory }
@@ -26,6 +27,7 @@ builtin_sema_context::builtin_sema_context(
 {
   add_types();
   add_functions();
+  add_cmake_namespace_context(functions_ctx);
 }
 
 template <unsigned N>
@@ -1107,5 +1109,14 @@ void builtin_sema_context::add_option_member_functions(
   };
 
   add_type_member_functions(project_manipulator, functions);
+}
+
+void builtin_sema_context::add_cmake_namespace_context(
+  functions_context& functions_ctx)
+{
+  m_cmake_namespace_context =
+    std::make_unique<builtin_cmake_namespace_context>(
+      *this, functions_ctx, m_function_factory, m_builtin_token_provider,
+      *m_builtin_types);
 }
 }

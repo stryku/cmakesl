@@ -1,0 +1,37 @@
+/** \brief The builtin cmake namespace.
+ */
+namespace cmake {
+
+/** \brief A message printing function.
+ *
+ * Prints \p msg to the standard output stream.
+ *
+ * \param msg The message to be printed.
+ */
+void message(string msg);
+
+/** \brief A warning printing function.
+ *
+ * Prints \p msg to the standard error stream. Configuration continues.
+ *
+ * \param msg The message to be printed.
+ */
+void warning(string msg);
+
+/** \brief An error printing function.
+ *
+ * Prints \p msg to the standard error stream. Configuration continues, but
+ * prevents generation.
+ *
+ * \param msg The message to be printed.
+ */
+void error(string msg);
+
+/** \brief A fatal error printing function.
+ *
+ * Prints \p msg to the standard error stream. Configuration stops.
+ *
+ * \param msg The message to be printed.
+ */
+void fatal_error(string msg);
+}

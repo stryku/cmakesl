@@ -342,6 +342,10 @@ private:
                                const params_t& params);
 
   inst::instance* cmake_minimum_required(const params_t& params);
+  inst::instance* cmake_message(const params_t& params);
+  inst::instance* cmake_warning(const params_t& params);
+  inst::instance* cmake_error(const params_t& params);
+  inst::instance* cmake_fatal_error(const params_t& params);
 
 private:
   int_t string_pos_to_int(std::string::size_type pos) const;

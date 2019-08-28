@@ -19,6 +19,8 @@ set(SEMA_SOURCES
     add_subdirectory_handler.hpp
     block_node_manipulator.cpp
     block_node_manipulator.hpp
+    builtin_cmake_namespace_context.cpp
+    builtin_cmake_namespace_context.hpp
     builtin_function_kind.hpp
     builtin_sema_context.cpp
     builtin_sema_context.hpp

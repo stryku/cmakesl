@@ -17,6 +17,7 @@ struct string_tokens_provider;
 struct version_tokens_provider;
 struct void_tokens_provider;
 struct option_tokens_provider;
+struct cmake_tokens_provider;
 
 // An instance of this class has to live for the whole program execution.
 // String views to paths are used later by sema and execution.
@@ -41,9 +42,10 @@ public:
   version_tokens_provider version() const;
   void_tokens_provider void_() const;
   option_tokens_provider option() const;
+  cmake_tokens_provider cmake() const;
 
 private:
-  enum class builtin_type
+  enum class provider_type
   {
     bool_,
     double_,
@@ -55,15 +57,16 @@ private:
     int_,
     string,
     version,
-    void_
+    void_,
+    cmake
   };
 
   void initialize_documentation_paths();
 
-  std::optional<cmsl::string_view> get_path(builtin_type type) const;
+  std::optional<cmsl::string_view> get_path(provider_type type) const;
 
 private:
   std::string m_builtin_documentation_path;
-  std::unordered_map<builtin_type, std::string> m_documentation_paths;
+  std::unordered_map<provider_type, std::string> m_documentation_paths;
 };
 }

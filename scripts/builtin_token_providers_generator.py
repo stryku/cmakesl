@@ -257,6 +257,15 @@ GENERATION_INFO = {
             'constructor_description_value': ['option(string description, bool value);', '', 'option'],
             'value': ['bool value();', 'bool ', 'value']
         }
+    },
+    'cmake': {
+        'tokens': {
+            'name': ['namespace cmake', 'namespace ', 'cmake'],
+            'message': ['void message(string msg);', 'void ', 'message'],
+            'warning': ['void warning(string msg);', 'void ', 'warning'],
+            'error': ['void error(string msg);', 'void ', 'error'],
+            'fatal_error': ['void fatal_error(string msg);', 'void ', 'fatal_error']
+        }
     }
 }
 
