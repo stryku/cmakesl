@@ -10,10 +10,26 @@ class fake_cmake_facade : public cmsl::facade::cmake_facade
 public:
   version get_cmake_version() const override { return {}; }
 
-  void message(const std::string&) const override {}
-  void warning(const std::string&) const override {}
-  void error(const std::string&) const override {}
-  void fatal_error(const std::string&) const override {}
+  void message(const std::string& msg) const override
+  {
+    std::cout << msg << '\n';
+  }
+
+  void warning(const std::string& msg) const override
+  {
+    std::cout << msg << '\n';
+  }
+
+  void error(const std::string& msg) const override
+  {
+    std::cout << msg << '\n';
+  }
+
+  void fatal_error(const std::string& msg) const override
+  {
+
+    std::cout << msg << '\n';
+  }
 
   void register_project(const std::string& name) override {}
 
