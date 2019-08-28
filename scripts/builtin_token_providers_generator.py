@@ -249,6 +249,14 @@ GENERATION_INFO = {
         'tokens': {
             'name': ['class void', 'class ', 'void', 'kw_void']
         }
+    },
+    'option': {
+        'tokens': {
+            'name': ['class option', 'class ', 'option', 'kw_option'],
+            'constructor_description': ['option(string description);', '', 'option'],
+            'constructor_description_value': ['option(string description, bool value);', '', 'option'],
+            'value': ['bool value();', 'bool ', 'value']
+        }
     }
 }
 

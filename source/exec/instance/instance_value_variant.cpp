@@ -65,6 +65,11 @@ instance_value_variant::instance_value_variant(executable_value val)
 {
 }
 
+instance_value_variant::instance_value_variant(option_value val)
+  : m_value{ std::move(val) }
+{
+}
+
 instance_value_variant::which_t instance_value_variant::which() const
 {
   return static_cast<which_t>(m_value.index());
@@ -150,6 +155,8 @@ void instance_value_variant::set_string(std::string value)
     case which_t::library:                                                    \
       break;                                                                  \
     case which_t::executable:                                                 \
+      break;                                                                  \
+    case which_t::option:                                                     \
       break;                                                                  \
   }                                                                           \
   CMSL_UNREACHABLE("Unknown alternative")
@@ -261,5 +268,20 @@ executable_value& instance_value_variant::get_executable_ref()
 void instance_value_variant::set_executable(executable_value value)
 {
   m_value = std::move(value);
+}
+
+const option_value& instance_value_variant::get_option_cref() const
+{
+  return std::get<option_value>(m_value);
+}
+
+option_value& instance_value_variant::get_option_ref()
+{
+  return std::get<option_value>(m_value);
+}
+
+void instance_value_variant::set_option(option_value value)
+{
+  m_value = value;
 }
 }

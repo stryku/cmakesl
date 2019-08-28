@@ -10,6 +10,9 @@
 #include <fstream>
 #include <iterator>
 
+#include "sema/dumper.hpp"
+#include <iostream>
+
 namespace cmsl::exec {
 global_executor::directory_guard::directory_guard(
   facade::cmake_facade& cmake_facade, const std::string& dir)
@@ -48,6 +51,11 @@ int global_executor::execute(std::string source)
   if (!compiled) {
     raise_unsuccessful_compilation_error(source_path);
     return -1;
+  }
+
+  {
+    sema::dumper d{ std::cout };
+    compiled->sema_tree().visit(d);
   }
 
   const auto builtin_types = compiled->builtin_types();

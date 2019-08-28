@@ -347,6 +347,7 @@ lexer::keyword_tokens_t lexer::create_keyword_tokens() const
   tokens["library"] = token_type::kw_library;
   tokens["executable"] = token_type::kw_executable;
   tokens["project"] = token_type::kw_project;
+  tokens["option"] = token_type::kw_option;
   tokens["return"] = token_type::kw_return;
   tokens["class"] = token_type::kw_class;
   tokens["enum"] = token_type::kw_enum;

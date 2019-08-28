@@ -214,6 +214,10 @@ std::unique_ptr<inst::instance> builtin_function_caller2::call_member(
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(user_type_operator_equal);
 
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(option_ctor_description);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(option_ctor_description_value);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(option_value);
+
     default:
       CMSL_UNREACHABLE("Calling unimplemented member function");
       return nullptr;
@@ -1613,5 +1617,29 @@ inst::instance* builtin_function_caller2::user_type_operator_equal(
 {
   instance.assign(params[0]->copy());
   return m_instances.create_reference(instance);
+}
+
+inst::instance* builtin_function_caller2::option_ctor_description(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto& [description] = get_params<alternative_t::string>(params);
+  instance.assign(inst::option_value{ description });
+  return &instance;
+}
+
+inst::instance* builtin_function_caller2::option_ctor_description_value(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto& [description, value] =
+    get_params<alternative_t::string, alternative_t::bool_>(params);
+  instance.assign(inst::option_value{ description, value });
+  return &instance;
+}
+
+inst::instance* builtin_function_caller2::option_value(
+  inst::instance& instance, const builtin_function_caller2::params_t& params)
+{
+  const auto value = instance.value_cref().get_option_cref().value();
+  return m_instances.create(value);
 }
 }

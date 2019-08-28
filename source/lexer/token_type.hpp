@@ -81,6 +81,7 @@ enum class token_type
   kw_library,
   kw_executable,
   kw_project,
+  kw_option,
 
   _builtin_types_end,
 

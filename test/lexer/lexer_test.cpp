@@ -281,6 +281,7 @@ const auto values =
                   PureKeywordState{ "library", token_type::kw_library },
                   PureKeywordState{ "executable", token_type::kw_executable },
                   PureKeywordState{ "project", token_type::kw_project },
+                  PureKeywordState{ "option", token_type::kw_option },
                   PureKeywordState{ "return", token_type::kw_return },
                   PureKeywordState{ "class", token_type::kw_class },
                   PureKeywordState{ "enum", token_type::kw_enum },

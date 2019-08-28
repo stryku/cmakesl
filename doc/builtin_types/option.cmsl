@@ -1,0 +1,28 @@
+/** \brief The builtin option type.
+ */
+class option
+{
+public:
+  /** \brief Constructor.
+   *
+   * Sets value to false.
+   *
+   * \param description The description to be initialized with.
+   */
+  option(string description);
+
+  /** \brief Constructor.
+   *
+   * Sets value to \p value.
+   *
+   * \param description The description to be initialized with.
+   * \param value The value to be initialized with.
+   */
+  option(string description, bool value);
+
+  /** \brief Value getter.
+   *
+   * \return The option value.
+   */
+  bool value();
+};

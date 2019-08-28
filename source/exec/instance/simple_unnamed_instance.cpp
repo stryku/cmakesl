@@ -37,6 +37,8 @@ instance_value_variant simple_unnamed_instance::create_init_data() const
     return list_value{};
   } else if (name == "project") {
     return project_value{ "" };
+  } else if (name == "option") {
+    return option_value{ "" };
   }
 
   CMSL_UNREACHABLE("Unknown type");

@@ -16,6 +16,7 @@ struct int_tokens_provider;
 struct string_tokens_provider;
 struct version_tokens_provider;
 struct void_tokens_provider;
+struct option_tokens_provider;
 
 // An instance of this class has to live for the whole program execution.
 // String views to paths are used later by sema and execution.
@@ -39,6 +40,7 @@ public:
   string_tokens_provider string() const;
   version_tokens_provider version() const;
   void_tokens_provider void_() const;
+  option_tokens_provider option() const;
 
 private:
   enum class builtin_type
@@ -49,6 +51,7 @@ private:
     library,
     list,
     project,
+    option,
     int_,
     string,
     version,

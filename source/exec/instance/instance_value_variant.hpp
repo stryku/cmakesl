@@ -4,6 +4,7 @@
 #include "exec/instance/enum_constant_value.hpp"
 #include "exec/instance/instance_value_alternative.hpp"
 #include "exec/instance/list_value.hpp"
+#include "exec/instance/option_value.hpp"
 #include "exec/instance/project_value.hpp"
 #include "exec/instance/target_value.hpp"
 #include "exec/instance/version_value.hpp"
@@ -18,9 +19,10 @@ class instance;
 class instance_value_variant
 {
 private:
-  using value_t = std::variant<bool, int_t, double, enum_constant_value,
-                               std::string, version_value, list_value,
-                               project_value, library_value, executable_value>;
+  using value_t =
+    std::variant<bool, int_t, double, enum_constant_value, std::string,
+                 version_value, list_value, project_value, library_value,
+                 executable_value, option_value>;
 
 public:
   using which_t = instance_value_alternative;
@@ -44,6 +46,7 @@ public:
   instance_value_variant(project_value val);
   instance_value_variant(library_value val);
   instance_value_variant(executable_value val);
+  instance_value_variant(option_value val);
 
   which_t which() const;
 
@@ -82,6 +85,10 @@ public:
   const executable_value& get_executable_cref() const;
   executable_value& get_executable_ref();
   void set_executable(executable_value value);
+
+  const option_value& get_option_cref() const;
+  option_value& get_option_ref();
+  void set_option(option_value value);
 
   // Todo: move to tests. It's not needed in production code.
   bool operator==(const instance_value_variant& rhs) const;

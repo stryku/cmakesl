@@ -35,6 +35,9 @@ std::unique_ptr<instance> instance_factory2::create(
       case instance_value_variant::which_t::executable: {
         return builtin_types.executable;
       }
+      case instance_value_variant::which_t::option: {
+        return builtin_types.option;
+      }
       default:
         CMSL_UNREACHABLE("Unknown type requested");
     }

@@ -334,6 +334,13 @@ private:
   inst::instance* user_type_operator_equal(inst::instance& instance,
                                            const params_t& params);
 
+  inst::instance* option_ctor_description(inst::instance& instance,
+                                          const params_t& params);
+  inst::instance* option_ctor_description_value(inst::instance& instance,
+                                                const params_t& params);
+  inst::instance* option_value(inst::instance& instance,
+                               const params_t& params);
+
   inst::instance* cmake_minimum_required(const params_t& params);
 
 private:
