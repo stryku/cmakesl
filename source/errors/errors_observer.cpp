@@ -21,7 +21,7 @@ namespace cmsl::errors {
 void errors_observer::nofify_error(const error& error)
 {
 
-  std::cout << error.source_path << ':' << error.range.begin.line << ':'
+  std::cerr << error.source_path << ':' << error.range.begin.line << ':'
             << error.range.begin.column << ": " << to_string(error.type)
             << ": " << error.message << '\n';
 
@@ -30,7 +30,7 @@ void errors_observer::nofify_error(const error& error)
     std::string range_indicator(range_start, ' ');
     range_indicator += std::string(error.range.size(), '^');
 
-    std::cout << error.line_snippet << '\n' << range_indicator << '\n';
+    std::cerr << error.line_snippet << '\n' << range_indicator << '\n';
   }
 }
 }

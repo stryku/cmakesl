@@ -71,14 +71,25 @@ private:
 int main(int argc, const char* argv[])
 {
   if (argc < 2) {
-    std::cerr << "Usage: cmakesl path/to/directory/with/root/cmakesl/file";
+    std::cerr << "Usage: cmakesl path/to/root/CMakeLists.cmsl";
     return 1;
   }
 
-  const auto root_dir_path = std::string{ argv[1] };
-  const auto file_path = root_dir_path + "/CMakeLists.cmsl";
+  if (argv[1] == std::string{ "--version" }) {
+    std::cout << "v0.0";
+    return 0;
+  }
 
-  std::ifstream in{ file_path };
+  const auto root_file_path = std::string{ argv[1] };
+  const auto end_of_root_dir = root_file_path.find("/CMakeLists.cmsl");
+  if (end_of_root_dir == std::string::npos) {
+    std::cerr << "Usage: cmakesl path/to/root/CMakeLists.cmsl";
+    return 1;
+  }
+
+  const auto root_dir_path = root_file_path.substr(0, end_of_root_dir);
+
+  std::ifstream in{ root_file_path };
   std::string source{ (std::istreambuf_iterator<char>(in)),
                       std::istreambuf_iterator<char>() };
 
