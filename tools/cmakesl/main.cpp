@@ -25,10 +25,15 @@ public:
     std::cout << msg << '\n';
   }
 
-  void fatal_error(const std::string& msg) const override
+  void fatal_error(const std::string& msg) override
   {
-
+    m_fatal_error_occured = true;
     std::cout << msg << '\n';
+  }
+
+  bool did_fatal_error_occure() const override
+  {
+    return m_fatal_error_occured;
   }
 
   void register_project(const std::string& name) override {}
@@ -66,6 +71,7 @@ public:
 
 private:
   std::stack<std::string> m_directory_stack;
+  bool m_fatal_error_occured{ false };
 };
 
 int main(int argc, const char* argv[])

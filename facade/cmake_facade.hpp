@@ -43,7 +43,9 @@ public:
   virtual void message(const std::string& what) const = 0;
   virtual void warning(const std::string& what) const = 0;
   virtual void error(const std::string& what) const = 0;
-  virtual void fatal_error(const std::string& what) const = 0;
+  virtual void fatal_error(const std::string& what) = 0;
+  virtual bool did_fatal_error_occure() const = 0;
+
   virtual void register_project(const std::string& name) = 0;
 
   virtual std::string get_current_binary_dir() const = 0;
