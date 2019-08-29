@@ -75,7 +75,7 @@ struct sema_builder_ast_visitor_members
   sema_type_factory& type_factory;
   sema_function_factory& function_factory;
   sema_context_factory& context_factory;
-  add_subdirectory_handler& add_subdirectory_handler;
+  add_subdirectory_handler& add_subdir_handler;
   const builtin_token_provider& builtin_token_provider;
   parsing_context& parsing_ctx;
   builtin_types_accessor builtin_types;
@@ -213,18 +213,6 @@ public:
   std::unique_ptr<sema_node> m_result_node;
 
 private:
-  //  sema_context& m_generic_types_context;
-  //  sema_context& m_ctx;
-  //  errors::errors_observer& m_errors_observer;
-  //  qualified_contextes m_qualified_ctxs;
-  //  sema_type_factory& m_type_factory;
-  //  sema_function_factory& m_function_factory;
-  //  sema_context_factory& m_context_factory;
-  //  add_subdirectory_handler& m_add_subdirectory_handler;
-  //  const builtin_token_provider& m_builtin_token_provider;
-  //  parsing_context& m_parsing_ctx;
-  //  builtin_types_accessor m_builtin_types;
-
   sema_builder_ast_visitor_members& m_;
 
   static unsigned m_identifier_index;

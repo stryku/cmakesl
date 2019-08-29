@@ -318,7 +318,7 @@ sema_builder_ast_visitor::build_add_subdirectory_call(
                  [](auto& param) { return std::move(param); });
 
   const auto fun =
-    m_.add_subdirectory_handler.handle_add_subdirectory(name, params_but_name);
+    m_.add_subdir_handler.handle_add_subdirectory(name, params_but_name);
   if (!fun) {
     return nullptr;
   }
@@ -663,12 +663,10 @@ sema_builder_ast_visitor sema_builder_ast_visitor::clone(
   sema_context& ctx_to_visit) const
 {
   auto members = sema_builder_ast_visitor_members{
-    m_.generic_types_context,  ctx_to_visit,
-    m_.errors_observer,        m_.qualified_ctxs,
-    m_.type_factory,           m_.function_factory,
-    m_.context_factory,        m_.add_subdirectory_handler,
-    m_.builtin_token_provider, m_.parsing_ctx,
-    m_.builtin_types
+    m_.generic_types_context, ctx_to_visit,          m_.errors_observer,
+    m_.qualified_ctxs,        m_.type_factory,       m_.function_factory,
+    m_.context_factory,       m_.add_subdir_handler, m_.builtin_token_provider,
+    m_.parsing_ctx,           m_.builtin_types
   };
 
   return sema_builder_ast_visitor{ members };
