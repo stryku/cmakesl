@@ -80,6 +80,9 @@ TEST_F(ExpressionEvaluationVisitorTest,
   EXPECT_CALL(m_instances, create(Matcher<inst::instance_value_variant>(_)))
     .WillOnce(Return(&instance_mock));
 
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
+
   visitor.visit(true_node);
 
   EXPECT_THAT(visitor.result, Eq(&instance_mock));
@@ -98,6 +101,9 @@ TEST_F(ExpressionEvaluationVisitorTest,
 
   EXPECT_CALL(m_instances, create(Matcher<inst::instance_value_variant>(_)))
     .WillOnce(Return(&instance_mock));
+
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
 
   visitor.visit(node);
 
@@ -118,6 +124,9 @@ TEST_F(ExpressionEvaluationVisitorTest,
   EXPECT_CALL(m_instances, create(Matcher<inst::instance_value_variant>(_)))
     .WillOnce(Return(&instance_mock));
 
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
+
   visitor.visit(node);
 
   EXPECT_THAT(visitor.result, Eq(&instance_mock));
@@ -136,6 +145,9 @@ TEST_F(ExpressionEvaluationVisitorTest,
 
   EXPECT_CALL(m_instances, create(Matcher<inst::instance_value_variant>(_)))
     .WillOnce(Return(&instance_mock));
+
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
 
   visitor.visit(node);
 
@@ -157,6 +169,9 @@ TEST_F(ExpressionEvaluationVisitorTest,
 
   EXPECT_CALL(m_ids_ctx, lookup_identifier(identifier_index))
     .WillOnce(Return(&instance_mock));
+
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
 
   visitor.visit(node);
 
@@ -208,6 +223,9 @@ TEST_F(
 
   // Function return value storing in our instances.
   EXPECT_CALL(m_instances, store(_));
+
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
 
   expression_evaluation_visitor visitor{ m_ctx };
 
@@ -261,6 +279,9 @@ TEST_F(ExpressionEvaluationVisitorTest,
 
   // Function return value storing in our instances.
   EXPECT_CALL(m_instances, store(_));
+
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
 
   expression_evaluation_visitor visitor{ m_ctx };
   visitor.visit(node);
@@ -323,6 +344,9 @@ TEST_F(
 
   // Function return value storing in our instances.
   EXPECT_CALL(m_instances, store(_));
+
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
 
   expression_evaluation_visitor visitor{ m_ctx };
   visitor.visit(node);
@@ -387,6 +411,9 @@ TEST_F(
   // Function return value storing in our instances.
   EXPECT_CALL(m_instances, store(_));
 
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
+
   expression_evaluation_visitor visitor{ m_ctx };
   visitor.visit(node);
 
@@ -413,6 +440,9 @@ TEST_F(ExpressionEvaluationVisitorTest,
 
   EXPECT_CALL(lhs_instance, find_member(_)).WillOnce(Return(&member_instance));
 
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
+
   expression_evaluation_visitor visitor{ m_ctx };
   visitor.visit(node);
 
@@ -432,6 +462,9 @@ TEST_F(ExpressionEvaluationVisitorTest,
 
   EXPECT_CALL(m_ids_ctx, lookup_identifier(_))
     .WillOnce(Return(&result_instance));
+
+  EXPECT_CALL(m_cmake_facade, did_fatal_error_occure())
+    .WillRepeatedly(Return(false));
 
   expression_evaluation_visitor visitor{ m_ctx };
   visitor.visit(node);
