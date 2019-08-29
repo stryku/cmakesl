@@ -55,7 +55,7 @@ int global_executor::execute(std::string source)
   const auto main_function = compiled->get_main();
   if (!main_function) {
     raise_no_main_function_error(m_root_path);
-    return -1;
+    return -2;
   }
 
   const auto& global_context = compiled->get_global_context();
@@ -73,6 +73,11 @@ int global_executor::execute(std::string source)
 
   inst::instances_holder instances{ builtin_types };
   auto main_result = e.call(*casted, {}, instances);
+
+  if (m_cmake_facade.did_fatal_error_occure()) {
+    return -1;
+  }
+
   return main_result->value_cref().get_int();
 }
 
