@@ -76,7 +76,7 @@ struct sema_builder_ast_visitor_members
   sema_function_factory& function_factory;
   sema_context_factory& context_factory;
   add_subdirectory_handler& add_subdir_handler;
-  const builtin_token_provider& builtin_token_provider;
+  const builtin_token_provider& builtin_tokens;
   parsing_context& parsing_ctx;
   builtin_types_accessor builtin_types;
 };

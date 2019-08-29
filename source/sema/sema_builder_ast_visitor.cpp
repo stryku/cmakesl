@@ -595,9 +595,9 @@ const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(
   }
 
   auto factory = sema_generic_type_factory{
-    m_.generic_types_context,  search_context,     m_.type_factory,
-    m_.function_factory,       m_.context_factory, m_.errors_observer,
-    m_.builtin_token_provider, m_.builtin_types,   m_.qualified_ctxs.types
+    m_.generic_types_context, search_context,     m_.type_factory,
+    m_.function_factory,      m_.context_factory, m_.errors_observer,
+    m_.builtin_tokens,        m_.builtin_types,   m_.qualified_ctxs.types
   };
 
   return factory.create_generic(name);
@@ -665,7 +665,7 @@ sema_builder_ast_visitor sema_builder_ast_visitor::clone(
   auto members = sema_builder_ast_visitor_members{
     m_.generic_types_context, ctx_to_visit,          m_.errors_observer,
     m_.qualified_ctxs,        m_.type_factory,       m_.function_factory,
-    m_.context_factory,       m_.add_subdir_handler, m_.builtin_token_provider,
+    m_.context_factory,       m_.add_subdir_handler, m_.builtin_tokens,
     m_.parsing_ctx,           m_.builtin_types
   };
 
