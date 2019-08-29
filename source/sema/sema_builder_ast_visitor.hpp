@@ -66,22 +66,28 @@ struct parsing_context
   unsigned loop_parsing_counter{ 0u };
 };
 
+struct sema_builder_ast_visitor_members
+{
+  sema_context& generic_types_context;
+  sema_context& ctx;
+  errors::errors_observer& errors_observer;
+  qualified_contextes qualified_ctxs;
+  sema_type_factory& type_factory;
+  sema_function_factory& function_factory;
+  sema_context_factory& context_factory;
+  add_subdirectory_handler& add_subdirectory_handler;
+  const builtin_token_provider& builtin_token_provider;
+  parsing_context& parsing_ctx;
+  builtin_types_accessor builtin_types;
+};
+
 class sema_builder_ast_visitor : public ast::ast_node_visitor
 {
 private:
   using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
 public:
-  explicit sema_builder_ast_visitor(
-    sema_context& generic_types_context, sema_context& ctx,
-    errors::errors_observer& errs, enum_values_context& enums_context,
-    identifiers_context& ids_context, types_context& ty_context,
-    functions_context& functions_ctx, sema_type_factory& type_factory,
-    sema_function_factory& function_factory,
-    sema_context_factory& context_factory,
-    add_subdirectory_handler& add_subdirectory_handler,
-    const builtin_token_provider& builtin_token_provider,
-    parsing_context& parsing_ctx, builtin_types_accessor builtin_types);
+  explicit sema_builder_ast_visitor(sema_builder_ast_visitor_members& members);
 
   void visit(const ast::block_node& node) override;
   void visit(const ast::class_node& node) override;
@@ -207,17 +213,19 @@ public:
   std::unique_ptr<sema_node> m_result_node;
 
 private:
-  sema_context& m_generic_types_context;
-  sema_context& m_ctx;
-  errors::errors_observer& m_errors_observer;
-  qualified_contextes m_qualified_ctxs;
-  sema_type_factory& m_type_factory;
-  sema_function_factory& m_function_factory;
-  sema_context_factory& m_context_factory;
-  add_subdirectory_handler& m_add_subdirectory_handler;
-  const builtin_token_provider& m_builtin_token_provider;
-  parsing_context& m_parsing_ctx;
-  builtin_types_accessor m_builtin_types;
+  //  sema_context& m_generic_types_context;
+  //  sema_context& m_ctx;
+  //  errors::errors_observer& m_errors_observer;
+  //  qualified_contextes m_qualified_ctxs;
+  //  sema_type_factory& m_type_factory;
+  //  sema_function_factory& m_function_factory;
+  //  sema_context_factory& m_context_factory;
+  //  add_subdirectory_handler& m_add_subdirectory_handler;
+  //  const builtin_token_provider& m_builtin_token_provider;
+  //  parsing_context& m_parsing_ctx;
+  //  builtin_types_accessor m_builtin_types;
+
+  sema_builder_ast_visitor_members& m_;
 
   static unsigned m_identifier_index;
 };
