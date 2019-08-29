@@ -106,7 +106,7 @@ private:
     auto err = errors::error{ m_source.path(),           line_info.line,
                               line_info.start_pos,       std::move(message),
                               errors::error_type::error, token.src_range() };
-    m_errors_observer.nofify_error(std::move(err));
+    m_errors_observer.notify_error(std::move(err));
   }
 
 private:

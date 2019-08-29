@@ -19,7 +19,7 @@ errors_observer_mock::~errors_observer_mock()
 }
 }
 
-void errors_observer::nofify_error(const cmsl::errors::error& error)
+void errors_observer::notify_error(const cmsl::errors::error& error)
 {
   errors_observer_mock_ptr->notify_error(error);
 }

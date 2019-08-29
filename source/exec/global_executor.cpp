@@ -123,7 +123,7 @@ void global_executor::raise_no_main_function_error(
   err.message = "main function not found";
   err.type = errors::error_type::error;
   err.range = source_range{ source_location{}, source_location{} };
-  m_errors_observer.nofify_error(err);
+  m_errors_observer.notify_error(err);
 }
 
 void global_executor::raise_unsuccessful_compilation_error(
@@ -134,6 +134,6 @@ void global_executor::raise_unsuccessful_compilation_error(
   err.message = "parsing failed, can not execute";
   err.type = errors::error_type::error;
   err.range = source_range{ source_location{}, source_location{} };
-  m_errors_observer.nofify_error(err);
+  m_errors_observer.notify_error(err);
 }
 }

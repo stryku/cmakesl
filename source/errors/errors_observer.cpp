@@ -18,7 +18,7 @@ cmsl::string_view to_string(cmsl::errors::error_type type)
 }
 
 namespace cmsl::errors {
-void errors_observer::nofify_error(const error& error)
+void errors_observer::notify_error(const error& error)
 {
 
   std::cerr << error.source_path << ':' << error.range.begin.line << ':'

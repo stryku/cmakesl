@@ -33,7 +33,7 @@ const sema_function* overload_resolution::choose(
                                       "\' function not found",
                                     errors::error_type::error,
                                     m_call_token.src_range() };
-    m_errs.nofify_error(err);
+    m_errs.notify_error(err);
 
     return nullptr;
   }
@@ -158,7 +158,7 @@ void overload_resolution::error_notes_reporter::operator()(
   auto err = create_note_basics();
   err.message += "Wrong parameters count passed. Expected " +
     std::to_string(result.expected) + ", got " + std::to_string(result.got);
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 void overload_resolution::error_notes_reporter::operator()(
@@ -211,7 +211,7 @@ void overload_resolution::raise_error(
       line_info.start_pos,          "No matching function for call",
       errors::error_type::error,    m_call_token.src_range()
     };
-    m_errs.nofify_error(err);
+    m_errs.notify_error(err);
   }
 
   for (const auto& result : match_results) {

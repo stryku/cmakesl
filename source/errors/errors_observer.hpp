@@ -6,6 +6,6 @@ struct error;
 class errors_observer
 {
 public:
-  void nofify_error(const error& error);
+  void notify_error(const error& error);
 };
 }

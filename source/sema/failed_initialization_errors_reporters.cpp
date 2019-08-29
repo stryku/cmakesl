@@ -27,7 +27,7 @@ void designated_initializer_failed_initialization_errors_reporter::operator()(
     "' of type '" + issue.member_type.name().to_string() +
     "' can not be initialized by a value of type '" +
     issue.init_type.name().to_string() + "'";
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 void designated_initializer_failed_initialization_errors_reporter::operator()(
@@ -41,7 +41,7 @@ void designated_initializer_failed_initialization_errors_reporter::operator()(
   err.message = "member '" + std::string{ issue.member_name.str() } +
     "' of type '" + issue.member_type.name().to_string() +
     "' can not be initialized by a temporary value";
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 void designated_initializer_failed_initialization_errors_reporter::operator()(
@@ -52,7 +52,7 @@ void designated_initializer_failed_initialization_errors_reporter::operator()(
   auto err = create_note_basics();
   err.message = "no member named '" + std::string{ issue.member_name.str() } +
     "' in '" + issue.type.name().to_string() + "'";
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 void designated_initializer_failed_initialization_errors_reporter::operator()(
@@ -64,7 +64,7 @@ void designated_initializer_failed_initialization_errors_reporter::operator()(
   auto err = create_note_basics();
   err.message = "member '" + std::string{ issue.member_name.str() } +
     "' already initialized";
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 
   // note: initialized here
   err = create_note_basics();
@@ -76,7 +76,7 @@ void designated_initializer_failed_initialization_errors_reporter::operator()(
   err.line_start_pos = line_info.start_pos;
   err.range = issue.first_initialization.src_range();
 
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 }
 
@@ -105,7 +105,7 @@ operator()(const variable_initialization_issues::different_types& issue)
     m_function.signature().params[m_param_index].ty.name().to_string() +
     "', got '" + m_param_expression.type().name().to_string() + '\'';
 
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 void function_call_parameters_failed_initializations_errors_reporter::
@@ -117,7 +117,7 @@ operator()(
   auto err = create_note_basics();
   err.message = "parameter at position " + std::to_string(m_param_index) +
     ", of a reference type, initialized by a temporary value";
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 errors::error function_call_parameters_failed_initializations_errors_reporter::
@@ -153,7 +153,7 @@ void function_return_value_failed_initialization_errors_reporter::operator()(
     issue.expected.name().to_string() + "', got '" +
     issue.got.name().to_string() + "'";
 
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 void function_return_value_failed_initialization_errors_reporter::operator()(
@@ -165,7 +165,7 @@ void function_return_value_failed_initialization_errors_reporter::operator()(
   auto err = create_note_basics();
   err.message = "return value of a reference type can not be initialized by a "
                 "temporary value";
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 errors::error function_return_value_failed_initialization_errors_reporter::
@@ -195,7 +195,7 @@ void variable_failed_initialization_errors_reporter::operator()(
 {
   auto err = create_note_basics();
   err.message = "Initialization and declared variable type does not match";
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 void variable_failed_initialization_errors_reporter::operator()(
@@ -204,7 +204,7 @@ void variable_failed_initialization_errors_reporter::operator()(
   auto err = create_note_basics();
   err.message =
     "Reference variable can not be initialized with a temporary value";
-  m_errs.nofify_error(err);
+  m_errs.notify_error(err);
 }
 
 errors::error

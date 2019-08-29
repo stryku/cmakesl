@@ -668,7 +668,7 @@ void sema_builder_ast_visitor::notify_error_observer(
   const auto err =
     errors::error{ source.path(), line_info.line, line_info.start_pos,
                    message,       err_type,       src_range };
-  m_errors_observer.nofify_error(err);
+  m_errors_observer.notify_error(err);
 }
 
 sema_builder_ast_visitor sema_builder_ast_visitor::clone() const
