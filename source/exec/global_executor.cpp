@@ -55,7 +55,7 @@ int global_executor::execute(std::string source)
   const auto main_function = compiled->get_main();
   if (!main_function) {
     raise_no_main_function_error(m_root_path);
-    return -1;
+    return -2;
   }
 
   const auto& global_context = compiled->get_global_context();
@@ -73,6 +73,11 @@ int global_executor::execute(std::string source)
 
   inst::instances_holder instances{ builtin_types };
   auto main_result = e.call(*casted, {}, instances);
+
+  if (m_cmake_facade.did_fatal_error_occure()) {
+    return -1;
+  }
+
   return main_result->value_cref().get_int();
 }
 
@@ -123,7 +128,7 @@ void global_executor::raise_no_main_function_error(
   err.message = "main function not found";
   err.type = errors::error_type::error;
   err.range = source_range{ source_location{}, source_location{} };
-  m_errors_observer.nofify_error(err);
+  m_errors_observer.notify_error(err);
 }
 
 void global_executor::raise_unsuccessful_compilation_error(
@@ -134,6 +139,6 @@ void global_executor::raise_unsuccessful_compilation_error(
   err.message = "parsing failed, can not execute";
   err.type = errors::error_type::error;
   err.range = source_range{ source_location{}, source_location{} };
-  m_errors_observer.nofify_error(err);
+  m_errors_observer.notify_error(err);
 }
 }

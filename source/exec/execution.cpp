@@ -23,8 +23,12 @@ std::unique_ptr<inst::instance> execution::call(
   } else {
     auto builtin_function =
       dynamic_cast<const sema::builtin_sema_function*>(&fun);
-    result = builtin_function_caller2{ m_cmake_facade, instances }.call(
-      builtin_function->kind(), params);
+    result =
+      builtin_function_caller2{
+        m_cmake_facade,
+        instances,
+      }
+        .call(builtin_function->kind(), params);
   }
 
   return result;
@@ -69,7 +73,8 @@ void execution::execute_block(const sema::block_node& block)
   auto guard = m_callstack.top().exec_ctx.enter_scope();
   for (const auto& expr : block.nodes()) {
     execute_node(*expr);
-    if (returning_from_function() || m_breaking_from_loop) {
+    if (returning_from_function() || m_breaking_from_loop ||
+        m_cmake_facade.did_fatal_error_occure()) {
       return;
     }
   }
@@ -180,6 +185,9 @@ std::unique_ptr<inst::instance> execution::execute_infix_expression(
 {
   expression_evaluation_visitor visitor{ ctx };
   node.visit(visitor);
+  if (m_cmake_facade.did_fatal_error_occure()) {
+    return nullptr;
+  }
   return visitor.result->copy(); // Todo: it'd be good to move instead of copy.
 }
 

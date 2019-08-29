@@ -221,7 +221,7 @@ token_type lexer::get_string_token_type()
     err.line_snippet = line_info.line;
     err.line_start_pos = line_info.start_pos;
 
-    m_err_observer.nofify_error(std::move(err));
+    m_err_observer.notify_error(std::move(err));
     return token_type::undef;
   }
 

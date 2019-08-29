@@ -58,7 +58,15 @@ public:
   void visit(const sema::binary_operator_node& node) override
   {
     auto lhs_result = evaluate_child(node.lhs());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     auto rhs_result = evaluate_child(node.rhs());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     const auto& operator_function = node.operator_function();
 
     // Todo: use small vector.
@@ -66,6 +74,10 @@ public:
     params.emplace_back(rhs_result);
     auto result_instance = m_ctx.caller.call_member(
       *lhs_result, operator_function, std::move(params), m_ctx.instances);
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
   }
@@ -74,9 +86,17 @@ public:
   {
     auto evaluated_params =
       evaluate_call_parameters(node.function(), node.param_expressions());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     const auto& function = node.function();
     auto result_instance =
       m_ctx.caller.call(function, evaluated_params, m_ctx.instances);
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
   }
@@ -88,9 +108,19 @@ public:
 
     auto evaluated_params =
       evaluate_call_parameters(node.function(), node.param_expressions());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      m_ctx.cmake_facade.go_directory_up();
+      return;
+    }
+
     const auto& function = node.function();
     auto result_instance =
       m_ctx.caller.call(function, evaluated_params, m_ctx.instances);
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      m_ctx.cmake_facade.go_directory_up();
+      return;
+    }
+
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
 
@@ -101,10 +131,18 @@ public:
   {
     auto evaluated_params =
       evaluate_call_parameters(node.function(), node.param_expressions());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     const auto& function = node.function();
     auto class_instance = m_ctx.ids_context.get_class_instance();
     auto result_instance = m_ctx.caller.call_member(
       *class_instance, function, evaluated_params, m_ctx.instances);
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
   }
@@ -113,10 +151,18 @@ public:
   {
     auto evaluated_params =
       evaluate_call_parameters(node.function(), node.param_expressions());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     const auto& function = node.function();
     auto class_instance = m_ctx.instances.create(node.type());
     auto result_instance = m_ctx.caller.call_member(
       *class_instance, function, evaluated_params, m_ctx.instances);
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
   }
@@ -124,11 +170,23 @@ public:
   void visit(const sema::member_function_call_node& node) override
   {
     auto lhs_result = evaluate_child(node.lhs());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     auto evaluated_params =
       evaluate_call_parameters(node.function(), node.param_expressions());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     const auto& function = node.function();
     auto result_instance = m_ctx.caller.call_member(
       *lhs_result, function, evaluated_params, m_ctx.instances);
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
   }
@@ -136,6 +194,9 @@ public:
   void visit(const sema::class_member_access_node& node) override
   {
     auto lhs = evaluate_child(node.lhs());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
     result = lhs->find_member(node.member_index());
   }
 
@@ -147,12 +208,18 @@ public:
   void visit(const sema::cast_to_reference_node& node) override
   {
     const auto evaluated = evaluate_child(node.expression());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
     result = m_ctx.instances.create_reference(*evaluated);
   }
 
   void visit(const sema::cast_to_value_node& node) override
   {
     const auto evaluated = evaluate_child(node.expression());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
     const auto& evaluated_reference_type = evaluated->type();
     const auto& referenced_type = evaluated_reference_type.referenced_type();
     result = m_ctx.instances.create(referenced_type, evaluated->value());
@@ -165,6 +232,9 @@ public:
 
     for (const auto& value_expression : node.values()) {
       const auto evaluated = evaluate_child(*value_expression);
+      if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+        return;
+      }
       auto owned_value = m_ctx.instances.gather_ownership(evaluated);
       list.push_back(std::move(owned_value));
     }
@@ -175,6 +245,10 @@ public:
   void visit(const sema::ternary_operator_node& node) override
   {
     const auto condition = evaluate_child(node.condition());
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
     const auto& condition_result_value = condition->value_cref();
 
     if (condition_result_value.get_bool()) {
@@ -195,6 +269,9 @@ public:
       auto guard = set_expected_type(member_info->ty);
 
       auto initialization_value = evaluate_child(*initializer.init);
+      if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+        return;
+      }
 
       // It could probably be gathered from the instances.
       instance->assign_member(member_info->index,
@@ -239,6 +316,11 @@ private:
       const auto& expected_type = function.signature().params[i].ty;
       auto guard = set_expected_type(expected_type);
       auto param = evaluate_child(*params[i]);
+
+      if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+        return {};
+      }
+
       evaluated_params.emplace_back(param);
     }
 

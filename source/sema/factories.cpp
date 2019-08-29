@@ -192,13 +192,13 @@ const sema_type* sema_generic_type_factory::create_list(
   const auto& nested_types = name.nested_types();
   if (nested_types.empty()) {
     const auto err = generic_parameters_error_creator();
-    m_errors_observer.nofify_error(err);
+    m_errors_observer.notify_error(err);
     return nullptr;
   }
   constexpr auto list_generic_parameters{ 1u };
   if (nested_types.size() > list_generic_parameters) {
     const auto err = generic_parameters_error_creator();
-    m_errors_observer.nofify_error(err);
+    m_errors_observer.notify_error(err);
     return nullptr;
   }
 
@@ -466,7 +466,7 @@ const sema_type* sema_generic_type_factory::try_get_or_create_value_type(
         type_name.generic_name().primary_name().src_range().begin.line);
       err.line_start_pos = line_info.start_pos;
       err.line_snippet = line_info.line;
-      m_errors_observer.nofify_error(err);
+      m_errors_observer.notify_error(err);
       return nullptr;
     }
     return found;
