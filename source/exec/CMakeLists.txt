@@ -1,6 +1,6 @@
 set(EXEC_SOURCES
-    builtin_function_caller2.cpp
-    builtin_function_caller2.hpp
+    builtin_function_caller.cpp
+    builtin_function_caller.hpp
     compiled_source.cpp
     execution.cpp
     execution.hpp

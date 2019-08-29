@@ -1,5 +1,5 @@
-#include "exec/builtin_function_caller2.hpp"
-#include "builtin_function_caller2.hpp"
+#include "exec/builtin_function_caller.hpp"
+#include "builtin_function_caller.hpp"
 #include "common/assert.hpp"
 #include "exec/instance/instance.hpp"
 #include "exec/instance/instances_holder.hpp"
@@ -31,9 +31,9 @@ decltype(auto) get_params(Params&& params)
 
 using alternative_t = inst::instance_value_alternative;
 
-const std::locale builtin_function_caller2::m_utf8_locale("en_US.utf8");
+const std::locale builtin_function_caller::m_utf8_locale("en_US.utf8");
 
-builtin_function_caller2::builtin_function_caller2(
+builtin_function_caller::builtin_function_caller(
   facade::cmake_facade& cmake_facade,
   inst::instances_holder_interface& instances)
   : m_cmake_facade{ cmake_facade }
@@ -41,7 +41,7 @@ builtin_function_caller2::builtin_function_caller2(
 {
 }
 
-std::unique_ptr<inst::instance> builtin_function_caller2::call_member(
+std::unique_ptr<inst::instance> builtin_function_caller::call_member(
   inst::instance& instance, sema::builtin_function_kind function_kind,
   const params_t& params)
 {
@@ -226,9 +226,9 @@ std::unique_ptr<inst::instance> builtin_function_caller2::call_member(
   return m_instances.gather_ownership(result);
 }
 
-std::unique_ptr<inst::instance> builtin_function_caller2::call(
+std::unique_ptr<inst::instance> builtin_function_caller::call(
   sema::builtin_function_kind function_kind,
-  const builtin_function_caller2::params_t& params)
+  const builtin_function_caller::params_t& params)
 {
   inst::instance* result{ nullptr };
 
@@ -247,109 +247,109 @@ std::unique_ptr<inst::instance> builtin_function_caller2::call(
   return m_instances.gather_ownership(result);
 }
 
-inst::instance* builtin_function_caller2::int_operator_minus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_minus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs - rhs);
 }
 
-inst::instance* builtin_function_caller2::int_operator_unary_minus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_unary_minus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto value = instance.value_cref().get_int();
   return m_instances.create(-1 * value);
 }
 
-inst::instance* builtin_function_caller2::int_operator_unary_minusminus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_unary_minusminus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto val = instance.value_ref().get_int();
   instance.value_ref() = val - 1;
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::int_operator_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   instance.value_ref() = rhs;
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::int_ctor_bool(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_ctor_bool(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::bool_>(params);
   instance.value_ref().set_int(static_cast<int_t>(param));
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::bool_ctor(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::bool_ctor(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   instance.value_ref().set_bool(false);
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::bool_ctor_bool(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::bool_ctor_bool(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::bool_>(params);
   instance.value_ref().set_bool(param);
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::bool_ctor_int(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::bool_ctor_int(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::int_>(params);
   instance.value_ref().set_bool(static_cast<bool>(param));
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::bool_operator_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::bool_operator_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::bool_>(params);
   instance.value_ref() = rhs;
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::int_ctor(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::int_ctor(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   instance.value_ref().set_int(int_t{ 0 });
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::int_ctor_int(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_ctor_int(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   instance.value_ref() = rhs;
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::int_operator_plus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_plus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs + rhs);
 }
 
-inst::instance* builtin_function_caller2::int_operator_unary_plusplus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_unary_plusplus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto val = instance.value_ref().get_int();
   instance.value_ref() = int_t{ val + 1 };
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::int_operator_plus_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_plus_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
@@ -358,8 +358,8 @@ inst::instance* builtin_function_caller2::int_operator_plus_equal(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::int_operator_minus_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_minus_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
@@ -368,24 +368,24 @@ inst::instance* builtin_function_caller2::int_operator_minus_equal(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::int_operator_star(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_star(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs * rhs);
 }
 
-inst::instance* builtin_function_caller2::int_operator_slash(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_slash(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs / rhs);
 }
 
-inst::instance* builtin_function_caller2::int_operator_star_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_star_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
@@ -394,8 +394,8 @@ inst::instance* builtin_function_caller2::int_operator_star_equal(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::int_operator_slash_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_slash_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
@@ -404,188 +404,188 @@ inst::instance* builtin_function_caller2::int_operator_slash_equal(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::int_operator_less(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_less(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs < rhs);
 }
 
-inst::instance* builtin_function_caller2::int_operator_less_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_less_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs <= rhs);
 }
 
-inst::instance* builtin_function_caller2::int_operator_greater(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_greater(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs > rhs);
 }
 
-inst::instance* builtin_function_caller2::int_operator_greater_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_greater_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs >= rhs);
 }
 
-inst::instance* builtin_function_caller2::int_operator_equal_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_operator_equal_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_int();
   const auto& [rhs] = get_params<alternative_t::int_>(params);
   return m_instances.create(lhs == rhs);
 }
 
-inst::instance* builtin_function_caller2::int_to_string(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::int_to_string(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto lhs = instance.value_cref().get_int();
   return m_instances.create(std::to_string(lhs));
 }
 
-inst::instance* builtin_function_caller2::bool_operator_equal_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::bool_operator_equal_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_bool();
   const auto& [rhs] = get_params<alternative_t::bool_>(params);
   return m_instances.create(lhs == rhs);
 }
 
-inst::instance* builtin_function_caller2::bool_operator_pipe_pipe(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::bool_operator_pipe_pipe(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_bool();
   const auto& [rhs] = get_params<alternative_t::bool_>(params);
   return m_instances.create(lhs || rhs);
 }
 
-inst::instance* builtin_function_caller2::bool_operator_amp_amp(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::bool_operator_amp_amp(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_bool();
   const auto& [rhs] = get_params<alternative_t::bool_>(params);
   return m_instances.create(lhs && rhs);
 }
 
-inst::instance* builtin_function_caller2::bool_operator_unary_exclaim(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::bool_operator_unary_exclaim(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_bool();
   return m_instances.create(!lhs);
 }
 
-inst::instance* builtin_function_caller2::bool_to_string(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::bool_to_string(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto lhs = instance.value_cref().get_int();
   return m_instances.create(lhs ? std::string{ "true" }
                                 : std::string{ "false" });
 }
 
-inst::instance* builtin_function_caller2::double_ctor(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::double_ctor(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   instance.value_ref().set_double(0.0);
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::int_ctor_double(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::int_ctor_double(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::double_>(params);
   instance.value_ref() = static_cast<int_t>(param);
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::double_ctor_double(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_ctor_double(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::double_>(params);
   instance.value_ref() = param;
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::double_ctor_int(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_ctor_int(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::int_>(params);
   instance.value_ref() = static_cast<double>(param);
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::double_operator_plus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_plus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   return m_instances.create(lhs + rhs);
 }
 
-inst::instance* builtin_function_caller2::double_operator_unary_plusplus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_unary_plusplus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto val = instance.value_ref().get_double();
   instance.value_ref() = val + 1.0;
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::double_operator_minus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_minus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   return m_instances.create(lhs - rhs);
 }
 
-inst::instance* builtin_function_caller2::double_operator_unary_minus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_unary_minus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto value = instance.value_ref().get_double();
   return m_instances.create(-1 * value);
 }
 
-inst::instance* builtin_function_caller2::double_operator_unary_minusminus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_unary_minusminus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto val = instance.value_ref().get_double();
   instance.value_ref() = val - 1.0;
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::double_operator_star(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_star(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   return m_instances.create(lhs * rhs);
 }
 
-inst::instance* builtin_function_caller2::double_operator_slash(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_slash(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   return m_instances.create(lhs / rhs);
 }
 
-inst::instance* builtin_function_caller2::double_operator_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   instance.value_ref() = rhs;
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::double_operator_plus_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_plus_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
@@ -594,8 +594,8 @@ inst::instance* builtin_function_caller2::double_operator_plus_equal(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::double_operator_minus_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_minus_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
@@ -604,8 +604,8 @@ inst::instance* builtin_function_caller2::double_operator_minus_equal(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::double_operator_star_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_star_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
@@ -614,8 +614,8 @@ inst::instance* builtin_function_caller2::double_operator_star_equal(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::double_operator_slash_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_slash_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
@@ -624,126 +624,126 @@ inst::instance* builtin_function_caller2::double_operator_slash_equal(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::double_operator_less(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_less(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   return m_instances.create(lhs < rhs);
 }
 
-inst::instance* builtin_function_caller2::double_operator_less_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_less_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   return m_instances.create(lhs <= rhs);
 }
 
-inst::instance* builtin_function_caller2::double_operator_greater(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_greater(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   return m_instances.create(lhs > rhs);
 }
 
-inst::instance* builtin_function_caller2::double_operator_greater_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::double_operator_greater_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto lhs = instance.value_cref().get_double();
   const auto& [rhs] = get_params<alternative_t::double_>(params);
   return m_instances.create(lhs >= rhs);
 }
 
-inst::instance* builtin_function_caller2::string_empty(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::string_empty(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& str = instance.value_cref().get_string_cref();
   return m_instances.create(str.empty());
 }
 
-inst::instance* builtin_function_caller2::string_size(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::string_size(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto size = static_cast<int_t>(str.size());
   return m_instances.create(size);
 }
 
-inst::instance* builtin_function_caller2::string_ctor(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::string_ctor(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   instance.value_ref().set_string(std::string{});
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::string_ctor_string(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_ctor_string(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::string>(params);
   instance.value_ref().set_string(std::move(param));
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::string_operator_equal_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_operator_equal_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& lhs = instance.value_cref().get_string_cref();
   const auto& [rhs] = get_params<alternative_t::string>(params);
   return m_instances.create(lhs == rhs);
 }
 
-inst::instance* builtin_function_caller2::string_operator_not_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_operator_not_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& lhs = instance.value_cref().get_string_cref();
   const auto& [rhs] = get_params<alternative_t::string>(params);
   return m_instances.create(lhs != rhs);
 }
 
-inst::instance* builtin_function_caller2::string_operator_less(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_operator_less(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& lhs = instance.value_cref().get_string_cref();
   const auto& [rhs] = get_params<alternative_t::string>(params);
   return m_instances.create(lhs < rhs);
 }
 
-inst::instance* builtin_function_caller2::string_operator_less_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_operator_less_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& lhs = instance.value_cref().get_string_cref();
   const auto& [rhs] = get_params<alternative_t::string>(params);
   return m_instances.create(lhs <= rhs);
 }
 
-inst::instance* builtin_function_caller2::string_operator_greater(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_operator_greater(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& lhs = instance.value_cref().get_string_cref();
   const auto& [rhs] = get_params<alternative_t::string>(params);
   return m_instances.create(lhs > rhs);
 }
 
-inst::instance* builtin_function_caller2::string_operator_greater_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_operator_greater_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& lhs = instance.value_cref().get_string_cref();
   const auto& [rhs] = get_params<alternative_t::string>(params);
   return m_instances.create(lhs >= rhs);
 }
 
-inst::instance* builtin_function_caller2::string_operator_plus(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_operator_plus(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& lhs = instance.value_cref().get_string_cref();
   const auto& [rhs] = get_params<alternative_t::string>(params);
   return m_instances.create(lhs + rhs);
 }
 
-inst::instance* builtin_function_caller2::string_operator_plus_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_operator_plus_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& lhs = instance.value_ref().get_string_ref();
   const auto& [rhs] = get_params<alternative_t::string>(params);
@@ -752,8 +752,8 @@ inst::instance* builtin_function_caller2::string_operator_plus_equal(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_ctor_string_count(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_ctor_string_count(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& str = instance.value_ref().get_string_ref();
   const auto& [value, count] =
@@ -769,16 +769,16 @@ inst::instance* builtin_function_caller2::string_ctor_string_count(
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::string_clear(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::string_clear(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& str = instance.value_ref().get_string_ref();
   str.clear();
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_insert_pos_str(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_insert_pos_str(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& str = instance.value_ref().get_string_ref();
   const auto& [position, value] =
@@ -789,8 +789,8 @@ inst::instance* builtin_function_caller2::string_insert_pos_str(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_erase_pos(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_erase_pos(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& str = instance.value_ref().get_string_ref();
   const auto& [position] = get_params<alternative_t::int_>(params);
@@ -798,8 +798,8 @@ inst::instance* builtin_function_caller2::string_erase_pos(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_erase_pos_count(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_erase_pos_count(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& str = instance.value_ref().get_string_ref();
   const auto& [position, count] =
@@ -808,8 +808,8 @@ inst::instance* builtin_function_caller2::string_erase_pos_count(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_starts_with(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_starts_with(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [value] = get_params<alternative_t::string>(params);
@@ -833,8 +833,8 @@ inst::instance* builtin_function_caller2::string_starts_with(
   return m_instances.create(starts_with);
 }
 
-inst::instance* builtin_function_caller2::string_ends_with(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_ends_with(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [value] = get_params<alternative_t::string>(params);
@@ -858,8 +858,8 @@ inst::instance* builtin_function_caller2::string_ends_with(
   return m_instances.create(ends_with);
 }
 
-inst::instance* builtin_function_caller2::string_replace_pos_count_str(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_replace_pos_count_str(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& str = instance.value_ref().get_string_ref();
   const auto& [position, count, value] =
@@ -869,16 +869,16 @@ inst::instance* builtin_function_caller2::string_replace_pos_count_str(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_substr_pos(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_substr_pos(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [position] = get_params<alternative_t::int_>(params);
   return m_instances.create(str.substr(position));
 }
 
-inst::instance* builtin_function_caller2::string_substr_pos_count(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_substr_pos_count(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [position, count] =
@@ -886,8 +886,8 @@ inst::instance* builtin_function_caller2::string_substr_pos_count(
   return m_instances.create(str.substr(position, count));
 }
 
-inst::instance* builtin_function_caller2::string_resize_newsize(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_resize_newsize(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& str = instance.value_ref().get_string_ref();
   const auto& [new_size] = get_params<alternative_t::int_>(params);
@@ -895,8 +895,8 @@ inst::instance* builtin_function_caller2::string_resize_newsize(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_resize_newsize_fill(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_resize_newsize_fill(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& str = instance.value_ref().get_string_ref();
   const auto& [new_size, fill] =
@@ -915,8 +915,8 @@ inst::instance* builtin_function_caller2::string_resize_newsize_fill(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_find_str(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_find_str(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [value] = get_params<alternative_t::string>(params);
@@ -925,8 +925,8 @@ inst::instance* builtin_function_caller2::string_find_str(
   return m_instances.create(pos);
 }
 
-inst::instance* builtin_function_caller2::string_find_str_pos(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_find_str_pos(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [value, start_pos] =
@@ -936,8 +936,8 @@ inst::instance* builtin_function_caller2::string_find_str_pos(
   return m_instances.create(pos);
 }
 
-inst::instance* builtin_function_caller2::string_find_not_of_str(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_find_not_of_str(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [value] = get_params<alternative_t::string>(params);
@@ -946,8 +946,8 @@ inst::instance* builtin_function_caller2::string_find_not_of_str(
   return m_instances.create(pos);
 }
 
-inst::instance* builtin_function_caller2::string_find_not_of_str_pos(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_find_not_of_str_pos(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [value, start_pos] =
@@ -957,8 +957,8 @@ inst::instance* builtin_function_caller2::string_find_not_of_str_pos(
   return m_instances.create(pos);
 }
 
-inst::instance* builtin_function_caller2::string_find_last_str(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_find_last_str(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [value] = get_params<alternative_t::string>(params);
@@ -967,14 +967,14 @@ inst::instance* builtin_function_caller2::string_find_last_str(
   return m_instances.create(pos);
 }
 
-int_t builtin_function_caller2::string_pos_to_int(
+int_t builtin_function_caller::string_pos_to_int(
   std::string::size_type pos) const
 {
   return pos != std::string::npos ? static_cast<int_t>(pos) : int_t{ -1 };
 }
 
-inst::instance* builtin_function_caller2::string_find_last_not_of_str(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_find_last_not_of_str(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [value] = get_params<alternative_t::string>(params);
@@ -983,8 +983,8 @@ inst::instance* builtin_function_caller2::string_find_last_not_of_str(
   return m_instances.create(pos);
 }
 
-inst::instance* builtin_function_caller2::string_contains(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::string_contains(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& str = instance.value_cref().get_string_cref();
   const auto& [value] = get_params<alternative_t::string>(params);
@@ -993,8 +993,8 @@ inst::instance* builtin_function_caller2::string_contains(
   return m_instances.create(contains);
 }
 
-inst::instance* builtin_function_caller2::string_lower(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::string_lower(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& str = instance.value_ref().get_string_ref();
 
@@ -1005,8 +1005,8 @@ inst::instance* builtin_function_caller2::string_lower(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_make_lower(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::string_make_lower(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& str = instance.value_cref().get_string_cref();
   std::string result;
@@ -1018,8 +1018,8 @@ inst::instance* builtin_function_caller2::string_make_lower(
   return m_instances.create(std::move(result));
 }
 
-inst::instance* builtin_function_caller2::string_upper(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::string_upper(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& str = instance.value_ref().get_string_ref();
 
@@ -1030,8 +1030,8 @@ inst::instance* builtin_function_caller2::string_upper(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::string_make_upper(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::string_make_upper(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& str = instance.value_cref().get_string_cref();
   std::string result;
@@ -1043,16 +1043,16 @@ inst::instance* builtin_function_caller2::string_make_upper(
   return m_instances.create(std::move(result));
 }
 
-inst::instance* builtin_function_caller2::version_ctor_major(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_ctor_major(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [major] = get_params<alternative_t::int_>(params);
   instance.value_ref().set_version(inst::version_value{ major });
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::version_ctor_major_minor(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_ctor_major_minor(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [major, minor] =
     get_params<alternative_t::int_, alternative_t::int_>(params);
@@ -1060,8 +1060,8 @@ inst::instance* builtin_function_caller2::version_ctor_major_minor(
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::version_ctor_major_minor_patch(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_ctor_major_minor_patch(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [major, minor, patch] =
     get_params<alternative_t::int_, alternative_t::int_, alternative_t::int_>(
@@ -1070,8 +1070,8 @@ inst::instance* builtin_function_caller2::version_ctor_major_minor_patch(
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::version_ctor_major_minor_patch_tweak(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_ctor_major_minor_patch_tweak(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [major, minor, patch, tweak] =
     get_params<alternative_t::int_, alternative_t::int_, alternative_t::int_,
@@ -1081,106 +1081,106 @@ inst::instance* builtin_function_caller2::version_ctor_major_minor_patch_tweak(
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::version_operator_equal_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_operator_equal_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   const auto& [ver2] = get_params<alternative_t::version>(params);
   return m_instances.create(ver == ver2);
 }
 
-inst::instance* builtin_function_caller2::version_operator_not_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_operator_not_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   const auto& [ver2] = get_params<alternative_t::version>(params);
   return m_instances.create(ver != ver2);
 }
 
-inst::instance* builtin_function_caller2::version_operator_less(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_operator_less(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   const auto& [ver2] = get_params<alternative_t::version>(params);
   return m_instances.create(ver < ver2);
 }
 
-inst::instance* builtin_function_caller2::version_operator_less_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_operator_less_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   const auto& [ver2] = get_params<alternative_t::version>(params);
   return m_instances.create(ver <= ver2);
 }
 
-inst::instance* builtin_function_caller2::version_operator_greater(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_operator_greater(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   const auto& [ver2] = get_params<alternative_t::version>(params);
   return m_instances.create(ver > ver2);
 }
 
-inst::instance* builtin_function_caller2::version_operator_greater_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::version_operator_greater_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   const auto& [ver2] = get_params<alternative_t::version>(params);
   return m_instances.create(ver >= ver2);
 }
 
-inst::instance* builtin_function_caller2::version_major(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::version_major(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   return m_instances.create(ver.major_());
 }
 
-inst::instance* builtin_function_caller2::version_minor(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::version_minor(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   return m_instances.create(ver.minor_());
 }
 
-inst::instance* builtin_function_caller2::version_patch(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::version_patch(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   return m_instances.create(ver.patch());
 }
 
-inst::instance* builtin_function_caller2::version_tweak(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::version_tweak(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   return m_instances.create(ver.tweak());
 }
 
-inst::instance* builtin_function_caller2::version_to_string(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::version_to_string(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& ver = instance.value_cref().get_version_cref();
   return m_instances.create(ver.to_string());
 }
 
-inst::instance* builtin_function_caller2::list_ctor(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_ctor(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& list = instance.value_ref().get_list_ref();
   list = inst::list_value{};
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::list_size(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_size(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& list = instance.value_cref().get_list_cref();
   return m_instances.create(static_cast<int_t>(list.size()));
 }
 
-inst::instance* builtin_function_caller2::list_ctor_list(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_ctor_list(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& [value] = get_params<alternative_t::list>(params);
@@ -1188,16 +1188,16 @@ inst::instance* builtin_function_caller2::list_ctor_list(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::list_ctor_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_ctor_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   list.push_back(params[0]->copy());
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::list_ctor_value_count(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_ctor_value_count(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto count = params[1]->value_cref().get_int();
@@ -1209,16 +1209,16 @@ inst::instance* builtin_function_caller2::list_ctor_value_count(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::list_push_back_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_push_back_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   list.push_back(params[0]->copy());
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_push_back_list(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_push_back_list(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& [list2] = get_params<alternative_t::list>(params);
@@ -1226,16 +1226,16 @@ inst::instance* builtin_function_caller2::list_push_back_list(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_push_front_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_push_front_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   list.push_front(params[0]->copy());
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_push_front_list(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_push_front_list(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& [list2] = get_params<alternative_t::list>(params);
@@ -1243,24 +1243,24 @@ inst::instance* builtin_function_caller2::list_push_front_list(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_pop_back(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_pop_back(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& list = instance.value_ref().get_list_ref();
   list.pop_back();
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_pop_front(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_pop_front(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& list = instance.value_ref().get_list_ref();
   list.pop_front();
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_at(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_at(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& [position] = get_params<alternative_t::int_>(params);
@@ -1268,24 +1268,24 @@ inst::instance* builtin_function_caller2::list_at(
   return m_instances.create_reference(instance_at);
 }
 
-inst::instance* builtin_function_caller2::list_front(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_front(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& list = instance.value_ref().get_list_ref();
   auto& instance_at_front = list.front();
   return m_instances.create_reference(instance_at_front);
 }
 
-inst::instance* builtin_function_caller2::list_back(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_back(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& list = instance.value_ref().get_list_ref();
   auto& instance_at_back = list.back();
   return m_instances.create_reference(instance_at_back);
 }
 
-inst::instance* builtin_function_caller2::list_insert_pos_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_insert_pos_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& [position] = get_params<alternative_t::int_>(params);
@@ -1293,8 +1293,8 @@ inst::instance* builtin_function_caller2::list_insert_pos_value(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_insert_pos_list(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_insert_pos_list(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& [position, list2] =
@@ -1303,8 +1303,8 @@ inst::instance* builtin_function_caller2::list_insert_pos_list(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_erase_pos(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_erase_pos(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& [position] = get_params<alternative_t::int_>(params);
@@ -1312,8 +1312,8 @@ inst::instance* builtin_function_caller2::list_erase_pos(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_erase_pos_count(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_erase_pos_count(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& [position, count] =
@@ -1322,8 +1322,8 @@ inst::instance* builtin_function_caller2::list_erase_pos_count(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_remove_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_remove_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& value = *params[0];
@@ -1331,8 +1331,8 @@ inst::instance* builtin_function_caller2::list_remove_value(
   return m_instances.create(removed_count);
 }
 
-inst::instance* builtin_function_caller2::list_remove_value_count(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_remove_value_count(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& value = *params[0];
@@ -1341,8 +1341,8 @@ inst::instance* builtin_function_caller2::list_remove_value_count(
   return m_instances.create(removed_count);
 }
 
-inst::instance* builtin_function_caller2::list_remove_last_value_count(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_remove_last_value_count(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   const auto& value = *params[0];
@@ -1351,16 +1351,16 @@ inst::instance* builtin_function_caller2::list_remove_last_value_count(
   return m_instances.create(removed_count);
 }
 
-inst::instance* builtin_function_caller2::list_clear(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_clear(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& list = instance.value_ref().get_list_ref();
   list.clear();
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_resize(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_resize(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& list_type =
     *dynamic_cast<const sema::homogeneous_generic_type*>(&instance.type());
@@ -1375,40 +1375,40 @@ inst::instance* builtin_function_caller2::list_resize(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_sort(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_sort(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& list = instance.value_ref().get_list_ref();
   list.sort();
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_reverse(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_reverse(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   auto& list = instance.value_ref().get_list_ref();
   list.reverse();
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::list_min(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_min(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& list = instance.value_cref().get_list_cref();
   const auto min_element_index = list.min();
   return m_instances.create(min_element_index);
 }
 
-inst::instance* builtin_function_caller2::list_max(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_max(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& list = instance.value_cref().get_list_cref();
   const auto max_element_index = list.max();
   return m_instances.create(max_element_index);
 }
 
-inst::instance* builtin_function_caller2::list_sublist_pos(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_sublist_pos(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& list = instance.value_cref().get_list_cref();
   const auto& [position] = get_params<alternative_t::int_>(params);
@@ -1416,8 +1416,8 @@ inst::instance* builtin_function_caller2::list_sublist_pos(
   return m_instances.create(instance.type(), std::move(sublist));
 }
 
-inst::instance* builtin_function_caller2::list_sublist_pos_count(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_sublist_pos_count(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& list = instance.value_cref().get_list_cref();
   const auto& [position, count] =
@@ -1426,16 +1426,16 @@ inst::instance* builtin_function_caller2::list_sublist_pos_count(
   return m_instances.create(instance.type(), std::move(sublist));
 }
 
-inst::instance* builtin_function_caller2::list_empty(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::list_empty(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& list = instance.value_cref().get_list_cref();
   const auto is_empty = list.empty();
   return m_instances.create(is_empty);
 }
 
-inst::instance* builtin_function_caller2::list_find_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_find_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& list = instance.value_cref().get_list_cref();
   const auto& value = *params[0];
@@ -1443,8 +1443,8 @@ inst::instance* builtin_function_caller2::list_find_value(
   return m_instances.create(found_index);
 }
 
-inst::instance* builtin_function_caller2::list_find_value_pos(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_find_value_pos(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& list = instance.value_cref().get_list_cref();
   const auto& value = *params[0];
@@ -1453,8 +1453,8 @@ inst::instance* builtin_function_caller2::list_find_value_pos(
   return m_instances.create(found_index);
 }
 
-inst::instance* builtin_function_caller2::list_operator_plus_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_operator_plus_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto list_copy = instance.value_cref().get_list_cref();
   auto value = params[0]->copy();
@@ -1462,8 +1462,8 @@ inst::instance* builtin_function_caller2::list_operator_plus_value(
   return m_instances.create(instance.type(), std::move(list_copy));
 }
 
-inst::instance* builtin_function_caller2::list_operator_plus_list(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_operator_plus_list(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto list_copy = instance.value_cref().get_list_cref();
   auto [list_to_append] = get_params<alternative_t::list>(params);
@@ -1471,8 +1471,8 @@ inst::instance* builtin_function_caller2::list_operator_plus_list(
   return m_instances.create(instance.type(), std::move(list_copy));
 }
 
-inst::instance* builtin_function_caller2::list_operator_plus_equal_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_operator_plus_equal_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   auto value = params[0]->copy();
@@ -1480,8 +1480,8 @@ inst::instance* builtin_function_caller2::list_operator_plus_equal_value(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::list_operator_plus_equal_list(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::list_operator_plus_equal_list(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& list = instance.value_ref().get_list_ref();
   auto [list_to_append] = get_params<alternative_t::list>(params);
@@ -1489,8 +1489,8 @@ inst::instance* builtin_function_caller2::list_operator_plus_equal_list(
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::cmake_minimum_required(
-  const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::cmake_minimum_required(
+  const builtin_function_caller::params_t& params)
 {
   const auto got_version = m_cmake_facade.get_cmake_version();
   const inst::version_value current_version{
@@ -1512,8 +1512,8 @@ inst::instance* builtin_function_caller2::cmake_minimum_required(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::project_ctor_name(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::project_ctor_name(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& project = instance.value_ref().get_project_ref();
   const auto& [name] = get_params<alternative_t::string>(params);
@@ -1522,15 +1522,15 @@ inst::instance* builtin_function_caller2::project_ctor_name(
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::project_name(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::project_name(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& project = instance.value_cref().get_project_cref();
   return m_instances.create(project.name());
 }
 
-inst::instance* builtin_function_caller2::project_add_executable(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::project_add_executable(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& project = instance.value_ref().get_project_ref();
   const auto& [name, sources] =
@@ -1539,8 +1539,8 @@ inst::instance* builtin_function_caller2::project_add_executable(
   return m_instances.create(inst::executable_value{ name });
 }
 
-inst::instance* builtin_function_caller2::project_add_library(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::project_add_library(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   auto& project = instance.value_ref().get_project_ref();
   const auto& [name, sources] =
@@ -1549,15 +1549,15 @@ inst::instance* builtin_function_caller2::project_add_library(
   return m_instances.create(inst::library_value{ name });
 }
 
-inst::instance* builtin_function_caller2::library_name(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::library_name(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& target = instance.value_cref().get_library_cref();
   return m_instances.create(target.name());
 }
 
-inst::instance* builtin_function_caller2::library_link_to(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::library_link_to(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& target = instance.value_cref().get_library_cref();
   const auto& [library] = get_params<alternative_t::library>(params);
@@ -1565,15 +1565,15 @@ inst::instance* builtin_function_caller2::library_link_to(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::executable_name(
-  inst::instance& instance, const builtin_function_caller2::params_t&)
+inst::instance* builtin_function_caller::executable_name(
+  inst::instance& instance, const builtin_function_caller::params_t&)
 {
   const auto& target = instance.value_cref().get_executable_cref();
   return m_instances.create(target.name());
 }
 
-inst::instance* builtin_function_caller2::executable_link_to(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::executable_link_to(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& target = instance.value_cref().get_executable_cref();
   const auto& [library] = get_params<alternative_t::library>(params);
@@ -1581,8 +1581,8 @@ inst::instance* builtin_function_caller2::executable_link_to(
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::enum_to_string(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::enum_to_string(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& enum_type = static_cast<const sema::enum_type&>(instance.type());
   const auto enum_value = instance.value_cref().get_enum_constant();
@@ -1590,16 +1590,16 @@ inst::instance* builtin_function_caller2::enum_to_string(
   return m_instances.create(std::string{ enum_value_name });
 }
 
-inst::instance* builtin_function_caller2::enum_operator_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::enum_operator_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [enum_value] = get_params<alternative_t::enum_>(params);
   instance.assign(enum_value);
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::enum_operator_equalequal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::enum_operator_equalequal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::enum_>(params);
   const auto& lhs = instance.value_cref().get_enum_constant();
@@ -1607,8 +1607,8 @@ inst::instance* builtin_function_caller2::enum_operator_equalequal(
   return m_instances.create(result);
 }
 
-inst::instance* builtin_function_caller2::enum_operator_exclaimequal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::enum_operator_exclaimequal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::enum_>(params);
   const auto& lhs = instance.value_cref().get_enum_constant();
@@ -1616,23 +1616,23 @@ inst::instance* builtin_function_caller2::enum_operator_exclaimequal(
   return m_instances.create(result);
 }
 
-inst::instance* builtin_function_caller2::user_type_operator_equal(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::user_type_operator_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   instance.assign(params[0]->copy());
   return m_instances.create_reference(instance);
 }
 
-inst::instance* builtin_function_caller2::option_ctor_description(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::option_ctor_description(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [description] = get_params<alternative_t::string>(params);
   instance.assign(inst::option_value{ description });
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::option_ctor_description_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::option_ctor_description_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [description, value] =
     get_params<alternative_t::string, alternative_t::bool_>(params);
@@ -1640,38 +1640,38 @@ inst::instance* builtin_function_caller2::option_ctor_description_value(
   return &instance;
 }
 
-inst::instance* builtin_function_caller2::option_value(
-  inst::instance& instance, const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::option_value(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto value = instance.value_cref().get_option_cref().value();
   return m_instances.create(value);
 }
-inst::instance* builtin_function_caller2::cmake_message(
-  const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::cmake_message(
+  const builtin_function_caller::params_t& params)
 {
   const auto& [message] = get_params<alternative_t::string>(params);
   m_cmake_facade.message(message);
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::cmake_warning(
-  const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::cmake_warning(
+  const builtin_function_caller::params_t& params)
 {
   const auto& [message] = get_params<alternative_t::string>(params);
   m_cmake_facade.warning(message);
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::cmake_error(
-  const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::cmake_error(
+  const builtin_function_caller::params_t& params)
 {
   const auto& [message] = get_params<alternative_t::string>(params);
   m_cmake_facade.error(message);
   return m_instances.create_void();
 }
 
-inst::instance* builtin_function_caller2::cmake_fatal_error(
-  const builtin_function_caller2::params_t& params)
+inst::instance* builtin_function_caller::cmake_fatal_error(
+  const builtin_function_caller::params_t& params)
 {
   const auto& [message] = get_params<alternative_t::string>(params);
   m_cmake_facade.fatal_error(message);

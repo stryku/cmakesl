@@ -21,12 +21,12 @@ class instance;
 class instances_holder_interface;
 }
 
-class builtin_function_caller2
+class builtin_function_caller
 {
 public:
   using params_t = std::vector<inst::instance*>;
 
-  explicit builtin_function_caller2(
+  explicit builtin_function_caller(
     facade::cmake_facade& cmake_facade,
     inst::instances_holder_interface& instances);
 

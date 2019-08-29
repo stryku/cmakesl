@@ -1,4 +1,4 @@
-#include "exec/builtin_function_caller2.hpp"
+#include "exec/builtin_function_caller.hpp"
 
 #include "test/exec/mock/cmake_facade_mock.hpp"
 #include "test/exec/mock/instance_mock.hpp"
@@ -15,7 +15,7 @@ using testing::ByMove;
 using testing::_;
 
 using fun_t = sema::builtin_function_kind;
-using params_t = builtin_function_caller2::params_t;
+using params_t = builtin_function_caller::params_t;
 
 // Todo: Consider extracting common CmakeMinimumRequired parts to some
 // function/fixture.
@@ -45,7 +45,7 @@ TEST(BuiltinFunctionCaller2Test,
   EXPECT_CALL(instances, gather_ownership(return_instance_ptr))
     .WillOnce(Return(ByMove(std::move(return_instance))));
 
-  builtin_function_caller2 caller{ facade, instances };
+  builtin_function_caller caller{ facade, instances };
   auto result = caller.call(fun_t::cmake_minimum_required, params);
 
   EXPECT_THAT(result.get(), Eq(return_instance_ptr));
@@ -77,7 +77,7 @@ TEST(BuiltinFunctionCaller2Test,
   EXPECT_CALL(instances, gather_ownership(return_instance_ptr))
     .WillOnce(Return(ByMove(std::move(return_instance))));
 
-  builtin_function_caller2 caller{ facade, instances };
+  builtin_function_caller caller{ facade, instances };
   auto result = caller.call(fun_t::cmake_minimum_required, params);
 
   EXPECT_THAT(result.get(), Eq(return_instance_ptr));
@@ -111,7 +111,7 @@ TEST(BuiltinFunctionCaller2Test,
   EXPECT_CALL(instances, gather_ownership(return_instance_ptr))
     .WillOnce(Return(ByMove(std::move(return_instance))));
 
-  builtin_function_caller2 caller{ facade, instances };
+  builtin_function_caller caller{ facade, instances };
   auto result = caller.call(fun_t::cmake_minimum_required, params);
 
   EXPECT_THAT(result.get(), Eq(return_instance_ptr));
