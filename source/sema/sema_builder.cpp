@@ -30,22 +30,25 @@ sema_builder::sema_builder(
 
 std::unique_ptr<sema_node> sema_builder::build(const ast::ast_node& ast_tree)
 {
-  parsing_context parsing_ctx;
+  parsing_context parsing_ctx{};
 
-  sema_builder_ast_visitor visitor{ m_ctx, // generic types ctx
-                                    m_ctx, // global ctx
-                                    m_errs,
-                                    m_enums_context,
-                                    m_ids_context,
-                                    m_types_context,
-                                    m_functions_context,
-                                    m_type_factory,
-                                    m_function_factory,
-                                    m_context_factory,
-                                    m_add_subdirectory_handler,
-                                    m_builtin_token_provider,
-                                    parsing_ctx,
-                                    m_builtin_types };
+  auto qualified_ctxs =
+    qualified_contextes{ m_enums_context, m_functions_context, m_ids_context,
+                         m_types_context };
+  auto members = sema_builder_ast_visitor_members{ m_ctx, // generic types ctx
+                                                   m_ctx, // global ctx
+                                                   m_errs,
+                                                   qualified_ctxs,
+                                                   m_type_factory,
+                                                   m_function_factory,
+                                                   m_context_factory,
+                                                   m_add_subdirectory_handler,
+                                                   m_builtin_token_provider,
+                                                   parsing_ctx,
+                                                   m_builtin_types };
+
+  sema_builder_ast_visitor visitor{ members };
+
   ast_tree.visit(visitor);
   return std::move(visitor.m_result_node);
 }
