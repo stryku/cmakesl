@@ -27,7 +27,7 @@ public:
     sema::builtin_types_accessor builtin_types,
     const std::vector<sema::identifier_info>& builtin_identifiers_info);
 
-  bool initialize_static_variables(const sema::translation_unit_node& node);
+  void initialize_static_variables(const sema::translation_unit_node& node);
 
   // Todo: consider returning a reference
   // Todo: Call parameters should be a vector of std::unique_ptrs, not raw
