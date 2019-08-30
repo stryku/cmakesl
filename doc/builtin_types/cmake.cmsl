@@ -2,6 +2,12 @@
  */
 namespace cmake {
 
+/** \brief A list of directories specifying a search path for CMake modules to
+ * be loaded by the include() od find_package() before checking the default
+ * modules that come with CMake.
+ *
+ * By default it is empty, it is intended to be set by the project.
+ */
 list<string> module_path;
 
 /** \brief A message printing function.
