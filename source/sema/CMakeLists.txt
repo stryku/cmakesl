@@ -47,6 +47,7 @@ set(SEMA_SOURCES
     generic_type_creation_utils.hpp
     homogeneous_generic_type.cpp
     homogeneous_generic_type.hpp
+    identifier_info.hpp
     identifiers_context.cpp
     identifiers_context.hpp
     identifiers_index_provider.hpp

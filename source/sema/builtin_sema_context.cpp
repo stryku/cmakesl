@@ -1096,4 +1096,10 @@ void builtin_sema_context::add_cmake_namespace_context()
       *this, m_qualified_ctxs, m_function_factory, m_builtin_token_provider,
       *m_builtin_types, *m_generics_creation_utils);
 }
+
+std::vector<identifier_info> builtin_sema_context::builtin_identifiers_info()
+  const
+{
+  return m_cmake_namespace_context->builtin_identifiers_info();
+}
 }

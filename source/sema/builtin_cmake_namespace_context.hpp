@@ -3,6 +3,7 @@
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_accessor.hpp"
 #include "sema/function_signature.hpp"
+#include "sema/identifier_info.hpp"
 #include "sema/sema_context_impl.hpp"
 
 namespace cmsl::sema {
@@ -21,6 +22,8 @@ public:
     const builtin_types_accessor& builtin_types,
     generic_type_creation_utils& generics_creation_utils);
 
+  const std::vector<identifier_info>& builtin_identifiers_info() const;
+
 private:
   using token_type_t = lexer::token_type;
 
@@ -36,5 +39,6 @@ private:
   const builtin_token_provider& m_builtin_tokens;
   const builtin_types_accessor& m_builtin_types;
   generic_type_creation_utils& m_generics_creation_utils;
+  std::vector<identifier_info> m_builtin_identifiers_info;
 };
 }

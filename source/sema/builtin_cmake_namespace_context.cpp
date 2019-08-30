@@ -106,10 +106,16 @@ void builtin_cmake_namespace_context::add_identifiers()
 
   for (const auto& identifier : identifiers) {
     const auto identifier_index = identifiers_index_provider::get_next();
-    m_qualified_ctxs.ids.register_identifier(
-      identifier.name,
-      identifiers_context::identifier_info{ identifier.type,
-                                            identifier_index });
+    const auto id_info = identifier_info{ identifier.type, identifier_index };
+
+    m_qualified_ctxs.ids.register_identifier(identifier.name, id_info);
+    m_builtin_identifiers_info.emplace_back(id_info);
   }
+}
+
+const std::vector<identifier_info>&
+builtin_cmake_namespace_context::builtin_identifiers_info() const
+{
+  return m_builtin_identifiers_info;
 }
 }

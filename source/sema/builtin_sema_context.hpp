@@ -3,6 +3,7 @@
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_accessor.hpp"
 #include "sema/function_signature.hpp"
+#include "sema/identifier_info.hpp"
 #include "sema/sema_context_impl.hpp"
 
 namespace cmsl {
@@ -23,6 +24,7 @@ enum class builtin_function_kind;
 class type_builder;
 class qualified_contextes;
 class generic_type_creation_utils;
+class builtin_cmake_namespace_context;
 
 class builtin_sema_context : public sema_context_impl
 {
@@ -36,6 +38,8 @@ public:
   ~builtin_sema_context() override;
 
   builtin_types_accessor builtin_types() const;
+
+  std::vector<identifier_info> builtin_identifiers_info() const;
 
 private:
   using token_type_t = lexer::token_type;
@@ -100,7 +104,7 @@ private:
 
   std::unique_ptr<builtin_types_accessor> m_builtin_types;
   std::unique_ptr<generic_type_creation_utils> m_generics_creation_utils;
-  std::unique_ptr<sema_context> m_cmake_namespace_context;
+  std::unique_ptr<builtin_cmake_namespace_context> m_cmake_namespace_context;
 };
 }
 }
