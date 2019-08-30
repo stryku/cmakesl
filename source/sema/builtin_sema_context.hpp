@@ -21,8 +21,7 @@ class sema_type_factory;
 class sema_context_factory;
 enum class builtin_function_kind;
 class type_builder;
-class types_context;
-class functions_context;
+class qualified_contextes;
 
 class builtin_sema_context : public sema_context_impl
 {
@@ -32,7 +31,7 @@ public:
     sema_context_factory& context_factory,
     errors::errors_observer& errors_observer,
     const builtin_token_provider& builtin_token_provider,
-    types_context& types_ctx, functions_context& functions_ctx);
+    qualified_contextes& qualified_ctxs);
 
   builtin_types_accessor builtin_types() const;
 
@@ -54,7 +53,7 @@ private:
   void add_types();
   void add_functions();
 
-  void add_cmake_namespace_context(functions_context& functions_ctx);
+  void add_cmake_namespace_context();
 
   template <typename Functions>
   void add_type_member_functions(type_builder& manipulator,
@@ -97,7 +96,7 @@ private:
   sema_context_factory& m_context_factory;
   errors::errors_observer& m_errors_observer;
   const builtin_token_provider& m_builtin_token_provider;
-  types_context& m_types_ctx;
+  qualified_contextes& m_qualified_ctxs;
 
   std::unique_ptr<builtin_types_accessor> m_builtin_types;
 

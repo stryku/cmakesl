@@ -47,6 +47,7 @@ set(SEMA_SOURCES
     homogeneous_generic_type.hpp
     identifiers_context.cpp
     identifiers_context.hpp
+    identifiers_index_provider.hpp
     overload_resolution.cpp
     overload_resolution.hpp
     qualified_contextes.hpp

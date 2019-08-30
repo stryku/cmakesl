@@ -5,25 +5,28 @@
 #include "sema/builtin_token_provider.hpp"
 #include "sema/factories.hpp"
 #include "sema/functions_context.hpp"
+#include "sema/qualified_contextes.hpp"
 
 #include <generated/builtin_token_providers.hpp>
 
 namespace cmsl::sema {
 
 builtin_cmake_namespace_context::builtin_cmake_namespace_context(
-  const sema_context& parent, functions_context& functions_ctx,
+  const sema_context& parent, qualified_contextes& qualified_ctxs,
   sema_function_factory& function_factory,
   const builtin_token_provider& builtin_token_provider,
   builtin_types_accessor builtin_types)
   : sema_context_impl{ "cmake", &parent }
-  , m_funcitons_context{ functions_ctx }
+  , m_qualified_ctxs{ qualified_ctxs }
   , m_function_factory{ function_factory }
   , m_token_provider{ builtin_token_provider }
   , m_builtin_types{ builtin_types }
 {
-  m_funcitons_context.enter_global_ctx(m_token_provider.cmake().name());
+  auto guard =
+    m_qualified_ctxs.all_qualified_ctxs_guard(m_token_provider.cmake().name());
+
   add_functions();
-  m_funcitons_context.leave_ctx();
+  add_variables();
 }
 
 void builtin_cmake_namespace_context::add_functions()
@@ -71,7 +74,12 @@ void builtin_cmake_namespace_context::add_functions()
     const auto& created_function = m_function_factory.create_builtin(
       *this, f.return_type, f.signature, f.kind);
     add_function(created_function);
-    m_funcitons_context.register_function(f.signature.name, created_function);
+    m_qualified_ctxs.functions.register_function(f.signature.name,
+                                                 created_function);
   }
+}
+
+void builtin_cmake_namespace_context::add_variables()
+{
 }
 }

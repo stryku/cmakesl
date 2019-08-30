@@ -8,13 +8,13 @@
 namespace cmsl::sema {
 class builtin_token_provider;
 class sema_function_factory;
-class functions_context;
+class qualified_contextes;
 
 class builtin_cmake_namespace_context : public sema_context_impl
 {
 public:
   explicit builtin_cmake_namespace_context(
-    const sema_context& parent, functions_context& functions_ctx,
+    const sema_context& parent, qualified_contextes& qualified_ctxs,
     sema_function_factory& function_factory,
     const builtin_token_provider& builtin_token_provider,
     builtin_types_accessor builtin_types);
@@ -28,9 +28,10 @@ private:
   };
 
   void add_functions();
+  void add_variables();
 
 private:
-  functions_context& m_funcitons_context;
+  qualified_contextes& m_qualified_ctxs;
   sema_function_factory& m_function_factory;
   const builtin_token_provider& m_token_provider;
   builtin_types_accessor m_builtin_types;

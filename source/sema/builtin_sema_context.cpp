@@ -1,5 +1,6 @@
 #include "sema/builtin_sema_context.hpp"
 #include "common/assert.hpp"
+#include "qualified_contextes.hpp"
 #include "sema/builtin_cmake_namespace_context.hpp"
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_sema_function.hpp"
@@ -16,18 +17,18 @@ builtin_sema_context::builtin_sema_context(
   sema_context_factory& context_factory,
   errors::errors_observer& errors_observer,
   const builtin_token_provider& builtin_token_provider,
-  types_context& types_ctx, functions_context& functions_ctx)
+  qualified_contextes& qualified_ctxs)
   : sema_context_impl{ "" }
   , m_type_factory{ type_factory }
   , m_function_factory{ function_factory }
   , m_context_factory{ context_factory }
   , m_errors_observer{ errors_observer }
   , m_builtin_token_provider{ builtin_token_provider }
-  , m_types_ctx{ types_ctx }
+  , m_qualified_ctxs{ qualified_ctxs }
 {
   add_types();
   add_functions();
-  add_cmake_namespace_context(functions_ctx);
+  add_cmake_namespace_context();
 }
 
 template <unsigned N>
@@ -1047,7 +1048,7 @@ const sema_type& builtin_sema_context::get_or_create_generic_type(
                                             m_errors_observer,
                                             m_builtin_token_provider,
                                             *m_builtin_types,
-                                            m_types_ctx };
+                                            m_qualified_ctxs.types };
   return *factory.create_generic(type_representation);
 }
 type_builder builtin_sema_context::add_void_type()
@@ -1111,12 +1112,11 @@ void builtin_sema_context::add_option_member_functions(
   add_type_member_functions(project_manipulator, functions);
 }
 
-void builtin_sema_context::add_cmake_namespace_context(
-  functions_context& functions_ctx)
+void builtin_sema_context::add_cmake_namespace_context()
 {
   m_cmake_namespace_context =
     std::make_unique<builtin_cmake_namespace_context>(
-      *this, functions_ctx, m_function_factory, m_builtin_token_provider,
+      *this, m_qualified_ctxs, m_function_factory, m_builtin_token_provider,
       *m_builtin_types);
 }
 }
