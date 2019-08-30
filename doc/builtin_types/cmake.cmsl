@@ -2,6 +2,8 @@
  */
 namespace cmake {
 
+list<string> module_path;
+
 /** \brief A message printing function.
  *
  * Prints \p msg to the standard output stream.

@@ -7,6 +7,7 @@
 #include "sema/builtin_token_provider.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/factories.hpp"
+#include "sema/generic_type_creation_utils.hpp"
 #include "sema/type_builder.hpp"
 
 #include <generated/builtin_token_providers.hpp>
@@ -29,6 +30,10 @@ builtin_sema_context::builtin_sema_context(
   add_types();
   add_functions();
   add_cmake_namespace_context();
+}
+
+builtin_sema_context::~builtin_sema_context()
+{
 }
 
 template <unsigned N>
@@ -93,6 +98,10 @@ void builtin_sema_context::add_types()
                                              .option_ref = option_ref };
 
   m_builtin_types = std::make_unique<builtin_types_accessor>(types);
+  m_generics_creation_utils = std::make_unique<generic_type_creation_utils>(
+    *this, m_type_factory, m_function_factory, m_context_factory,
+    m_errors_observer, m_builtin_token_provider, *m_builtin_types,
+    m_qualified_ctxs.types);
 
   add_bool_member_functions(bool_manipulator);
   add_int_member_functions(int_manipulator);
@@ -920,21 +929,7 @@ void builtin_sema_context::add_project_member_functions(
   const auto& executable_type = m_builtin_types->executable;
 
   const auto token_provider = m_builtin_token_provider.project();
-
-  const auto string_token = make_token(token_type_t::kw_string, "string");
-  const auto string_type_representation =
-    ast::type_representation{ ast::qualified_name{ string_token } };
-
-  auto generic_name = ast::type_representation::generic_type_name{
-    { make_token(token_type_t::kw_list, "list"),
-      make_token(token_type_t::less, "<"), string_token,
-      make_token(token_type_t::greater, ">") },
-    { string_type_representation }
-  };
-  const auto sources_list_type_name_representation =
-    ast::type_representation{ generic_name };
-  const auto& sources_type =
-    get_or_create_generic_type(sources_list_type_name_representation);
+  const auto& sources_type = m_generics_creation_utils->list_of_strings();
 
   const auto functions = {
     builtin_function_info{
@@ -1033,24 +1028,6 @@ void builtin_sema_context::add_executable_member_functions(
   add_type_member_functions(project_manipulator, functions);
 }
 
-const sema_type& builtin_sema_context::get_or_create_generic_type(
-  const ast::type_representation& type_representation)
-{
-  if (const auto found = find_type(type_representation)) {
-    return *found;
-  }
-
-  auto factory = sema_generic_type_factory{ *this,
-                                            *this,
-                                            m_type_factory,
-                                            m_function_factory,
-                                            m_context_factory,
-                                            m_errors_observer,
-                                            m_builtin_token_provider,
-                                            *m_builtin_types,
-                                            m_qualified_ctxs.types };
-  return *factory.create_generic(type_representation);
-}
 type_builder builtin_sema_context::add_void_type()
 {
   static const auto token = m_builtin_token_provider.void_().name();
@@ -1117,6 +1094,6 @@ void builtin_sema_context::add_cmake_namespace_context()
   m_cmake_namespace_context =
     std::make_unique<builtin_cmake_namespace_context>(
       *this, m_qualified_ctxs, m_function_factory, m_builtin_token_provider,
-      *m_builtin_types);
+      *m_builtin_types, *m_generics_creation_utils);
 }
 }

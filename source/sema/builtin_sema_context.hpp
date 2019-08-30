@@ -22,6 +22,7 @@ class sema_context_factory;
 enum class builtin_function_kind;
 class type_builder;
 class qualified_contextes;
+class generic_type_creation_utils;
 
 class builtin_sema_context : public sema_context_impl
 {
@@ -32,11 +33,13 @@ public:
     errors::errors_observer& errors_observer,
     const builtin_token_provider& builtin_token_provider,
     qualified_contextes& qualified_ctxs);
+  ~builtin_sema_context() override;
 
   builtin_types_accessor builtin_types() const;
 
 private:
   using token_type_t = lexer::token_type;
+
   struct builtin_function_info
   {
     const sema_type& return_type;
@@ -87,9 +90,6 @@ private:
   template <unsigned N>
   lexer::token make_id_token(const char (&tok)[N]);
 
-  const sema_type& get_or_create_generic_type(
-    const ast::type_representation& type_representation);
-
 private:
   sema_type_factory& m_type_factory;
   sema_function_factory& m_function_factory;
@@ -99,7 +99,7 @@ private:
   qualified_contextes& m_qualified_ctxs;
 
   std::unique_ptr<builtin_types_accessor> m_builtin_types;
-
+  std::unique_ptr<generic_type_creation_utils> m_generics_creation_utils;
   std::unique_ptr<sema_context> m_cmake_namespace_context;
 };
 }
