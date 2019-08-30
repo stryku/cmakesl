@@ -2,11 +2,14 @@
 #include "exec/static_variables_initializer.hpp"
 
 namespace cmsl::exec {
-execution::execution(facade::cmake_facade& cmake_facade,
-                     sema::builtin_types_accessor builtin_types)
+execution::execution(
+  facade::cmake_facade& cmake_facade,
+  sema::builtin_types_accessor builtin_types,
+  const std::vector<sema::identifier_info>& builtin_identifiers_info)
   : m_cmake_facade{ cmake_facade }
   , m_builtin_types{ builtin_types }
 {
+  initialize_builtin_identifiers(builtin_identifiers_info);
 }
 
 std::unique_ptr<inst::instance> execution::call(
@@ -295,5 +298,15 @@ bool execution::initialize_static_variables(
   node.visit(initializer);
   m_global_variables = initializer.gather_instances();
   return true;
+}
+
+void execution::initialize_builtin_identifiers(
+  const std::vector<sema::identifier_info>& identifiers_info)
+{
+  inst::instances_holder instances{ m_builtin_types };
+  for (const auto& info : identifiers_info) {
+    const auto created = instances.create(info.type);
+    m_global_variables[info.index] = instances.gather_ownership(created);
+  }
 }
 }

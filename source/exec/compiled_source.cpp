@@ -1,5 +1,6 @@
 #include "exec/compiled_source.hpp"
 #include "ast/ast_node.hpp"
+#include "sema/builtin_sema_context.hpp"
 #include "sema/builtin_token_provider.hpp"
 #include "sema/enum_values_context.hpp"
 #include "sema/identifiers_context.hpp"
@@ -9,7 +10,7 @@
 namespace cmsl::exec {
 compiled_source::compiled_source(
   std::unique_ptr<ast::ast_node> ast_tree,
-  std::unique_ptr<sema::sema_context> builtin_context,
+  std::unique_ptr<sema::builtin_sema_context> builtin_context,
   const sema::sema_context& global_context,
   std::unique_ptr<sema::sema_node> sema_tree, source_view source,
   std::unique_ptr<sema::builtin_token_provider> builtin_token_provider,
@@ -56,5 +57,10 @@ sema::identifiers_context& compiled_source::get_ids_ctx()
 sema::builtin_types_accessor compiled_source::builtin_types() const
 {
   return m_builtin_types;
+}
+
+const sema::builtin_sema_context& compiled_source::builtin_ctx() const
+{
+  return *m_builtin_context;
 }
 }
