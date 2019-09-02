@@ -5,6 +5,8 @@
 #include "exec/instance/instances_holder.hpp"
 #include "exec/parameter_alternatives_getter.hpp"
 #include "sema/builtin_function_kind.hpp"
+#include "sema/builtin_types_accessor.hpp"
+#include "sema/cmake_namespace_types_accessor.hpp"
 #include "sema/enum_type.hpp"
 
 #include "cmake_facade.hpp"
@@ -35,9 +37,11 @@ const std::locale builtin_function_caller::m_utf8_locale("en_US.utf8");
 
 builtin_function_caller::builtin_function_caller(
   facade::cmake_facade& cmake_facade,
-  inst::instances_holder_interface& instances)
+  inst::instances_holder_interface& instances,
+  const sema::builtin_types_accessor& builtin_types)
   : m_cmake_facade{ cmake_facade }
   , m_instances{ instances }
+  , m_builtin_types{ builtin_types }
 {
 }
 
@@ -238,6 +242,7 @@ std::unique_ptr<inst::instance> builtin_function_caller::call(
     CASE_BUILTIN_FUNCTION_CALL(cmake_warning);
     CASE_BUILTIN_FUNCTION_CALL(cmake_error);
     CASE_BUILTIN_FUNCTION_CALL(cmake_fatal_error);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_get_cxx_compiler_info);
 
     default:
       CMSL_UNREACHABLE("Calling unimplemented function");
@@ -1676,5 +1681,14 @@ inst::instance* builtin_function_caller::cmake_fatal_error(
   const auto& [message] = get_params<alternative_t::string>(params);
   m_cmake_facade.fatal_error(message);
   return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::cmake_get_cxx_compiler_info(
+  const builtin_function_caller::params_t& params)
+{
+  auto created_variable =
+    m_instances.create(m_builtin_types.cmake->cxx_compiler_info);
+  // Todo: Gather from cmake_facade the compiler info and fill members.
+  return created_variable;
 }
 }

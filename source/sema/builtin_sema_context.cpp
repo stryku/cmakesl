@@ -1093,8 +1093,11 @@ void builtin_sema_context::add_cmake_namespace_context()
 {
   m_cmake_namespace_context =
     std::make_unique<builtin_cmake_namespace_context>(
-      *this, m_qualified_ctxs, m_function_factory, m_builtin_token_provider,
-      *m_builtin_types, *m_generics_creation_utils);
+      *this, m_qualified_ctxs, m_type_factory, m_function_factory,
+      m_context_factory, m_builtin_token_provider, *m_builtin_types,
+      *m_generics_creation_utils);
+
+  m_builtin_types->cmake = &(m_cmake_namespace_context->types_accessor());
 }
 
 std::vector<identifier_info> builtin_sema_context::builtin_identifiers_info()

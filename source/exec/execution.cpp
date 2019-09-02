@@ -27,10 +27,7 @@ std::unique_ptr<inst::instance> execution::call(
     auto builtin_function =
       dynamic_cast<const sema::builtin_sema_function*>(&fun);
     result =
-      builtin_function_caller{
-        m_cmake_facade,
-        instances,
-      }
+      builtin_function_caller{ m_cmake_facade, instances, m_builtin_types }
         .call(builtin_function->kind(), params);
   }
 
@@ -51,8 +48,9 @@ std::unique_ptr<inst::instance> execution::call_member(
   } else {
     auto builtin_function =
       dynamic_cast<const sema::builtin_sema_function*>(&fun);
-    return builtin_function_caller{ m_cmake_facade, instances }.call_member(
-      class_instance, builtin_function->kind(), params);
+    return builtin_function_caller{ m_cmake_facade, instances,
+                                    m_builtin_types }
+      .call_member(class_instance, builtin_function->kind(), params);
   }
 }
 

@@ -7,8 +7,9 @@ class enum_type : public sema_type
 {
 public:
   explicit enum_type(const sema_context& ctx, ast::type_representation name,
-                     std::vector<lexer::token> enumerators)
-    : sema_type{ enum_tag{}, ctx, std::move(name) }
+                     std::vector<lexer::token> enumerators,
+                     flags_t additional_flags = {})
+    : sema_type{ ctx, std::move(name), {}, flags::enum_ | additional_flags }
     , m_enumerators{ std::move(enumerators) }
   {
   }

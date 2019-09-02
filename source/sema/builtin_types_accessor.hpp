@@ -1,6 +1,7 @@
 #pragma once
 
 namespace cmsl::sema {
+struct cmake_namespace_types_accessor;
 class sema_type;
 
 struct builtin_types_accessor
@@ -24,5 +25,7 @@ struct builtin_types_accessor
   const sema_type& project_ref;
   const sema_type& option;
   const sema_type& option_ref;
+
+  const cmake_namespace_types_accessor* cmake{ nullptr };
 };
 }

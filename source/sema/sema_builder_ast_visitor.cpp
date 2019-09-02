@@ -24,6 +24,7 @@
 #include "sema/block_node_manipulator.hpp"
 #include "sema/builtin_sema_function.hpp"
 #include "sema/builtin_types_finder.hpp"
+#include "sema/enum_creator.hpp"
 #include "sema/enum_values_context.hpp"
 #include "sema/factories.hpp"
 #include "sema/failed_initialization_errors_reporters.hpp"
@@ -1383,61 +1384,9 @@ void sema_builder_ast_visitor::visit(const ast::enum_node& node)
 const sema_type& sema_builder_ast_visitor::create_enum_type(
   const ast::enum_node& node)
 {
-  const auto& name = node.name();
-  const auto name_representation =
-    ast::type_representation{ ast::qualified_name{ name } };
-  type_builder builder{
-    m_.type_factory, m_.function_factory, m_.context_factory,
-    m_.ctx,          name_representation, sema_context::context_type ::enum_
-  };
-
-  const auto& enum_type =
-    builder.build_enum_and_register_in_context(node.enumerators());
-  const auto& enum_ref_type = builder.built_type().reference;
-
-  const auto& string_type = m_.builtin_types.string;
-  const auto& bool_type = m_.builtin_types.bool_;
-
-  const auto dummy_param_name_token =
-    lexer::make_token(lexer::token_type::identifier, "");
-
-  auto functions = {
-    type_builder::builtin_function_info{
-      // to_string()
-      string_type,
-      function_signature{
-        lexer::make_token(lexer::token_type::identifier, "to_string") },
-      builtin_function_kind::enum_to_string },
-    type_builder::builtin_function_info{
-      // operator==(enum)
-      bool_type,
-      function_signature{
-        lexer::make_token(lexer::token_type::equalequal, "=="),
-        { parameter_declaration{ enum_type, dummy_param_name_token,
-                                 identifiers_index_provider::get_next() } } },
-      builtin_function_kind::enum_operator_equalequal,
-    },
-    type_builder::builtin_function_info{
-      // operator!=(enum)
-      bool_type,
-      function_signature{
-        lexer::make_token(lexer::token_type::exclaimequal, "!="),
-        { parameter_declaration{ enum_type, dummy_param_name_token,
-                                 identifiers_index_provider::get_next() } } },
-      builtin_function_kind::enum_operator_exclaimequal },
-    type_builder::builtin_function_info{
-      // operator=(enum)
-      enum_ref_type,
-      function_signature{
-        lexer::make_token(lexer::token_type::equal, "="),
-        { parameter_declaration{ enum_type, dummy_param_name_token,
-                                 identifiers_index_provider::get_next() } } },
-      builtin_function_kind::enum_operator_equal }
-  };
-
-  builder.with_builtin_functions(functions);
-
-  return enum_type;
+  enum_creator creator{ m_.type_factory, m_.function_factory,
+                        m_.context_factory, m_.ctx, m_.builtin_types };
+  return creator.create(node.name(), node.enumerators());
 }
 
 void sema_builder_ast_visitor::add_user_type_default_methods(

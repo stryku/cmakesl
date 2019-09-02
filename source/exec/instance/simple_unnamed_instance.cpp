@@ -39,6 +39,8 @@ instance_value_variant simple_unnamed_instance::create_init_data() const
     return project_value{ "" };
   } else if (name == "option") {
     return option_value{ "" };
+  } else if (m_sema_type.is_enum()) {
+    return enum_constant_value{};
   }
 
   CMSL_UNREACHABLE("Unknown type");

@@ -30,9 +30,11 @@ const sema_type different_type{ valid_context,
                                   token_identifier("bar") } },
                                 {} };
 const sema_type designated_initialization_type{
-  sema_type::designated_initializer_tag{}, valid_context,
+  valid_context,
   ast::type_representation{
-    ast::qualified_name{ token_identifier("designated_type") } }
+    ast::qualified_name{ token_identifier("designated_type") } },
+  {},
+  sema_type::flags::designated_initializer
 };
 
 const sema_type complex_type{

@@ -56,7 +56,7 @@ std::unique_ptr<instance> instance_factory2::create_reference(
 std::unique_ptr<instance> instance_factory2::create(
   const sema::sema_type& type) const
 {
-  if (!type.is_builtin()) {
+  if (type.is_complex() || !type.is_builtin()) {
     return std::make_unique<complex_unnamed_instance>(type);
   } else {
     return std::make_unique<simple_unnamed_instance>(type);

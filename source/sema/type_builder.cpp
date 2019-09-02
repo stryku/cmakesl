@@ -46,10 +46,11 @@ type_builder& type_builder::with_builtin_function(const sema_type& return_type,
   return *this;
 }
 
-const sema_type& type_builder::build_and_register_in_context()
+const sema_type& type_builder::build_and_register_in_context(
+  sema_type::flags_t flags)
 {
   const auto& type =
-    m_type_factory.create(m_type_ctx, m_name, std::move(m_members));
+    m_type_factory.create(m_type_ctx, m_name, std::move(m_members), flags);
   const auto& reference_type = m_type_factory.create_reference(type);
   m_current_ctx.add_type(type);
   m_current_ctx.add_type(reference_type);
@@ -61,10 +62,10 @@ const sema_type& type_builder::build_and_register_in_context()
 }
 
 const sema_type& type_builder::build_enum_and_register_in_context(
-  std::vector<lexer::token> enumerators)
+  std::vector<lexer::token> enumerators, sema_type::flags_t additional_flags)
 {
-  const auto& type =
-    m_type_factory.create_enum(m_type_ctx, m_name, std::move(enumerators));
+  const auto& type = m_type_factory.create_enum(
+    m_type_ctx, m_name, std::move(enumerators), additional_flags);
   const auto& reference_type = m_type_factory.create_reference(type);
   m_current_ctx.add_type(type);
   m_current_ctx.add_type(reference_type);

@@ -49,9 +49,11 @@ public:
     return *this;
   }
 
-  const sema_type& build_and_register_in_context();
+  const sema_type& build_and_register_in_context(
+    sema_type::flags_t flags = {});
   const sema_type& build_enum_and_register_in_context(
-    std::vector<lexer::token> enumerators);
+    std::vector<lexer::token> enumerators,
+    sema_type::flags_t additional_flags = {});
   const sema_type& build_builtin_and_register_in_context();
   const sema_type& build_homogeneous_generic_and_register_in_context(
     const sema_type& value_type);

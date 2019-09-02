@@ -42,4 +42,24 @@ void error(string msg);
  * \param msg The message to be printed.
  */
 void fatal_error(string msg);
+
+/** \brief CXX compiler identificator.
+ */
+enum cxx_compiler_id
+{
+  clang
+};
+
+/** \brief CXX compiler information.
+ */
+class cxx_compiler_info
+{
+  cxx_compiler_id id;
+};
+
+/** \brief CXX compiler information getter.
+ *
+ * \return Information about cxx compiler that cmake is running for.
+ */
+cxx_compiler_info get_cxx_compiler_info();
 }

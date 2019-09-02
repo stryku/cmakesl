@@ -13,6 +13,7 @@ class cmake_facade;
 
 namespace sema {
 enum class builtin_function_kind;
+struct builtin_types_accessor;
 }
 
 namespace exec {
@@ -28,7 +29,8 @@ public:
 
   explicit builtin_function_caller(
     facade::cmake_facade& cmake_facade,
-    inst::instances_holder_interface& instances);
+    inst::instances_holder_interface& instances,
+    const sema::builtin_types_accessor& builtin_types);
 
   std::unique_ptr<inst::instance> call(
     sema::builtin_function_kind function_kind, const params_t& params);
@@ -346,6 +348,7 @@ private:
   inst::instance* cmake_warning(const params_t& params);
   inst::instance* cmake_error(const params_t& params);
   inst::instance* cmake_fatal_error(const params_t& params);
+  inst::instance* cmake_get_cxx_compiler_info(const params_t& params);
 
 private:
   int_t string_pos_to_int(std::string::size_type pos) const;
@@ -355,6 +358,7 @@ private:
 
   facade::cmake_facade& m_cmake_facade;
   inst::instances_holder_interface& m_instances;
+  const sema::builtin_types_accessor& m_builtin_types;
 };
 }
 }
