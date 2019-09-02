@@ -120,7 +120,7 @@ public:
     sema_context_factory& context_factory,
     errors::errors_observer& errors_observer,
     const builtin_token_provider& builtin_token_provider,
-    builtin_types_accessor builtin_types, types_context& types_ctx);
+    const builtin_types_accessor& builtin_types, types_context& types_ctx);
 
   const sema_type* create_generic(const ast::type_representation& name);
 
@@ -140,7 +140,7 @@ private:
   sema_context_factory& m_context_factory;
   errors::errors_observer& m_errors_observer;
   const builtin_token_provider& m_builtin_token_provider;
-  builtin_types_accessor m_builtin_types;
+  const builtin_types_accessor& m_builtin_types;
 };
 }
 }

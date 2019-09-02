@@ -4,6 +4,7 @@
 #include "common/algorithm.hpp"
 #include "common/assert.hpp"
 #include "lexer/token.hpp"
+#include "sema/identifier_info.hpp"
 #include "sema/qualified_entries_finder.hpp"
 
 #include <algorithm>
@@ -19,12 +20,6 @@ protected:
   using qualified_names_t = std::vector<ast::name_with_coloncolon>;
 
 public:
-  struct identifier_info
-  {
-    std::reference_wrapper<const sema_type> type;
-    unsigned index;
-  };
-
   virtual ~identifiers_context() = default;
 
   virtual void register_identifier(token_t name, identifier_info info) = 0;

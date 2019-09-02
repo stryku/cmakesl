@@ -9,8 +9,8 @@ void identifiers_context_impl::register_identifier(
   m_contextes_handler.register_entry(declaration_token, info);
 }
 
-std::optional<identifiers_context_impl::identifier_info>
-identifiers_context_impl::info_of(const qualified_names_t& names) const
+std::optional<identifier_info> identifiers_context_impl::info_of(
+  const qualified_names_t& names) const
 {
   const auto found_entries = m_contextes_handler.find(names);
   if (found_entries.empty()) {

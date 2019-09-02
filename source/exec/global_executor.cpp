@@ -1,7 +1,9 @@
 #include "exec/global_executor.hpp"
+
 #include "exec/compiled_source.hpp"
 #include "exec/execution.hpp"
 #include "exec/source_compiler.hpp"
+#include "sema/builtin_sema_context.hpp"
 #include "sema/user_sema_function.hpp"
 
 #include "cmake_facade.hpp"
@@ -17,6 +19,7 @@ global_executor::directory_guard::directory_guard(
 {
   m_cmake_facade.go_into_subdirectory(dir);
 }
+
 global_executor::directory_guard::~directory_guard()
 {
   m_cmake_facade.go_directory_up();
@@ -63,7 +66,10 @@ int global_executor::execute(std::string source)
   const auto casted =
     dynamic_cast<const sema::user_sema_function*>(main_function);
 
-  execution e{ m_cmake_facade, compiled->builtin_types() };
+  const auto builtin_identifiers_info =
+    compiled->builtin_ctx().builtin_identifiers_info();
+  execution e{ m_cmake_facade, compiled->builtin_types(),
+               builtin_identifiers_info };
 
   const auto translation_unit =
     dynamic_cast<const sema::translation_unit_node*>(&compiled->sema_tree());

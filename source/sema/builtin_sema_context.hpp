@@ -3,6 +3,7 @@
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_accessor.hpp"
 #include "sema/function_signature.hpp"
+#include "sema/identifier_info.hpp"
 #include "sema/sema_context_impl.hpp"
 
 namespace cmsl {
@@ -21,8 +22,9 @@ class sema_type_factory;
 class sema_context_factory;
 enum class builtin_function_kind;
 class type_builder;
-class types_context;
-class functions_context;
+class qualified_contextes;
+class generic_type_creation_utils;
+class builtin_cmake_namespace_context;
 
 class builtin_sema_context : public sema_context_impl
 {
@@ -32,12 +34,16 @@ public:
     sema_context_factory& context_factory,
     errors::errors_observer& errors_observer,
     const builtin_token_provider& builtin_token_provider,
-    types_context& types_ctx, functions_context& functions_ctx);
+    qualified_contextes& qualified_ctxs);
+  ~builtin_sema_context() override;
 
   builtin_types_accessor builtin_types() const;
 
+  std::vector<identifier_info> builtin_identifiers_info() const;
+
 private:
   using token_type_t = lexer::token_type;
+
   struct builtin_function_info
   {
     const sema_type& return_type;
@@ -54,7 +60,7 @@ private:
   void add_types();
   void add_functions();
 
-  void add_cmake_namespace_context(functions_context& functions_ctx);
+  void add_cmake_namespace_context();
 
   template <typename Functions>
   void add_type_member_functions(type_builder& manipulator,
@@ -88,20 +94,17 @@ private:
   template <unsigned N>
   lexer::token make_id_token(const char (&tok)[N]);
 
-  const sema_type& get_or_create_generic_type(
-    const ast::type_representation& type_representation);
-
 private:
   sema_type_factory& m_type_factory;
   sema_function_factory& m_function_factory;
   sema_context_factory& m_context_factory;
   errors::errors_observer& m_errors_observer;
   const builtin_token_provider& m_builtin_token_provider;
-  types_context& m_types_ctx;
+  qualified_contextes& m_qualified_ctxs;
 
   std::unique_ptr<builtin_types_accessor> m_builtin_types;
-
-  std::unique_ptr<sema_context> m_cmake_namespace_context;
+  std::unique_ptr<generic_type_creation_utils> m_generics_creation_utils;
+  std::unique_ptr<builtin_cmake_namespace_context> m_cmake_namespace_context;
 };
 }
 }

@@ -43,10 +43,14 @@ set(SEMA_SOURCES
     function_signature.hpp
     functions_context.cpp
     functions_context.hpp
+    generic_type_creation_utils.cpp
+    generic_type_creation_utils.hpp
     homogeneous_generic_type.cpp
     homogeneous_generic_type.hpp
+    identifier_info.hpp
     identifiers_context.cpp
     identifiers_context.hpp
+    identifiers_index_provider.hpp
     overload_resolution.cpp
     overload_resolution.hpp
     qualified_contextes.hpp

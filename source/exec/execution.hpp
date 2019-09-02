@@ -10,6 +10,7 @@
 #include "exec/instance/instances_holder.hpp"
 #include "sema/builtin_sema_function.hpp"
 #include "sema/builtin_types_accessor.hpp"
+#include "sema/identifier_info.hpp"
 #include "sema/sema_nodes.hpp"
 #include "sema/user_sema_function.hpp"
 
@@ -21,10 +22,12 @@ class execution
   , public function_caller
 {
 public:
-  explicit execution(facade::cmake_facade& cmake_facade,
-                     sema::builtin_types_accessor builtin_types);
+  explicit execution(
+    facade::cmake_facade& cmake_facade,
+    sema::builtin_types_accessor builtin_types,
+    const std::vector<sema::identifier_info>& builtin_identifiers_info);
 
-  bool initialize_static_variables(const sema::translation_unit_node& node);
+  void initialize_static_variables(const sema::translation_unit_node& node);
 
   // Todo: consider returning a reference
   // Todo: Call parameters should be a vector of std::unique_ptrs, not raw
@@ -71,6 +74,9 @@ private:
 
   std::unique_ptr<inst::instance> execute_infix_expression(
     const sema::sema_type& expected_type, const sema::sema_node& node);
+
+  void initialize_builtin_identifiers(
+    const std::vector<sema::identifier_info>& identifiers_info);
 
 private:
   struct callstack_frame

@@ -9,6 +9,7 @@
 #include "sema/enum_values_context.hpp"
 #include "sema/factories.hpp"
 #include "sema/identifiers_context.hpp"
+#include "sema/qualified_contextes.hpp"
 #include "sema/sema_builder.hpp"
 #include "sema/sema_node.hpp"
 #include "sema/types_context.hpp"
@@ -44,23 +45,22 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
   auto builtin_token_provider =
     std::make_unique<sema::builtin_token_provider>("");
 
-  auto builtin_context = std::make_unique<sema::builtin_sema_context>(
-    m_type_factory, m_function_factory, m_context_factory, m_errors_observer,
-    *builtin_token_provider, m_types_ctx, m_functions_ctx);
-  const auto builtin_types = builtin_context->builtin_types();
-
-  auto& global_context = m_context_factory.create("", builtin_context.get());
-
   std::unique_ptr<sema::identifiers_context> ids_ctx =
     std::make_unique<sema::identifiers_context_impl>();
   std::unique_ptr<sema::enum_values_context> enums_ctx =
     std::make_unique<sema::enum_values_context_impl>();
+  sema::qualified_contextes qualified_ctxs{ *enums_ctx, m_functions_ctx,
+                                            *ids_ctx, m_types_ctx };
+
+  auto builtin_context = std::make_unique<sema::builtin_sema_context>(
+    m_type_factory, m_function_factory, m_context_factory, m_errors_observer,
+    *builtin_token_provider, qualified_ctxs);
+  const auto builtin_types = builtin_context->builtin_types();
+
+  auto& global_context = m_context_factory.create("", builtin_context.get());
   sema::sema_builder sema_builder{ global_context,
                                    m_errors_observer,
-                                   *enums_ctx,
-                                   *ids_ctx,
-                                   m_types_ctx,
-                                   m_functions_ctx,
+                                   qualified_ctxs,
                                    m_type_factory,
                                    m_function_factory,
                                    m_context_factory,

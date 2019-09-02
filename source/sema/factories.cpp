@@ -146,7 +146,7 @@ sema_generic_type_factory::sema_generic_type_factory(
   sema_context_factory& context_factory,
   errors::errors_observer& errors_observer,
   const builtin_token_provider& builtin_token_provider,
-  builtin_types_accessor builtin_types, types_context& types_ctx)
+  const builtin_types_accessor& builtin_types, types_context& types_ctx)
   : sema_type_factory{ types_ctx }
   , m_generic_types_context{ generic_types_context }
   , m_creation_context{ creation_context }

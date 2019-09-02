@@ -14,6 +14,7 @@ namespace sema {
 class builtin_token_provider;
 class sema_node;
 class sema_function;
+class builtin_sema_context;
 class sema_context;
 class identifiers_context;
 class types_context;
@@ -26,7 +27,7 @@ class compiled_source
 public:
   explicit compiled_source(
     std::unique_ptr<ast::ast_node> ast_tree,
-    std::unique_ptr<sema::sema_context> builtin_context,
+    std::unique_ptr<sema::builtin_sema_context> builtin_context,
     const sema::sema_context& global_context,
     std::unique_ptr<sema::sema_node> sema_tree, source_view source,
     std::unique_ptr<sema::builtin_token_provider> builtin_token_provider,
@@ -42,10 +43,11 @@ public:
   const sema::sema_node& sema_tree() const;
 
   sema::builtin_types_accessor builtin_types() const;
+  const sema::builtin_sema_context& builtin_ctx() const;
 
 private:
   std::unique_ptr<ast::ast_node> m_ast_tree;
-  std::unique_ptr<sema::sema_context> m_builtin_context;
+  std::unique_ptr<sema::builtin_sema_context> m_builtin_context;
   const sema::sema_context& m_global_context;
   std::unique_ptr<sema::sema_node> m_sema_tree;
   source_view m_source;

@@ -10,6 +10,7 @@
 #include "sema/enum_values_context.hpp"
 #include "sema/functions_context.hpp"
 #include "sema/identifiers_context.hpp"
+#include "sema/qualified_contextes.hpp"
 #include "sema/sema_builder.hpp"
 #include "sema/sema_function.hpp"
 #include "sema/types_context.hpp"
@@ -51,13 +52,19 @@ cmsl_parsed_source* cmsl_parse_source(
                             source_view, tokens };
   auto ast_tree = parser.parse_translation_unit();
 
+  cmsl::sema::identifiers_context_impl ids_ctx;
+  cmsl::sema::enum_values_context_impl enums_context;
+  cmsl::sema::qualified_contextes qualified_ctxs{
+    enums_context, parsed_source->context.functions_ctx, ids_ctx,
+    parsed_source->context.types_ctx
+  };
+
   auto builtin_ctx = std::make_unique<cmsl::sema::builtin_sema_context>(
     parsed_source->context.type_factory,
     parsed_source->context.function_factory,
     parsed_source->context.context_factory,
     parsed_source->context.errors_observer,
-    *(parsed_source->builtin_token_provider), parsed_source->context.types_ctx,
-    parsed_source->context.functions_ctx);
+    *(parsed_source->builtin_token_provider), qualified_ctxs);
 
   auto builtin_types = builtin_ctx->builtin_types();
 
@@ -65,17 +72,10 @@ cmsl_parsed_source* cmsl_parse_source(
 
   auto& global_context = parsed_source->context.context_factory.create(
     "", parsed_source->builtin_context.get());
-
-  cmsl::sema::identifiers_context_impl ids_ctx;
-  cmsl::sema::enum_values_context_impl enums_context;
-  cmsl::sema::functions_context_impl functions_ctx;
   cmsl::sema::sema_builder sema_builder{
     global_context,
     parsed_source->context.errors_observer,
-    enums_context,
-    ids_ctx,
-    parsed_source->context.types_ctx,
-    parsed_source->context.functions_ctx,
+    qualified_ctxs,
     parsed_source->context.type_factory,
     parsed_source->context.function_factory,
     parsed_source->context.context_factory,

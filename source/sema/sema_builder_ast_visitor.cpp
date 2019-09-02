@@ -29,6 +29,7 @@
 #include "sema/failed_initialization_errors_reporters.hpp"
 #include "sema/functions_context.hpp"
 #include "sema/identifiers_context.hpp"
+#include "sema/identifiers_index_provider.hpp"
 #include "sema/overload_resolution.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_nodes.hpp"
@@ -43,8 +44,6 @@
 #include <unordered_set>
 
 namespace cmsl::sema {
-unsigned sema_builder_ast_visitor::m_identifier_index = 0u;
-
 sema_builder_ast_visitor::sema_builder_ast_visitor(
   sema_builder_ast_visitor_members& members)
   : m_{ members }
@@ -496,7 +495,7 @@ void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
       return;
     }
 
-    const auto identifier_index = m_identifier_index++;
+    const auto identifier_index = identifiers_index_provider::get_next();
     params.emplace_back(
       param_decl_t{ *param_type, param_decl.name, identifier_index });
     m_.qualified_ctxs.ids.register_identifier(
@@ -752,7 +751,7 @@ sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
     }
 
     params.emplace_back(parameter_declaration{ *param_type, param_decl.name });
-    const auto idenfitied_context = m_identifier_index++;
+    const auto idenfitied_context = identifiers_index_provider::get_next();
     m_.qualified_ctxs.ids.register_identifier(
       param_decl.name, { *param_type, idenfitied_context });
   }
@@ -1107,7 +1106,7 @@ void sema_builder_ast_visitor::visit(
       convert_to_cast_node_if_need(*type, std::move(initialization));
   }
 
-  const auto identifier_index = m_identifier_index++;
+  const auto identifier_index = identifiers_index_provider::get_next();
   m_.qualified_ctxs.ids.register_identifier(node.name(),
                                             { *type, identifier_index });
   m_result_node = std::make_unique<variable_declaration_node>(
@@ -1369,7 +1368,7 @@ void sema_builder_ast_visitor::visit(const ast::enum_node& node)
 
       seen_enumerators.insert(enumerator);
 
-      const auto enum_value_index = m_identifier_index++;
+      const auto enum_value_index = identifiers_index_provider::get_next();
       const auto enum_value = value++;
       m_.qualified_ctxs.enums.register_identifier(
         enumerator,
@@ -1415,7 +1414,7 @@ const sema_type& sema_builder_ast_visitor::create_enum_type(
       function_signature{
         lexer::make_token(lexer::token_type::equalequal, "=="),
         { parameter_declaration{ enum_type, dummy_param_name_token,
-                                 m_identifier_index++ } } },
+                                 identifiers_index_provider::get_next() } } },
       builtin_function_kind::enum_operator_equalequal,
     },
     type_builder::builtin_function_info{
@@ -1424,7 +1423,7 @@ const sema_type& sema_builder_ast_visitor::create_enum_type(
       function_signature{
         lexer::make_token(lexer::token_type::exclaimequal, "!="),
         { parameter_declaration{ enum_type, dummy_param_name_token,
-                                 m_identifier_index++ } } },
+                                 identifiers_index_provider::get_next() } } },
       builtin_function_kind::enum_operator_exclaimequal },
     type_builder::builtin_function_info{
       // operator=(enum)
@@ -1432,7 +1431,7 @@ const sema_type& sema_builder_ast_visitor::create_enum_type(
       function_signature{
         lexer::make_token(lexer::token_type::equal, "="),
         { parameter_declaration{ enum_type, dummy_param_name_token,
-                                 m_identifier_index++ } } },
+                                 identifiers_index_provider::get_next() } } },
       builtin_function_kind::enum_operator_equal }
   };
 
@@ -1456,7 +1455,7 @@ void sema_builder_ast_visitor::add_user_type_default_methods(
       function_signature{
         lexer::make_token(lexer::token_type::identifier, "="),
         { parameter_declaration{ class_ref_ty, dummy_param_name_token,
-                                 m_identifier_index++ } } },
+                                 identifiers_index_provider::get_next() } } },
       builtin_function_kind::user_type_operator_equal },
   };
 

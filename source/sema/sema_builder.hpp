@@ -17,24 +17,18 @@ class errors_observer;
 namespace sema {
 class add_subdirectory_handler;
 class builtin_token_provider;
-class identifiers_context;
 class sema_context;
 class sema_node;
 class sema_type_factory;
 class sema_function_factory;
 class sema_context_factory;
-class types_context;
-class functions_context;
-class enum_values_context;
+class qualified_contextes;
 
 class sema_builder
 {
 public:
   explicit sema_builder(sema_context& ctx, errors::errors_observer& errs,
-                        enum_values_context& enums_context,
-                        identifiers_context& ids_context,
-                        types_context& ty_context,
-                        functions_context& functions_ctx,
+                        qualified_contextes& qualified_ctxs,
                         sema_type_factory& type_factory,
                         sema_function_factory& function_factory,
                         sema_context_factory& context_factory,
@@ -47,10 +41,7 @@ public:
 private:
   sema_context& m_ctx;
   errors::errors_observer& m_errs;
-  enum_values_context& m_enums_context;
-  identifiers_context& m_ids_context;
-  types_context& m_types_context;
-  functions_context& m_functions_context;
+  qualified_contextes& m_qualified_ctxs;
   sema_type_factory& m_type_factory;
   sema_function_factory& m_function_factory;
   sema_context_factory& m_context_factory;

@@ -368,9 +368,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Identifier_GetCorrectIdentifierNode)
   const auto identifier_index = 0u;
   const ast::id_node node{ q_name };
 
-  auto expected_info =
-    identifiers_context::identifier_info{ valid_type_data.ty,
-                                          identifier_index };
+  auto expected_info = identifier_info{ valid_type_data.ty, identifier_index };
   EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(expected_info));
 
   visitor.visit(node);
@@ -551,8 +549,7 @@ TEST_F(
   EXPECT_CALL(ctx, find_reference_for(Ref(valid_type_data.ty)))
     .WillRepeatedly(Return(&valid_type_reference));
 
-  auto expected_info =
-    identifiers_context::identifier_info{ valid_type_data.ty, 0u };
+  auto expected_info = identifier_info{ valid_type_data.ty, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(expected_info));
   EXPECT_CALL(ids_ctx, register_identifier(_, _));
 
@@ -736,8 +733,7 @@ TEST_F(SemaBuilderAstVisitorTest,
   EXPECT_CALL(function_mock, return_type())
     .WillRepeatedly(ReturnRef(valid_type_data.ty));
 
-  auto expected_info =
-    identifiers_context::identifier_info{ valid_type_data.ty, 0u };
+  auto expected_info = identifier_info{ valid_type_data.ty, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(expected_info));
 
   // Todo: use mocks
@@ -901,7 +897,7 @@ TEST_F(
   auto node =
     create_member_function_call_node(std::move(lhs_ast_node), fun_name_token);
 
-  auto expected_info = identifiers_context::identifier_info{ lhs_type, 0u };
+  auto expected_info = identifier_info{ lhs_type, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(expected_info));
 
   const auto lookup_result =
@@ -968,10 +964,8 @@ TEST_F(
   auto node = create_member_function_call_node(
     std::move(lhs_ast_node), fun_name_token, std::move(ast_params));
 
-  auto expected_lhs_info =
-    identifiers_context::identifier_info{ lhs_type, 0u };
-  auto expected_info =
-    identifiers_context::identifier_info{ valid_type_data.ty, 0u };
+  auto expected_lhs_info = identifier_info{ lhs_type, 0u };
+  auto expected_info = identifier_info{ valid_type_data.ty, 0u };
   EXPECT_CALL(ids_ctx, info_of(_))
     .WillOnce(Return(expected_lhs_info))
     .WillOnce(Return(expected_info))
@@ -1510,8 +1504,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_WhileNode)
 
   ast::while_node node(tmp_token, std::move(conditional_ast_node));
 
-  auto expected_info =
-    identifiers_context::identifier_info{ valid_type_data.ty, 0u };
+  auto expected_info = identifier_info{ valid_type_data.ty, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(expected_info));
 
   EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
@@ -1549,8 +1542,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfNode_GetIfNode)
 
   ast::if_else_node node(std::move(ifs), std::nullopt);
 
-  auto expected_info =
-    identifiers_context::identifier_info{ valid_type_data.ty, 0u };
+  auto expected_info = identifier_info{ valid_type_data.ty, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(expected_info));
 
   EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(2);
@@ -1597,8 +1589,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseNode_GetIfElseNode)
 
   ast::if_else_node node(std::move(ifs), std::move(else_value));
 
-  auto expected_info =
-    identifiers_context::identifier_info{ valid_type_data.ty, 0u };
+  auto expected_info = identifier_info{ valid_type_data.ty, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(expected_info));
 
   EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(4);
@@ -1649,8 +1640,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfNode_GetIfElseIfNode)
 
   ast::if_else_node node(std::move(ifs), std::nullopt);
 
-  auto expected_info =
-    identifiers_context::identifier_info{ valid_type_data.ty, 0u };
+  auto expected_info = identifier_info{ valid_type_data.ty, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(expected_info));
 
   EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(4);
@@ -1705,8 +1695,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_IfElseIfElseNode_GetIfElseIfElseNode)
 
   ast::if_else_node node(std::move(ifs), std::move(else_value));
 
-  auto expected_info =
-    identifiers_context::identifier_info{ valid_type_data.ty, 0u };
+  auto expected_info = identifier_info{ valid_type_data.ty, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(expected_info));
 
   EXPECT_CALL(ids_ctx, enter_local_ctx()).Times(6);
@@ -1751,7 +1740,7 @@ TEST_F(SemaBuilderAstVisitorTest,
   ast::class_member_access_node node{ std::move(lhs_node), tmp_token,
                                       member_name_token };
 
-  auto expected_info = identifiers_context::identifier_info{ lhs_type, 0u };
+  auto expected_info = identifier_info{ lhs_type, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillOnce(Return(expected_info));
 
   visitor.visit(node);
@@ -1874,8 +1863,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_BinaryOperatorNode)
   ast::binary_operator_node node{ std::move(lhs_node), operator_token,
                                   std::move(rhs_node) };
 
-  auto expected_info =
-    identifiers_context::identifier_info{ lhs_and_rhs_type, 0u };
+  auto expected_info = identifier_info{ lhs_and_rhs_type, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(expected_info));
 
   const auto expected_signature = function_signature{
@@ -2155,7 +2143,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_UnaryOperatorNode)
 
   ast::unary_operator node{ operator_token, std::move(foo_node) };
 
-  auto expected_info = identifiers_context::identifier_info{ foo_type, 0u };
+  auto expected_info = identifier_info{ foo_type, 0u };
   EXPECT_CALL(ids_ctx, info_of(_)).WillRepeatedly(Return(expected_info));
 
   const auto expected_signature = function_signature{ operator_token, {} };

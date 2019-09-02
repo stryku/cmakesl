@@ -214,8 +214,6 @@ public:
 
 private:
   sema_builder_ast_visitor_members& m_;
-
-  static unsigned m_identifier_index;
 };
 }
 }
