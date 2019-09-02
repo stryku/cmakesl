@@ -74,33 +74,33 @@ make
 * `CMAKESL_WITH_TOOLS=ON` enables building tools library
 * `CMAKESL_WITH_EXAMPLES=ON` enables building example usage of indexer and syntax completion tools
 
-This will build only the libraries. To integrate CMakeSL into the CMake, more work has to be done:
+This will build only the libraries. In order to integrate CMakeSL into the CMake codebase, more work has to be done:
 ```sh
-# Clone CMake codebase
+# Clone CMake codebase.
 git clone https://gitlab.kitware.com/cmake/cmake.git
 cd cmake
-# CMakeSL bases on this particular release
+# CMakeSL bases on this particular release.
 git checkout v3.14.3
 
-# Clone CMakeSL in the `Source` directory
+# Clone CMakeSL in the `Source` directory.
 cd Source
 git clone https://github.com/stryku/cmakesl
 cd cmakesl
 # Checkout to a specific version if need.
 git checkout v0.0
 
-# Apply changes to CMake code
+# Apply changes to CMake code.
 cd ../..
 git apply Source/cmakesl/cmake_integration/cmake_changes.patch
 
-# Build CMake. C++17 compiler is required
+# Build CMake. C++17 compiler is required.
 cd ..
 mkdir build install
 cd build
 cmake ../cmake -DCMAKE_CXX_COMPILER=<compiler supporting C++17> -DCMAKE_INSTALL_PREFIX=../install
 make install -j
 cd ..
-# Now, in install/bin you have the `cmake` binary that supports CMakeSL
+# Now, in install/bin you have the `cmake` binary that supports CMakeSL.
 ```
 
 An alternative way to build CMake is to use a ready-made script from the [scripts/](https://github.com/stryku/cmakesl/tree/master/scripts) directory:
