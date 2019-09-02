@@ -29,8 +29,11 @@ set(SEMA_SOURCES
     builtin_token_provider.hpp
     builtin_types_accessor.hpp
     builtin_types_finder.hpp
+    cmake_namespace_types_accessor.hpp
     dumper.cpp
     dumper.hpp
+    enum_creator.cpp
+    enum_creator.hpp
     enum_type.hpp
     enum_values_context.cpp
     enum_values_context.hpp

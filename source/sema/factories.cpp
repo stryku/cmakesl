@@ -69,19 +69,20 @@ sema_context_factory::~sema_context_factory()
 
 const sema_type& sema_type_factory::create(const sema_context& ctx,
                                            ast::type_representation name,
-                                           std::vector<member_info> members)
+                                           std::vector<member_info> members,
+                                           sema_type::flags_t flags)
 {
   return create_and_add<sema_type>(name.primary_name_token(), ctx, name,
-                                   std::move(members));
+                                   std::move(members), flags);
 }
 
 const sema_type& sema_type_factory::create_builtin(
   const sema_context& ctx, ast::type_representation name,
   std::vector<member_info> members)
 {
-  return create_and_add<sema_type>(name.primary_name_token(),
-                                   sema_type::builtin_tag{}, ctx, name,
-                                   std::move(members));
+  return create_and_add<sema_type>(name.primary_name_token(), ctx, name,
+                                   std::move(members),
+                                   sema_type::flags::builtin);
 }
 
 const sema_type& sema_type_factory::create_homogeneous_generic(
@@ -98,8 +99,9 @@ const sema_type& sema_type_factory::create_reference(
   const auto primary_name_token = referenced_type.name().primary_name_token();
   if (referenced_type.is_builtin()) {
     return create_and_add<sema_type>(primary_name_token,
-                                     sema_type::builtin_tag{},
-                                     sema_type_reference{ referenced_type });
+
+                                     sema_type_reference{ referenced_type },
+                                     sema_type::flags::builtin);
   } else {
     return create_and_add<sema_type>(primary_name_token,
                                      sema_type_reference{ referenced_type });
@@ -118,17 +120,17 @@ sema_type_factory::~sema_type_factory()
 const sema_type& sema_type_factory::create_designated_initializer(
   const sema_context& ctx, ast::type_representation name)
 {
-  return create_and_add<sema_type>(name.primary_name_token(),
-                                   sema_type::designated_initializer_tag{},
-                                   ctx, name);
+  return create_and_add<sema_type>(name.primary_name_token(), ctx, name,
+                                   std::vector<member_info>{},
+                                   sema_type::flags::designated_initializer);
 }
 
 const sema_type& sema_type_factory::create_enum(
   const sema_context& ctx, ast::type_representation name,
-  std::vector<lexer::token> enumerators)
+  std::vector<lexer::token> enumerators, sema_type::flags_t additional_flags)
 {
   return create_and_add<enum_type>(name.primary_name_token(), ctx, name,
-                                   std::move(enumerators));
+                                   std::move(enumerators), additional_flags);
 }
 
 template <typename T, typename... Args>

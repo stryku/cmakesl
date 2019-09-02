@@ -28,27 +28,17 @@ private:
   using token_t = lexer::token;
 
 public:
-  struct designated_initializer_tag
+  using flags_t = uint32_t;
+  enum flags : flags_t
   {
-  };
-  struct builtin_tag
-  {
-  };
-  struct enum_tag
-  {
+    builtin = 0x1,
+    designated_initializer = 0x2,
+    enum_ = 0x4
   };
 
+  explicit sema_type(const sema_type_reference& reference, flags_t f = {});
   explicit sema_type(const sema_context& ctx, ast::type_representation name,
-                     std::vector<member_info> members);
-  explicit sema_type(const sema_type_reference reference);
-  explicit sema_type(designated_initializer_tag, const sema_context& ctx,
-                     ast::type_representation name);
-  explicit sema_type(enum_tag, const sema_context& ctx,
-                     ast::type_representation name);
-  explicit sema_type(builtin_tag, const sema_context& ctx,
-                     ast::type_representation name,
-                     std::vector<member_info> members);
-  explicit sema_type(builtin_tag, const sema_type_reference reference);
+                     std::vector<member_info> members, flags_t f = {});
 
   sema_type(const sema_type&) = delete;
   sema_type& operator=(sema_type&&) = delete;
@@ -79,8 +69,6 @@ private:
   ast::type_representation m_name;
   std::vector<member_info> m_members;
   const sema_type* m_referenced_type{ nullptr };
-  bool m_is_designated_initializer = false;
-  bool m_is_builtin{ false };
-  bool m_is_enum{ false };
+  flags_t m_flags;
 };
 }

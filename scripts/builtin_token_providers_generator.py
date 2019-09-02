@@ -261,11 +261,17 @@ GENERATION_INFO = {
     'cmake': {
         'tokens': {
             'name': ['namespace cmake', 'namespace ', 'cmake'],
+            'module_path': ['list<string> module_path;', 'list<string> ', 'module_path'],
             'message': ['void message(string msg);', 'void ', 'message'],
             'warning': ['void warning(string msg);', 'void ', 'warning'],
             'error': ['void error(string msg);', 'void ', 'error'],
             'fatal_error': ['void fatal_error(string msg);', 'void ', 'fatal_error'],
-            'module_path': ['list<string> module_path;', 'list<string> ', 'module_path']
+
+            'cxx_compiler_id_name': ['enum cxx_compiler_id', 'enum ', 'cxx_compiler_id'],
+            'cxx_compiler_id_clang': ['clang', '', 'clang'],
+            'cxx_compiler_info_name': ['class cxx_compiler_info', 'class ', 'cxx_compiler_info'],
+            'cxx_compiler_info_id': ['cxx_compiler_id id;', 'cxx_compiler_id ', 'id'],
+            'get_cxx_compiler_info': ['cxx_compiler_info get_cxx_compiler_info();', 'cxx_compiler_info ', 'get_cxx_compiler_info'],
         }
     }
 }

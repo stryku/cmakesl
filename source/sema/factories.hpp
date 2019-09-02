@@ -84,7 +84,8 @@ public:
 
   const sema_type& create(const sema_context& ctx,
                           ast::type_representation name,
-                          std::vector<member_info> members);
+                          std::vector<member_info> members,
+                          sema_type::flags_t flags = {});
 
   const sema_type& create_builtin(const sema_context& ctx,
                                   ast::type_representation name,
@@ -101,7 +102,8 @@ public:
 
   const sema_type& create_enum(const sema_context& ctx,
                                ast::type_representation name,
-                               std::vector<lexer::token> enumerators);
+                               std::vector<lexer::token> enumerators,
+                               sema_type::flags_t additional_flags = {});
 
 private:
   template <typename T, typename... Args>
