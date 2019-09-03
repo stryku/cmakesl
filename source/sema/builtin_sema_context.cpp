@@ -1,12 +1,13 @@
 #include "sema/builtin_sema_context.hpp"
 #include "common/assert.hpp"
-#include "qualified_contextes.hpp"
+#include "qualified_contextes_refs.hpp"
 #include "sema/builtin_cmake_namespace_context.hpp"
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_sema_function.hpp"
 #include "sema/builtin_token_provider.hpp"
 #include "sema/builtin_types_finder.hpp"
 #include "sema/factories.hpp"
+#include "sema/factories_provider.hpp"
 #include "sema/generic_type_creation_utils.hpp"
 #include "sema/type_builder.hpp"
 
@@ -14,15 +15,12 @@
 
 namespace cmsl::sema {
 builtin_sema_context::builtin_sema_context(
-  sema_type_factory& type_factory, sema_function_factory& function_factory,
-  sema_context_factory& context_factory,
+  factories_provider& factories_provider,
   errors::errors_observer& errors_observer,
   const builtin_token_provider& builtin_token_provider,
-  qualified_contextes& qualified_ctxs)
+  qualified_contextes_refs& qualified_ctxs)
   : sema_context_impl{ "" }
-  , m_type_factory{ type_factory }
-  , m_function_factory{ function_factory }
-  , m_context_factory{ context_factory }
+  , m_factories{ factories_provider }
   , m_errors_observer{ errors_observer }
   , m_builtin_token_provider{ builtin_token_provider }
   , m_qualified_ctxs{ qualified_ctxs }
@@ -98,10 +96,10 @@ void builtin_sema_context::add_types()
                                              .option_ref = option_ref };
 
   m_builtin_types = std::make_unique<builtin_types_accessor>(types);
+
   m_generics_creation_utils = std::make_unique<generic_type_creation_utils>(
-    *this, m_type_factory, m_function_factory, m_context_factory,
-    m_errors_observer, m_builtin_token_provider, *m_builtin_types,
-    m_qualified_ctxs.types);
+    *this, m_factories, m_errors_observer, m_builtin_token_provider,
+    *m_builtin_types, m_qualified_ctxs.types);
 
   add_bool_member_functions(bool_manipulator);
   add_int_member_functions(int_manipulator);
@@ -127,10 +125,12 @@ void builtin_sema_context::add_functions()
       { parameter_declaration{ version_type, make_id_token("") } } },
     builtin_function_kind::cmake_minimum_required } };
 
+  auto factory = m_factories.function_factory();
+
   for (const auto& function : functions) {
-    const auto& created = m_function_factory.create_builtin(
-      *this, function.return_type, std::move(function.signature),
-      function.kind);
+    const auto& created =
+      factory.create_builtin(*this, function.return_type,
+                             std::move(function.signature), function.kind);
     add_function(created);
   }
 }
@@ -1038,8 +1038,9 @@ type_builder builtin_sema_context::add_type(lexer::token name_token)
 {
   const auto name_representation =
     ast::type_representation{ ast::qualified_name{ name_token } };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
+
+  type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
+                        name_representation };
   builder.build_builtin_and_register_in_context();
   return builder;
 }
@@ -1093,9 +1094,8 @@ void builtin_sema_context::add_cmake_namespace_context()
 {
   m_cmake_namespace_context =
     std::make_unique<builtin_cmake_namespace_context>(
-      *this, m_qualified_ctxs, m_type_factory, m_function_factory,
-      m_context_factory, m_builtin_token_provider, *m_builtin_types,
-      *m_generics_creation_utils);
+      *this, m_qualified_ctxs, m_factories, m_builtin_token_provider,
+      *m_builtin_types, *m_generics_creation_utils);
 
   m_builtin_types->cmake = &(m_cmake_namespace_context->types_accessor());
 }

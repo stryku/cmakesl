@@ -31,6 +31,13 @@ template <typename StoredType>
 class factory
 {
 protected:
+  using storage_t = std::vector<std::unique_ptr<StoredType>>;
+
+  explicit factory(storage_t& storage)
+    : m_storage{ storage }
+  {
+  }
+
   template <typename TypeImplementation, typename... Args>
   TypeImplementation& create_impl(Args&&... args)
   {
@@ -42,12 +49,16 @@ protected:
   }
 
 private:
-  std::vector<std::unique_ptr<StoredType>> m_storage;
+  storage_t& m_storage;
 };
 
 class sema_function_factory : public factory<sema_function>
 {
 public:
+  explicit sema_function_factory(storage_t& storage)
+    : factory{ storage }
+  {
+  }
   ~sema_function_factory();
 
   user_sema_function& create_user(const sema_context& ctx,
@@ -63,6 +74,10 @@ public:
 class sema_context_factory : public factory<sema_context>
 {
 public:
+  explicit sema_context_factory(storage_t& storage)
+    : factory{ storage }
+  {
+  }
   ~sema_context_factory();
 
   sema_context_impl& create(
@@ -78,7 +93,11 @@ public:
 class sema_type_factory : public factory<sema_type>
 {
 public:
-  explicit sema_type_factory(types_context& types_ctx);
+  explicit sema_type_factory(types_context& types_ctx, storage_t& storage)
+    : factory{ storage }
+    , m_types_ctx{ types_ctx }
+  {
+  }
 
   ~sema_type_factory();
 
@@ -113,14 +132,14 @@ protected:
   types_context& m_types_ctx;
 };
 
-class sema_generic_type_factory : public sema_type_factory
+class factories_provider;
+
+class sema_generic_type_factory
 {
 public:
   explicit sema_generic_type_factory(
     sema_context& generic_types_context, const sema_context& creation_context,
-    sema_type_factory& type_factory, sema_function_factory& function_factory,
-    sema_context_factory& context_factory,
-    errors::errors_observer& errors_observer,
+    factories_provider& factories, errors::errors_observer& errors_observer,
     const builtin_token_provider& builtin_token_provider,
     const builtin_types_accessor& builtin_types, types_context& types_ctx);
 
@@ -137,9 +156,8 @@ private:
 private:
   sema_context& m_generic_types_context;
   const sema_context& m_creation_context;
-  sema_type_factory& m_type_factory;
-  sema_function_factory& m_function_factory;
-  sema_context_factory& m_context_factory;
+  factories_provider& m_factories;
+  types_context& m_types_ctx;
   errors::errors_observer& m_errors_observer;
   const builtin_token_provider& m_builtin_token_provider;
   const builtin_types_accessor& m_builtin_types;

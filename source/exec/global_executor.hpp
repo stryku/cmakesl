@@ -3,8 +3,8 @@
 #include "errors/errors_observer.hpp"
 #include "sema/add_subdirectory_handler.hpp"
 #include "sema/factories.hpp"
-#include "sema/functions_context.hpp"
-#include "sema/types_context.hpp"
+#include "sema/factories_provider.hpp"
+#include "sema/qualified_contextes.hpp"
 
 #include <memory>
 #include <vector>
@@ -12,6 +12,10 @@
 namespace cmsl {
 namespace facade {
 class cmake_facade;
+}
+
+namespace sema {
+class builtin_sema_context;
 }
 
 namespace exec {
@@ -35,6 +39,9 @@ private:
   void raise_no_main_function_error(const cmsl::string_view& path);
   void raise_unsuccessful_compilation_error(const cmsl::string_view& path);
 
+  sema::qualified_contextes create_qualified_contextes() const;
+  std::unique_ptr<sema::builtin_sema_context> create_builtin_context();
+
 private:
   class directory_guard
   {
@@ -50,11 +57,12 @@ private:
   std::string m_root_path;
   facade::cmake_facade& m_cmake_facade;
   errors::errors_observer m_errors_observer;
-  sema::types_context_impl m_types_context;
-  sema::functions_context_impl m_functions_ctx;
-  sema::sema_type_factory m_type_factory;
-  sema::sema_function_factory m_function_factory;
-  sema::sema_context_factory m_context_factory;
+  // Contextes are going to be initialized with builtin stuff at builtin
+  // context creation.
+  sema::qualified_contextes m_qualified_contextes;
+  sema::factories_provider m_factories;
+  std::unique_ptr<sema::builtin_token_provider> m_builtin_tokens;
+  std::unique_ptr<sema::builtin_sema_context> m_builtin_context;
   std::vector<std::string> m_sources;
   std::vector<std::string> m_paths;
   std::vector<std::unique_ptr<compiled_source>> m_compiled_sources;

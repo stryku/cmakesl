@@ -8,8 +8,9 @@
 #include "sema/builtin_token_provider.hpp"
 #include "sema/enum_values_context.hpp"
 #include "sema/factories.hpp"
+#include "sema/factories_provider.hpp"
 #include "sema/identifiers_context.hpp"
-#include "sema/qualified_contextes.hpp"
+#include "sema/qualified_contextes_refs.hpp"
 #include "sema/sema_builder.hpp"
 #include "sema/sema_node.hpp"
 #include "sema/types_context.hpp"
@@ -17,18 +18,17 @@
 namespace cmsl::exec {
 source_compiler::source_compiler(
   errors::errors_observer& errors_observer,
-  sema::sema_type_factory& type_factory,
-  sema::sema_function_factory& function_factory,
-  sema::sema_context_factory& context_factory,
+  sema::factories_provider& factories_provider,
   sema::add_subdirectory_handler& add_subdirectory_handler,
-  sema::types_context& types_ctx, sema::functions_context& functions_ctx)
+  sema::qualified_contextes_refs& qualified_contextes,
+  sema::builtin_sema_context& builtin_context,
+  sema::builtin_token_provider& builtin_tokens)
   : m_errors_observer{ errors_observer }
-  , m_type_factory{ type_factory }
-  , m_function_factory{ function_factory }
-  , m_context_factory{ context_factory }
+  , m_factories_provider{ factories_provider }
   , m_add_subdirectory_handler{ add_subdirectory_handler }
-  , m_types_ctx{ types_ctx }
-  , m_functions_ctx{ functions_ctx }
+  , m_qualified_contextes{ qualified_contextes }
+  , m_builtin_context{ builtin_context }
+  , m_builtin_tokens{ builtin_tokens }
 {
 }
 
@@ -42,39 +42,22 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
     return nullptr;
   }
 
-  auto builtin_token_provider =
-    std::make_unique<sema::builtin_token_provider>("");
+  const auto builtin_types = m_builtin_context.builtin_types();
 
-  std::unique_ptr<sema::identifiers_context> ids_ctx =
-    std::make_unique<sema::identifiers_context_impl>();
-  std::unique_ptr<sema::enum_values_context> enums_ctx =
-    std::make_unique<sema::enum_values_context_impl>();
-  sema::qualified_contextes qualified_ctxs{ *enums_ctx, m_functions_ctx,
-                                            *ids_ctx, m_types_ctx };
-
-  auto builtin_context = std::make_unique<sema::builtin_sema_context>(
-    m_type_factory, m_function_factory, m_context_factory, m_errors_observer,
-    *builtin_token_provider, qualified_ctxs);
-  const auto builtin_types = builtin_context->builtin_types();
-
-  auto& global_context = m_context_factory.create("", builtin_context.get());
-  sema::sema_builder sema_builder{ global_context,
-                                   m_errors_observer,
-                                   qualified_ctxs,
-                                   m_type_factory,
-                                   m_function_factory,
-                                   m_context_factory,
-                                   m_add_subdirectory_handler,
-                                   *builtin_token_provider,
-                                   builtin_types };
+  auto& global_context =
+    m_factories_provider.context_factory().create("", &m_builtin_context);
+  sema::sema_builder sema_builder{
+    global_context,       m_errors_observer,          m_qualified_contextes,
+    m_factories_provider, m_add_subdirectory_handler, m_builtin_tokens,
+    builtin_types
+  };
   auto sema_tree = sema_builder.build(*ast_tree);
   if (!sema_tree) {
     return nullptr;
   }
 
-  return std::make_unique<compiled_source>(
-    std::move(ast_tree), std::move(builtin_context), global_context,
-    std::move(sema_tree), source, std::move(builtin_token_provider),
-    std::move(enums_ctx), std::move(ids_ctx), builtin_types);
+  return std::make_unique<compiled_source>(std::move(ast_tree), global_context,
+                                           std::move(sema_tree), source,
+                                           builtin_types);
 }
 }

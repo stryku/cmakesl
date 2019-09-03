@@ -52,4 +52,12 @@ const sema_function* functions_context_impl::find_in_current_scope(
 
   return &found_exact_function->entry.fun;
 }
+
+std::unique_ptr<functions_context> functions_context_impl::clone() const
+{
+
+  auto created = std::make_unique<functions_context_impl>();
+  created->m_functions_finder = m_functions_finder;
+  return std::move(created);
+}
 }

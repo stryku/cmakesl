@@ -52,4 +52,11 @@ void types_context_impl::leave_ctx()
   m_types_finder.leave_node();
 }
 
+std::unique_ptr<types_context> types_context_impl::clone() const
+{
+  auto created = std::make_unique<types_context_impl>();
+  created->m_types_finder = m_types_finder;
+  return std::move(created);
+}
+
 }

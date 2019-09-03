@@ -14,5 +14,7 @@ public:
   MOCK_METHOD1(enter_global_ctx, void(token_t));
   MOCK_METHOD0(enter_local_ctx, void());
   MOCK_METHOD0(leave_ctx, void());
+
+  MOCK_CONST_METHOD0(clone, std::unique_ptr<identifiers_context>());
 };
 }

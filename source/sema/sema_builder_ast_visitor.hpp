@@ -2,7 +2,7 @@
 
 #include "ast/ast_node_visitor.hpp"
 #include "sema/builtin_types_accessor.hpp"
-#include "sema/qualified_contextes.hpp"
+#include "sema/qualified_contextes_refs.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_node.hpp"
 #include "sema/type_member_info.hpp"
@@ -35,9 +35,7 @@ class variable_declaration_node;
 class sema_type;
 class identifiers_context;
 class types_context;
-class sema_type_factory;
-class sema_function_factory;
-class sema_context_factory;
+class factories_provider;
 class user_sema_function;
 class block_node;
 class return_node;
@@ -71,10 +69,8 @@ struct sema_builder_ast_visitor_members
   sema_context& generic_types_context;
   sema_context& ctx;
   errors::errors_observer& errors_observer;
-  qualified_contextes qualified_ctxs;
-  sema_type_factory& type_factory;
-  sema_function_factory& function_factory;
-  sema_context_factory& context_factory;
+  qualified_contextes_refs qualified_ctxs;
+  factories_provider& factories;
   add_subdirectory_handler& add_subdir_handler;
   const builtin_token_provider& builtin_tokens;
   parsing_context& parsing_ctx;

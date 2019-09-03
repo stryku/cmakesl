@@ -108,11 +108,6 @@ const sema_type& sema_type_factory::create_reference(
   }
 }
 
-sema_type_factory::sema_type_factory(types_context& types_ctx)
-  : m_types_ctx{ types_ctx }
-{
-}
-
 sema_type_factory::~sema_type_factory()
 {
 }
@@ -144,17 +139,13 @@ const sema_type& sema_type_factory::create_and_add(
 
 sema_generic_type_factory::sema_generic_type_factory(
   sema_context& generic_types_context, const sema_context& creation_context,
-  sema_type_factory& type_factory, sema_function_factory& function_factory,
-  sema_context_factory& context_factory,
-  errors::errors_observer& errors_observer,
+  factories_provider& factories, errors::errors_observer& errors_observer,
   const builtin_token_provider& builtin_token_provider,
   const builtin_types_accessor& builtin_types, types_context& types_ctx)
-  : sema_type_factory{ types_ctx }
-  , m_generic_types_context{ generic_types_context }
+  : m_generic_types_context{ generic_types_context }
   , m_creation_context{ creation_context }
-  , m_type_factory{ type_factory }
-  , m_function_factory{ function_factory }
-  , m_context_factory{ context_factory }
+  , m_factories{ factories }
+  , m_types_ctx{ types_ctx }
   , m_errors_observer{ errors_observer }
   , m_builtin_token_provider{ builtin_token_provider }
   , m_builtin_types{ builtin_types }
@@ -212,8 +203,8 @@ const sema_type* sema_generic_type_factory::create_list(
   }
 
   const auto list_name_representation = prepare_list_name_representation(name);
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        m_generic_types_context, list_name_representation };
+  type_builder builder{ m_factories, m_types_ctx, m_generic_types_context,
+                        list_name_representation };
   builder.build_homogeneous_generic_and_register_in_context(*value_type);
 
   // At this point we know that list type is created and registered in context.

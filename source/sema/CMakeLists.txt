@@ -39,6 +39,8 @@ set(SEMA_SOURCES
     enum_values_context.hpp
     factories.cpp
     factories.hpp
+    factories_provider.cpp
+    factories_provider.hpp
     failed_initialization_errors_reporters.cpp
     failed_initialization_errors_reporters.hpp
     function_lookup_result.hpp
@@ -56,7 +58,9 @@ set(SEMA_SOURCES
     identifiers_index_provider.hpp
     overload_resolution.cpp
     overload_resolution.hpp
+    qualified_contextes.cpp
     qualified_contextes.hpp
+    qualified_contextes_refs.hpp
     qualified_entries_finder.hpp
     sema_builder.cpp
     sema_builder.hpp

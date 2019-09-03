@@ -2,20 +2,17 @@
 #include "lexer/token.hpp"
 #include "sema/builtin_types_accessor.hpp"
 #include "sema/factories.hpp"
+#include "sema/factories_provider.hpp"
 
 namespace cmsl::sema {
 
 generic_type_creation_utils::generic_type_creation_utils(
-  sema_context& generic_types_context, sema_type_factory& type_factory,
-  sema_function_factory& function_factory,
-  sema_context_factory& context_factory,
+  sema_context& generic_types_context, factories_provider& factories,
   errors::errors_observer& errors_observer,
   const builtin_token_provider& builtin_token_provider,
   const builtin_types_accessor& builtin_types, types_context& types_ctx)
   : m_generic_types_context{ generic_types_context }
-  , m_type_factory{ type_factory }
-  , m_function_factory{ function_factory }
-  , m_context_factory{ context_factory }
+  , m_factories{ factories }
   , m_errors_observer{ errors_observer }
   , m_builtin_token_provider{ builtin_token_provider }
   , m_builtin_types{ builtin_types }
@@ -48,11 +45,13 @@ const sema_type& generic_type_creation_utils::get_or_create_generic_type(
     return *found;
   }
 
-  auto factory = sema_generic_type_factory{
-    m_generic_types_context,  m_generic_types_context, m_type_factory,
-    m_function_factory,       m_context_factory,       m_errors_observer,
-    m_builtin_token_provider, m_builtin_types,         m_types_ctx
-  };
+  auto factory = sema_generic_type_factory{ m_generic_types_context,
+                                            m_generic_types_context,
+                                            m_factories,
+                                            m_errors_observer,
+                                            m_builtin_token_provider,
+                                            m_builtin_types,
+                                            m_types_ctx };
   return *factory.create_generic(type_representation);
 }
 }

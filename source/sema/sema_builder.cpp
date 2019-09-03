@@ -6,18 +6,14 @@
 namespace cmsl::sema {
 sema_builder::sema_builder(
   sema_context& ctx, errors::errors_observer& errs,
-  qualified_contextes& qualified_ctxs, sema_type_factory& type_factory,
-  sema_function_factory& function_factory,
-  sema_context_factory& context_factory,
+  qualified_contextes_refs& qualified_ctxs, factories_provider& factories,
   add_subdirectory_handler& add_subdirectory_handler,
   const builtin_token_provider& builtin_token_provider,
   builtin_types_accessor builtin_types)
   : m_ctx{ ctx }
   , m_errs{ errs }
   , m_qualified_ctxs{ qualified_ctxs }
-  , m_type_factory{ type_factory }
-  , m_function_factory{ function_factory }
-  , m_context_factory{ context_factory }
+  , m_factories{ factories }
   , m_add_subdirectory_handler{ add_subdirectory_handler }
   , m_builtin_token_provider{ builtin_token_provider }
   , m_builtin_types{ builtin_types }
@@ -32,9 +28,7 @@ std::unique_ptr<sema_node> sema_builder::build(const ast::ast_node& ast_tree)
                                                    m_ctx, // global ctx
                                                    m_errs,
                                                    m_qualified_ctxs,
-                                                   m_type_factory,
-                                                   m_function_factory,
-                                                   m_context_factory,
+                                                   m_factories,
                                                    m_add_subdirectory_handler,
                                                    m_builtin_token_provider,
                                                    parsing_ctx,

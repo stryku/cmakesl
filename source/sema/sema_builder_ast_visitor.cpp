@@ -27,6 +27,7 @@
 #include "sema/enum_creator.hpp"
 #include "sema/enum_values_context.hpp"
 #include "sema/factories.hpp"
+#include "sema/factories_provider.hpp"
 #include "sema/failed_initialization_errors_reporters.hpp"
 #include "sema/functions_context.hpp"
 #include "sema/identifiers_context.hpp"
@@ -82,8 +83,8 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
   auto functions_guard = m_.qualified_ctxs.functions_ctx_guard(name);
   auto enums_guard = m_.qualified_ctxs.enums_ctx_guard(name);
 
-  auto& class_context =
-    m_.context_factory.create_class(std::string{ name.str() }, &m_.ctx);
+  auto& class_context = m_.factories.context_factory().create_class(
+    std::string{ name.str() }, &m_.ctx);
 
   auto members =
     collect_class_members_and_add_functions_to_ctx(node, class_context);
@@ -92,9 +93,10 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
     return;
   }
 
-  auto& class_type = m_.type_factory.create(
+  auto type_factory = m_.factories.type_factory(m_.qualified_ctxs.types);
+  auto& class_type = type_factory.create(
     class_context, class_name_representation, std::move(members->info));
-  auto& class_type_reference = m_.type_factory.create_reference(class_type);
+  auto& class_type_reference = type_factory.create_reference(class_type);
 
   auto types_guard = m_.qualified_ctxs.types_ctx_guard(name);
 
@@ -308,7 +310,7 @@ sema_builder_ast_visitor::build_add_subdirectory_call(
     return nullptr;
   }
 
-  params[0].release();
+  (void)params[0].release();
   auto name_string_node = std::unique_ptr<string_value_node>(casted);
   const auto name = name_string_node->value();
 
@@ -508,8 +510,8 @@ void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
   if (raise_error_if_function_redefined(signature)) {
     return;
   }
-  auto& function =
-    m_.function_factory.create_user(m_.ctx, return_type, std::move(signature));
+  auto& function = m_.factories.function_factory().create_user(
+    m_.ctx, return_type, std::move(signature));
 
   // Add function (without a body yet) to context, so it will be visible inside
   // function body in case of a recursive call.
@@ -595,9 +597,9 @@ const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(
   }
 
   auto factory = sema_generic_type_factory{
-    m_.generic_types_context, search_context,     m_.type_factory,
-    m_.function_factory,      m_.context_factory, m_.errors_observer,
-    m_.builtin_tokens,        m_.builtin_types,   m_.qualified_ctxs.types
+    m_.generic_types_context, search_context,    m_.factories,
+    m_.errors_observer,       m_.builtin_tokens, m_.builtin_types,
+    m_.qualified_ctxs.types
   };
 
   return factory.create_generic(name);
@@ -663,10 +665,9 @@ sema_builder_ast_visitor sema_builder_ast_visitor::clone(
   sema_context& ctx_to_visit) const
 {
   auto members = sema_builder_ast_visitor_members{
-    m_.generic_types_context, ctx_to_visit,          m_.errors_observer,
-    m_.qualified_ctxs,        m_.type_factory,       m_.function_factory,
-    m_.context_factory,       m_.add_subdir_handler, m_.builtin_tokens,
-    m_.parsing_ctx,           m_.builtin_types
+    m_.generic_types_context, ctx_to_visit,   m_.errors_observer,
+    m_.qualified_ctxs,        m_.factories,   m_.add_subdir_handler,
+    m_.builtin_tokens,        m_.parsing_ctx, m_.builtin_types
   };
 
   return sema_builder_ast_visitor{ members };
@@ -762,8 +763,8 @@ sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
     return std::nullopt;
   }
 
-  auto& function =
-    m_.function_factory.create_user(ctx, return_type, std::move(signature));
+  auto& function = m_.factories.function_factory().create_user(
+    ctx, return_type, std::move(signature));
   m_.qualified_ctxs.functions.register_function(signature.name, function);
   ctx.add_function(function);
 
@@ -1172,7 +1173,7 @@ bool sema_builder_ast_visitor::is_inside_loop() const
 void sema_builder_ast_visitor::visit(const ast::namespace_node& node)
 {
 
-  std::stack<qualified_contextes::all_qualified_contextes_guard> guards;
+  std::stack<qualified_contextes_refs::all_qualified_contextes_guard> guards;
   for (const auto& name_with_colon : node.names()) {
     auto guard =
       m_.qualified_ctxs.all_qualified_ctxs_guard(name_with_colon.name);
@@ -1269,8 +1270,9 @@ void sema_builder_ast_visitor::visit(
 {
   const auto name = ast::type_representation{ ast::qualified_name{
     make_token(lexer::token_type::identifier, "designated_initializer") } };
+  auto type_factory = m_.factories.type_factory(m_.qualified_ctxs.types);
   const auto& designated_type =
-    m_.type_factory.create_designated_initializer(m_.ctx, name);
+    type_factory.create_designated_initializer(m_.ctx, name);
 
   designated_initializers_node::initializers_t initializers;
 
@@ -1384,8 +1386,8 @@ void sema_builder_ast_visitor::visit(const ast::enum_node& node)
 const sema_type& sema_builder_ast_visitor::create_enum_type(
   const ast::enum_node& node)
 {
-  enum_creator creator{ m_.type_factory, m_.function_factory,
-                        m_.context_factory, m_.ctx, m_.builtin_types };
+  enum_creator creator{ m_.factories, m_.qualified_ctxs.types, m_.ctx,
+                        m_.builtin_types };
   return creator.create(node.name(), node.enumerators());
 }
 
@@ -1409,7 +1411,7 @@ void sema_builder_ast_visitor::add_user_type_default_methods(
   };
 
   for (auto& f : functions) {
-    const auto& function = m_.function_factory.create_builtin(
+    const auto& function = m_.factories.function_factory().create_builtin(
       class_ctx, f.return_type, std::move(f.signature), f.kind);
     class_ctx.add_function(function);
   }

@@ -6,10 +6,11 @@
 #include "sema/cmake_namespace_types_accessor.hpp"
 #include "sema/enum_creator.hpp"
 #include "sema/factories.hpp"
+#include "sema/factories_provider.hpp"
 #include "sema/functions_context.hpp"
 #include "sema/generic_type_creation_utils.hpp"
 #include "sema/identifiers_index_provider.hpp"
-#include "sema/qualified_contextes.hpp"
+#include "sema/qualified_contextes_refs.hpp"
 #include "sema/type_builder.hpp"
 
 #include <generated/builtin_token_providers.hpp>
@@ -17,17 +18,14 @@
 namespace cmsl::sema {
 
 builtin_cmake_namespace_context::builtin_cmake_namespace_context(
-  const sema_context& parent, qualified_contextes& qualified_ctxs,
-  sema_type_factory& type_factory, sema_function_factory& function_factory,
-  sema_context_factory& context_factory,
+  const sema_context& parent, qualified_contextes_refs& qualified_ctxs,
+  factories_provider& factories,
   const builtin_token_provider& builtin_token_provider,
   const builtin_types_accessor& builtin_types,
   generic_type_creation_utils& generics_creation_utils)
   : sema_context_impl{ "cmake", &parent }
   , m_qualified_ctxs{ qualified_ctxs }
-  , m_type_factory{ type_factory }
-  , m_function_factory{ function_factory }
-  , m_context_factory{ context_factory }
+  , m_factories{ factories }
   , m_builtin_tokens{ builtin_token_provider }
   , m_builtin_types{ builtin_types }
   , m_generics_creation_utils{ generics_creation_utils }
@@ -90,9 +88,11 @@ void builtin_cmake_namespace_context::add_functions()
       builtin_function_kind::cmake_get_cxx_compiler_info }
   };
 
+  auto factory = m_factories.function_factory();
+
   for (const auto& f : functions) {
-    const auto& created_function = m_function_factory.create_builtin(
-      *this, f.return_type, f.signature, f.kind);
+    const auto& created_function =
+      factory.create_builtin(*this, f.return_type, f.signature, f.kind);
     add_function(created_function);
     m_qualified_ctxs.functions.register_function(f.signature.name,
                                                  created_function);
@@ -144,8 +144,8 @@ type_builder builtin_cmake_namespace_context::add_type(lexer::token name_token)
 {
   const auto name_representation =
     ast::type_representation{ ast::qualified_name{ name_token } };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
+  type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
+                        name_representation };
   builder.build_builtin_and_register_in_context();
   return builder;
 }
@@ -157,8 +157,8 @@ const sema_type& builtin_cmake_namespace_context::add_cxx_compiler_id_type()
     m_builtin_tokens.cmake().cxx_compiler_id_clang()
   };
 
-  enum_creator creator{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, m_builtin_types };
+  enum_creator creator{ m_factories, m_qualified_ctxs.types, *this,
+                        m_builtin_types };
 
   const auto& type =
     creator.create(token, enumerators, sema_type::flags::builtin);
@@ -187,8 +187,8 @@ type_builder builtin_cmake_namespace_context::add_cxx_compiler_info_type(
   static const auto token = m_builtin_tokens.cmake().cxx_compiler_info_name();
   const auto name_representation =
     ast::type_representation{ ast::qualified_name{ token } };
-  type_builder builder{ m_type_factory, m_function_factory, m_context_factory,
-                        *this, name_representation };
+  type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
+                        name_representation };
 
   const auto members = { builtin_variable_info{
     m_builtin_tokens.cmake().cxx_compiler_info_id(), cxx_compiler_id } };

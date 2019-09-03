@@ -8,9 +8,11 @@
 #include "sema/builtin_sema_context.hpp"
 #include "sema/builtin_token_provider.hpp"
 #include "sema/enum_values_context.hpp"
+#include "sema/factories.hpp"
+#include "sema/factories_provider.hpp"
 #include "sema/functions_context.hpp"
 #include "sema/identifiers_context.hpp"
-#include "sema/qualified_contextes.hpp"
+#include "sema/qualified_contextes_refs.hpp"
 #include "sema/sema_builder.hpp"
 #include "sema/sema_function.hpp"
 #include "sema/types_context.hpp"
@@ -54,31 +56,27 @@ cmsl_parsed_source* cmsl_parse_source(
 
   cmsl::sema::identifiers_context_impl ids_ctx;
   cmsl::sema::enum_values_context_impl enums_context;
-  cmsl::sema::qualified_contextes qualified_ctxs{
+  cmsl::sema::qualified_contextes_refs qualified_ctxs{
     enums_context, parsed_source->context.functions_ctx, ids_ctx,
     parsed_source->context.types_ctx
   };
 
   auto builtin_ctx = std::make_unique<cmsl::sema::builtin_sema_context>(
-    parsed_source->context.type_factory,
-    parsed_source->context.function_factory,
-    parsed_source->context.context_factory,
-    parsed_source->context.errors_observer,
+    parsed_source->context.factories, parsed_source->context.errors_observer,
     *(parsed_source->builtin_token_provider), qualified_ctxs);
 
   auto builtin_types = builtin_ctx->builtin_types();
 
   parsed_source->builtin_context = std::move(builtin_ctx);
 
-  auto& global_context = parsed_source->context.context_factory.create(
-    "", parsed_source->builtin_context.get());
+  auto& global_context =
+    parsed_source->context.factories.context_factory().create(
+      "", parsed_source->builtin_context.get());
   cmsl::sema::sema_builder sema_builder{
     global_context,
     parsed_source->context.errors_observer,
     qualified_ctxs,
-    parsed_source->context.type_factory,
-    parsed_source->context.function_factory,
-    parsed_source->context.context_factory,
+    parsed_source->context.factories,
     *parsed_source->add_subdirectory_handler,
     *(parsed_source->builtin_token_provider),
     builtin_types

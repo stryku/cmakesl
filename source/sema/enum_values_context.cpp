@@ -31,4 +31,11 @@ void enum_values_context_impl::leave_ctx()
 {
   m_finder.leave_node();
 }
+
+std::unique_ptr<enum_values_context> enum_values_context_impl::clone() const
+{
+  auto created = std::make_unique<enum_values_context_impl>();
+  created->m_finder = m_finder;
+  return std::move(created);
+}
 }

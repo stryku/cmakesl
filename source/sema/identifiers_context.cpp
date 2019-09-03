@@ -1,6 +1,8 @@
 #include "sema/identifiers_context.hpp"
 #include "ast/qualified_name.hpp"
 
+#include <algorithm>
+
 namespace cmsl::sema {
 
 void identifiers_context_impl::register_identifier(
@@ -58,5 +60,12 @@ identifiers_context_impl::declaration_token_of_ctx(
   const identifiers_context::qualified_names_t& names) const
 {
   return m_contextes_handler.find_node_registration_token(names);
+}
+
+std::unique_ptr<identifiers_context> identifiers_context_impl::clone() const
+{
+  auto created = std::make_unique<identifiers_context_impl>();
+  created->m_contextes_handler = m_contextes_handler;
+  return std::move(created);
 }
 }

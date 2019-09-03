@@ -9,9 +9,8 @@ namespace cmsl::sema {
 struct member_info;
 class sema_context_impl;
 class sema_context;
-class sema_type_factory;
-class sema_function_factory;
-class sema_context_factory;
+class factories_provider;
+class types_context;
 enum class builtin_function_kind;
 
 class type_builder
@@ -24,10 +23,8 @@ public:
     builtin_function_kind kind;
   };
 
-  explicit type_builder(sema_type_factory& type_factory,
-                        sema_function_factory& function_factory,
-                        sema_context_factory& context_factory,
-                        sema_context& parent_ctx,
+  explicit type_builder(factories_provider& factories,
+                        types_context& types_ctx, sema_context& parent_ctx,
                         ast::type_representation name,
                         sema_context::context_type ctx_type =
                           sema::sema_context::context_type::class_);
@@ -68,9 +65,8 @@ public:
   built_type_info built_type() const;
 
 private:
-  sema_type_factory& m_type_factory;
-  sema_function_factory& m_function_factory;
-  sema_context_factory& m_context_factory;
+  factories_provider& m_factories;
+  types_context& m_types_ctx;
   sema_context& m_current_ctx;
   sema_context& m_type_ctx;
   ast::type_representation m_name;
