@@ -3,6 +3,8 @@
 #include "sema/qualified_entries_finder.hpp"
 
 #include <functional>
+#include <memory>
+
 namespace cmsl::sema {
 class sema_type;
 
@@ -28,6 +30,8 @@ public:
 
   virtual void enter_global_ctx(token_t name) = 0;
   virtual void leave_ctx() = 0;
+
+  virtual std::unique_ptr<enum_values_context> clone() const = 0;
 };
 
 class enum_values_context_impl : public enum_values_context
@@ -41,6 +45,8 @@ public:
 
   void enter_global_ctx(token_t name) override;
   void leave_ctx() override;
+
+  std::unique_ptr<enum_values_context> clone() const override;
 
 private:
   qualified_entries_finder<enum_value_info> m_finder;

@@ -5,6 +5,7 @@ set(CMSL_TOOLS_SOURCES
     cmsl_index.hpp
     cmsl_parse_source.cpp
     cmsl_parse_source.hpp
+    cmsl_parsed_source.cpp
     cmsl_parsed_source.hpp
     completer.cpp
     completer.hpp

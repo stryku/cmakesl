@@ -13,5 +13,6 @@ public:
                      std::optional<enum_value_info>(const qualified_names_t&));
   MOCK_METHOD1(enter_global_ctx, void(token_t));
   MOCK_METHOD0(leave_ctx, void());
+  MOCK_CONST_METHOD0(clone, std::unique_ptr<enum_values_context>());
 };
 }

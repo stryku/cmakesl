@@ -11,11 +11,10 @@ class errors_observer;
 
 namespace sema {
 class add_subdirectory_handler;
-class sema_type_factory;
-class sema_function_factory;
-class sema_context_factory;
-class types_context;
-class functions_context;
+class builtin_sema_context;
+class builtin_token_provider;
+class factories_provider;
+class qualified_contextes_refs;
 }
 
 namespace exec {
@@ -26,22 +25,21 @@ class source_compiler
 public:
   explicit source_compiler(
     errors::errors_observer& errors_observer,
-    sema::sema_type_factory& type_factory,
-    sema::sema_function_factory& function_factory,
-    sema::sema_context_factory& context_factory,
+    sema::factories_provider& factories_provider,
     sema::add_subdirectory_handler& add_subdirectory_handler,
-    sema::types_context& types_ctx, sema::functions_context& functions_ctx);
+    sema::qualified_contextes_refs& qualified_contextes,
+    sema::builtin_sema_context& builtin_context,
+    sema::builtin_token_provider& builtin_tokens);
 
   std::unique_ptr<compiled_source> compile(source_view source);
 
 private:
   errors::errors_observer& m_errors_observer;
-  sema::sema_type_factory& m_type_factory;
-  sema::sema_function_factory& m_function_factory;
-  sema::sema_context_factory& m_context_factory;
+  sema::factories_provider& m_factories_provider;
   sema::add_subdirectory_handler& m_add_subdirectory_handler;
-  sema::types_context& m_types_ctx;
-  sema::functions_context& m_functions_ctx;
+  sema::qualified_contextes_refs& m_qualified_contextes;
+  sema::builtin_sema_context& m_builtin_context;
+  sema::builtin_token_provider& m_builtin_tokens;
 };
 }
 }

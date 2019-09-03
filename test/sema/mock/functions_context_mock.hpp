@@ -21,6 +21,7 @@ public:
 
   MOCK_METHOD1(enter_global_ctx, void(const lexer::token& name));
   MOCK_METHOD0(leave_ctx, void());
+  MOCK_CONST_METHOD0(clone, std::unique_ptr<functions_context>());
 };
 
 }

@@ -17,12 +17,10 @@ class instance;
 
 namespace sema {
 class builtin_token_provider;
-class sema_function_factory;
-class sema_type_factory;
-class sema_context_factory;
+class factories_provider;
 enum class builtin_function_kind;
 class type_builder;
-class qualified_contextes;
+class qualified_contextes_refs;
 class generic_type_creation_utils;
 class builtin_cmake_namespace_context;
 
@@ -30,11 +28,10 @@ class builtin_sema_context : public sema_context_impl
 {
 public:
   explicit builtin_sema_context(
-    sema_type_factory& type_factory, sema_function_factory& function_factory,
-    sema_context_factory& context_factory,
+    factories_provider& factories_provider,
     errors::errors_observer& errors_observer,
     const builtin_token_provider& builtin_token_provider,
-    qualified_contextes& qualified_ctxs);
+    qualified_contextes_refs& qualified_ctxs);
   ~builtin_sema_context() override;
 
   builtin_types_accessor builtin_types() const;
@@ -95,12 +92,10 @@ private:
   lexer::token make_id_token(const char (&tok)[N]);
 
 private:
-  sema_type_factory& m_type_factory;
-  sema_function_factory& m_function_factory;
-  sema_context_factory& m_context_factory;
+  factories_provider& m_factories;
   errors::errors_observer& m_errors_observer;
   const builtin_token_provider& m_builtin_token_provider;
-  qualified_contextes& m_qualified_ctxs;
+  qualified_contextes_refs& m_qualified_ctxs;
 
   std::unique_ptr<builtin_types_accessor> m_builtin_types;
   std::unique_ptr<generic_type_creation_utils> m_generics_creation_utils;

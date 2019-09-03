@@ -7,8 +7,8 @@
 #include "sema/identifier_info.hpp"
 #include "sema/qualified_entries_finder.hpp"
 
-#include <algorithm>
 #include <functional>
+#include <memory>
 
 namespace cmsl::sema {
 class sema_type;
@@ -29,6 +29,8 @@ public:
   virtual void enter_global_ctx(token_t name) = 0;
   virtual void enter_local_ctx() = 0;
   virtual void leave_ctx() = 0;
+
+  virtual std::unique_ptr<identifiers_context> clone() const = 0;
 };
 
 class identifiers_context_impl : public identifiers_context
@@ -48,6 +50,8 @@ public:
   void enter_global_ctx(token_t name) override;
   void enter_local_ctx() override;
   void leave_ctx() override;
+
+  std::unique_ptr<identifiers_context> clone() const override;
 
 private:
   qualified_entries_finder<identifier_info> m_contextes_handler;

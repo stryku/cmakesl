@@ -9,10 +9,13 @@
 
 namespace cmsl::sema {
 class add_subdirectory_handler;
+class builtin_token_provider;
 }
 
 struct cmsl_parsed_source
 {
+  ~cmsl_parsed_source();
+
   std::string source;
   std::unique_ptr<cmsl::sema::builtin_token_provider> builtin_token_provider;
   cmsl::sema::sema_tree_building_context context;

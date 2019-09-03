@@ -2,6 +2,8 @@
 
 #include "sema/qualified_entries_finder.hpp"
 
+#include <memory>
+
 namespace cmsl::sema {
 class sema_type;
 
@@ -22,6 +24,8 @@ public:
 
   virtual void enter_global_ctx(const lexer::token& name) = 0;
   virtual void leave_ctx() = 0;
+
+  virtual std::unique_ptr<types_context> clone() const = 0;
 };
 
 class types_context_impl : public types_context
@@ -43,6 +47,8 @@ public:
 
   void enter_global_ctx(const lexer::token& name) override;
   void leave_ctx() override;
+
+  std::unique_ptr<types_context> clone() const override;
 
 private:
   qualified_entries_finder<type_data> m_types_finder;

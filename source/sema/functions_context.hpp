@@ -3,6 +3,8 @@
 #include "sema/function_lookup_result.hpp"
 #include "sema/qualified_entries_finder.hpp"
 
+#include <memory>
+
 namespace cmsl::sema {
 
 class sema_function;
@@ -24,6 +26,8 @@ public:
 
   virtual void enter_global_ctx(const lexer::token& name) = 0;
   virtual void leave_ctx() = 0;
+
+  virtual std::unique_ptr<functions_context> clone() const = 0;
 };
 
 class functions_context_impl : public functions_context
@@ -46,6 +50,8 @@ public:
 
   void enter_global_ctx(const lexer::token& name) override;
   void leave_ctx() override;
+
+  std::unique_ptr<functions_context> clone() const override;
 
 private:
   qualified_entries_finder<function_data> m_functions_finder;

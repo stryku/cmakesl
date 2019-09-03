@@ -17,6 +17,7 @@
 #include "errors/errors_observer.hpp"
 #include "sema/builtin_token_provider.hpp"
 #include "sema/factories.hpp"
+#include "sema/factories_provider.hpp"
 #include "sema/types_context.hpp"
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
@@ -96,9 +97,7 @@ const auto tmp_token = token_identifier("");
 class SemaBuilderAstVisitorTest : public ::testing::Test
 {
 protected:
-  std::unique_ptr<sema_type_factory> m_type_factory;
-  sema_function_factory m_function_factory;
-  sema_context_factory m_context_factory;
+  factories_provider m_factories;
   add_subdirectory_semantic_handler_mock m_add_subdirectory_mock;
   builtin_token_provider m_token_provider{ "" };
   parsing_context m_parsing_ctx;
@@ -120,8 +119,6 @@ protected:
                                         functions_context& functions_ctx,
                                         parsing_context& parsing_ctx)
   {
-    m_type_factory = std::make_unique<sema_type_factory>(types_ctx);
-
     const auto builtin_types =
       builtin_types_accessor{ .void_ = m_void_type_data.ty,
                               .bool_ = m_bool_type_data.ty,
@@ -144,16 +141,14 @@ protected:
                               .option_ref = valid_type_data.ty };
 
     auto qualified_ctxs =
-      qualified_contextes{ enums_ctx, functions_ctx, ids_ctx, types_ctx };
+      qualified_contextes_refs{ enums_ctx, functions_ctx, ids_ctx, types_ctx };
 
     auto tmp_members =
       sema_builder_ast_visitor_members{ ctx,
                                         ctx,
                                         errs.observer,
                                         qualified_ctxs,
-                                        *m_type_factory,
-                                        m_function_factory,
-                                        m_context_factory,
+                                        m_factories,
                                         m_add_subdirectory_mock,
                                         m_token_provider,
                                         parsing_ctx,

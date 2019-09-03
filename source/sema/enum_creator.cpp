@@ -6,14 +6,11 @@
 #include "sema/type_builder.hpp"
 
 namespace cmsl::sema {
-enum_creator::enum_creator(sema_type_factory& type_factory,
-                           sema_function_factory& function_factory,
-                           sema_context_factory& context_factory,
-                           sema_context& parent_ctx,
+enum_creator::enum_creator(factories_provider& factories,
+                           types_context& types_ctx, sema_context& parent_ctx,
                            const builtin_types_accessor& builtin_types)
-  : m_type_factory{ type_factory }
-  , m_function_factory{ function_factory }
-  , m_context_factory{ context_factory }
+  : m_factories{ factories }
+  , m_types_ctx{ types_ctx }
   , m_parent_ctx{ parent_ctx }
   , m_builtin_types{ builtin_types }
 {
@@ -25,10 +22,9 @@ const sema_type& enum_creator::create(
 {
   const auto name_representation =
     ast::type_representation{ ast::qualified_name{ name } };
-  type_builder builder{
-    m_type_factory, m_function_factory,  m_context_factory,
-    m_parent_ctx,   name_representation, sema_context::context_type ::enum_
-  };
+  type_builder builder{ m_factories, m_types_ctx, m_parent_ctx,
+                        name_representation,
+                        sema_context::context_type ::enum_ };
 
   const auto& enum_type =
     builder.build_enum_and_register_in_context(enumerators, additional_flags);
