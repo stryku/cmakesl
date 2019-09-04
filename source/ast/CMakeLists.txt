@@ -17,6 +17,8 @@ set(AST_SOURCES
     for_node.hpp
     if_else_node.cpp
     if_else_node.hpp
+    import_node.cpp
+    import_node.hpp
     infix_nodes.hpp
     namespace_node.cpp
     namespace_node.hpp

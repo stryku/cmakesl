@@ -291,7 +291,9 @@ const auto values =
                   PureKeywordState{ "auto", token_type::kw_auto },
                   PureKeywordState{ "for", token_type::kw_for },
                   PureKeywordState{ "break", token_type::kw_break },
-                  PureKeywordState{ "namespace", token_type::kw_namespace });
+                  PureKeywordState{ "namespace", token_type::kw_namespace },
+                  PureKeywordState{ "import", token_type::kw_import },
+                  PureKeywordState{ "export", token_type::kw_export });
 INSTANTIATE_TEST_CASE_P(Lexer, PureKeyword, values);
 }
 

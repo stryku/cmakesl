@@ -5,17 +5,23 @@
 
 namespace cmsl::ast {
 
-enum_node::enum_node(ast_node::token_t enum_kw, ast_node::token_t name,
-                     ast_node::token_t open_brace,
-                     std::vector<ast_node::token_t> enumerators,
-                     ast_node::token_t close_brace, token_t semicolon)
-  : m_enum_kw{ enum_kw }
+enum_node::enum_node(std::optional<token_t> export_kw, token_t enum_kw,
+                     token_t name, token_t open_brace,
+                     std::vector<token_t> enumerators, token_t close_brace,
+                     token_t semicolon)
+  : m_export_kw{ export_kw }
+  , m_enum_kw{ enum_kw }
   , m_name{ name }
   , m_open_brace{ open_brace }
   , m_enumerators{ std::move(enumerators) }
   , m_close_brace{ close_brace }
   , m_semicolon{ semicolon }
 {
+}
+
+const std::optional<ast_node::token_t>& enum_node::export_() const
+{
+  return m_export_kw;
 }
 
 const ast_node::token_t& enum_node::enum_kw() const
@@ -61,5 +67,10 @@ source_location enum_node::end_location() const
 const ast_node::token_t& enum_node::semicolon() const
 {
   return m_semicolon;
+}
+
+bool enum_node::is_exported() const
+{
+  return m_export_kw.has_value();
 }
 }

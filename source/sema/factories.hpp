@@ -103,30 +103,36 @@ public:
 
   const sema_type& create(const sema_context& ctx,
                           ast::type_representation name,
-                          std::vector<member_info> members,
+                          std::vector<member_info> members, bool exported,
                           sema_type::flags_t flags = {});
 
   const sema_type& create_builtin(const sema_context& ctx,
                                   ast::type_representation name,
-                                  std::vector<member_info> members);
+                                  std::vector<member_info> members,
+                                  bool exported);
 
-  const sema_type& create_reference(const sema_type& referenced_type);
+  const sema_type& create_reference(const sema_type& referenced_type,
+                                    bool exported);
 
   const sema_type& create_homogeneous_generic(const sema_context& ctx,
                                               ast::type_representation name,
-                                              const sema_type& value_type);
+                                              const sema_type& value_type,
+                                              bool exported);
 
-  const sema_type& create_designated_initializer(
-    const sema_context& ctx, ast::type_representation name);
+  const sema_type& create_designated_initializer(const sema_context& ctx,
+                                                 ast::type_representation name,
+                                                 bool exported);
 
   const sema_type& create_enum(const sema_context& ctx,
                                ast::type_representation name,
                                std::vector<lexer::token> enumerators,
+                               bool exported,
                                sema_type::flags_t additional_flags = {});
 
 private:
   template <typename T, typename... Args>
-  const sema_type& create_and_add(const lexer::token& primary_name, Args&&...);
+  const sema_type& create_and_add(const lexer::token& primary_name,
+                                  bool exported, Args&&...);
 
 protected:
   types_context& m_types_ctx;

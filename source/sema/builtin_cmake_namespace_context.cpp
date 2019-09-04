@@ -30,8 +30,8 @@ builtin_cmake_namespace_context::builtin_cmake_namespace_context(
   , m_builtin_types{ builtin_types }
   , m_generics_creation_utils{ generics_creation_utils }
 {
-  auto guard =
-    m_qualified_ctxs.all_qualified_ctxs_guard(m_builtin_tokens.cmake().name());
+  auto guard = m_qualified_ctxs.all_qualified_ctxs_guard(
+    m_builtin_tokens.cmake().name(), /*exported=*/false);
 
   add_types();
   add_functions();
@@ -94,8 +94,8 @@ void builtin_cmake_namespace_context::add_functions()
     const auto& created_function =
       factory.create_builtin(*this, f.return_type, f.signature, f.kind);
     add_function(created_function);
-    m_qualified_ctxs.functions.register_function(f.signature.name,
-                                                 created_function);
+    m_qualified_ctxs.functions.register_function(
+      f.signature.name, created_function, /*exported=*/false);
   }
 }
 
@@ -111,7 +111,8 @@ void builtin_cmake_namespace_context::add_identifiers()
     const auto identifier_index = identifiers_index_provider::get_next();
     const auto id_info = identifier_info{ identifier.type, identifier_index };
 
-    m_qualified_ctxs.ids.register_identifier(identifier.name, id_info);
+    m_qualified_ctxs.ids.register_identifier(identifier.name, id_info,
+                                             /*exported=*/false);
     m_builtin_identifiers_info.emplace_back(id_info);
   }
 }
@@ -164,7 +165,7 @@ const sema_type& builtin_cmake_namespace_context::add_cxx_compiler_id_type()
     creator.create(token, enumerators, sema_type::flags::builtin);
 
   {
-    auto guard = m_qualified_ctxs.enums_ctx_guard(token);
+    auto guard = m_qualified_ctxs.enums_ctx_guard(token, /*exported=*/false);
 
     unsigned value{};
 
@@ -174,7 +175,8 @@ const sema_type& builtin_cmake_namespace_context::add_cxx_compiler_id_type()
       m_qualified_ctxs.enums.register_identifier(
         enumerator,
         enum_values_context::enum_value_info{ type, enum_value,
-                                              enum_value_index });
+                                              enum_value_index },
+        /*exported=*/false);
     }
   }
 

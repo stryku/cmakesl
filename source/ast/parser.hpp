@@ -25,6 +25,7 @@ class id_node;
 class ternary_operator_node;
 class designated_initializers_node;
 class enum_node;
+class import_node;
 
 class parser : public parser_utils
 {
@@ -33,15 +34,18 @@ public:
          const token_container_t& tokens);
 
   std::unique_ptr<ast_node> parse_translation_unit();
-  std::unique_ptr<ast_node> parse_standalone_variable_declaration();
-  std::unique_ptr<variable_declaration_node> parse_variable_declaration();
-  std::unique_ptr<ast_node> parse_function();
-  std::unique_ptr<ast_node> parse_class();
+  std::unique_ptr<ast_node> parse_standalone_variable_declaration(
+    std::optional<token_t> export_kw);
+  std::unique_ptr<variable_declaration_node> parse_variable_declaration(
+    std::optional<token_t> export_kw = {});
+  std::unique_ptr<ast_node> parse_function(
+    std::optional<token_t> export_kw = {});
+  std::unique_ptr<ast_node> parse_class(std::optional<token_t> export_kw);
   std::unique_ptr<ast_node> parse_factor();
   std::unique_ptr<ast_node> parse_initializer_list();
 
-  // expr() doesn't eat terminating semicolon. Callee has to handle that if
-  // there is a need.
+  // parse_expr() doesn't eat terminating semicolon. Callee has to handle that
+  // if there is a need.
   std::unique_ptr<ast_node> parse_expr();
   std::unique_ptr<ast_node> parse_if_else_node();
   std::unique_ptr<ast_node> parse_while_node();
@@ -62,8 +66,8 @@ public:
   parse_designated_initializers();
 
   std::unique_ptr<ast_node> parse_unary_operator();
-
-  std::unique_ptr<enum_node> parse_enum();
+  std::unique_ptr<enum_node> parse_enum(std::optional<token_t> export_kw);
+  std::unique_ptr<import_node> parse_import();
 
 private:
   struct function_call_values

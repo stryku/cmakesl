@@ -29,20 +29,21 @@ class token;
 
 namespace sema {
 class add_subdirectory_handler;
-class builtin_token_provider;
-class expression_node;
-class variable_declaration_node;
-class sema_type;
-class identifiers_context;
-class types_context;
-class factories_provider;
-class user_sema_function;
 class block_node;
+class builtin_token_provider;
+class enum_values_context;
+class expression_node;
+class factories_provider;
+class functions_context;
+class identifiers_context;
+class import_handler;
 class return_node;
 class sema_context_impl;
+class sema_type;
+class types_context;
+class user_sema_function;
+class variable_declaration_node;
 struct function_signature;
-class functions_context;
-class enum_values_context;
 
 struct function_parsing_context
 {
@@ -71,10 +72,11 @@ struct sema_builder_ast_visitor_members
   errors::errors_observer& errors_observer;
   qualified_contextes_refs qualified_ctxs;
   factories_provider& factories;
-  add_subdirectory_handler& add_subdir_handler;
   const builtin_token_provider& builtin_tokens;
   parsing_context& parsing_ctx;
   builtin_types_accessor builtin_types;
+  add_subdirectory_handler& add_subdir_handler;
+  import_handler& imports_handler;
 };
 
 class sema_builder_ast_visitor : public ast::ast_node_visitor
@@ -85,33 +87,34 @@ private:
 public:
   explicit sema_builder_ast_visitor(sema_builder_ast_visitor_members& members);
 
+  void visit(const ast::binary_operator_node& node) override;
   void visit(const ast::block_node& node) override;
+  void visit(const ast::bool_value_node& node) override;
+  void visit(const ast::break_node& node) override;
+  void visit(const ast::class_member_access_node& node) override;
   void visit(const ast::class_node& node) override;
   void visit(const ast::conditional_node& node) override;
-  void visit(const ast::if_else_node& node) override;
-  void visit(const ast::binary_operator_node& node) override;
-  void visit(const ast::class_member_access_node& node) override;
-  void visit(const ast::function_call_node& node) override;
-  void visit(const ast::member_function_call_node& node) override;
-  void visit(const ast::bool_value_node& node) override;
-  void visit(const ast::int_value_node& node) override;
+  void visit(const ast::designated_initializers_node& node) override;
   void visit(const ast::double_value_node& node) override;
-  void visit(const ast::string_value_node& node) override;
+  void visit(const ast::enum_node& node) override;
+  void visit(const ast::for_node& node) override;
+  void visit(const ast::function_call_node& node) override;
   void visit(const ast::id_node& node) override;
+  void visit(const ast::if_else_node& node) override;
+  void visit(const ast::import_node& node) override;
+  void visit(const ast::initializer_list_node& node) override;
+  void visit(const ast::int_value_node& node) override;
+  void visit(const ast::member_function_call_node& node) override;
+  void visit(const ast::namespace_node& node) override;
   void visit(const ast::return_node& node) override;
+  void visit(const ast::standalone_variable_declaration_node& node) override;
+  void visit(const ast::string_value_node& node) override;
+  void visit(const ast::ternary_operator_node& node) override;
   void visit(const ast::translation_unit_node& node) override;
+  void visit(const ast::unary_operator& node) override;
   void visit(const ast::user_function_node& node) override;
   void visit(const ast::variable_declaration_node& node) override;
-  void visit(const ast::standalone_variable_declaration_node& node) override;
   void visit(const ast::while_node& node) override;
-  void visit(const ast::initializer_list_node& node) override;
-  void visit(const ast::for_node& node) override;
-  void visit(const ast::break_node& node) override;
-  void visit(const ast::namespace_node& node) override;
-  void visit(const ast::ternary_operator_node& node) override;
-  void visit(const ast::designated_initializers_node& node) override;
-  void visit(const ast::unary_operator& node) override;
-  void visit(const ast::enum_node& node) override;
 
 private:
   function_lookup_result_t find_functions(
@@ -204,6 +207,8 @@ private:
 
   void add_user_type_default_methods(const sema_type& class_ty,
                                      sema_context& class_ctx);
+
+  bool is_export_allowed() const;
 
 public:
   std::unique_ptr<sema_node> m_result_node;

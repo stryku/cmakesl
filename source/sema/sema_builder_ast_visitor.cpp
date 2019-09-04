@@ -7,6 +7,7 @@
 #include "ast/enum_node.hpp"
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
+#include "ast/import_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/namespace_node.hpp"
 #include "ast/return_node.hpp"
@@ -32,6 +33,7 @@
 #include "sema/functions_context.hpp"
 #include "sema/identifiers_context.hpp"
 #include "sema/identifiers_index_provider.hpp"
+#include "sema/import_handler.hpp"
 #include "sema/overload_resolution.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_nodes.hpp"
@@ -79,9 +81,12 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
     return;
   }
 
-  auto class_ids_guard = m_.qualified_ctxs.global_ids_guard(name);
-  auto functions_guard = m_.qualified_ctxs.functions_ctx_guard(name);
-  auto enums_guard = m_.qualified_ctxs.enums_ctx_guard(name);
+  const auto is_exported = node.export_().has_value();
+
+  auto class_ids_guard = m_.qualified_ctxs.global_ids_guard(name, is_exported);
+  auto functions_guard =
+    m_.qualified_ctxs.functions_ctx_guard(name, is_exported);
+  auto enums_guard = m_.qualified_ctxs.enums_ctx_guard(name, is_exported);
 
   auto& class_context = m_.factories.context_factory().create_class(
     std::string{ name.str() }, &m_.ctx);
@@ -94,11 +99,13 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
   }
 
   auto type_factory = m_.factories.type_factory(m_.qualified_ctxs.types);
-  auto& class_type = type_factory.create(
-    class_context, class_name_representation, std::move(members->info));
-  auto& class_type_reference = type_factory.create_reference(class_type);
+  auto& class_type =
+    type_factory.create(class_context, class_name_representation,
+                        std::move(members->info), is_exported);
+  auto& class_type_reference =
+    type_factory.create_reference(class_type, is_exported);
 
-  auto types_guard = m_.qualified_ctxs.types_ctx_guard(name);
+  auto types_guard = m_.qualified_ctxs.types_ctx_guard(name, is_exported);
 
   // Same as with ast context. class_type raw pointer will be valid. We move it
   // to context to make this class findable as a regular type (so e.g. inside
@@ -331,7 +338,6 @@ sema_builder_ast_visitor::build_add_subdirectory_call(
 
 void sema_builder_ast_visitor::visit(const ast::function_call_node& node)
 {
-
   if (node.name().str() == "add_subdirectory") {
     m_result_node = build_add_subdirectory_call(node);
   } else {
@@ -473,6 +479,11 @@ void sema_builder_ast_visitor::visit(const ast::translation_unit_node& node)
 
 void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
 {
+  if (node.is_exported() && !is_export_allowed()) {
+    raise_error(*node.export_(), "exporting member functions is not allowed");
+    return;
+  }
+
   const auto& return_type_representation = node.return_type_representation();
   const auto should_deduce_return_type = return_type_representation.is_auto();
 
@@ -502,7 +513,7 @@ void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
     params.emplace_back(
       param_decl_t{ *param_type, param_decl.name, identifier_index });
     m_.qualified_ctxs.ids.register_identifier(
-      param_decl.name, { *param_type, identifier_index });
+      param_decl.name, { *param_type, identifier_index }, /*exported=*/false);
   }
 
   // Todo: add test for function redefinition.
@@ -516,7 +527,9 @@ void sema_builder_ast_visitor::visit(const ast::user_function_node& node)
   // Add function (without a body yet) to context, so it will be visible inside
   // function body in case of a recursive call.
   m_.ctx.add_function(function);
-  m_.qualified_ctxs.functions.register_function(node.name(), function);
+  const auto is_exported = node.export_().has_value();
+  m_.qualified_ctxs.functions.register_function(node.name(), function,
+                                                is_exported);
 
   // Store pointer to function that is currently parsed,
   // so function body will be able to figure out function return type
@@ -665,9 +678,10 @@ sema_builder_ast_visitor sema_builder_ast_visitor::clone(
   sema_context& ctx_to_visit) const
 {
   auto members = sema_builder_ast_visitor_members{
-    m_.generic_types_context, ctx_to_visit,   m_.errors_observer,
-    m_.qualified_ctxs,        m_.factories,   m_.add_subdir_handler,
-    m_.builtin_tokens,        m_.parsing_ctx, m_.builtin_types
+    m_.generic_types_context, ctx_to_visit,     m_.errors_observer,
+    m_.qualified_ctxs,        m_.factories,     m_.builtin_tokens,
+    m_.parsing_ctx,           m_.builtin_types, m_.add_subdir_handler,
+    m_.imports_handler
   };
 
   return sema_builder_ast_visitor{ members };
@@ -704,7 +718,13 @@ std::unique_ptr<sema_node> sema_builder_ast_visitor::visit_child(
 std::unique_ptr<sema_node> sema_builder_ast_visitor::visit_child(
   const ast::ast_node& node, sema_context& ctx_to_visit)
 {
-  auto v = clone(ctx_to_visit);
+  auto members = sema_builder_ast_visitor_members{
+    m_.generic_types_context, ctx_to_visit,     m_.errors_observer,
+    m_.qualified_ctxs,        m_.factories,     m_.builtin_tokens,
+    m_.parsing_ctx,           m_.builtin_types, m_.add_subdir_handler,
+    m_.imports_handler
+  };
+  auto v = sema_builder_ast_visitor{ members };
   node.visit(v);
   return std::move(v.m_result_node);
 }
@@ -755,7 +775,8 @@ sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
     params.emplace_back(parameter_declaration{ *param_type, param_decl.name });
     const auto idenfitied_context = identifiers_index_provider::get_next();
     m_.qualified_ctxs.ids.register_identifier(
-      param_decl.name, { *param_type, idenfitied_context });
+      param_decl.name, { *param_type, idenfitied_context },
+      /*exported=*/false);
   }
 
   function_signature signature{ node.name(), std::move(params) };
@@ -765,7 +786,9 @@ sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
 
   auto& function = m_.factories.function_factory().create_user(
     ctx, return_type, std::move(signature));
-  m_.qualified_ctxs.functions.register_function(signature.name, function);
+  const auto is_exported = node.export_().has_value();
+  m_.qualified_ctxs.functions.register_function(signature.name, function,
+                                                is_exported);
   ctx.add_function(function);
 
   return function_declaration{ node, &function, node.body() };
@@ -1032,6 +1055,11 @@ sema_builder_ast_visitor::try_deduce_currently_parsed_function_return_type()
 void sema_builder_ast_visitor::visit(
   const ast::variable_declaration_node& node)
 {
+  if (node.is_exported() && !is_export_allowed()) {
+    raise_error(*node.export_(), "exporting local variables is not allowed");
+    return;
+  }
+
   const auto& type_representation = node.type();
   const auto should_deduce_type_from_initialization =
     type_representation.is_auto();
@@ -1109,8 +1137,9 @@ void sema_builder_ast_visitor::visit(
   }
 
   const auto identifier_index = identifiers_index_provider::get_next();
-  m_.qualified_ctxs.ids.register_identifier(node.name(),
-                                            { *type, identifier_index });
+  const auto is_exported = node.export_().has_value();
+  m_.qualified_ctxs.ids.register_identifier(
+    node.name(), { *type, identifier_index }, is_exported);
   m_result_node = std::make_unique<variable_declaration_node>(
     node, *type, node.name(), std::move(initialization), identifier_index);
 }
@@ -1172,11 +1201,10 @@ bool sema_builder_ast_visitor::is_inside_loop() const
 
 void sema_builder_ast_visitor::visit(const ast::namespace_node& node)
 {
-
   std::stack<qualified_contextes_refs::all_qualified_contextes_guard> guards;
   for (const auto& name_with_colon : node.names()) {
-    auto guard =
-      m_.qualified_ctxs.all_qualified_ctxs_guard(name_with_colon.name);
+    auto guard = m_.qualified_ctxs.all_qualified_ctxs_guard(
+      name_with_colon.name, /*exported=*/false);
     guards.emplace(std::move(guard));
   }
 
@@ -1271,8 +1299,8 @@ void sema_builder_ast_visitor::visit(
   const auto name = ast::type_representation{ ast::qualified_name{
     make_token(lexer::token_type::identifier, "designated_initializer") } };
   auto type_factory = m_.factories.type_factory(m_.qualified_ctxs.types);
-  const auto& designated_type =
-    type_factory.create_designated_initializer(m_.ctx, name);
+  const auto& designated_type = type_factory.create_designated_initializer(
+    m_.ctx, name, /*exported=*/false);
 
   designated_initializers_node::initializers_t initializers;
 
@@ -1352,11 +1380,13 @@ void sema_builder_ast_visitor::visit(const ast::enum_node& node)
 
   // Create context and type
   const auto& enum_type = create_enum_type(node);
-  auto functions_guard = m_.qualified_ctxs.functions_ctx_guard(name);
+  const auto is_exported = node.export_().has_value();
+  auto functions_guard =
+    m_.qualified_ctxs.functions_ctx_guard(name, is_exported);
 
   // Create enum constants
   {
-    auto guard = m_.qualified_ctxs.enums_ctx_guard(name);
+    auto guard = m_.qualified_ctxs.enums_ctx_guard(name, is_exported);
 
     std::unordered_set<lexer::token> seen_enumerators;
     unsigned value{};
@@ -1376,7 +1406,8 @@ void sema_builder_ast_visitor::visit(const ast::enum_node& node)
       m_.qualified_ctxs.enums.register_identifier(
         enumerator,
         enum_values_context::enum_value_info{ enum_type, enum_value,
-                                              enum_value_index });
+                                              enum_value_index },
+        is_exported);
     }
   }
 
@@ -1415,5 +1446,43 @@ void sema_builder_ast_visitor::add_user_type_default_methods(
       class_ctx, f.return_type, std::move(f.signature), f.kind);
     class_ctx.add_function(function);
   }
+}
+
+void sema_builder_ast_visitor::visit(const ast::import_node& node)
+{
+  const auto file_path_view = node.file_path().str();
+
+  // -2 to remove "".
+  const auto path = cmsl::string_view{ file_path_view.data() + 1u,
+                                       file_path_view.size() - 2u };
+  const auto imported = m_.imports_handler.handle_import(path);
+  if (!imported) {
+    raise_error(node.import_(), "Importing failed");
+    return;
+  }
+
+  const auto enums_succeed = m_.qualified_ctxs.enums.merge_imported_stuff(
+    *imported->enums, m_.errors_observer);
+  const auto functions_succeed =
+    m_.qualified_ctxs.functions.merge_imported_stuff(*imported->functions,
+                                                     m_.errors_observer);
+  const auto ids_succeed = m_.qualified_ctxs.ids.merge_imported_stuff(
+    *imported->ids, m_.errors_observer);
+  const auto types_succeed = m_.qualified_ctxs.types.merge_imported_stuff(
+    *imported->types, m_.errors_observer);
+
+  const auto all_succeed =
+    enums_succeed && functions_succeed && ids_succeed && types_succeed;
+  if (!all_succeed) {
+    raise_error(node.import_(), "Importing failed");
+    return;
+  }
+
+  m_result_node = std::make_unique<import_node>(node, node.file_path());
+}
+
+bool sema_builder_ast_visitor::is_export_allowed() const
+{
+  return m_.qualified_ctxs.ids.is_in_global_ctx();
 }
 }

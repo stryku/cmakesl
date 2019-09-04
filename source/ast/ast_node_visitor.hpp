@@ -28,6 +28,7 @@ class ternary_operator_node;
 class designated_initializers_node;
 class unary_operator;
 class enum_node;
+class import_node;
 
 class ast_node_visitor
 {
@@ -61,5 +62,6 @@ public:
   virtual void visit(const designated_initializers_node& node) = 0;
   virtual void visit(const unary_operator& node) = 0;
   virtual void visit(const enum_node& node) = 0;
+  virtual void visit(const import_node& node) = 0;
 };
 }

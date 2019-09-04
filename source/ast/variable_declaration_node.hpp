@@ -16,20 +16,23 @@ public:
   };
 
   explicit variable_declaration_node(
-    type_representation ty, token_t name,
+    std::optional<token_t> export_kw, type_representation ty, token_t name,
     std::optional<initialization_values> initialization);
 
+  const std::optional<token_t>& export_() const;
   const type_representation& type() const;
   token_t name() const;
   token_t semicolon() const;
   std::optional<token_t> equal() const;
   const ast_node* initialization() const;
 
+  bool is_exported() const override;
   void visit(ast_node_visitor& visitor) const override;
   source_location begin_location() const override;
   source_location end_location() const override;
 
 private:
+  std::optional<token_t> m_export_kw;
   type_representation m_type;
   lexer::token m_name;
   std::optional<initialization_values> m_initialization;
@@ -48,6 +51,7 @@ public:
   const variable_declaration_node& variable_declaration() const;
   const token_t& semicolon() const;
 
+  bool is_exported() const override;
   void visit(ast_node_visitor& visitor) const override;
   source_location begin_location() const override;
   source_location end_location() const override;

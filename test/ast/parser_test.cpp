@@ -7,6 +7,7 @@
 #include "ast/enum_node.hpp"
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
+#include "ast/import_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/namespace_node.hpp"
 #include "ast/parser.hpp"
@@ -51,7 +52,10 @@ public:
 
   void visit(const class_node& node) override
   {
-    m_result += "class{name:" + std::string{ node.name().str() } + ";members:";
+    m_result +=
+      "class{exported:" + std::to_string(static_cast<int>(node.is_exported()));
+
+    m_result += "name:" + std::string{ node.name().str() } + ";members:";
 
     for (const auto& n : node.nodes()) {
       n->visit(*this);
@@ -200,7 +204,9 @@ public:
 
   void visit(const user_function_node& node) override
   {
-    m_result += "user_function{return_type:";
+    m_result += "user_function{exported:" +
+      std::to_string(static_cast<int>(node.is_exported()));
+    m_result += "return_type:";
     const auto ret_type_reference = node.return_type_representation();
     m_result += ret_type_reference.to_string() + ";name:";
     m_result += std::string{ node.name().str() } + ";params:";
@@ -215,7 +221,9 @@ public:
 
   void visit(const variable_declaration_node& node) override
   {
-    m_result += "variable_declaration{type:";
+    m_result += "variable_declaration{" +
+      std::to_string(static_cast<int>(node.is_exported()));
+    m_result += ";type:";
     const auto ret_type_reference = node.type();
     m_result += ret_type_reference.to_string() + ";name:";
     m_result += std::string{ node.name().str() } + ";initialization:";
@@ -227,7 +235,8 @@ public:
 
   void visit(const standalone_variable_declaration_node& node) override
   {
-    m_result += "standalone_variable_declaration_node{";
+    m_result += "standalone_variable_declaration_node{exported:" +
+      std::to_string(static_cast<int>(node.is_exported())) + ';';
     node.variable_declaration().visit(*this);
     m_result += "}";
   }
@@ -334,6 +343,13 @@ public:
       m_result += ',';
     }
 
+    m_result += '}';
+  }
+
+  void visit(const import_node& node) override
+  {
+    m_result += "import{file:";
+    m_result += node.file_path().str();
     m_result += '}';
   }
 
@@ -1134,6 +1150,7 @@ using Type_SingleToken = ::testing::TestWithParam<token_t>;
 
 TEST_P(Type_SingleToken, GetTypeReference)
 {
+  // int
   const auto token = token_kw_int();
 
   const auto expected_reference =
@@ -1158,6 +1175,7 @@ INSTANTIATE_TEST_CASE_P(ParserTest, Type_SingleToken, values);
 
 TEST_F(ParserTest, Type_GenericType_GetTypeReference)
 {
+  // list<int>
   cmsl::string_view source = "list<int>";
   const auto list_token =
     token_from_larger_source(source, token_type_t::kw_list, 0u, 4u);
@@ -1188,6 +1206,7 @@ TEST_F(ParserTest, Type_GenericType_GetTypeReference)
 
 TEST_F(ParserTest, Type_NestedGenericType_GetTypeReference)
 {
+  // list<list<foo>>
   cmsl::string_view source = "list<list<foo>>";
   const auto list_token =
     token_from_larger_source(source, token_type_t::kw_list, 0u, 4u);
@@ -1252,7 +1271,7 @@ TEST_F(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
     type_representation{ ast::qualified_name{ type_token } };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
-    type_repr, name_token, std::nullopt);
+    std::nullopt, type_repr, name_token, std::nullopt);
   auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
     std::move(variable_decl), tmp_token);
 
@@ -1260,10 +1279,43 @@ TEST_F(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
     tokens_container_t{ type_token, name_token, token_semicolon() };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_standalone_variable_declaration();
+  auto result_ast =
+    parser.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+  EXPECT_FALSE(result_ast->is_exported());
+}
+
+TEST_F(ParserTest, ExportedVariableDeclaration_TypeId_GetVariableDeclaration)
+{
+  // export int foo;
+  const auto type_token = token_kw_int();
+  const auto name_token = token_identifier("foo");
+
+  const auto type_repr =
+    type_representation{ ast::qualified_name{ type_token } };
+
+  auto variable_decl = std::make_unique<variable_declaration_node>(
+    token_kw_export(), type_repr, name_token, std::nullopt);
+  auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
+    std::move(variable_decl), tmp_token);
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    type_token,
+    name_token,
+    token_semicolon()
+    //clang-format on
+
+  };
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_standalone_variable_declaration(token_kw_export());
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+  EXPECT_TRUE(result_ast->is_exported());
 }
 
 TEST_F(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
@@ -1290,7 +1342,7 @@ TEST_F(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
   const auto representation = type_representation{ std::move(generic_name) };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
-    representation, name_token, std::nullopt);
+    std::nullopt, representation, name_token, std::nullopt);
   auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
     std::move(variable_decl), tmp_token);
 
@@ -1306,7 +1358,8 @@ TEST_F(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_standalone_variable_declaration();
+  auto result_ast =
+    parser.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1330,7 +1383,7 @@ TEST_F(ParserTest,
     };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
-    representation, name_token, std::move(initialization));
+    std::nullopt, representation, name_token, std::move(initialization));
   auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
     std::move(variable_decl), tmp_token);
 
@@ -1345,7 +1398,8 @@ TEST_F(ParserTest,
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_standalone_variable_declaration();
+  auto result_ast =
+    parser.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1383,7 +1437,7 @@ TEST_F(ParserTest,
     };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
-    representation, name_token, std::move(initialization));
+    std::nullopt, representation, name_token, std::move(initialization));
   auto expected_ast = std::make_unique<standalone_variable_declaration_node>(
     std::move(variable_decl), tmp_token);
 
@@ -1401,7 +1455,8 @@ TEST_F(ParserTest,
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_standalone_variable_declaration();
+  auto result_ast =
+    parser.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1432,7 +1487,7 @@ TEST_F(ParserTest, Block_VariableDeclaration_GetBlock)
     type_representation{ ast::qualified_name{ variable_type_token } };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
-    variable_type_ref, variable_name_token, std::nullopt);
+    std::nullopt, variable_type_ref, variable_name_token, std::nullopt);
   auto variable_decl_node =
     std::make_unique<standalone_variable_declaration_node>(
       std::move(variable_decl), tmp_token);
@@ -1690,7 +1745,7 @@ TEST_F(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
   auto function_block_node =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto expected_ast = std::make_unique<user_function_node>(
-    function_type_ref, function_name_token, tmp_token,
+    std::nullopt, function_type_ref, function_name_token, tmp_token,
     user_function_node::params_t{}, tmp_token, std::move(function_block_node));
 
   const auto tokens = tokens_container_t{
@@ -1709,6 +1764,40 @@ TEST_F(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+  EXPECT_FALSE(result_ast->is_exported());
+}
+
+TEST_F(ParserTest,
+       Function_ExportTypeIdOpenParenCloseParen_GetExportedFunction)
+{
+  // export double foo() {}
+  const auto function_type_token = token_kw_double();
+  const auto function_name_token = token_identifier("foo");
+  const auto function_type_ref =
+    type_representation{ ast::qualified_name{ function_type_token } };
+  auto function_block_node =
+    std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
+  auto expected_ast = std::make_unique<user_function_node>(
+    token_kw_export(), function_type_ref, function_name_token, tmp_token,
+    user_function_node::params_t{}, tmp_token, std::move(function_block_node));
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    function_type_token,
+    function_name_token,
+    token_open_paren(),
+    token_close_paren(),
+    token_open_brace(),
+    token_close_brace()
+    // clang-format on
+  };
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_function(token_kw_export());
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+  EXPECT_TRUE(result_ast->is_exported());
 }
 
 TEST_F(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
@@ -1730,8 +1819,8 @@ TEST_F(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
   auto function_block_node =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto expected_ast = std::make_unique<user_function_node>(
-    function_type_ref, function_name_token, tmp_token, std::move(params),
-    tmp_token, std::move(function_block_node));
+    std::nullopt, function_type_ref, function_name_token, tmp_token,
+    std::move(params), tmp_token, std::move(function_block_node));
 
   const auto tokens = tokens_container_t{
     // clang-format off
@@ -1781,8 +1870,8 @@ TEST_F(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
   auto function_block_node =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto expected_ast = std::make_unique<user_function_node>(
-    function_type_ref, function_name_token, tmp_token, std::move(params),
-    tmp_token, std::move(function_block_node));
+    std::nullopt, function_type_ref, function_name_token, tmp_token,
+    std::move(params), tmp_token, std::move(function_block_node));
 
   const auto tokens = tokens_container_t{
     // clang-format off
@@ -1815,9 +1904,9 @@ TEST_F(ParserTest, Class_ClassIdEmptyBlock_GetClass)
   // class foo {};
   const auto name_token = token_identifier("foo");
 
-  auto expected_ast =
-    std::make_unique<class_node>(tmp_token, name_token, tmp_token,
-                                 class_node::nodes_t{}, tmp_token, tmp_token);
+  auto expected_ast = std::make_unique<class_node>(
+    std::nullopt, tmp_token, name_token, tmp_token, class_node::nodes_t{},
+    tmp_token, tmp_token);
 
   const auto tokens = tokens_container_t{
     // clang-format off
@@ -1830,10 +1919,38 @@ TEST_F(ParserTest, Class_ClassIdEmptyBlock_GetClass)
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_class();
+  auto result_ast = parser.parse_class(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+  EXPECT_FALSE(result_ast->is_exported());
+}
+
+TEST_F(ParserTest, Class_ExportClassIdEmptyBlock_GetExportedClass)
+{
+  // export class foo {};
+  const auto name_token = token_identifier("foo");
+
+  auto expected_ast = std::make_unique<class_node>(
+    token_kw_export(), tmp_token, name_token, tmp_token, class_node::nodes_t{},
+    tmp_token, tmp_token);
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_class(),
+    name_token,
+    token_open_brace(),
+    token_close_brace(),
+    token_semicolon()
+    // clang-format on
+  };
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_class(token_kw_export());
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+  EXPECT_TRUE(result_ast->is_exported());
 }
 
 TEST_F(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
@@ -1846,7 +1963,7 @@ TEST_F(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
     type_representation{ ast::qualified_name{ variable_type_token } };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
-    variable_type_ref, variable_name_token, std::nullopt);
+    std::nullopt, variable_type_ref, variable_name_token, std::nullopt);
   auto variable_decl_node =
     std::make_unique<standalone_variable_declaration_node>(
       std::move(variable_decl), tmp_token);
@@ -1855,7 +1972,8 @@ TEST_F(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
   nodes.emplace_back(std::move(variable_decl_node));
 
   auto expected_ast = std::make_unique<class_node>(
-    tmp_token, name_token, tmp_token, std::move(nodes), tmp_token, tmp_token);
+    std::nullopt, tmp_token, name_token, tmp_token, std::move(nodes),
+    tmp_token, tmp_token);
 
   const auto tokens = tokens_container_t{
     // clang-format off
@@ -1873,7 +1991,7 @@ TEST_F(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_class();
+  auto result_ast = parser.parse_class(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -1891,7 +2009,7 @@ TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
   auto function_block_node =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
   auto fun_node = std::make_unique<user_function_node>(
-    function_type_ref, function_name_token, tmp_token,
+    std::nullopt, function_type_ref, function_name_token, tmp_token,
     user_function_node::params_t{}, tmp_token, std::move(function_block_node));
 
   const auto variable_type_token = token_identifier("baz");
@@ -1900,7 +2018,7 @@ TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
     type_representation{ ast::qualified_name{ variable_type_token } };
 
   auto variable_decl = std::make_unique<variable_declaration_node>(
-    variable_type_ref, variable_name_token, std::nullopt);
+    std::nullopt, variable_type_ref, variable_name_token, std::nullopt);
   auto variable_decl_node =
     std::make_unique<standalone_variable_declaration_node>(
       std::move(variable_decl), tmp_token);
@@ -1910,7 +2028,8 @@ TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
   nodes.emplace_back(std::move(variable_decl_node));
 
   auto expected_ast = std::make_unique<class_node>(
-    tmp_token, name_token, tmp_token, std::move(nodes), tmp_token, tmp_token);
+    std::nullopt, tmp_token, name_token, tmp_token, std::move(nodes),
+    tmp_token, tmp_token);
 
   const auto tokens = tokens_container_t{
     // clang-format off
@@ -1935,7 +2054,7 @@ TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
   };
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_class();
+  auto result_ast = parser.parse_class(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
@@ -2057,7 +2176,7 @@ TEST_F(ParserTest,
   const auto foo_token = token_identifier("foo");
 
   auto foo_declaration = std::make_unique<variable_declaration_node>(
-    int_representation, foo_token, std::nullopt);
+    std::nullopt, int_representation, foo_token, std::nullopt);
 
   auto body = std::make_unique<block_node>(
     token_open_brace(), block_node::nodes_t{}, token_close_brace());
@@ -2112,7 +2231,7 @@ TEST_F(
   };
 
   auto foo_declaration = std::make_unique<variable_declaration_node>(
-    int_representation, foo_token, std::move(init_values));
+    std::nullopt, int_representation, foo_token, std::move(init_values));
 
   auto body = std::make_unique<block_node>(
     token_open_brace(), block_node::nodes_t{}, token_close_brace());
@@ -2520,8 +2639,8 @@ TEST_F(ParserTest, EmptyEnum_GetEnum)
   const auto foo_token = token_identifier("foo");
 
   auto expected_ast = std::make_unique<enum_node>(
-    token_kw_enum(), foo_token, token_open_brace(), std::vector<token_t>{},
-    token_close_brace(), token_semicolon());
+    std::nullopt, token_kw_enum(), foo_token, token_open_brace(),
+    std::vector<token_t>{}, token_close_brace(), token_semicolon());
 
   const auto tokens = tokens_container_t{
     // clang-format off
@@ -2535,13 +2654,42 @@ TEST_F(ParserTest, EmptyEnum_GetEnum)
 
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_enum();
+  auto result_ast = parser.parse_enum(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+  EXPECT_FALSE(result_ast->is_exported());
 }
 
-TEST_F(ParserTest, EnumWithoutInitializers_GetEnum)
+TEST_F(ParserTest, EmptyExportedEnum_GetExportedEnum)
+{
+  // export enum foo{}
+  const auto foo_token = token_identifier("foo");
+
+  auto expected_ast = std::make_unique<enum_node>(
+    token_kw_export(), token_kw_enum(), foo_token, token_open_brace(),
+    std::vector<token_t>{}, token_close_brace(), token_semicolon());
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_enum(),
+    foo_token,
+    token_open_brace(),
+    token_close_brace(),
+    token_semicolon()
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_enum(token_kw_export());
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+  EXPECT_TRUE(result_ast->is_exported());
+}
+
+TEST_F(ParserTest, EnumWithEnumerators_GetEnum)
 {
   // enum foo{ bar, baz, qux }
   const auto foo_token = token_identifier("foo");
@@ -2555,8 +2703,8 @@ TEST_F(ParserTest, EnumWithoutInitializers_GetEnum)
   enumerators.emplace_back(qux_token);
 
   auto expected_ast = std::make_unique<enum_node>(
-    token_kw_enum(), foo_token, token_open_brace(), std::move(enumerators),
-    token_close_brace(), token_semicolon());
+    std::nullopt, token_kw_enum(), foo_token, token_open_brace(),
+    std::move(enumerators), token_close_brace(), token_semicolon());
 
   const auto tokens = tokens_container_t{
     // clang-format off
@@ -2574,7 +2722,30 @@ TEST_F(ParserTest, EnumWithoutInitializers_GetEnum)
 
   auto parser =
     parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
-  auto result_ast = parser.parse_enum();
+  auto result_ast = parser.parse_enum(/*export_kw=*/std::nullopt);
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest, Import_GetImportNode)
+{
+  // import "foo/bar"
+  const auto file_token = token_string("\"foo/bar\"");
+
+  auto expected_ast =
+    std::make_unique<import_node>(token_kw_import(), file_token);
+
+  const auto tokens = tokens_container_t{
+    // clang-format off
+    token_kw_import(),
+    file_token
+    // clang-format on
+  };
+
+  auto parser =
+    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_import();
 
   ASSERT_THAT(result_ast, NotNull());
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));

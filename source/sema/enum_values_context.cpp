@@ -3,9 +3,9 @@
 namespace cmsl::sema {
 
 void enum_values_context_impl::register_identifier(
-  lexer::token declaration_token, enum_value_info info)
+  lexer::token declaration_token, enum_value_info info, bool exported)
 {
-  m_finder.register_entry(declaration_token, info);
+  m_finder.register_entry(declaration_token, info, exported);
 }
 
 std::optional<enum_values_context::enum_value_info>
@@ -22,9 +22,9 @@ enum_values_context_impl::info_of(
 }
 
 void enum_values_context_impl::enter_global_ctx(
-  enum_values_context::token_t name)
+  enum_values_context::token_t name, bool exported)
 {
-  m_finder.enter_global_node(name);
+  m_finder.enter_global_node(name, exported);
 }
 
 void enum_values_context_impl::leave_ctx()
@@ -37,5 +37,20 @@ std::unique_ptr<enum_values_context> enum_values_context_impl::clone() const
   auto created = std::make_unique<enum_values_context_impl>();
   created->m_finder = m_finder;
   return std::move(created);
+}
+
+std::unique_ptr<enum_values_context>
+enum_values_context_impl::collect_exported_stuff() const
+{
+  auto created = std::make_unique<enum_values_context_impl>();
+  created->m_finder = m_finder.collect_exported_stuff();
+  return std::move(created);
+}
+
+bool enum_values_context_impl::merge_imported_stuff(
+  const enum_values_context& imported, errors::errors_observer& errs)
+{
+  const auto& casted = static_cast<const enum_values_context_impl&>(imported);
+  return m_finder.merge_imported_stuff(casted.m_finder, errs);
 }
 }

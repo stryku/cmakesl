@@ -7,6 +7,7 @@
 #include "ast/designated_initializers_node.hpp"
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
+#include "ast/import_node.hpp"
 #include "ast/infix_nodes.hpp"
 #include "ast/namespace_node.hpp"
 #include "ast/return_node.hpp"
@@ -63,12 +64,13 @@ std::unique_ptr<ast_node> parser::constructor(token_t class_name)
 
   // Let's pretend that ctors return something.
   return std::make_unique<user_function_node>(
+    /*export=*/std::nullopt,
     type_representation{ qualified_name{ class_name } }, *type_name,
     param_values->open_paren, std::move(param_values->params),
     param_values->close_paren, std::move(block_expr));
 }
 
-std::unique_ptr<ast_node> parser::parse_class()
+std::unique_ptr<ast_node> parser::parse_class(std::optional<token_t> export_kw)
 {
   const auto class_kw = eat(token_type_t::kw_class);
   if (!class_kw) {
@@ -104,7 +106,8 @@ std::unique_ptr<ast_node> parser::parse_class()
 
       class_nodes.emplace_back(std::move(fun));
     } else {
-      auto member = parse_standalone_variable_declaration();
+      auto member =
+        parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
       if (!member) {
         return nullptr;
       }
@@ -123,12 +126,13 @@ std::unique_ptr<ast_node> parser::parse_class()
     return nullptr;
   }
 
-  return std::make_unique<class_node>(*class_kw, *name, *open_brace,
+  return std::make_unique<class_node>(export_kw, *class_kw, *name, *open_brace,
                                       std::move(class_nodes), *close_brace,
                                       *semicolon);
 }
 
-std::unique_ptr<ast_node> parser::parse_function()
+std::unique_ptr<ast_node> parser::parse_function(
+  std::optional<token_t> export_kw)
 {
   const auto ty = parse_type();
   if (!ty) {
@@ -152,8 +156,9 @@ std::unique_ptr<ast_node> parser::parse_function()
   }
 
   return std::make_unique<user_function_node>(
-    *ty, *name, param_values->open_paren, std::move(param_values->params),
-    param_values->close_paren, std::move(block_node));
+    export_kw, *ty, *name, param_values->open_paren,
+    std::move(param_values->params), param_values->close_paren,
+    std::move(block_node));
 }
 
 std::unique_ptr<ast_node> parser::parse_return_node()
@@ -288,7 +293,7 @@ std::unique_ptr<block_node> parser::parse_block()
     if (current_is(token_type_t::kw_return)) {
       node = parse_return_node();
     } else if (declaration_starts()) {
-      node = parse_standalone_variable_declaration();
+      node = parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
     } else if (current_is(token_type_t::kw_if)) {
       node = parse_if_else_node();
     } else if (current_is(token_type_t::kw_while)) {
@@ -407,7 +412,8 @@ std::optional<parser::param_list_values> parser::param_declarations()
   return param_list_values{ *open_paren, std::move(params), *close_paren };
 }
 
-std::unique_ptr<variable_declaration_node> parser::parse_variable_declaration()
+std::unique_ptr<variable_declaration_node> parser::parse_variable_declaration(
+  std::optional<token_t> export_kw)
 {
   const auto ty = parse_type();
   if (!ty) {
@@ -434,12 +440,13 @@ std::unique_ptr<variable_declaration_node> parser::parse_variable_declaration()
   }
 
   return std::make_unique<variable_declaration_node>(
-    *ty, *name, std::move(initialization_vals));
+    export_kw, *ty, *name, std::move(initialization_vals));
 }
 
-std::unique_ptr<ast_node> parser::parse_standalone_variable_declaration()
+std::unique_ptr<ast_node> parser::parse_standalone_variable_declaration(
+  std::optional<token_t> export_kw)
 {
-  auto variable_decl = parse_variable_declaration();
+  auto variable_decl = parse_variable_declaration(export_kw);
   if (!variable_decl) {
     return nullptr;
   }
@@ -1011,16 +1018,20 @@ parser::parse_top_level_nodes(StopCondition&& stop_condition)
   while (!stop_condition()) {
     std::unique_ptr<ast_node> node;
 
+    auto export_kw = try_eat(token_type_t::kw_export);
+
     if (function_declaration_starts()) {
-      node = parse_function();
+      node = parse_function(export_kw);
     } else if (current_is(token_type_t::kw_class)) {
-      node = parse_class();
+      node = parse_class(export_kw);
     } else if (current_is(token_type_t::kw_enum)) {
-      node = parse_enum();
+      node = parse_enum(export_kw);
     } else if (current_is(token_type_t::kw_namespace)) {
       node = parse_namespace();
+    } else if (current_is(token_type_t::kw_import)) {
+      node = parse_import();
     } else {
-      node = parse_standalone_variable_declaration();
+      node = parse_standalone_variable_declaration(export_kw);
     }
 
     if (!node) {
@@ -1174,7 +1185,7 @@ std::unique_ptr<ast_node> parser::parse_unary_operator()
   return std::make_unique<unary_operator>(*op, std::move(expression));
 }
 
-std::unique_ptr<enum_node> parser::parse_enum()
+std::unique_ptr<enum_node> parser::parse_enum(std::optional<token_t> export_kw)
 {
   const auto enum_kw = eat(token_type_t::kw_enum);
   if (!enum_kw) {
@@ -1222,8 +1233,23 @@ std::unique_ptr<enum_node> parser::parse_enum()
     return nullptr;
   }
 
-  return std::make_unique<enum_node>(*enum_kw, *name, *open_brace,
+  return std::make_unique<enum_node>(export_kw, *enum_kw, *name, *open_brace,
                                      std::move(enumerators), *close_brace,
                                      *semicolon);
+}
+
+std::unique_ptr<import_node> parser::parse_import()
+{
+  const auto include = eat(token_type_t::kw_import);
+  if (!include) {
+    return nullptr;
+  }
+
+  const auto file = eat(token_type_t::string);
+  if (!file) {
+    return nullptr;
+  }
+
+  return std::make_unique<import_node>(*include, *file);
 }
 }

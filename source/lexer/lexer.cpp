@@ -358,6 +358,8 @@ lexer::keyword_tokens_t lexer::create_keyword_tokens() const
   tokens["for"] = token_type::kw_for;
   tokens["break"] = token_type::kw_break;
   tokens["namespace"] = token_type::kw_namespace;
+  tokens["import"] = token_type::kw_import;
+  tokens["export"] = token_type::kw_export;
 
   return tokens;
 }

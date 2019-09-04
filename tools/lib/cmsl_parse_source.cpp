@@ -78,6 +78,7 @@ cmsl_parsed_source* cmsl_parse_source(
     qualified_ctxs,
     parsed_source->context.factories,
     *parsed_source->add_subdirectory_handler,
+    *parsed_source->imports_handler,
     *(parsed_source->builtin_token_provider),
     builtin_types
   };

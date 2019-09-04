@@ -48,9 +48,9 @@ const sema_type& type_builder::build_and_register_in_context(
   sema_type::flags_t flags)
 {
   auto factory = m_factories.type_factory(m_types_ctx);
-  const auto& type =
-    factory.create(m_type_ctx, m_name, std::move(m_members), flags);
-  const auto& reference_type = factory.create_reference(type);
+  const auto& type = factory.create(m_type_ctx, m_name, std::move(m_members),
+                                    m_exported, flags);
+  const auto& reference_type = factory.create_reference(type, m_exported);
   m_current_ctx.add_type(type);
   m_current_ctx.add_type(reference_type);
 
@@ -65,8 +65,8 @@ const sema_type& type_builder::build_enum_and_register_in_context(
 {
   auto factory = m_factories.type_factory(m_types_ctx);
   const auto& type = factory.create_enum(
-    m_type_ctx, m_name, std::move(enumerators), additional_flags);
-  const auto& reference_type = factory.create_reference(type);
+    m_type_ctx, m_name, std::move(enumerators), m_exported, additional_flags);
+  const auto& reference_type = factory.create_reference(type, m_exported);
   m_current_ctx.add_type(type);
   m_current_ctx.add_type(reference_type);
 
@@ -79,9 +79,9 @@ const sema_type& type_builder::build_enum_and_register_in_context(
 const sema_type& type_builder::build_builtin_and_register_in_context()
 {
   auto factory = m_factories.type_factory(m_types_ctx);
-  const auto& type =
-    factory.create_builtin(m_type_ctx, m_name, std::move(m_members));
-  const auto& reference_type = factory.create_reference(type);
+  const auto& type = factory.create_builtin(m_type_ctx, m_name,
+                                            std::move(m_members), m_exported);
+  const auto& reference_type = factory.create_reference(type, m_exported);
   m_current_ctx.add_type(type);
   m_current_ctx.add_type(reference_type);
 
@@ -96,9 +96,9 @@ type_builder::build_homogeneous_generic_and_register_in_context(
   const sema_type& value_type)
 {
   auto factory = m_factories.type_factory(m_types_ctx);
-  const auto& type =
-    factory.create_homogeneous_generic(m_type_ctx, m_name, value_type);
-  const auto& reference_type = factory.create_reference(type);
+  const auto& type = factory.create_homogeneous_generic(
+    m_type_ctx, m_name, value_type, m_exported);
+  const auto& reference_type = factory.create_reference(type, m_exported);
   m_current_ctx.add_type(type);
   m_current_ctx.add_type(reference_type);
 
@@ -116,5 +116,11 @@ const sema_context& type_builder::context()
 type_builder::built_type_info type_builder::built_type() const
 {
   return { *m_built_type, *m_built_type_ref };
+}
+
+type_builder& type_builder::with_exported(bool exported)
+{
+  m_exported = exported;
+  return *this;
 }
 }

@@ -2,6 +2,10 @@ set(EXEC_SOURCES
     builtin_function_caller.cpp
     builtin_function_caller.hpp
     compiled_source.cpp
+    compiled_source.hpp
+    cross_translation_unit_static_variables.cpp
+    cross_translation_unit_static_variables.hpp
+    cross_translation_unit_static_variables_accessor.hpp
     execution.cpp
     execution.hpp
     execution_context.cpp
@@ -12,6 +16,8 @@ set(EXEC_SOURCES
     global_executor.cpp
     global_executor.hpp
     identifiers_context.hpp
+    module_sema_tree_provider.hpp
+    module_static_variables_initializer.hpp
     parameter_alternatives_getter.hpp
     scope_context.cpp
     scope_context.hpp

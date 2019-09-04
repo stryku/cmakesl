@@ -1,0 +1,13 @@
+import "import_test/foo.cmsl"
+
+  namespace baz
+{
+  int change_and_get()
+  {
+    auto old = foo::bar;
+    foo::bar = 24;
+    return old;
+  }
+
+  export auto qux = change_and_get();
+}

@@ -5,9 +5,9 @@
 namespace cmsl::sema {
 
 void types_context_impl::register_type(const lexer::token& name,
-                                       const sema_type& ty)
+                                       const sema_type& ty, bool exported)
 {
-  m_types_finder.register_entry(name, type_data{ ty });
+  m_types_finder.register_entry(name, type_data{ ty }, exported);
 }
 
 const sema_type* types_context_impl::find(
@@ -42,9 +42,10 @@ const sema_type* types_context_impl::find_in_current_scope(
   }
 }
 
-void types_context_impl::enter_global_ctx(const lexer::token& name)
+void types_context_impl::enter_global_ctx(const lexer::token& name,
+                                          bool exported)
 {
-  m_types_finder.enter_global_node(name);
+  m_types_finder.enter_global_node(name, exported);
 }
 
 void types_context_impl::leave_ctx()
@@ -59,4 +60,18 @@ std::unique_ptr<types_context> types_context_impl::clone() const
   return std::move(created);
 }
 
+std::unique_ptr<types_context> types_context_impl::collect_exported_stuff()
+  const
+{
+  auto created = std::make_unique<types_context_impl>();
+  created->m_types_finder = m_types_finder.collect_exported_stuff();
+  return std::move(created);
+}
+
+bool types_context_impl::merge_imported_stuff(const types_context& imported,
+                                              errors::errors_observer& errs)
+{
+  const auto& casted = static_cast<const types_context_impl&>(imported);
+  return m_types_finder.merge_imported_stuff(casted.m_types_finder, errs);
+}
 }

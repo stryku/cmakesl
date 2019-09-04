@@ -10,6 +10,6 @@ class ExecutionSmokeTest : public ::testing::Test
 {
 protected:
   ::testing::NiceMock<cmake_facade_mock> m_facade;
-  global_executor m_executor{ "<unknown source>", m_facade };
+  global_executor m_executor{ CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR, m_facade };
 };
 }

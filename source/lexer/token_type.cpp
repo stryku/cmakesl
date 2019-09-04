@@ -134,6 +134,10 @@ std::string to_string(lexer::token_type type)
       return "break keyword";
     case lexer::token_type::kw_namespace:
       return "namespace keyword";
+    case lexer::token_type::kw_import:
+      return "import keyword";
+    case lexer::token_type::kw_export:
+      return "export keyword";
 
     case lexer::token_type::undef:
     default:

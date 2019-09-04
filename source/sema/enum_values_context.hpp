@@ -5,7 +5,12 @@
 #include <functional>
 #include <memory>
 
-namespace cmsl::sema {
+namespace cmsl {
+namespace errors {
+class errors_observer;
+}
+
+namespace sema {
 class sema_type;
 
 class enum_values_context
@@ -24,32 +29,42 @@ public:
 
   virtual ~enum_values_context() = default;
 
-  virtual void register_identifier(token_t name, enum_value_info info) = 0;
+  virtual void register_identifier(token_t name, enum_value_info info,
+                                   bool exported) = 0;
   virtual std::optional<enum_value_info> info_of(
     const qualified_names_t& names) const = 0;
 
-  virtual void enter_global_ctx(token_t name) = 0;
+  virtual void enter_global_ctx(token_t name, bool exported) = 0;
   virtual void leave_ctx() = 0;
 
   virtual std::unique_ptr<enum_values_context> clone() const = 0;
+  virtual std::unique_ptr<enum_values_context> collect_exported_stuff()
+    const = 0;
+
+  virtual bool merge_imported_stuff(const enum_values_context& imported,
+                                    errors::errors_observer& errs) = 0;
 };
 
 class enum_values_context_impl : public enum_values_context
 {
 public:
   void register_identifier(lexer::token declaration_token,
-                           enum_value_info info) override;
+                           enum_value_info info, bool exported) override;
 
   std::optional<enum_value_info> info_of(
     const qualified_names_t& names) const override;
 
-  void enter_global_ctx(token_t name) override;
+  void enter_global_ctx(token_t name, bool exported) override;
   void leave_ctx() override;
 
   std::unique_ptr<enum_values_context> clone() const override;
+  std::unique_ptr<enum_values_context> collect_exported_stuff() const override;
+
+  bool merge_imported_stuff(const enum_values_context& imported,
+                            errors::errors_observer& errs) override;
 
 private:
   qualified_entries_finder<enum_value_info> m_finder;
 };
-
+}
 }
