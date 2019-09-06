@@ -1,7 +1,7 @@
 # CMakeSL User guide
 
 ## CMakeLists.txt vs CMakeLists.cmsl
-CMake binary expects that CMakeSL scripts are named `CMakeLists.cmsl`. Based on extension it knows how to execute the scripts.
+CMake binary expects that CMakeSL scripts are named `CMakeLists.cmsl`. Based on extension (`cmsl` not `txt`) it knows that the scripts are written in CMakeSL, not the 'old' CMake language.
 
 ## Entry point of scripts execution
 Every `CMakeLists.cmsl` script has to have a main function. It's the entry point of script execution.
