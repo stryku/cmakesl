@@ -1,5 +1,7 @@
 #pragma once
 
+#include "sema/qualified_contextes_refs.hpp"
+
 #include <memory>
 
 namespace cmsl {
@@ -29,7 +31,7 @@ public:
     sema::factories_provider& factories_provider,
     sema::add_subdirectory_handler& add_subdirectory_handler,
     sema::import_handler& imports_handler,
-    sema::qualified_contextes_refs& qualified_contextes,
+    sema::qualified_contextes_refs qualified_contextes,
     sema::builtin_sema_context& builtin_context,
     sema::builtin_token_provider& builtin_tokens);
 
@@ -40,7 +42,7 @@ private:
   sema::factories_provider& m_factories_provider;
   sema::add_subdirectory_handler& m_add_subdirectory_handler;
   sema::import_handler& m_imports_handler;
-  sema::qualified_contextes_refs& m_qualified_contextes;
+  sema::qualified_contextes_refs m_qualified_contextes;
   sema::builtin_sema_context& m_builtin_context;
   sema::builtin_token_provider& m_builtin_tokens;
 };

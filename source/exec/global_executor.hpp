@@ -23,6 +23,7 @@ class builtin_sema_context;
 
 namespace exec {
 class compiled_source;
+class source_compiler;
 
 class global_executor
   : public sema::add_subdirectory_handler
@@ -56,6 +57,12 @@ private:
 
   std::string build_full_import_path(cmsl::string_view import_path) const;
 
+  source_compiler create_compiler(sema::qualified_contextes& ctxs);
+
+  std::optional<source_view> load_source(std::string path);
+  cmsl::string_view store_source(std::string path);
+  cmsl::string_view store_path(std::string path);
+
 private:
   class directory_guard
   {
@@ -85,11 +92,11 @@ private:
   std::vector<std::string> m_sources;
   std::vector<std::string> m_paths;
   std::vector<std::unique_ptr<compiled_source>> m_compiled_sources;
-  std::unordered_map<std::string,
+  std::unordered_map<cmsl::string_view,
                      std::reference_wrapper<const sema::sema_node>>
     m_sema_trees;
 
-  std::unordered_map<std::string, sema::qualified_contextes>
+  std::unordered_map<cmsl::string_view, sema::qualified_contextes>
     m_exported_qualified_contextes;
 };
 }
