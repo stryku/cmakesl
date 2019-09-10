@@ -71,7 +71,9 @@ const tokens_str_t& operators_str()
                               { token_type_t::kw_auto, "auto" },
                               { token_type_t::kw_for, "for" },
                               { token_type_t::kw_break, "break" },
-                              { token_type_t::kw_namespace, "namespace" } };
+                              { token_type_t::kw_namespace, "namespace" },
+                              { token_type_t::kw_import, "import" },
+                              { token_type_t::kw_export, "export" } };
 
   return map;
 }
@@ -441,5 +443,15 @@ token_t token_kw_break()
 token_t token_kw_namespace()
 {
   return details::simple_token(token_type_t::kw_namespace);
+}
+
+token_t token_kw_import()
+{
+  return details::simple_token(token_type_t::kw_import);
+}
+
+token_t token_kw_export()
+{
+  return details::simple_token(token_type_t::kw_export);
 }
 }

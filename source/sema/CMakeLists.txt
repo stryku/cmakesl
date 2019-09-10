@@ -56,6 +56,7 @@ set(SEMA_SOURCES
     identifiers_context.cpp
     identifiers_context.hpp
     identifiers_index_provider.hpp
+    import_handler.hpp
     overload_resolution.cpp
     overload_resolution.hpp
     qualified_contextes.cpp

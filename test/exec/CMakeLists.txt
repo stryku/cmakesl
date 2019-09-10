@@ -32,6 +32,7 @@ cmsl_add_test(
         version_type_smoke_tests.cpp
         void_type_smoke_test.cpp
         while_loop_smoke_test.cpp
+        import_test/import_smoke_test.cpp
         mock/cmake_facade_mock.hpp
         mock/function_caller_mock.hpp
         mock/identifiers_context_mock.hpp
@@ -47,4 +48,9 @@ cmsl_add_test(
         sema
         errors_observer_mock
         tests_common
+)
+
+target_compile_definitions(exec_test
+    PRIVATE
+        -DCMAKESL_EXEC_SMOKE_TEST_ROOT_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
 )

@@ -63,6 +63,7 @@ void dumper::visit(const variable_declaration_node& node)
   out() << "-variable declaration";
   auto ig = ident();
 
+  dump_exported(node);
   dump_type(node.type());
 
   out() << "-name: " << node.name().str();
@@ -199,6 +200,7 @@ void dumper::visit(const function_node& node)
   out() << "-function";
   auto ig = ident();
 
+  dump_exported(node);
   out() << "-return type: " << &node.return_type() << " "
         << node.return_type().name().to_string();
   out() << "-name: " << node.signature().name.str();
@@ -227,6 +229,7 @@ void dumper::visit(const class_node& node)
   out() << "-class";
   auto ig = ident();
 
+  dump_exported(node);
   out() << "-name: " << node.name().str();
 
   {
@@ -447,6 +450,7 @@ void dumper::visit(const namespace_node& node)
   out() << "-namespace";
   auto ig = ident();
 
+  dump_exported(node);
   dump_qualified_name(node.names());
 
   {
@@ -531,6 +535,7 @@ void dumper::visit(const enum_node& node)
   out() << "-enum";
   auto ig = ident();
 
+  dump_exported(node);
   out() << "-name: " << node.name().str();
   {
     out() << "-enumerators";
@@ -539,5 +544,17 @@ void dumper::visit(const enum_node& node)
       out() << '-' << e.str();
     }
   }
+}
+
+void dumper::visit(const import_node& node)
+{
+  out() << "-import";
+  auto ig = ident();
+  out() << "-path: " << node.file_path().str();
+}
+
+void dumper::dump_exported(const sema_node& node)
+{
+  out() << "-exported: " << (node.ast_node().is_exported() ? "true" : "false");
 }
 }

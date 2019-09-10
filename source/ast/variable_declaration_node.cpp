@@ -4,9 +4,10 @@
 
 namespace cmsl::ast {
 variable_declaration_node::variable_declaration_node(
-  type_representation ty, token_t name,
+  std::optional<token_t> export_kw, type_representation ty, token_t name,
   std::optional<initialization_values> initialization)
-  : m_type{ std::move(ty) }
+  : m_export_kw{ export_kw }
+  , m_type{ std::move(ty) }
   , m_name{ name }
   , m_initialization{ std::move(initialization) }
 {
@@ -55,6 +56,16 @@ source_location variable_declaration_node::end_location() const
     return m_name.src_range().end;
   }
 }
+const std::optional<ast_node::token_t>& variable_declaration_node::export_()
+  const
+{
+  return m_export_kw;
+}
+
+bool variable_declaration_node::is_exported() const
+{
+  return m_export_kw.has_value();
+}
 
 standalone_variable_declaration_node::standalone_variable_declaration_node(
   std::unique_ptr<variable_declaration_node> variable_decl, token_t semicolon)
@@ -85,8 +96,14 @@ const ast_node::token_t& standalone_variable_declaration_node::semicolon()
 {
   return m_semicolon;
 }
+
 source_location standalone_variable_declaration_node::begin_location() const
 {
   return m_variable_decl->begin_location();
+}
+
+bool standalone_variable_declaration_node::is_exported() const
+{
+  return m_variable_decl->is_exported();
 }
 }

@@ -3,6 +3,8 @@
 #include "exec/expression_evaluation_visitor.hpp"
 #include "exec/function_caller.hpp"
 #include "exec/instance/instances_holder.hpp"
+#include "exec/module_sema_tree_provider.hpp"
+#include "exec/module_static_variables_initializer.hpp"
 #include "sema/sema_node_visitor.hpp"
 #include "sema/sema_nodes.hpp"
 
@@ -17,10 +19,12 @@ class static_variables_initializer final
 public:
   explicit static_variables_initializer(
     function_caller& caller, const sema::builtin_types_accessor& builtin_types,
-    facade::cmake_facade& cmake_facade)
+    facade::cmake_facade& cmake_facade,
+    module_static_variables_initializer& module_variables_initializer)
     : m_function_caller{ caller }
     , m_builtin_types{ builtin_types }
     , m_cmake_facade{ cmake_facade }
+    , m_module_variables_initializer{ module_variables_initializer }
   {
   }
 
@@ -79,6 +83,11 @@ public:
     }
   }
 
+  void visit(const sema::import_node& node) override
+  {
+    m_module_variables_initializer.initialize(node.pretty_file_path());
+  }
+
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>>
   gather_instances()
   {
@@ -88,7 +97,8 @@ public:
 private:
   function_caller& m_function_caller;
   facade::cmake_facade& m_cmake_facade;
-  sema::builtin_types_accessor m_builtin_types;
+  const sema::builtin_types_accessor& m_builtin_types;
+  module_static_variables_initializer& m_module_variables_initializer;
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>> m_instances;
 };
 }

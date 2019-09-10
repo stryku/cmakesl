@@ -138,7 +138,8 @@ TEST_P(VariableDeclaration, Malformed_ReportError)
 
   const auto tokens = GetParam();
   parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-  auto result = p.parse_standalone_variable_declaration();
+  auto result =
+    p.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
   EXPECT_THAT(result, IsNull());
 }
@@ -394,7 +395,7 @@ TEST_P(Class, Malformed_ReportError)
 
   const auto tokens = GetParam();
   parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-  auto result = p.parse_class();
+  auto result = p.parse_class(/*export_kw=*/std::nullopt);
 
   EXPECT_THAT(result, IsNull());
 }
@@ -584,7 +585,7 @@ TEST_P(Enum, Malformed_ReportError)
 
   const auto tokens = GetParam();
   parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
-  auto result = p.parse_enum();
+  auto result = p.parse_enum(/*export_kw=*/std::nullopt);
 
   EXPECT_THAT(result, IsNull());
 }
@@ -621,6 +622,32 @@ const auto values = Values(
                       cb, sc }); // enum foo {bar, ,baz};
 
 INSTANTIATE_TEST_CASE_P(ParserErrorTest, Enum, values);
-
 }
+
+namespace imports {
+using Import = TestWithParam<tokens_container_t>;
+
+TEST_P(Import, Malformed_ReportError)
+{
+  errs_t errs;
+  EXPECT_CALL(errs.mock, notify_error(_));
+
+  const auto tokens = GetParam();
+  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  auto result = p.parse_enum(/*export_kw=*/std::nullopt);
+
+  EXPECT_THAT(result, IsNull());
+}
+
+const auto imp = token_kw_import();
+const auto foo_bar = token_string("\"foo/bar\"");
+const auto id = token_identifier("baz");
+
+const auto values = Values(tokens_container_t{ imp },      // include
+                           tokens_container_t{ foo_bar },  // "foo/bar"
+                           tokens_container_t{ imp, id }); // include baz
+
+INSTANTIATE_TEST_CASE_P(ParserErrorTest, Import, values);
+}
+
 }

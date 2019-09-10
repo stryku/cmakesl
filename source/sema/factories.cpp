@@ -70,40 +70,41 @@ sema_context_factory::~sema_context_factory()
 const sema_type& sema_type_factory::create(const sema_context& ctx,
                                            ast::type_representation name,
                                            std::vector<member_info> members,
+                                           bool exported,
                                            sema_type::flags_t flags)
 {
-  return create_and_add<sema_type>(name.primary_name_token(), ctx, name,
-                                   std::move(members), flags);
+  return create_and_add<sema_type>(name.primary_name_token(), exported, ctx,
+                                   name, std::move(members), flags);
 }
 
 const sema_type& sema_type_factory::create_builtin(
   const sema_context& ctx, ast::type_representation name,
-  std::vector<member_info> members)
+  std::vector<member_info> members, bool exported)
 {
-  return create_and_add<sema_type>(name.primary_name_token(), ctx, name,
-                                   std::move(members),
+  return create_and_add<sema_type>(name.primary_name_token(), exported, ctx,
+                                   name, std::move(members),
                                    sema_type::flags::builtin);
 }
 
 const sema_type& sema_type_factory::create_homogeneous_generic(
   const sema_context& ctx, ast::type_representation name,
-  const sema_type& value_type)
+  const sema_type& value_type, bool exported)
 {
   return create_and_add<homogeneous_generic_type>(
-    name.primary_name_token(), ctx, std::move(name), value_type);
+    name.primary_name_token(), exported, ctx, std::move(name), value_type);
 }
 
 const sema_type& sema_type_factory::create_reference(
-  const sema_type& referenced_type)
+  const sema_type& referenced_type, bool exported)
 {
   const auto primary_name_token = referenced_type.name().primary_name_token();
   if (referenced_type.is_builtin()) {
-    return create_and_add<sema_type>(primary_name_token,
+    return create_and_add<sema_type>(primary_name_token, exported,
 
                                      sema_type_reference{ referenced_type },
                                      sema_type::flags::builtin);
   } else {
-    return create_and_add<sema_type>(primary_name_token,
+    return create_and_add<sema_type>(primary_name_token, exported,
                                      sema_type_reference{ referenced_type });
   }
 }
@@ -113,27 +114,29 @@ sema_type_factory::~sema_type_factory()
 }
 
 const sema_type& sema_type_factory::create_designated_initializer(
-  const sema_context& ctx, ast::type_representation name)
+  const sema_context& ctx, ast::type_representation name, bool exported)
 {
-  return create_and_add<sema_type>(name.primary_name_token(), ctx, name,
-                                   std::vector<member_info>{},
+  return create_and_add<sema_type>(name.primary_name_token(), exported, ctx,
+                                   name, std::vector<member_info>{},
                                    sema_type::flags::designated_initializer);
 }
 
 const sema_type& sema_type_factory::create_enum(
   const sema_context& ctx, ast::type_representation name,
-  std::vector<lexer::token> enumerators, sema_type::flags_t additional_flags)
+  std::vector<lexer::token> enumerators, bool exported,
+  sema_type::flags_t additional_flags)
 {
-  return create_and_add<enum_type>(name.primary_name_token(), ctx, name,
-                                   std::move(enumerators), additional_flags);
+  return create_and_add<enum_type>(name.primary_name_token(), exported, ctx,
+                                   name, std::move(enumerators),
+                                   additional_flags);
 }
 
 template <typename T, typename... Args>
 const sema_type& sema_type_factory::create_and_add(
-  const lexer::token& primary_name, Args&&... args)
+  const lexer::token& primary_name, bool exported, Args&&... args)
 {
   const auto& created = create_impl<T>(std::forward<Args>(args)...);
-  m_types_ctx.register_type(primary_name, created);
+  m_types_ctx.register_type(primary_name, created, exported);
   return created;
 }
 

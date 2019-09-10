@@ -73,7 +73,8 @@ TEST_F(IdentifiersContextTest,
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -93,9 +94,11 @@ TEST_F(
   const auto different_declaration_token = token_identifier("bar");
   const auto different_identifier_index = 1u;
 
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -112,7 +115,8 @@ TEST_F(IdentifiersContextTest,
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -128,7 +132,8 @@ TEST_F(IdentifiersContextTest,
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   ctx.enter_local_ctx();
 
@@ -146,14 +151,16 @@ TEST_F(
   ctx.enter_local_ctx();
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   ctx.enter_local_ctx();
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -169,13 +176,15 @@ TEST_F(
   ctx.enter_local_ctx();
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   ctx.enter_local_ctx();
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 0u;
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   ctx.leave_ctx();
 
@@ -189,7 +198,8 @@ TEST_F(IdentifiersContextTest,
        WithinGlobalCtxWithNothingRegistered_TypeOf_ReturnsNull)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("foo"));
+  ctx.enter_global_ctx(token_identifier("foo"),
+                       /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("bar"));
   EXPECT_EQ(got_info, std::nullopt);
@@ -199,7 +209,8 @@ TEST_F(IdentifiersContextTest,
        WithinGlobalCtxWithNothingRegistered_TypeOfSameNameAsCtx_ReturnsNull)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("foo"));
+  ctx.enter_global_ctx(token_identifier("foo"),
+                       /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   EXPECT_EQ(got_info, std::nullopt);
@@ -209,7 +220,8 @@ TEST_F(IdentifiersContextTest,
        AfterLeavingGlobalCtxWithNothingRegistered_TypeOf_ReturnsNull)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("foo"));
+  ctx.enter_global_ctx(token_identifier("foo"),
+                       /*exported=*/false);
   ctx.leave_ctx();
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
@@ -223,7 +235,8 @@ TEST_F(IdentifiersContextTest,
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -235,11 +248,13 @@ TEST_F(IdentifiersContextTest,
        SingleGlobalCtx_TypeOfRegistered_TypeOf_ReturnsCorrectType)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -252,16 +267,19 @@ TEST_F(
   SingleGlobalCtx_RegisteredAmongOtherIdentifiers_TypeOf_ReturnsCorrectType)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
   const auto different_declaration_token = token_identifier("bar");
   const auto different_identifier_index = 1u;
 
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -273,12 +291,15 @@ TEST_F(IdentifiersContextTest,
        MultipleGlobalCtxs_RegisteredInChildCtx_TypeOf_ReturnsCorrectType)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("ctx"));
-  ctx.enter_global_ctx(token_identifier("other_ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
+  ctx.enter_global_ctx(token_identifier("other_ctx"),
+                       /*exported=*/false);
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -290,13 +311,16 @@ TEST_F(IdentifiersContextTest,
        MultipleGlobalCtxs_RegisteredInParentCtx_TypeOf_ReturnsCorrectType)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
-  ctx.enter_global_ctx(token_identifier("other_ctx"));
+  ctx.enter_global_ctx(token_identifier("other_ctx"),
+                       /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -309,17 +333,21 @@ TEST_F(
   MultipleGlobalCtxs_lRegisteredInParentAndChildCtxs_TypeOf_ReturnsTypeFromNestedCtx)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
-  ctx.enter_global_ctx(token_identifier("other_ctx"));
+  ctx.enter_global_ctx(token_identifier("other_ctx"),
+                       /*exported=*/false);
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -332,17 +360,21 @@ TEST_F(
   MultipleGlobal_RegisteredInParentAndChildCtxs_TypeOfAfterLeavingCtx_ReturnsFromParentCtx)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
-  ctx.enter_global_ctx(token_identifier("other_ctx"));
+  ctx.enter_global_ctx(token_identifier("other_ctx"),
+                       /*exported=*/false);
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   ctx.leave_ctx();
 
@@ -359,7 +391,8 @@ TEST_F(IdentifiersContextTest,
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   ctx.enter_local_ctx();
 
@@ -378,7 +411,8 @@ TEST_F(IdentifiersContextTest,
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -391,18 +425,21 @@ TEST_F(
   GlobalAndLocalCtxs_RegisteredInLocalAndGlobalCtx_TypeOf_ReturnsFromLocalCtx)
 {
   identifiers_context_impl ctx;
-  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
   ctx.enter_local_ctx();
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   const auto got_info = ctx.info_of(create_qualified_name("foo"));
   ASSERT_NE(got_info, std::nullopt);
@@ -417,14 +454,17 @@ TEST_F(IdentifiersContextTest,
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
-  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   // ::foo
   const auto got_info = ctx.info_of(create_qualified_name("foo", ""));
@@ -441,14 +481,17 @@ TEST_F(
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
-  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   {
     // ctx::foo
@@ -474,21 +517,25 @@ TEST_F(IdentifiersContextTest,
 
   const auto declaration_token = token_identifier("foo");
   const auto identifier_index = 0u;
-  ctx.register_identifier(declaration_token, { valid_type, identifier_index });
+  ctx.register_identifier(declaration_token, { valid_type, identifier_index },
+                          /*exported=*/false);
 
-  ctx.enter_global_ctx(token_identifier("ctx"));
+  ctx.enter_global_ctx(token_identifier("ctx"),
+                       /*exported=*/false);
 
   const auto different_declaration_token = token_identifier("foo");
   const auto different_identifier_index = 1u;
   ctx.register_identifier(different_declaration_token,
-                          { different_type, different_identifier_index });
+                          { different_type, different_identifier_index },
+                          /*exported=*/false);
 
   ctx.enter_local_ctx();
 
   const auto third_declaration_token = token_identifier("foo");
   const auto third_identifier_index = 1u;
   ctx.register_identifier(third_declaration_token,
-                          { different_type, third_identifier_index });
+                          { different_type, third_identifier_index },
+                          /*exported=*/false);
 
   // ::ctx::foo
   const auto got_info = ctx.info_of(create_qualified_name("foo", "", "ctx"));

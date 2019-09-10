@@ -20,12 +20,14 @@ source_compiler::source_compiler(
   errors::errors_observer& errors_observer,
   sema::factories_provider& factories_provider,
   sema::add_subdirectory_handler& add_subdirectory_handler,
+  sema::import_handler& imports_handler,
   sema::qualified_contextes_refs& qualified_contextes,
   sema::builtin_sema_context& builtin_context,
   sema::builtin_token_provider& builtin_tokens)
   : m_errors_observer{ errors_observer }
   , m_factories_provider{ factories_provider }
   , m_add_subdirectory_handler{ add_subdirectory_handler }
+  , m_imports_handler{ imports_handler }
   , m_qualified_contextes{ qualified_contextes }
   , m_builtin_context{ builtin_context }
   , m_builtin_tokens{ builtin_tokens }
@@ -46,11 +48,14 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
 
   auto& global_context =
     m_factories_provider.context_factory().create("", &m_builtin_context);
-  sema::sema_builder sema_builder{
-    global_context,       m_errors_observer,          m_qualified_contextes,
-    m_factories_provider, m_add_subdirectory_handler, m_builtin_tokens,
-    builtin_types
-  };
+  sema::sema_builder sema_builder{ global_context,
+                                   m_errors_observer,
+                                   m_qualified_contextes,
+                                   m_factories_provider,
+                                   m_add_subdirectory_handler,
+                                   m_imports_handler,
+                                   m_builtin_tokens,
+                                   builtin_types };
   auto sema_tree = sema_builder.build(*ast_tree);
   if (!sema_tree) {
     return nullptr;

@@ -34,8 +34,13 @@ public:
 
     add_type_entry(variable_decl.type(), node.type());
 
-    m_identifiers_context.register_identifier(variable_decl.name(),
-                                              { node.type(), node.index() });
+    const auto is_exported =
+      static_cast<const ast::variable_declaration_node*>(&node.ast_node())
+        ->export_()
+        .has_value();
+
+    m_identifiers_context.register_identifier(
+      variable_decl.name(), { node.type(), node.index() }, is_exported);
 
     if (node.initialization()) {
       node.initialization()->visit(*this);
@@ -120,7 +125,8 @@ public:
     for (auto i = 0u; i < params.size(); ++i) {
       add_type_entry(ast_param_declarations[i].ty, params[i].ty);
       m_identifiers_context.register_identifier(
-        params[i].name, { params[i].ty, params[i].index });
+        params[i].name, { params[i].ty, params[i].index },
+        node.ast_node().is_exported());
     }
 
     node.body().visit(*this);
@@ -130,7 +136,8 @@ public:
 
   void visit(const sema::class_node& node) override
   {
-    m_identifiers_context.enter_global_ctx(node.name());
+    m_identifiers_context.enter_global_ctx(node.name(),
+                                           node.ast_node().is_exported());
 
     for (const auto& member : node.members()) {
       member->visit(*this);
@@ -321,6 +328,11 @@ private:
   }
 
   void visit(const sema::enum_constant_access_node& node) override
+  {
+    // Todo: implement
+  }
+
+  void visit(const sema::import_node& node) override
   {
     // Todo: implement
   }

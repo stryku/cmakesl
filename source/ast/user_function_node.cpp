@@ -4,11 +4,13 @@
 #include "ast/block_node.hpp"
 
 namespace cmsl::ast {
-user_function_node::user_function_node(type_representation return_type,
+user_function_node::user_function_node(std::optional<token_t> export_kw,
+                                       type_representation return_type,
                                        token_t name, token_t open_paren,
                                        params_t params, token_t close_paren,
                                        std::unique_ptr<block_node> body)
-  : m_return_type{ std::move(return_type) }
+  : m_export_kw{ export_kw }
+  , m_return_type{ std::move(return_type) }
   , m_name{ name }
   , m_open_paren{ open_paren }
   , m_params{ std::move(params) }
@@ -62,5 +64,15 @@ source_location user_function_node::begin_location() const
 source_location user_function_node::end_location() const
 {
   return m_body->end_location();
+}
+
+const std::optional<ast_node::token_t>& user_function_node::export_() const
+{
+  return m_export_kw;
+}
+
+bool user_function_node::is_exported() const
+{
+  return m_export_kw.has_value();
 }
 }

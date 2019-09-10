@@ -17,17 +17,23 @@
 #include "cmake_facade.hpp"
 
 namespace cmsl::exec {
+class module_sema_tree_provider;
+class module_static_variables_initializer;
+class cross_translation_unit_static_variables_accessor;
+
 class execution
   : public identifiers_context
   , public function_caller
 {
 public:
-  explicit execution(
-    facade::cmake_facade& cmake_facade,
-    sema::builtin_types_accessor builtin_types,
-    const std::vector<sema::identifier_info>& builtin_identifiers_info);
+  explicit execution(facade::cmake_facade& cmake_facade,
+                     sema::builtin_types_accessor builtin_types,
+                     cross_translation_unit_static_variables_accessor&
+                       static_variables_accessor);
 
-  void initialize_static_variables(const sema::translation_unit_node& node);
+  void initialize_static_variables(
+    const sema::translation_unit_node& node,
+    module_static_variables_initializer& module_statics_initializer);
 
   // Todo: consider returning a reference
   // Todo: Call parameters should be a vector of std::unique_ptrs, not raw
@@ -75,9 +81,6 @@ private:
   std::unique_ptr<inst::instance> execute_infix_expression(
     const sema::sema_type& expected_type, const sema::sema_node& node);
 
-  void initialize_builtin_identifiers(
-    const std::vector<sema::identifier_info>& identifiers_info);
-
 private:
   struct callstack_frame
   {
@@ -87,6 +90,8 @@ private:
 
   facade::cmake_facade& m_cmake_facade;
   sema::builtin_types_accessor m_builtin_types;
+  cross_translation_unit_static_variables_accessor&
+    m_static_variables_accessor;
   std::unique_ptr<inst::instance> m_function_return_value;
   std::stack<callstack_frame> m_callstack;
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>>

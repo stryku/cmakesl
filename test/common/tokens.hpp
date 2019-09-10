@@ -74,6 +74,8 @@ token_t token_kw_auto();
 token_t token_kw_for();
 token_t token_kw_break();
 token_t token_kw_namespace();
+token_t token_kw_import();
+token_t token_kw_export();
 
 token_t token_from_larger_source(cmsl::string_view source,
                                  lexer::token_type type, unsigned begin,

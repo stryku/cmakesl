@@ -95,6 +95,8 @@ enum class token_type
   kw_for,
   kw_break,
   kw_namespace,
+  kw_import,
+  kw_export,
 
   _keywords_end
 };

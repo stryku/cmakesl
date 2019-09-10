@@ -1,0 +1,15 @@
+namespace foo {
+export auto bar = 42;
+
+export auto baz()
+{
+  return 42;
+}
+
+export class qux
+{
+  int get() { return 42; }
+};
+
+export enum top { kek };
+}

@@ -3,6 +3,8 @@
 #include "ast/qualified_name.hpp"
 #include "common/algorithm.hpp"
 #include "common/assert.hpp"
+#include "errors/error.hpp"
+#include "errors/errors_observer.hpp"
 #include "lexer/token.hpp"
 
 #include <algorithm>
@@ -13,7 +15,13 @@ class qualified_entries_finder
 {
 private:
   using token_t = lexer::token;
-  using entries_map_t = std::unordered_multimap<token_t, Entry>;
+  struct possibly_exported_entry
+  {
+    Entry e;
+    bool exported{ false };
+  };
+  using entries_map_t =
+    std::unordered_multimap<token_t, possibly_exported_entry>;
   using node_id_t = unsigned;
   static constexpr auto k_bad_id = std::numeric_limits<node_id_t>::max();
   using qualified_names_t = std::vector<ast::name_with_coloncolon>;
@@ -26,6 +34,7 @@ private:
     token_t name;
     node_id_t id{ k_bad_id };
     node_id_t parent_id{ k_bad_id };
+    bool exported{ false };
     std::unordered_map<token_t, node_id_t> nodes;
     entries_map_t entries;
   };
@@ -41,16 +50,17 @@ public:
   {
     static const auto name_token =
       lexer::make_token(lexer::token_type::identifier, "");
-    (void)create_node(name_token);
+    (void)create_node(name_token, false);
     m_current_nodes_path.push_back({ name_token, 0u });
   }
 
-  void register_entry(token_t name, Entry entry)
+  void register_entry(token_t name, Entry entry, bool exported)
   {
-    current_entries().emplace(name, std::move(entry));
+    possibly_exported_entry e{ .e = std::move(entry), .exported = exported };
+    current_entries().emplace(name, std::move(e));
   }
 
-  void enter_global_node(token_t name)
+  void enter_global_node(token_t name, bool exported)
   {
     node_id_t node_id;
 
@@ -59,7 +69,7 @@ public:
     if (contains(current->nodes, name)) {
       node_id = current->nodes[name];
     } else {
-      node_id = create_node(name);
+      node_id = create_node(name, exported);
       current = &current_node();
       current->nodes[name] = node_id;
     }
@@ -79,10 +89,13 @@ public:
     }
   }
 
+  bool is_in_global_context() const { return m_local_nodes.empty(); }
+
   struct entry_info
   {
     token_t registration_token;
     Entry entry;
+    bool exported{ false };
   };
 
   std::vector<entry_info> find(const qualified_names_t& names) const
@@ -115,7 +128,83 @@ public:
     return node->name;
   }
 
+  // Todo: test it
+  qualified_entries_finder collect_exported_stuff() const
+  {
+    qualified_entries_finder cloned;
+    cloned.m_nodes_container = m_nodes_container;
+    cloned.erase_not_exported();
+    return cloned;
+  }
+
+  bool merge_imported_stuff(const qualified_entries_finder& imported,
+                            errors::errors_observer& errs)
+  {
+    return merge_node(imported.m_nodes_container,
+                      imported.m_nodes_container[0], m_nodes_container[0]);
+  }
+
 private:
+  bool merge_node(std::vector<tree_node> imported_nodes_container,
+                  const tree_node& imported_node, tree_node& into)
+  {
+    bool result{ true };
+
+    // We don't want recursive imports, thus the false.
+    const auto exported{ false };
+
+    entries_map_t merged_entries;
+
+    for (const auto& [token, entry] : imported_node.entries) {
+      const auto found = into.entries.find(token);
+      if (found != std::cend(into.entries)) {
+        // Todo: redeclaration
+        result = false;
+        continue;
+      }
+
+      possibly_exported_entry e{ .e = entry.e, .exported = exported };
+      merged_entries.emplace(token, std::move(e));
+    }
+
+    auto& curr_entries = current_entries();
+    std::move(std::begin(merged_entries), std::end(merged_entries),
+              std::inserter(curr_entries, std::end(curr_entries)));
+
+    for (const auto& [token, id] : imported_node.nodes) {
+      const auto& node = imported_nodes_container[id];
+      enter_global_node(node.name, exported);
+      const auto node_merging_result =
+        merge_node(imported_nodes_container, node, current_node());
+      result = result && node_merging_result;
+      leave_node();
+    }
+
+    return result;
+  }
+
+  void erase_not_exported()
+  {
+    auto& root_node = m_nodes_container[0];
+    erase_not_exported_in_node(root_node);
+  }
+
+  void erase_not_exported_in_node(tree_node& node)
+  {
+    const auto entry_pred = [](const auto& pair) {
+      const auto& entry = pair.second;
+      return !entry.exported;
+    };
+
+    cmsl::remove_if(node.entries, entry_pred);
+
+    for (auto& child : node.nodes) {
+      const auto node_id = child.second;
+      auto& child_node = m_nodes_container[node_id];
+      erase_not_exported_in_node(child_node);
+    }
+  }
+
   std::vector<entry_info> to_entries_info(
     const search_result_range_t& range) const
   {
@@ -123,7 +212,12 @@ private:
 
     std::transform(range.first, range.second, std::back_inserter(results),
                    [](const auto& pair) {
-                     return entry_info{ pair.first, pair.second };
+                     const auto& [registration_token, exported_entry] = pair;
+
+                     return entry_info{ .registration_token =
+                                          registration_token,
+                                        .entry = exported_entry.e,
+                                        .exported = exported_entry.exported };
                    });
 
     return results;
@@ -147,13 +241,18 @@ private:
     }
   }
 
-  node_id_t create_node(token_t name)
+  node_id_t create_node(token_t name, bool exported)
   {
     const node_id_t id = m_nodes_container.size();
-    tree_node node{ name, id, current_node_id() };
+    tree_node node{ .name = name,
+                    .id = id,
+                    .parent_id = current_node_id(),
+                    .exported = exported };
     m_nodes_container.emplace_back(node);
-    auto& current = current_node();
-    current.nodes[name] = id;
+    if (current_node_id() != k_bad_id) {
+      auto& current = current_node();
+      current.nodes[name] = id;
+    }
     return id;
   }
 
@@ -186,25 +285,33 @@ private:
     const auto& first_name = begin->name;
     auto* node = &current_node();
 
-    while (true) {
-      if (contains(node->nodes, first_name)) {
-        break;
-      }
+    const auto is_explicit_root_node_accessed = first_name.str().empty();
+    if (is_explicit_root_node_accessed) {
+      node = &m_nodes_container[0];
+    } else {
+      while (true) {
+        const auto found = node->nodes.find(first_name);
+        if (found != std::cend(node->nodes)) {
+          const auto id = found->second;
+          node = &m_nodes_container[id];
+          break;
+        }
 
-      const auto is_root_node = (node->id == 0u);
-      if (is_root_node) {
-        node = nullptr;
-        break;
-      }
+        const auto is_root_node = (node->id == 0u);
+        if (is_root_node) {
+          node = nullptr;
+          break;
+        }
 
-      node = &m_nodes_container[node->parent_id];
+        node = &m_nodes_container[node->parent_id];
+      }
     }
 
     if (node == nullptr) {
       return std::nullopt;
     }
 
-    auto first = begin;
+    auto first = std::next(begin);
     while (first != end) {
       if (!contains(node->nodes, first->name)) {
         return std::nullopt;

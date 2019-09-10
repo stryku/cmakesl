@@ -942,4 +942,27 @@ private:
   std::vector<lexer::token> m_enumerators;
 };
 
+class import_node : public sema_node
+{
+public:
+  explicit import_node(const ast::ast_node& ast_node,
+                       const lexer::token& file_path)
+    : sema_node{ ast_node }
+    , m_file_path{ file_path }
+  {
+  }
+
+  const lexer::token& file_path() const { return m_file_path; }
+  cmsl::string_view pretty_file_path() const
+  {
+    return cmsl::string_view{ m_file_path.str().data() + 1u,
+                              m_file_path.str().size() - 2u };
+  }
+
+  VISIT_METHOD
+
+private:
+  lexer::token m_file_path;
+};
+
 }

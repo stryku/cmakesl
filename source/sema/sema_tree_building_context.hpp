@@ -1,7 +1,6 @@
 #pragma once
 
 #include "errors/errors_observer.hpp"
-#include "factories_provider.hpp"
 #include "sema/factories_provider.hpp"
 #include "sema/functions_context.hpp"
 #include "sema/types_context.hpp"

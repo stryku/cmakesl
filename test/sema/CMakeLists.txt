@@ -6,6 +6,7 @@ cmsl_add_test(
         mock/enum_values_context_mock.hpp
         mock/expression_node_mock.hpp
         mock/identifiers_context_mock.hpp
+        mock/import_handler_mock.hpp
         mock/sema_context_mock.hpp
         mock/sema_function_mock.hpp
         identifiers_context_test.cpp

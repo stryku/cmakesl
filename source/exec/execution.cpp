@@ -1,15 +1,16 @@
 #include "exec/execution.hpp"
+#include "exec/cross_translation_unit_static_variables_accessor.hpp"
 #include "exec/static_variables_initializer.hpp"
 
 namespace cmsl::exec {
 execution::execution(
   facade::cmake_facade& cmake_facade,
   sema::builtin_types_accessor builtin_types,
-  const std::vector<sema::identifier_info>& builtin_identifiers_info)
+  cross_translation_unit_static_variables_accessor& static_variables_accessor)
   : m_cmake_facade{ cmake_facade }
   , m_builtin_types{ builtin_types }
+  , m_static_variables_accessor{ static_variables_accessor }
 {
-  initialize_builtin_identifiers(builtin_identifiers_info);
 }
 
 std::unique_ptr<inst::instance> execution::call(
@@ -59,6 +60,8 @@ inst::instance* execution::lookup_identifier(unsigned index)
   if (auto found = m_global_variables.find(index);
       found != std::cend(m_global_variables)) {
     return found->second.get();
+  } else if (auto found = m_static_variables_accessor.access_variable(index)) {
+    return found;
   } else {
     return m_callstack.top().exec_ctx.get_variable(index);
   }
@@ -289,23 +292,15 @@ void execution::execute_break_node(const sema::break_node& node)
 }
 
 void execution::initialize_static_variables(
-  const sema::translation_unit_node& node)
+  const sema::translation_unit_node& node,
+  module_static_variables_initializer& module_statics_initializer)
 {
   static_variables_initializer initializer{ *this, m_builtin_types,
-                                            m_cmake_facade };
+                                            m_cmake_facade,
+                                            module_statics_initializer };
   node.visit(initializer);
   auto instances = initializer.gather_instances();
   std::move(std::begin(instances), std::end(instances),
             std::inserter(m_global_variables, std::end(m_global_variables)));
-}
-
-void execution::initialize_builtin_identifiers(
-  const std::vector<sema::identifier_info>& identifiers_info)
-{
-  inst::instances_holder instances{ m_builtin_types };
-  for (const auto& info : identifiers_info) {
-    const auto created = instances.create(info.type);
-    m_global_variables[info.index] = instances.gather_ownership(created);
-  }
 }
 }

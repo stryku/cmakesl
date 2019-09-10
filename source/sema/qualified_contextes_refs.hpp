@@ -38,10 +38,10 @@ struct qualified_contextes_refs
       m_ids_ctx.enter_local_ctx();
     }
     explicit qualified_ctx_guard(Context& ids_context,
-                                 const lexer::token& name)
+                                 const lexer::token& name, bool exported)
       : m_ids_ctx{ ids_context }
     {
-      m_ids_ctx.enter_global_ctx(name);
+      m_ids_ctx.enter_global_ctx(name, exported);
     }
 
     ~qualified_ctx_guard()
@@ -79,11 +79,12 @@ struct qualified_contextes_refs
                                            types_context& types,
                                            functions_context& functions,
                                            enum_values_context& enums,
-                                           const lexer::token& name)
-      : m_ids_guard{ ids, name }
-      , m_types_guard{ types, name }
-      , m_functions_guard{ functions, name }
-      , m_enums_guard{ enums, name }
+                                           const lexer::token& name,
+                                           bool exported)
+      : m_ids_guard{ ids, name, exported }
+      , m_types_guard{ types, name, exported }
+      , m_functions_guard{ functions, name, exported }
+      , m_enums_guard{ enums, name, exported }
     {
     }
 
@@ -104,29 +105,32 @@ struct qualified_contextes_refs
   };
 
   [[nodiscard]] auto local_ids_guard() { return qualified_ctx_guard{ ids }; }
-  [[nodiscard]] auto global_ids_guard(const lexer::token& name)
+  [[nodiscard]] auto global_ids_guard(const lexer::token& name, bool exported)
   {
-    return qualified_ctx_guard{ ids, name };
+    return qualified_ctx_guard{ ids, name, exported };
   }
 
-  [[nodiscard]] auto types_ctx_guard(const lexer::token& name)
+  [[nodiscard]] auto types_ctx_guard(const lexer::token& name, bool exported)
   {
-    return qualified_ctx_guard{ types, name };
+    return qualified_ctx_guard{ types, name, exported };
   }
 
-  [[nodiscard]] auto enums_ctx_guard(const lexer::token& name)
+  [[nodiscard]] auto enums_ctx_guard(const lexer::token& name, bool exported)
   {
-    return qualified_ctx_guard{ enums, name };
+    return qualified_ctx_guard{ enums, name, exported };
   }
 
-  [[nodiscard]] auto functions_ctx_guard(const lexer::token& name)
+  [[nodiscard]] auto functions_ctx_guard(const lexer::token& name,
+                                         bool exported)
   {
-    return qualified_ctx_guard{ functions, name };
+    return qualified_ctx_guard{ functions, name, exported };
   }
 
-  [[nodiscard]] auto all_qualified_ctxs_guard(const lexer::token& name)
+  [[nodiscard]] auto all_qualified_ctxs_guard(const lexer::token& name,
+                                              bool exported)
   {
-    return all_qualified_contextes_guard{ ids, types, functions, enums, name };
+    return all_qualified_contextes_guard{ ids,   types, functions,
+                                          enums, name,  exported };
   }
 
   functions_context& functions;

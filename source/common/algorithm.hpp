@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <unordered_map>
 #include <utility>
 
 namespace cmsl {
@@ -54,5 +55,18 @@ inline bool starts_with(cmsl::string_view str, cmsl::string_view pattern)
 {
   return str.size() >= pattern.size() &&
     cmsl::string_view{ str.data(), pattern.size() } == pattern;
+}
+
+template <typename K, typename T, typename H, typename KE, typename A,
+          typename Pred>
+void remove_if(std::unordered_multimap<K, T, H, KE, A>& map, Pred&& predicate)
+{
+  for (auto it = begin(map); it != end(map);) {
+    if (predicate(*it)) {
+      it = map.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 }
