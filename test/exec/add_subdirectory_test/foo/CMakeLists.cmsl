@@ -1,0 +1,4 @@
+int main(double value)
+{
+  return int(value * 10.0);
+}

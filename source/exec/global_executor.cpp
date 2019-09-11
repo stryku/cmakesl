@@ -104,8 +104,6 @@ const sema::sema_function* global_executor::handle_add_subdirectory(
   cmsl::string_view name,
   const std::vector<std::unique_ptr<sema::expression_node>>&)
 {
-  directory_guard dg{ m_cmake_facade, std::string{ name } };
-
   const auto src_view =
     load_source(m_cmake_facade.current_directory() + "/CMakeLists.cmsl");
   if (!src_view) {
