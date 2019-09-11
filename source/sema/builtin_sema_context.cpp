@@ -132,6 +132,8 @@ void builtin_sema_context::add_functions()
       factory.create_builtin(*this, function.return_type,
                              std::move(function.signature), function.kind);
     add_function(created);
+    m_qualified_ctxs.functions.register_function(function.signature.name,
+                                                 created, /*exported=*/false);
   }
 }
 

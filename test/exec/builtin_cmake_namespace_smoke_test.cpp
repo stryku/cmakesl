@@ -42,4 +42,14 @@ TEST_F(BuiltinCMakeNamespaceSmokeTest, GetCxxCompilerInfo)
   EXPECT_THAT(result, Eq(1));
 }
 
+TEST_F(BuiltinCMakeNamespaceSmokeTest, CmakeMinimumRequiredIsCallable)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake_minimum_required(version(0));"
+                      "    return 42;"
+                      "}";
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }
