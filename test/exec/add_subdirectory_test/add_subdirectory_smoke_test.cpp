@@ -16,7 +16,8 @@ TEST_F(AddSubdirectorySmokeTest, SimpleAddSubdirectory)
                       "    return answer;"
                       "}";
 
-  EXPECT_CALL(m_facade, go_into_subdirectory("foo"));
+  // One while parsing and one while execution.
+  EXPECT_CALL(m_facade, go_into_subdirectory("foo")).Times(2);
 
   EXPECT_CALL(m_facade, current_directory())
     .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
@@ -38,7 +39,8 @@ TEST_F(AddSubdirectorySmokeTest,
                       "    return int(foo::bar);"
                       "}";
 
-  EXPECT_CALL(m_facade, go_into_subdirectory("import"));
+  // One while parsing and one while execution.
+  EXPECT_CALL(m_facade, go_into_subdirectory("import")).Times(2);
 
   EXPECT_CALL(m_facade, current_directory())
     .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
