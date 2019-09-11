@@ -32,6 +32,7 @@ cmsl_add_test(
         version_type_smoke_tests.cpp
         void_type_smoke_test.cpp
         while_loop_smoke_test.cpp
+        add_subdirectory_test/add_subdirectory_smoke_test.cpp
         import_test/import_smoke_test.cpp
         mock/cmake_facade_mock.hpp
         mock/function_caller_mock.hpp
