@@ -12,6 +12,8 @@ enum class builtin_function_kind
   cmake_error,
   cmake_fatal_error,
   cmake_get_cxx_compiler_info,
+  cmake_install_executable,
+  cmake_install_library,
 
   // Class methods:
 

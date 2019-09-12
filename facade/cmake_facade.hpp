@@ -48,6 +48,8 @@ public:
 
   virtual void register_project(const std::string& name) = 0;
 
+  virtual void install(const std::string& target_name) = 0;
+
   virtual std::string get_current_binary_dir() const = 0;
   virtual std::string get_current_source_dir() const = 0;
 

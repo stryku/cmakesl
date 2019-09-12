@@ -37,6 +37,7 @@ public:
   }
 
   void register_project(const std::string& name) override {}
+  void install(const std::string& target_name) override {}
 
   std::string get_current_binary_dir() const override { return {}; }
 

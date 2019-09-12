@@ -274,6 +274,9 @@ GENERATION_INFO = {
             'cxx_compiler_info_name': ['class cxx_compiler_info', 'class ', 'cxx_compiler_info'],
             'cxx_compiler_info_id': ['cxx_compiler_id id;', 'cxx_compiler_id ', 'id'],
             'get_cxx_compiler_info': ['cxx_compiler_info get_cxx_compiler_info();', 'cxx_compiler_info ', 'get_cxx_compiler_info'],
+
+            'install_executable': ['void install(executable exe);', 'void ', 'install'],
+            'install_library': ['void install(library lib);', 'void ', 'install']
         }
     }
 }
