@@ -264,6 +264,7 @@ GENERATION_INFO = {
         'tokens': {
             'name': ['namespace cmake', 'namespace ', 'cmake'],
             'module_path': ['list<string> module_path;', 'list<string> ', 'module_path'],
+            'minimum_required': ['void minimum_required(version v);', 'void ', 'minimum_required'],
             'message': ['void message(string msg);', 'void ', 'message'],
             'warning': ['void warning(string msg);', 'void ', 'warning'],
             'error': ['void error(string msg);', 'void ', 'error'],
@@ -279,7 +280,12 @@ GENERATION_INFO = {
             'install_library': ['void install(library lib);', 'void ', 'install'],
 
             'enable_ctest': ['void enable_ctest();', 'void ', 'enable_ctest'],
-            'add_test': ['void add_test(executable exe);', 'void ', 'add_test']
+            'add_test': ['void add_test(executable exe);', 'void ', 'add_test'],
+
+            'visibility': ['enum visibility', 'enum ', 'visibility'],
+            'visibility_interface': ['interface,', '', 'interface'],
+            'visibility_private': ['private,', '', 'private'],
+            'visibility_public': ['public', '', 'public']
         }
     }
 }

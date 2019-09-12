@@ -1,3 +1,4 @@
+namespace cmake {
 /** \brief The builtin version type.
  */
 class version
@@ -102,3 +103,4 @@ public:
    */
   string to_string();
 };
+}

@@ -70,17 +70,7 @@ protected:
                                   .double_ = m_double_type_data.ty,
                                   .double_ref = valid_type_data.ty,
                                   .string = m_string_type_data.ty,
-                                  .string_ref = valid_type_data.ty,
-                                  .version = m_version_type_data.ty,
-                                  .version_ref = valid_type_data.ty,
-                                  .library = m_library_type_data.ty,
-                                  .library_ref = valid_type_data.ty,
-                                  .executable = m_executable_type_data.ty,
-                                  .executable_ref = valid_type_data.ty,
-                                  .project = m_project_type_data.ty,
-                                  .project_ref = valid_type_data.ty,
-                                  .option = m_project_type_data.ty,
-                                  .option_ref = valid_type_data.ty };
+                                  .string_ref = valid_type_data.ty };
 };
 
 // Todo: Consider extracting common CmakeMinimumRequired parts to some

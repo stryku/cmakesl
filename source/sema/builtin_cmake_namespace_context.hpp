@@ -49,10 +49,26 @@ private:
   type_builder add_type(lexer::token name_token);
 
   const sema_type& add_cxx_compiler_id_type();
+  const sema_type& add_visibility_type();
   type_builder add_cxx_compiler_info_type(const sema_type& cxx_compiler_id);
+
+  type_builder add_version_type();
+  void add_version_member_functions(type_builder& string_manipulator);
+  type_builder add_library_type();
+  void add_library_member_functions(type_builder& project_manipulator);
+  type_builder add_executable_type();
+  void add_executable_member_functions(type_builder& project_manipulator);
+  type_builder add_project_type();
+  void add_project_member_functions(type_builder& project_manipulator);
+  type_builder add_option_type();
+  void add_option_member_functions(type_builder& project_manipulator);
 
   const sema_type& get_or_create_generic_type(
     const ast::type_representation& type_representation);
+
+  template <typename Functions>
+  void add_type_member_functions(type_builder& manipulator,
+                                 Functions&& functions);
 
 private:
   qualified_contextes_refs& m_qualified_ctxs;

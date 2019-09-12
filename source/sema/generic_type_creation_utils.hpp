@@ -42,6 +42,5 @@ private:
   const builtin_types_accessor& m_builtin_types;
   types_context& m_types_ctx;
 };
-
 }
 }

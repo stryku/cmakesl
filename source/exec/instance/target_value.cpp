@@ -15,15 +15,17 @@ std::string target_value::name() const
 }
 
 void target_value::link_to(facade::cmake_facade& cmake_facade,
+                           facade::visibility v,
                            const target_value& target) const
 {
-  cmake_facade.target_link_library(m_name, target.name());
+  cmake_facade.target_link_library(m_name, v, target.name());
 }
 
 void target_value::include_directories(facade::cmake_facade& cmake_facade,
+                                       facade::visibility v,
                                        const list_value& dirs) const
 {
   const auto dir_values = list_value_utils{ dirs }.strings();
-  cmake_facade.target_include_directories(m_name, dir_values);
+  cmake_facade.target_include_directories(m_name, v, dir_values);
 }
 }

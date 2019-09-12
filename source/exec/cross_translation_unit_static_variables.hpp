@@ -54,6 +54,5 @@ private:
   std::unordered_set<std::string> m_already_initialized_modules;
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>> m_variables;
 };
-
 }
 }

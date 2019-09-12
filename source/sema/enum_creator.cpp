@@ -74,5 +74,4 @@ const sema_type& enum_creator::create(
 
   return enum_type;
 }
-
 }

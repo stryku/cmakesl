@@ -114,6 +114,5 @@ private:
 private:
   const lexer::token& m_equal_token;
 };
-
 }
 }

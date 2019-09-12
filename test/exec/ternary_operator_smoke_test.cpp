@@ -40,5 +40,4 @@ TEST_F(TernaryOperatorSmokeTest, ReturnsReferences)
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
 }
-
 }

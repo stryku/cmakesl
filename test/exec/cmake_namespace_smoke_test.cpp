@@ -46,7 +46,7 @@ TEST_F(CmakeNamespaceSmokeTest, CmakeMinimumRequiredIsCallable)
 {
   const auto source = "int main()"
                       "{"
-                      "    cmake_minimum_required(version(0));"
+                      "    cmake::minimum_required(cmake::version(0));"
                       "    return 42;"
                       "}";
   const auto result = m_executor.execute(source);
@@ -113,7 +113,7 @@ TEST_F(CmakeNamespaceSmokeTest, InstallExecutable_CallsFacadeMethod)
 {
   const auto source = "int main()"
                       "{"
-                      "    project p = project(\"p\");"
+                      "    cmake::project p = cmake::project(\"p\");"
                       "    list<string> sources;"
                       "    auto exe = p.add_executable(\"exe\", sources);"
                       "    cmake::install(exe);"
@@ -130,7 +130,7 @@ TEST_F(CmakeNamespaceSmokeTest, InstallLibrary_CallsFacadeMethod)
 {
   const auto source = "int main()"
                       "{"
-                      "    project p = project(\"p\");"
+                      "    cmake::project p = cmake::project(\"p\");"
                       "    list<string> sources;"
                       "    auto lib = p.add_library(\"lib\", sources);"
                       "    cmake::install(lib);"
@@ -161,7 +161,7 @@ TEST_F(CmakeNamespaceSmokeTest, AddTest_CallsFacadeMethod)
 {
   const auto source = "int main()"
                       "{"
-                      "    project p = project(\"p\");"
+                      "    cmake::project p = cmake::project(\"p\");"
                       "    list<string> sources;"
                       "    auto exe = p.add_executable(\"exe\", sources);"
                       "    cmake::add_test(exe);"

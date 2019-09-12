@@ -1,11 +1,12 @@
 #include "instance_factory.hpp"
-#include <sema/builtin_types_accessor.hpp>
 
 #include "common/assert.hpp"
 #include "exec/instance/complex_unnamed_instance.hpp"
 #include "exec/instance/instance_reference.hpp"
 #include "exec/instance/simple_unnamed_instance.hpp"
+#include "sema/builtin_types_accessor.hpp"
 #include "sema/builtin_types_finder.hpp"
+#include "sema/cmake_namespace_types_accessor.hpp"
 #include "sema/sema_context.hpp"
 
 namespace cmsl::exec::inst {
@@ -30,13 +31,13 @@ std::unique_ptr<instance> instance_factory2::create(
         return builtin_types.string;
       }
       case instance_value_variant::which_t::library: {
-        return builtin_types.library;
+        return builtin_types.cmake->library;
       }
       case instance_value_variant::which_t::executable: {
-        return builtin_types.executable;
+        return builtin_types.cmake->executable;
       }
       case instance_value_variant::which_t::option: {
-        return builtin_types.option;
+        return builtin_types.cmake->option;
       }
       default:
         CMSL_UNREACHABLE("Unknown type requested");

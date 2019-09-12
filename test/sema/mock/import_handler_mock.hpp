@@ -12,5 +12,4 @@ public:
   MOCK_METHOD1(handle_import,
                std::unique_ptr<qualified_contextes>(cmsl::string_view));
 };
-
 }

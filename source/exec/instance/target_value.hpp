@@ -1,5 +1,7 @@
 #pragma once
 
+#include "visibility.hpp"
+
 #include <string>
 
 namespace cmsl {
@@ -17,11 +19,11 @@ public:
 
   std::string name() const;
 
-  void link_to(facade::cmake_facade& cmake_facade,
+  void link_to(facade::cmake_facade& cmake_facade, facade::visibility,
                const target_value& target) const;
 
   void include_directories(facade::cmake_facade& cmake_facade,
-                           const list_value& dirs) const;
+                           facade::visibility, const list_value& dirs) const;
 
 private:
   std::string m_name;

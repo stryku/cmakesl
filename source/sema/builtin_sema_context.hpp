@@ -73,16 +73,6 @@ private:
   void add_double_member_functions(type_builder& double_manipulator);
   type_builder add_string_type();
   void add_string_member_functions(type_builder& string_manipulator);
-  type_builder add_version_type();
-  void add_version_member_functions(type_builder& string_manipulator);
-  type_builder add_library_type();
-  void add_library_member_functions(type_builder& project_manipulator);
-  type_builder add_executable_type();
-  void add_executable_member_functions(type_builder& project_manipulator);
-  type_builder add_project_type();
-  void add_project_member_functions(type_builder& project_manipulator);
-  type_builder add_option_type();
-  void add_option_member_functions(type_builder& project_manipulator);
   type_builder add_void_type();
 
   template <unsigned N>

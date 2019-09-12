@@ -17,5 +17,4 @@ public:
 private:
   block_node& m_block_node;
 };
-
 }

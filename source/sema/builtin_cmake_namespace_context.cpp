@@ -15,6 +15,11 @@
 
 #include <generated/builtin_token_providers.hpp>
 
+namespace {
+const auto param_token =
+  cmsl::lexer::make_token(cmsl::lexer::token_type::identifier, "");
+}
+
 namespace cmsl::sema {
 
 builtin_cmake_namespace_context::builtin_cmake_namespace_context(
@@ -46,15 +51,20 @@ void builtin_cmake_namespace_context::add_functions()
 {
   const auto& string_type = m_builtin_types.string;
   const auto& void_type = m_builtin_types.void_;
-  const auto& executable_type = m_builtin_types.executable;
-  const auto& library_type = m_builtin_types.library;
+  const auto& executable_type = m_types_accessor->executable;
+  const auto& library_type = m_types_accessor->library;
+  const auto& version_type = m_types_accessor->version;
 
   const auto& token_provider = m_builtin_tokens.cmake();
 
-  const auto param_token =
-    lexer::make_token(lexer::token_type::identifier, "");
-
   const auto functions = {
+    builtin_function_info{
+      // void message(string)
+      void_type,
+      function_signature{
+        token_provider.minimum_required(),
+        { parameter_declaration{ version_type, param_token } } },
+      builtin_function_kind::cmake_minimum_required },
     builtin_function_info{
       // void message(string)
       void_type,
@@ -153,19 +163,51 @@ builtin_cmake_namespace_context::builtin_identifiers_info() const
 void builtin_cmake_namespace_context::add_types()
 {
   const auto& cxx_compiler_id_type = add_cxx_compiler_id_type();
+  const auto& visibility_type = add_visibility_type();
   auto cxx_compiler_info_manipulator =
     add_cxx_compiler_info_type(cxx_compiler_id_type);
+  auto version_manipulator = add_version_type();
+  auto library_manipulator = add_library_type();
+  auto executable_manipulator = add_executable_type();
+  auto project_manipulator = add_project_type();
+  auto option_manipulator = add_option_type();
 
   const auto& [cxx_compiler_info, cxx_compiler_info_ref] =
     cxx_compiler_info_manipulator.built_type();
+  const auto& [version, version_ref] = version_manipulator.built_type();
+  const auto& [library, library_ref] = library_manipulator.built_type();
+  const auto& [executable, executable_ref] =
+    executable_manipulator.built_type();
+  const auto& [project, project_ref] = project_manipulator.built_type();
+  const auto& [option, option_ref] = option_manipulator.built_type();
 
   cmake_namespace_types_accessor accessor{
-    cxx_compiler_id_type, *find_reference_for(cxx_compiler_id_type),
-    cxx_compiler_info, cxx_compiler_info_ref
+    .cxx_compiler_id = cxx_compiler_id_type,
+    .cxx_compiler_id_ref = *find_reference_for(cxx_compiler_id_type),
+    .cxx_compiler_info = cxx_compiler_info,
+    .cxx_compiler_info_ref = cxx_compiler_info_ref,
+    .visibility = visibility_type,
+    .visibility_ref = *find_reference_for(cxx_compiler_id_type),
+    .version = version,
+    .version_ref = version_ref,
+    .library = library,
+    .library_ref = library_ref,
+    .executable = executable,
+    .executable_ref = executable_ref,
+    .project = project,
+    .project_ref = project_ref,
+    .option = option,
+    .option_ref = option_ref
   };
 
   m_types_accessor =
     std::make_unique<cmake_namespace_types_accessor>(std::move(accessor));
+
+  add_version_member_functions(version_manipulator);
+  add_library_member_functions(library_manipulator);
+  add_executable_member_functions(executable_manipulator);
+  add_project_member_functions(project_manipulator);
+  add_option_member_functions(option_manipulator);
 }
 
 type_builder builtin_cmake_namespace_context::add_type(lexer::token name_token)
@@ -183,6 +225,40 @@ const sema_type& builtin_cmake_namespace_context::add_cxx_compiler_id_type()
   static const auto token = m_builtin_tokens.cmake().cxx_compiler_id_name();
   const std::vector<lexer::token> enumerators{
     m_builtin_tokens.cmake().cxx_compiler_id_clang()
+  };
+
+  enum_creator creator{ m_factories, m_qualified_ctxs.types, *this,
+                        m_builtin_types };
+
+  const auto& type =
+    creator.create(token, enumerators, sema_type::flags::builtin);
+
+  {
+    auto guard = m_qualified_ctxs.enums_ctx_guard(token, /*exported=*/false);
+
+    unsigned value{};
+
+    for (const auto& enumerator : enumerators) {
+      const auto enum_value_index = identifiers_index_provider::get_next();
+      const auto enum_value = value++;
+      m_qualified_ctxs.enums.register_identifier(
+        enumerator,
+        enum_values_context::enum_value_info{ type, enum_value,
+                                              enum_value_index },
+        /*exported=*/false);
+    }
+  }
+
+  return type;
+}
+
+const sema_type& builtin_cmake_namespace_context::add_visibility_type()
+{
+  static const auto token = m_builtin_tokens.cmake().visibility();
+  const std::vector<lexer::token> enumerators{
+    m_builtin_tokens.cmake().visibility_interface(),
+    m_builtin_tokens.cmake().visibility_private(),
+    m_builtin_tokens.cmake().visibility_public()
   };
 
   enum_creator creator{ m_factories, m_qualified_ctxs.types, *this,
@@ -231,9 +307,338 @@ type_builder builtin_cmake_namespace_context::add_cxx_compiler_info_type(
   builder.build_builtin_and_register_in_context();
   return builder;
 }
+
 const cmake_namespace_types_accessor&
 builtin_cmake_namespace_context::types_accessor() const
 {
   return *m_types_accessor;
+}
+
+type_builder builtin_cmake_namespace_context::add_version_type()
+{
+  static const auto token = m_builtin_tokens.version().name();
+  return add_type(token);
+}
+
+void builtin_cmake_namespace_context::add_version_member_functions(
+  type_builder& string_manipulator)
+{
+  const auto& int_type = m_builtin_types.int_;
+  const auto& bool_type = m_builtin_types.bool_;
+  const auto& string_type = m_builtin_types.string;
+  const auto& version_type = m_types_accessor->version;
+
+  const auto token_provider = m_builtin_tokens.version();
+
+  const auto functions = {
+    builtin_function_info{
+      // version(int major)
+      version_type,
+      function_signature{ token_provider.constructor_major(),
+                          { parameter_declaration{ int_type, param_token } } },
+      builtin_function_kind::version_ctor_major },
+    builtin_function_info{
+      // version(int major, int minor)
+      version_type,
+      function_signature{ token_provider.constructor_major_minor(),
+                          { parameter_declaration{ int_type, param_token },
+                            parameter_declaration{ int_type, param_token } } },
+      builtin_function_kind::version_ctor_major_minor },
+    builtin_function_info{
+      // version(int major, int minor, int patch)
+      version_type,
+      function_signature{ token_provider.constructor_major_minor_patch(),
+                          { parameter_declaration{ int_type, param_token },
+                            parameter_declaration{ int_type, param_token },
+                            parameter_declaration{ int_type, param_token } } },
+      builtin_function_kind::version_ctor_major_minor_patch },
+    builtin_function_info{
+      // version(int major, int minor, int patch, int tweak)
+      version_type,
+      function_signature{ token_provider.constructor_major_minor_patch_tweak(),
+                          { parameter_declaration{ int_type, param_token },
+                            parameter_declaration{ int_type, param_token },
+                            parameter_declaration{ int_type, param_token },
+                            parameter_declaration{ int_type, param_token } } },
+      builtin_function_kind::version_ctor_major_minor_patch_tweak },
+    builtin_function_info{
+      // bool operator==(version)
+      bool_type,
+      function_signature{
+        token_provider.operator_equal_equal(),
+        { parameter_declaration{ version_type, param_token } } },
+      builtin_function_kind::version_operator_equal_equal },
+    builtin_function_info{
+      // bool operator!=(version)
+      bool_type,
+      function_signature{
+        token_provider.operator_not_equal(),
+        { parameter_declaration{ version_type, param_token } } },
+      builtin_function_kind::version_operator_not_equal },
+    builtin_function_info{
+      // bool operator<(version)
+      bool_type,
+      function_signature{
+        token_provider.operator_less(),
+        { parameter_declaration{ version_type, param_token } } },
+      builtin_function_kind::version_operator_less },
+    builtin_function_info{
+      // bool operator<=(version)
+      bool_type,
+      function_signature{
+        token_provider.operator_less_equal(),
+        { parameter_declaration{ version_type, param_token } } },
+      builtin_function_kind::version_operator_less_equal },
+    builtin_function_info{
+      // bool operator>(version)
+      bool_type,
+      function_signature{
+        token_provider.operator_greater(),
+        { parameter_declaration{ version_type, param_token } } },
+      builtin_function_kind::version_operator_greater },
+    builtin_function_info{
+      // bool operator>=(version)
+      bool_type,
+      function_signature{
+        token_provider.operator_greater_equal(),
+        { parameter_declaration{ version_type, param_token } } },
+      builtin_function_kind::version_operator_greater_equal },
+    builtin_function_info{ // int major()
+                           int_type,
+                           function_signature{ token_provider.major_() },
+                           builtin_function_kind::version_major },
+    builtin_function_info{ // int minor()
+                           int_type,
+                           function_signature{ token_provider.minor_() },
+                           builtin_function_kind::version_minor },
+    builtin_function_info{ // int patch()
+                           int_type,
+                           function_signature{ token_provider.patch_() },
+                           builtin_function_kind::version_patch },
+    builtin_function_info{ // int tweak()
+                           int_type,
+                           function_signature{ token_provider.tweak_() },
+                           builtin_function_kind::version_tweak },
+    builtin_function_info{ // string to_string()
+                           string_type,
+                           function_signature{ token_provider.to_string() },
+                           builtin_function_kind::version_to_string }
+  };
+
+  add_type_member_functions(string_manipulator, functions);
+}
+
+type_builder builtin_cmake_namespace_context::add_library_type()
+{
+  static const auto token = m_builtin_tokens.library().name();
+  return add_type(token);
+}
+
+void builtin_cmake_namespace_context::add_library_member_functions(
+  type_builder& project_manipulator)
+{
+  const auto& string_type = m_builtin_types.string;
+  const auto& library_type = m_types_accessor->library;
+  const auto& void_type = m_builtin_types.void_;
+  const auto& directories_type = m_generics_creation_utils.list_of_strings();
+  const auto& visibility_type = m_types_accessor->visibility;
+
+  const auto token_provider = m_builtin_tokens.library();
+
+  const auto functions = {
+    builtin_function_info{ // string name()
+                           string_type,
+                           function_signature{ token_provider.method_name() },
+                           builtin_function_kind::library_name },
+    builtin_function_info{
+      // void link_to(library target)
+      void_type,
+      function_signature{
+        token_provider.link_to(),
+        { parameter_declaration{ library_type, param_token } } },
+      builtin_function_kind::library_link_to },
+    builtin_function_info{
+      // void link_to(library target, visibility v)
+      void_type,
+      function_signature{
+        token_provider.link_to(),
+        { parameter_declaration{ library_type, param_token },
+          parameter_declaration{ visibility_type, param_token } } },
+      builtin_function_kind::library_link_to_visibility },
+    builtin_function_info{
+      // void include_directories(list<string> dirs)
+      void_type,
+      function_signature{
+        token_provider.include_directories(),
+        { parameter_declaration{ directories_type, param_token } } },
+      builtin_function_kind::library_include_directories },
+    builtin_function_info{
+      // void include_directories(list<string> dirs, visibility v)
+      void_type,
+      function_signature{
+        token_provider.include_directories(),
+        { parameter_declaration{ directories_type, param_token },
+          parameter_declaration{ visibility_type, param_token } } },
+      builtin_function_kind::library_include_directories_visibility }
+  };
+
+  add_type_member_functions(project_manipulator, functions);
+}
+
+type_builder builtin_cmake_namespace_context::add_executable_type()
+{
+
+  static const auto token = m_builtin_tokens.executable().name();
+  return add_type(token);
+}
+
+void builtin_cmake_namespace_context::add_executable_member_functions(
+  type_builder& project_manipulator)
+{
+  const auto& string_type = m_builtin_types.string;
+  const auto& library_type = m_types_accessor->library;
+  const auto& void_type = m_builtin_types.void_;
+  const auto& directories_type = m_generics_creation_utils.list_of_strings();
+  const auto& visibility_type = m_types_accessor->visibility;
+
+  const auto token_provider = m_builtin_tokens.executable();
+
+  const auto functions = {
+    builtin_function_info{ // string name()
+                           string_type,
+                           function_signature{ token_provider.method_name() },
+                           builtin_function_kind::executable_name },
+    builtin_function_info{
+      // void link_to(target target)
+      void_type,
+      function_signature{
+        token_provider.link_to(),
+        { parameter_declaration{ library_type, param_token } } },
+      builtin_function_kind::executable_link_to },
+    builtin_function_info{
+      // void link_to(library target, visibility v)
+      void_type,
+      function_signature{
+        token_provider.link_to(),
+        { parameter_declaration{ library_type, param_token },
+          parameter_declaration{ visibility_type, param_token } } },
+      builtin_function_kind::executable_link_to_visibility },
+    builtin_function_info{
+      // void include_directories(list<string> dirs)
+      void_type,
+      function_signature{
+        token_provider.include_directories(),
+        { parameter_declaration{ directories_type, param_token } } },
+      builtin_function_kind::executable_include_directories },
+    builtin_function_info{
+      // void include_directories(list<string> dirs, visibility v)
+      void_type,
+      function_signature{
+        token_provider.include_directories(),
+        { parameter_declaration{ directories_type, param_token },
+          parameter_declaration{ visibility_type, param_token } } },
+      builtin_function_kind::executable_include_directories_visibility }
+  };
+
+  add_type_member_functions(project_manipulator, functions);
+}
+
+type_builder builtin_cmake_namespace_context::add_project_type()
+{
+  static const auto token = m_builtin_tokens.project().name();
+  return add_type(token);
+}
+
+void builtin_cmake_namespace_context::add_project_member_functions(
+  type_builder& project_manipulator)
+{
+  const auto& string_type = m_builtin_types.string;
+  const auto& project_type = m_types_accessor->project;
+  const auto& library_type = m_types_accessor->library;
+  const auto& executable_type = m_types_accessor->executable;
+
+  const auto token_provider = m_builtin_tokens.project();
+  const auto& sources_type = m_generics_creation_utils.list_of_strings();
+
+  const auto functions = {
+    builtin_function_info{
+      // project(string name)
+      project_type,
+      function_signature{
+        token_provider.name(),
+        { parameter_declaration{ string_type, param_token } } },
+      builtin_function_kind::project_ctor_name },
+    builtin_function_info{ // string name()
+                           string_type, function_signature{ param_token },
+                           builtin_function_kind::project_name },
+    builtin_function_info{
+      // executable add_executable(string name, list<string> sources)
+      executable_type,
+      function_signature{
+        token_provider.add_executable(),
+        { parameter_declaration{ string_type, param_token },
+          parameter_declaration{ sources_type, param_token } } },
+      builtin_function_kind::project_add_executable },
+    builtin_function_info{
+      // library add_library(string name, list<string> sources)
+      library_type,
+      function_signature{
+        token_provider.add_library(),
+        { parameter_declaration{ string_type, param_token },
+          parameter_declaration{ sources_type, param_token } } },
+      builtin_function_kind::project_add_library }
+  };
+
+  add_type_member_functions(project_manipulator, functions);
+}
+
+type_builder builtin_cmake_namespace_context::add_option_type()
+{
+  static const auto token = m_builtin_tokens.option().name();
+  return add_type(token);
+}
+
+void builtin_cmake_namespace_context::add_option_member_functions(
+  type_builder& project_manipulator)
+{
+  const auto& string_type = m_builtin_types.string;
+  const auto& bool_type = m_builtin_types.bool_;
+  const auto& option_type = m_types_accessor->option;
+
+  const auto token_provider = m_builtin_tokens.option();
+
+  const auto functions = {
+    builtin_function_info{
+      // option(string description)
+      option_type,
+      function_signature{
+        token_provider.constructor_description(),
+        { parameter_declaration{ string_type, param_token } } },
+      builtin_function_kind::option_ctor_description },
+    builtin_function_info{
+      // option(string description, bool value)
+      option_type,
+      function_signature{
+        token_provider.constructor_description_value(),
+        { parameter_declaration{ string_type, param_token },
+          parameter_declaration{ bool_type, param_token } } },
+      builtin_function_kind::option_ctor_description_value },
+    builtin_function_info{ // bool value()
+                           bool_type,
+                           function_signature{ token_provider.value() },
+                           builtin_function_kind::option_value }
+  };
+
+  add_type_member_functions(project_manipulator, functions);
+}
+
+template <typename Functions>
+void builtin_cmake_namespace_context::add_type_member_functions(
+  type_builder& manipulator, Functions&& functions)
+{
+  for (const auto& function : functions) {
+    manipulator.with_builtin_function(
+      function.return_type, std::move(function.signature), function.kind);
+  }
 }
 }

@@ -70,6 +70,5 @@ public:
 private:
   qualified_entries_finder<function_data> m_functions_finder;
 };
-
 }
 }

@@ -355,5 +355,4 @@ const auto values = testing::Values(
                    { token_type::identifier, token_type::coloncolon } });
 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Colon, values);
 }
-
 }

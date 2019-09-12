@@ -25,10 +25,12 @@ public:
                void(const std::string&, const std::vector<std::string>&));
   MOCK_METHOD2(add_library,
                void(const std::string&, const std::vector<std::string>&));
-  MOCK_METHOD2(target_link_library,
-               void(const std::string&, const std::string&));
-  MOCK_METHOD2(target_include_directories,
-               void(const std::string&, const std::vector<std::string>&));
+  MOCK_METHOD3(target_link_library,
+               void(const std::string&, facade::visibility,
+                    const std::string&));
+  MOCK_METHOD3(target_include_directories,
+               void(const std::string&, facade::visibility,
+                    const std::vector<std::string>&));
 
   MOCK_CONST_METHOD0(current_directory, std::string());
   MOCK_METHOD1(go_into_subdirectory, void(const std::string&));
