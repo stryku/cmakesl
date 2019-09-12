@@ -46,6 +46,8 @@ void builtin_cmake_namespace_context::add_functions()
 {
   const auto& string_type = m_builtin_types.string;
   const auto& void_type = m_builtin_types.void_;
+  const auto& executable_type = m_builtin_types.executable;
+  const auto& library_type = m_builtin_types.library;
 
   const auto& token_provider = m_builtin_tokens.cmake();
 
@@ -85,7 +87,21 @@ void builtin_cmake_namespace_context::add_functions()
       // cxx_compiler_info get_cxx_compiler_info()
       m_types_accessor->cxx_compiler_info,
       function_signature{ token_provider.get_cxx_compiler_info() },
-      builtin_function_kind::cmake_get_cxx_compiler_info }
+      builtin_function_kind::cmake_get_cxx_compiler_info },
+    builtin_function_info{
+      // void install(executable exe)
+      void_type,
+      function_signature{
+        token_provider.install_executable(),
+        { parameter_declaration{ executable_type, param_token } } },
+      builtin_function_kind::cmake_install_executable },
+    builtin_function_info{
+      // void install(library lib)
+      void_type,
+      function_signature{
+        token_provider.install_library(),
+        { parameter_declaration{ library_type, param_token } } },
+      builtin_function_kind::cmake_install_library }
   };
 
   auto factory = m_factories.function_factory();

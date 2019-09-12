@@ -62,4 +62,12 @@ class cxx_compiler_info
  * \return Information about cxx compiler that cmake is running for.
  */
 cxx_compiler_info get_cxx_compiler_info();
+
+/** \brief Adds the \p exe to installation rules.
+ */
+void install(executable exe);
+
+/** \brief Adds the \p lib to installation rules.
+ */
+void install(library lib);
 }
