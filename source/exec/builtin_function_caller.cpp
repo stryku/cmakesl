@@ -247,6 +247,8 @@ std::unique_ptr<inst::instance> builtin_function_caller::call(
     CASE_BUILTIN_FUNCTION_CALL(cmake_get_cxx_compiler_info);
     CASE_BUILTIN_FUNCTION_CALL(cmake_install_executable);
     CASE_BUILTIN_FUNCTION_CALL(cmake_install_library);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_enable_ctest);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_add_test);
 
     default:
       CMSL_UNREACHABLE("Calling unimplemented function");
@@ -1727,6 +1729,21 @@ inst::instance* builtin_function_caller::cmake_install_library(
 {
   const auto& [lib] = get_params<alternative_t::library>(params);
   m_cmake_facade.install(lib.name());
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::cmake_enable_ctest(
+  const builtin_function_caller::params_t&)
+{
+  m_cmake_facade.enable_ctest();
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::cmake_add_test(
+  const builtin_function_caller::params_t& params)
+{
+  const auto& [exe] = get_params<alternative_t::executable>(params);
+  m_cmake_facade.add_test(exe.name());
   return m_instances.create_void();
 }
 }

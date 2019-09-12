@@ -73,5 +73,8 @@ public:
   virtual std::string current_directory() const = 0;
   virtual void go_into_subdirectory(const std::string& dir) = 0;
   virtual void go_directory_up() = 0;
+
+  virtual void enable_ctest() const = 0;
+  virtual void add_test(const std::string& test_executable_name) = 0;
 };
 }

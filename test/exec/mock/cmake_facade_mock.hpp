@@ -33,5 +33,8 @@ public:
   MOCK_CONST_METHOD0(current_directory, std::string());
   MOCK_METHOD1(go_into_subdirectory, void(const std::string&));
   MOCK_METHOD0(go_directory_up, void());
+
+  MOCK_CONST_METHOD0(enable_ctest, void());
+  MOCK_METHOD1(add_test, void(const std::string&));
 };
 }
