@@ -117,11 +117,21 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
 
   for (auto function_declaration : members->functions) {
     m_.parsing_ctx.function_parsing_ctx.function = function_declaration.fun;
+    m_.parsing_ctx.function_parsing_ctx.return_nodes.clear();
     auto body = visit_child_node<block_node>(
       function_declaration.body_to_visit, class_context);
     m_.parsing_ctx.function_parsing_ctx.function = nullptr;
     if (!body) {
       return;
+    }
+
+    if (function_declaration.should_deduce_return_type) {
+      const auto return_type =
+        try_deduce_currently_parsed_function_return_type();
+      if (!return_type) {
+        return;
+      }
+      function_declaration.fun->set_return_type(*return_type);
     }
 
     function_declaration.fun->set_body(*body);
@@ -252,11 +262,10 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
     return nullptr;
   }
 
+  const auto chosen_function_return_type_not_known_yet =
+    chosen_function->try_return_type() == nullptr;
   if (chosen_function == m_.parsing_ctx.function_parsing_ctx.function) {
-    const auto function_has_auto_return_type =
-      m_.parsing_ctx.function_parsing_ctx.function->try_return_type() ==
-      nullptr;
-    if (function_has_auto_return_type) {
+    if (chosen_function_return_type_not_known_yet) {
       const auto source = node.name().source();
       const auto range = node.name().src_range();
       raise_error(
@@ -264,6 +273,15 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
         "recursively calling function with 'auto' return type is forbidden");
       return nullptr;
     }
+  }
+
+  if (chosen_function_return_type_not_known_yet) {
+    const auto source = node.name().source();
+    const auto range = node.name().src_range();
+    raise_error(source, range,
+                "using function with 'auto' return type before its definition "
+                "is forbidden");
+    return nullptr;
   }
 
   // Convert call parameter nodes if need, e.g. to a cast_to_reference_node, if
@@ -752,10 +770,15 @@ sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
   const ast::user_function_node& node, sema_context_impl& ctx)
 {
   const auto return_type_reference = node.return_type_representation();
-  auto return_type =
-    try_get_or_create_generic_type(ctx, return_type_reference);
-  if (!return_type) {
-    return {};
+  const auto should_deduce_return_type = return_type_reference.is_auto();
+
+  const sema_type* return_type{ nullptr };
+
+  if (!should_deduce_return_type) {
+    return_type = try_get_or_create_generic_type(ctx, return_type_reference);
+    if (!return_type) {
+      return {};
+    }
   }
 
   // Todo: parameters need to be in the same ids context as function body.
@@ -791,7 +814,8 @@ sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
                                                 is_exported);
   ctx.add_function(function);
 
-  return function_declaration{ node, &function, node.body() };
+  return function_declaration{ node, &function, node.body(),
+                               should_deduce_return_type };
 }
 
 std::optional<sema_builder_ast_visitor::class_members>
