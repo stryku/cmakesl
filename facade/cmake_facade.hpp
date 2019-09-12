@@ -76,5 +76,17 @@ public:
 
   virtual void enable_ctest() const = 0;
   virtual void add_test(const std::string& test_executable_name) = 0;
+
+  enum class cxx_compiler_id
+  {
+    clang
+  };
+
+  struct cxx_compiler_info
+  {
+    cxx_compiler_id id;
+  };
+
+  virtual cxx_compiler_info get_cxx_compiler_info() const = 0;
 };
 }

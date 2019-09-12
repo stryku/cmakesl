@@ -78,6 +78,11 @@ public:
   void enable_ctest() const override {}
   void add_test(const std::string& test_executable_name) override {}
 
+  cxx_compiler_info get_cxx_compiler_info() const override
+  {
+    return cxx_compiler_info{ cxx_compiler_id ::clang };
+  }
+
 private:
   std::stack<std::string> m_directory_stack;
   bool m_fatal_error_occured{ false };
