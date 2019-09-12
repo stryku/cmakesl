@@ -171,6 +171,7 @@ private:
     const ast::user_function_node& ast_function_node;
     user_sema_function* fun{ nullptr };
     const ast::block_node& body_to_visit;
+    bool should_deduce_return_type{ false };
   };
 
   struct class_members
