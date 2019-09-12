@@ -36,5 +36,7 @@ public:
 
   MOCK_CONST_METHOD0(enable_ctest, void());
   MOCK_METHOD1(add_test, void(const std::string&));
+
+  MOCK_CONST_METHOD0(get_cxx_compiler_info, cxx_compiler_info());
 };
 }

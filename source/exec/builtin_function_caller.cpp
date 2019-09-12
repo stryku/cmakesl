@@ -1712,7 +1712,15 @@ inst::instance* builtin_function_caller::cmake_get_cxx_compiler_info(
 {
   auto created_variable =
     m_instances.create(m_builtin_types.cmake->cxx_compiler_info);
-  // Todo: Gather from cmake_facade the compiler info and fill members.
+  auto id_member_info = created_variable->type().find_member("id");
+  auto id_member = created_variable->find_member(id_member_info->index);
+
+  const auto info = m_cmake_facade.get_cxx_compiler_info();
+
+  const auto enum_val =
+    inst::enum_constant_value{ static_cast<unsigned>(info.id) };
+  id_member->value_ref().set_enum_constant(enum_val);
+
   return created_variable;
 }
 
