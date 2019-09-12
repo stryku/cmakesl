@@ -14,6 +14,8 @@ enum class builtin_function_kind
   cmake_get_cxx_compiler_info,
   cmake_install_executable,
   cmake_install_library,
+  cmake_enable_ctest,
+  cmake_add_test,
 
   // Class methods:
 

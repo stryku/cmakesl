@@ -142,4 +142,35 @@ TEST_F(CmakeNamespaceSmokeTest, InstallLibrary_CallsFacadeMethod)
   const auto result = m_executor.execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(CmakeNamespaceSmokeTest, EnableCtest_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::enable_ctest();"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, enable_ctest());
+
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(CmakeNamespaceSmokeTest, AddTest_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    project p = project(\"p\");"
+                      "    list<string> sources;"
+                      "    auto exe = p.add_executable(\"exe\", sources);"
+                      "    cmake::add_test(exe);"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, add_test("exe"));
+
+  const auto result = m_executor.execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }

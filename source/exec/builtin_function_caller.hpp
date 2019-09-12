@@ -355,6 +355,8 @@ private:
   inst::instance* cmake_get_cxx_compiler_info(const params_t& params);
   inst::instance* cmake_install_executable(const params_t& params);
   inst::instance* cmake_install_library(const params_t& params);
+  inst::instance* cmake_enable_ctest(const params_t& params);
+  inst::instance* cmake_add_test(const params_t& params);
 
 private:
   int_t string_pos_to_int(std::string::size_type pos) const;

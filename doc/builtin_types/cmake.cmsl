@@ -70,4 +70,13 @@ void install(executable exe);
 /** \brief Adds the \p lib to installation rules.
  */
 void install(library lib);
+
+/** \brief Enables testing and ctest. Should be called in the root script.
+ */
+void enable_ctest();
+
+/** \brief Registers a test executable. Test name is the same as the \p exe
+ * name.
+ */
+void add_test(executable exe);
 }

@@ -276,7 +276,10 @@ GENERATION_INFO = {
             'get_cxx_compiler_info': ['cxx_compiler_info get_cxx_compiler_info();', 'cxx_compiler_info ', 'get_cxx_compiler_info'],
 
             'install_executable': ['void install(executable exe);', 'void ', 'install'],
-            'install_library': ['void install(library lib);', 'void ', 'install']
+            'install_library': ['void install(library lib);', 'void ', 'install'],
+
+            'enable_ctest': ['void enable_ctest();', 'void ', 'enable_ctest'],
+            'add_test': ['void add_test(executable exe);', 'void ', 'add_test']
         }
     }
 }
