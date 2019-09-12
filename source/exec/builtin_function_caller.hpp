@@ -318,11 +318,15 @@ private:
                                const params_t& params);
   inst::instance* library_link_to(inst::instance& instance,
                                   const params_t& params);
+  inst::instance* library_include_directories(inst::instance& instance,
+                                              const params_t& params);
 
   inst::instance* executable_name(inst::instance& instance,
                                   const params_t& params);
   inst::instance* executable_link_to(inst::instance& instance,
                                      const params_t& params);
+  inst::instance* executable_include_directories(inst::instance& instance,
+                                                 const params_t& params);
 
   inst::instance* enum_to_string(inst::instance& instance,
                                  const params_t& params);

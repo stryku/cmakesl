@@ -207,9 +207,11 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_name);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_link_to);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_include_directories);
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_name);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_link_to);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_include_directories);
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_to_string);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_operator_equal);
@@ -1570,6 +1572,15 @@ inst::instance* builtin_function_caller::library_link_to(
   return m_instances.create_void();
 }
 
+inst::instance* builtin_function_caller::library_include_directories(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [dirs] = get_params<alternative_t::list>(params);
+  const auto& lib = instance.value_cref().get_library_cref();
+  lib.include_directories(m_cmake_facade, dirs);
+  return m_instances.create_void();
+}
+
 inst::instance* builtin_function_caller::executable_name(
   inst::instance& instance, const builtin_function_caller::params_t&)
 {
@@ -1583,6 +1594,15 @@ inst::instance* builtin_function_caller::executable_link_to(
   const auto& target = instance.value_cref().get_executable_cref();
   const auto& [library] = get_params<alternative_t::library>(params);
   target.link_to(m_cmake_facade, library);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::executable_include_directories(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [dirs] = get_params<alternative_t::list>(params);
+  const auto& exe = instance.value_cref().get_executable_cref();
+  exe.include_directories(m_cmake_facade, dirs);
   return m_instances.create_void();
 }
 

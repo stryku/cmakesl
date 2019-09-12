@@ -57,6 +57,11 @@ public:
   {
   }
 
+  void target_include_directories(
+    const std::string& name, const std::vector<std::string>& sources) override
+  {
+  }
+
   std::string current_directory() const override
   {
     return m_directory_stack.top();

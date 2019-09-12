@@ -12,6 +12,7 @@ cmsl_add_test(
         designated_initializers_smoke_test.cpp
         double_type_smoke_test.cpp
         enum_smoke_test.cpp
+        executable_smoke_test.cpp
         expression_evaluation_visitor_test.cpp
         fatal_error_smoke_test.cpp
         for_loop_smoke_test.cpp
@@ -19,6 +20,7 @@ cmsl_add_test(
         if_else_smoke_test.cpp
         instance_value_variant_test.cpp
         int_type_smoke_test.cpp
+        library_smoke_test.cpp
         list_type_smoke_test.cpp
         namespaces_smoke_test.cpp
         option_smoke_test.cpp

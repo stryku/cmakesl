@@ -235,14 +235,16 @@ GENERATION_INFO = {
         'tokens': {
             'name': ['class library', 'class ', 'library', 'kw_library'],
             'method_name': ['string name();', 'string ', 'name'],
-            'link_to': ['void link_to(library lib);', 'void ', 'link_to']
+            'link_to': ['void link_to(library lib);', 'void ', 'link_to'],
+            'include_directories': ['void include_directories(list<string> dirs);', 'void ', 'include_directories']
         }
     },
     'executable': {
         'tokens': {
             'name': ['class executable', 'class ', 'executable', 'kw_executable'],
             'method_name': ['string name();', 'string ', 'name'],
-            'link_to': ['void link_to(library lib);', 'void ', 'link_to']
+            'link_to': ['void link_to(library lib);', 'void ', 'link_to'],
+            'include_directories': ['void include_directories(list<string> dirs);', 'void ', 'include_directories']
         }
     },
     'void': {
