@@ -40,6 +40,8 @@ set(EXEC_SOURCES
     instance/instances_holder_interface.hpp
     instance/list_value.cpp
     instance/list_value.hpp
+    instance/list_value_utils.cpp
+    instance/list_value_utils.hpp
     instance/option_value.cpp
     instance/option_value.hpp
     instance/project_value.cpp

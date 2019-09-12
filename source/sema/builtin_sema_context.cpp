@@ -978,6 +978,7 @@ void builtin_sema_context::add_library_member_functions(
   const auto& string_type = m_builtin_types->string;
   const auto& library_type = m_builtin_types->library;
   const auto& void_type = m_builtin_types->void_;
+  const auto& directories_type = m_generics_creation_utils->list_of_strings();
 
   const auto token_provider = m_builtin_token_provider.library();
 
@@ -992,7 +993,14 @@ void builtin_sema_context::add_library_member_functions(
       function_signature{
         token_provider.link_to(),
         { parameter_declaration{ library_type, make_id_token("") } } },
-      builtin_function_kind::library_link_to }
+      builtin_function_kind::library_link_to },
+    builtin_function_info{
+      // void include_directories(list<string> dirs)
+      void_type,
+      function_signature{
+        token_provider.include_directories(),
+        { parameter_declaration{ directories_type, make_id_token("") } } },
+      builtin_function_kind::library_include_directories }
   };
 
   add_type_member_functions(project_manipulator, functions);
@@ -1010,6 +1018,7 @@ void builtin_sema_context::add_executable_member_functions(
   const auto& string_type = m_builtin_types->string;
   const auto& library_type = m_builtin_types->library;
   const auto& void_type = m_builtin_types->void_;
+  const auto& directories_type = m_generics_creation_utils->list_of_strings();
 
   const auto token_provider = m_builtin_token_provider.executable();
 
@@ -1024,7 +1033,14 @@ void builtin_sema_context::add_executable_member_functions(
       function_signature{
         token_provider.link_to(),
         { parameter_declaration{ library_type, make_id_token("") } } },
-      builtin_function_kind::executable_link_to }
+      builtin_function_kind::executable_link_to },
+    builtin_function_info{
+      // void include_directories(list<string> dirs)
+      void_type,
+      function_signature{
+        token_provider.include_directories(),
+        { parameter_declaration{ directories_type, make_id_token("") } } },
+      builtin_function_kind::executable_include_directories }
   };
 
   add_type_member_functions(project_manipulator, functions);

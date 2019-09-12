@@ -60,10 +60,13 @@ public:
     const std::vector<std::string>&
       sources) = 0; // Todo: Change sources to vector of string_views
 
-  virtual void target_link_library(
+  virtual void target_link_library(const std::string& target_name,
+                                   const std::string& library_name) = 0;
+
+  virtual void target_include_directories(
     const std::string& target_name,
-    const std::string&
-      library_name) = 0; // Todo: Change sources to vector of string_views
+    const std::vector<std::string>&
+      dirs) = 0; // Todo: Change dirs to vector of string_views
 
   virtual std::string current_directory() const = 0;
   virtual void go_into_subdirectory(const std::string& dir) = 0;

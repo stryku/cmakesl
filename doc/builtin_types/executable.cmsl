@@ -17,4 +17,10 @@ public:
    * @param lib The library to be linked to.
    */
   void link_to(library lib);
+
+  /** @brief Adds dirs to the include path of the executable.
+   *
+   * @param dirs The paths to be added to the include path.
+   */
+  void include_directories(list<string> dirs);
 };
