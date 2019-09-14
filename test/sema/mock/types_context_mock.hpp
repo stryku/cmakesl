@@ -25,5 +25,4 @@ public:
                bool(const types_context& imported,
                     errors::errors_observer& errs));
 };
-
 }

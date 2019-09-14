@@ -10,6 +10,12 @@ namespace cmake {
  */
 list<string> module_path;
 
+/** \brief Checks whether scripts are run by a proper CMake version.
+ *
+ * \param v The minimum CMake version.
+ */
+void minimum_required(version v);
+
 /** \brief A message printing function.
  *
  * Prints \p msg to the standard output stream.
@@ -79,4 +85,15 @@ void enable_ctest();
  * name.
  */
 void add_test(executable exe);
+
+/** \brief Describes visibility.
+ *
+ * Used in e.g. library::link_to() and library::include_directories().
+ */
+enum visibility
+{
+  interface,
+  private,
+  public
+};
 }

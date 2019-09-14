@@ -170,5 +170,4 @@ bool is_unary_operator(token_type type)
                              token_type::_unary_operators_end, type);
 }
 }
-
 }

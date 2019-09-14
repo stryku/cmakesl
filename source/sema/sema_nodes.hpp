@@ -964,5 +964,4 @@ public:
 private:
   lexer::token m_file_path;
 };
-
 }

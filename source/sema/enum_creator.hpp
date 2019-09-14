@@ -33,6 +33,5 @@ private:
   sema_context& m_parent_ctx;
   const builtin_types_accessor& m_builtin_types;
 };
-
 }
 }

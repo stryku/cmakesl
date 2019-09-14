@@ -1,3 +1,4 @@
+namespace cmake {
 /** \brief The builtin library type.
  *
  * This class is a kind of an accessor. If you create a copy of it (e.g. by
@@ -24,3 +25,4 @@ public:
    */
   void include_directories(list<string> dirs);
 };
+}

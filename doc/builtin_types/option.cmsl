@@ -1,3 +1,4 @@
+namespace cmake {
 /** \brief The builtin option type.
  */
 class option
@@ -26,3 +27,4 @@ public:
    */
   bool value();
 };
+}

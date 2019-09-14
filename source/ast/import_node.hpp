@@ -20,5 +20,4 @@ private:
   token_t m_import;
   token_t m_file_path;
 };
-
 }

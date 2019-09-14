@@ -12,7 +12,7 @@ TEST_F(ProjectSmokeTest, ConstructorCallsFacadeMethod)
 {
   const auto source = "int main()"
                       "{"
-                      "    project p = project(\"foo\");"
+                      "    cmake::project p = cmake::project(\"foo\");"
                       "    return 42;"
                       "}";
 
@@ -26,7 +26,7 @@ TEST_F(ProjectSmokeTest, AddExecutableCallsFacadeMethod)
 {
   const auto source = "int main()"
                       "{"
-                      "    project p = project(\"foo\");"
+                      "    cmake::project p = cmake::project(\"foo\");"
                       "    list<string> sources = { \"main.cpp\" };"
                       "    p.add_executable(\"exe\", sources);"
                       "    return 42;"
@@ -45,7 +45,7 @@ TEST_F(ProjectSmokeTest, AddLibraryCallsFacadeMethod)
 {
   const auto source = "int main()"
                       "{"
-                      "    project p = project(\"foo\");"
+                      "    cmake::project p = cmake::project(\"foo\");"
                       "    list<string> sources = { \"lib.cpp\" };"
                       "    p.add_library(\"lib\", sources);"
                       "    return 42;"

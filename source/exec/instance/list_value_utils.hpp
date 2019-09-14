@@ -20,5 +20,4 @@ public:
 private:
   const list_value& m_list;
 };
-
 }

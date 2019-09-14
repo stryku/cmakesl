@@ -44,5 +44,4 @@ TEST_P(StringNotEndedBeforeEOF, NotifyError)
 const auto values = Values("\"", "abc\"", "\"abc", "\"abc\\\"", "\"abc''");
 INSTANTIATE_TEST_CASE_P(LexerErrorTest, StringNotEndedBeforeEOF, values);
 }
-
 }

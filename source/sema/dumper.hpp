@@ -104,5 +104,4 @@ private:
   std::ostream& m_out;
   static std::string m_ident;
 };
-
 }

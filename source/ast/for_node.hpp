@@ -45,5 +45,4 @@ private:
   token_t m_close_paren;
   std::unique_ptr<block_node> m_body;
 };
-
 }
