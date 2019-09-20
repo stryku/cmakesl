@@ -114,6 +114,8 @@ std::string to_string(lexer::token_type type)
       return "executable keyword";
     case lexer::token_type::kw_list:
       return "list keyword";
+    case lexer::token_type::kw_extern:
+      return "extern keyword";
     case lexer::token_type::kw_return:
       return "return keyword";
     case lexer::token_type::kw_class:

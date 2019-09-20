@@ -1,6 +1,7 @@
 #include "exec/builtin_function_caller.hpp"
 #include "builtin_function_caller.hpp"
 #include "common/assert.hpp"
+#include "exec/extern_argument_parser.hpp"
 #include "exec/instance/instance.hpp"
 #include "exec/instance/instances_holder.hpp"
 #include "exec/parameter_alternatives_getter.hpp"
@@ -162,6 +163,11 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_tweak);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_to_string);
 
+    // extern
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(extern_constructor_name);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(extern_has_value);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(extern_value);
+
     // list
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_ctor);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_ctor_list);
@@ -282,7 +288,7 @@ inst::instance* builtin_function_caller::int_operator_unary_minusminus(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto val = instance.value_ref().get_int();
-  instance.value_ref() = val - 1;
+  instance.value_ref().set_int(val - 1);
   return m_instances.create_reference(instance);
 }
 
@@ -290,7 +296,7 @@ inst::instance* builtin_function_caller::int_operator_equal(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::int_>(params);
-  instance.value_ref() = rhs;
+  instance.value_ref().set_int(rhs);
   return m_instances.create_reference(instance);
 }
 
@@ -329,7 +335,7 @@ inst::instance* builtin_function_caller::bool_operator_equal(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::bool_>(params);
-  instance.value_ref() = rhs;
+  instance.value_ref().set_bool(rhs);
   return m_instances.create_reference(instance);
 }
 
@@ -344,7 +350,7 @@ inst::instance* builtin_function_caller::int_ctor_int(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::int_>(params);
-  instance.value_ref() = rhs;
+  instance.value_ref().set_int(rhs);
   return &instance;
 }
 
@@ -360,7 +366,7 @@ inst::instance* builtin_function_caller::int_operator_unary_plusplus(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto val = instance.value_ref().get_int();
-  instance.value_ref() = int_t{ val + 1 };
+  instance.value_ref().set_int(int_t{ val + 1 });
   return m_instances.create_reference(instance);
 }
 
@@ -517,7 +523,7 @@ inst::instance* builtin_function_caller::int_ctor_double(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::double_>(params);
-  instance.value_ref() = static_cast<int_t>(param);
+  instance.value_ref().set_int(static_cast<int_t>(param));
   return &instance;
 }
 
@@ -525,7 +531,7 @@ inst::instance* builtin_function_caller::double_ctor_double(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::double_>(params);
-  instance.value_ref() = param;
+  instance.value_ref().set_double(param);
   return &instance;
 }
 
@@ -533,7 +539,7 @@ inst::instance* builtin_function_caller::double_ctor_int(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [param] = get_params<alternative_t::int_>(params);
-  instance.value_ref() = static_cast<double>(param);
+  instance.value_ref().set_double(static_cast<double>(param));
   return &instance;
 }
 
@@ -549,7 +555,7 @@ inst::instance* builtin_function_caller::double_operator_unary_plusplus(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto val = instance.value_ref().get_double();
-  instance.value_ref() = val + 1.0;
+  instance.value_ref().set_double(val + 1.0);
   return m_instances.create_reference(instance);
 }
 
@@ -572,7 +578,7 @@ inst::instance* builtin_function_caller::double_operator_unary_minusminus(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto val = instance.value_ref().get_double();
-  instance.value_ref() = val - 1.0;
+  instance.value_ref().set_double(val - 1.0);
   return m_instances.create_reference(instance);
 }
 
@@ -596,7 +602,7 @@ inst::instance* builtin_function_caller::double_operator_equal(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
   const auto& [rhs] = get_params<alternative_t::double_>(params);
-  instance.value_ref() = rhs;
+  instance.value_ref().set_double(rhs);
   return m_instances.create_reference(instance);
 }
 
@@ -1178,6 +1184,70 @@ inst::instance* builtin_function_caller::version_to_string(
 {
   const auto& ver = instance.value_cref().get_version_cref();
   return m_instances.create(ver.to_string());
+}
+
+inst::instance* builtin_function_caller::extern_constructor_name(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [name] = get_params<alternative_t ::string>(params);
+  const auto got_value = m_cmake_facade.try_get_extern_define(name);
+
+  std::unique_ptr<inst::instance> extern_instance;
+
+  if (got_value) {
+    extern_argument_parser parser;
+
+    const auto& ty =
+      static_cast<const sema::homogeneous_generic_type&>(instance.type());
+    const auto& expected_type = ty.value_type();
+    if (expected_type == m_builtin_types.bool_) {
+      const auto parsed = parser.try_bool(*got_value);
+      if (parsed) {
+        const auto created = m_instances.create(*parsed);
+        extern_instance = m_instances.gather_ownership(created);
+      }
+    } else if (expected_type == m_builtin_types.int_) {
+      const auto parsed = parser.try_int(*got_value);
+      if (parsed) {
+        const auto created = m_instances.create(*parsed);
+        extern_instance = m_instances.gather_ownership(created);
+      }
+    } else if (expected_type == m_builtin_types.double_) {
+      const auto parsed = parser.try_double(*got_value);
+      if (parsed) {
+        const auto created = m_instances.create(*parsed);
+        extern_instance = m_instances.gather_ownership(created);
+      }
+    } else if (expected_type == m_builtin_types.string) {
+      const auto parsed = parser.try_string(*got_value);
+      if (parsed) {
+        const auto created = m_instances.create(*parsed);
+        extern_instance = m_instances.gather_ownership(created);
+      }
+    }
+  }
+
+  instance.value_ref().set_extern(
+    inst::extern_value{ std::move(extern_instance) });
+  return &instance;
+}
+
+inst::instance* builtin_function_caller::extern_has_value(
+  inst::instance& instance, const builtin_function_caller::params_t&)
+{
+  const auto& extern_val = instance.value_cref().get_extern_cref();
+  const auto has_value = extern_val.has_value();
+  return m_instances.create(has_value);
+}
+
+inst::instance* builtin_function_caller::extern_value(
+  inst::instance& instance, const builtin_function_caller::params_t&)
+{
+  const auto& extern_val = instance.value_cref().get_extern_cref();
+  auto value_copy = extern_val.value_cref().copy();
+  auto ptr = value_copy.get();
+  m_instances.store(std::move(value_copy));
+  return ptr;
 }
 
 inst::instance* builtin_function_caller::list_ctor(

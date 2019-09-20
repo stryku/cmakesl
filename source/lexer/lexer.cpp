@@ -344,6 +344,7 @@ lexer::keyword_tokens_t lexer::create_keyword_tokens() const
   tokens["string"] = token_type::kw_string;
   tokens["version"] = token_type::kw_version;
   tokens["list"] = token_type::kw_list;
+  tokens["extern"] = token_type::kw_extern;
   tokens["library"] = token_type::kw_library;
   tokens["executable"] = token_type::kw_executable;
   tokens["project"] = token_type::kw_project;

@@ -278,6 +278,7 @@ const auto values =
                   PureKeywordState{ "string", token_type::kw_string },
                   PureKeywordState{ "version", token_type::kw_version },
                   PureKeywordState{ "list", token_type::kw_list },
+                  PureKeywordState{ "extern", token_type::kw_extern },
                   PureKeywordState{ "library", token_type::kw_library },
                   PureKeywordState{ "executable", token_type::kw_executable },
                   PureKeywordState{ "project", token_type::kw_project },

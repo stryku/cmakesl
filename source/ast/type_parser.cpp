@@ -79,7 +79,8 @@ bool type_parser::generic_type_starts() const
 
 bool type_parser::current_is_generic_type() const
 {
-  const auto generic_types = { token_type_t::kw_list };
+  const auto generic_types = { token_type_t::kw_list,
+                               token_type_t::kw_extern };
 
   return cmsl::contains(generic_types, curr_type());
 }
@@ -129,16 +130,7 @@ std::optional<ast::qualified_name> type_parser::eat_simple_type_name()
 
 bool type_parser::is_builtin_simple_type(token_type_t token_type) const
 {
-  const auto simple_types = {
-    token_type_t::kw_int,        token_type_t::kw_double,
-    token_type_t::kw_bool,       token_type_t::kw_string,
-    token_type_t::kw_version,    token_type_t::kw_list,
-    token_type_t::kw_library,    token_type_t::kw_project,
-    token_type_t::kw_executable, token_type_t::kw_auto,
-    token_type_t::kw_void,       token_type_t::kw_option
-  };
-
-  return cmsl::contains(simple_types, token_type);
+  return lexer::is_builtin_type(token_type);
 }
 
 std::optional<type_representation> type_parser::parse_type()

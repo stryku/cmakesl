@@ -4,6 +4,7 @@
 
 namespace cmsl::ast {
 class type_representation;
+
 struct type_parsing_result;
 
 class type_parser : public parser_utils
@@ -18,12 +19,17 @@ private:
   std::optional<token_t> eat_generic_type_token();
 
   std::optional<type_representation> parse_type();
+
   std::optional<type_representation> generic_type();
+
   std::optional<type_representation> simple_type();
+
   bool generic_type_starts() const;
 
   bool current_is_generic_type() const;
+
   bool is_builtin_simple_type(token_type_t token_type) const;
+
   std::optional<ast::qualified_name> eat_simple_type_name();
 
 private:

@@ -222,6 +222,14 @@ GENERATION_INFO = {
             'find_value_pos': ['int find(value_type value, int position);', 'int ', 'find']
         }
     },
+    'extern': {
+        'tokens': {
+            'name': ['class extern', 'class ', 'extern'],
+            'constructor_name': ['extern(string name);', '', 'extern'],
+            'has_value': ['bool has_value();', 'bool ', 'has_value'],
+            'value': ['ValueType value();', 'ValueType ', 'value'],
+        }
+    },
     'project': {
         'tokens': {
             'name': ['class project', 'class ', 'project', 'kw_project'],

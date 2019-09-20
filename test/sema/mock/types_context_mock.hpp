@@ -14,6 +14,9 @@ public:
   MOCK_CONST_METHOD1(
     find, const sema_type*(const std::vector<ast::name_with_coloncolon>&));
 
+  MOCK_CONST_METHOD1(find_generic,
+                     const sema_type*(const ast::type_representation&));
+
   MOCK_CONST_METHOD1(find_in_current_scope,
                      const sema_type*(const lexer::token& name));
 

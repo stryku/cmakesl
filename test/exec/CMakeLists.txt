@@ -13,6 +13,7 @@ cmsl_add_test(
         enum_smoke_test.cpp
         executable_smoke_test.cpp
         expression_evaluation_visitor_test.cpp
+        extern_type_smoke_test.cpp
         fatal_error_smoke_test.cpp
         for_loop_smoke_test.cpp
         function_smoke_test.cpp

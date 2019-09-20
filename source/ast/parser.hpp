@@ -93,6 +93,7 @@ private:
   bool current_is_function_call() const;
   bool current_is_fundamental_value() const;
   bool current_is_possibly_qualified_name() const;
+  bool current_is_generic_type_constructor_call() const;
   bool function_declaration_starts() const;
   bool declaration_starts() const;
 
@@ -103,6 +104,7 @@ private:
 
   std::unique_ptr<ast_node> fundamental_value();
   std::unique_ptr<ast_node> function_call();
+  std::unique_ptr<ast_node> parse_generic_type_constructor_call();
 
   std::optional<std::vector<std::unique_ptr<ast_node>>>
   comma_separated_expression_list(token_type_t valid_end_of_list_token);

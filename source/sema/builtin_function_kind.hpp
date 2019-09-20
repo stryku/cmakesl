@@ -125,6 +125,10 @@ enum class builtin_function_kind
   version_tweak,
   version_to_string,
 
+  extern_constructor_name,
+  extern_has_value,
+  extern_value,
+
   list_ctor,
   list_ctor_list,
   list_ctor_value,

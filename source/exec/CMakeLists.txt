@@ -12,6 +12,8 @@ set(EXEC_SOURCES
     execution_context.hpp
     expression_evaluation_context.hpp
     expression_evaluation_visitor.hpp
+    extern_argument_parser.cpp
+    extern_argument_parser.hpp
     function_caller.hpp
     global_executor.cpp
     global_executor.hpp
@@ -27,6 +29,8 @@ set(EXEC_SOURCES
     instance/complex_unnamed_instance.cpp
     instance/complex_unnamed_instance.hpp
     instance/enum_constant_value.hpp
+    instance/extern_value.cpp
+    instance/extern_value.hpp
     instance/instance.hpp
     instance/instance_factory.cpp
     instance/instance_factory.hpp

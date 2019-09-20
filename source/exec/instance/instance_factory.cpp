@@ -11,7 +11,7 @@
 
 namespace cmsl::exec::inst {
 std::unique_ptr<instance> instance_factory2::create(
-  instance_value_variant value,
+  instance_value_variant&& value,
   const sema::builtin_types_accessor& builtin_types) const
 {
   const auto type_getter = [&value,
@@ -45,7 +45,7 @@ std::unique_ptr<instance> instance_factory2::create(
   };
 
   const auto& type = type_getter();
-  return std::make_unique<simple_unnamed_instance>(type, value);
+  return std::make_unique<simple_unnamed_instance>(type, std::move(value));
 }
 
 std::unique_ptr<instance> instance_factory2::create_reference(
@@ -65,7 +65,7 @@ std::unique_ptr<instance> instance_factory2::create(
 }
 
 std::unique_ptr<instance> instance_factory2::create(
-  const sema::sema_type& type, instance_value_variant value) const
+  const sema::sema_type& type, instance_value_variant&& value) const
 {
   return std::make_unique<simple_unnamed_instance>(type, std::move(value));
 }

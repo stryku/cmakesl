@@ -119,6 +119,8 @@ public:
 private:
   function_lookup_result_t find_functions(
     const std::vector<ast::name_with_coloncolon>& names);
+  function_lookup_result_t find_generict_type_constructor_functions(
+    const ast::type_representation& name);
 
   const sema_type* try_get_or_create_generic_type(
     const sema_context& search_context, const ast::type_representation& name);

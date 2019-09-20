@@ -1,4 +1,5 @@
 #include "sema/builtin_token_provider.hpp"
+#include "builtin_token_provider.hpp"
 #include "generated/builtin_token_providers.hpp"
 
 namespace cmsl::sema {
@@ -23,6 +24,7 @@ void builtin_token_provider::initialize_documentation_paths()
   m_documentation_paths[provider_type::int_] = path_provider("int.cmsl");
   m_documentation_paths[provider_type::double_] = path_provider("double.cmsl");
   m_documentation_paths[provider_type::string] = path_provider("string.cmsl");
+  m_documentation_paths[provider_type::extern_] = path_provider("extern.cmsl");
   m_documentation_paths[provider_type::list] = path_provider("list.cmsl");
   m_documentation_paths[provider_type::executable] =
     path_provider("executable.cmsl");
@@ -107,5 +109,10 @@ option_tokens_provider builtin_token_provider::option() const
 cmake_tokens_provider builtin_token_provider::cmake() const
 {
   return cmake_tokens_provider{ get_path(provider_type::cmake) };
+}
+
+extern_tokens_provider builtin_token_provider::extern_() const
+{
+  return extern_tokens_provider{ get_path(provider_type::extern_) };
 }
 }

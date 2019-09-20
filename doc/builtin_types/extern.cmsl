@@ -1,0 +1,30 @@
+/** \brief The builtin generic extern type.
+ *
+ * Object of an extern type represents a value passed in the command line CMake
+ * invocation. \tparam ValueType can be one of: bool, int, double or string.
+ */
+template <typename ValueType>
+class extern
+
+{
+public:
+  /** \brief Default constructor.
+   *
+   * \param name Name of the argument passed in the CMake command line.
+   */
+  extern(string name);
+
+  /** \brief Check whether an argument has been passed in the CMake command
+   * line.
+   *
+   * \return true if argument has been passed, false otherwise.
+   */
+  bool has_value();
+
+  /** \brief Check whether an argument has been passed in the CMake command
+   * line.
+   *
+   * \return true if argument has been passed, false otherwise.
+   */
+  ValueType value();
+};

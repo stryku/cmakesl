@@ -20,7 +20,7 @@ namespace {
 template <unsigned N>
 cmsl::lexer::token make_id_token(const char (&tok)[N])
 {
-  return cmsl::lexer::make_token(cmsl::lexer::token_type ::identifier, tok);
+  return cmsl::lexer::make_token(cmsl::lexer::token_type::identifier, tok);
 }
 }
 
@@ -30,6 +30,7 @@ user_sema_function& sema_function_factory::create_user(
 {
   return create_impl<user_sema_function>(ctx, return_type, std::move(s));
 }
+
 builtin_sema_function& sema_function_factory::create_builtin(
   const sema_context& ctx, const sema_type& return_type, function_signature s,
   builtin_function_kind kind)
@@ -162,6 +163,9 @@ const sema_type* sema_generic_type_factory::create_generic(
   if (primary_name.str() == "list") {
     return create_list(name);
   }
+  if (primary_name.str() == "extern") {
+    return create_extern(name);
+  }
 
   CMSL_UNREACHABLE("Creating unknown generic type");
   return nullptr;
@@ -170,31 +174,8 @@ const sema_type* sema_generic_type_factory::create_generic(
 const sema_type* sema_generic_type_factory::create_list(
   const ast::type_representation& name)
 {
-  const auto generic_parameters_error_creator = [&name] {
-    errors::error err;
-    err.message = "list<> expects one generic parameter, got " +
-      std::to_string(name.nested_types().size());
-    err.range = name.src_range();
-    err.type = errors::error_type::error;
-    const auto source = name.generic_name().primary_name().source();
-    err.source_path = source.path();
-    const auto line_info =
-      source.line(name.generic_name().primary_name().src_range().begin.line);
-    err.line_start_pos = line_info.start_pos;
-    err.line_snippet = line_info.line;
-    return err;
-  };
-
-  const auto& nested_types = name.nested_types();
-  if (nested_types.empty()) {
-    const auto err = generic_parameters_error_creator();
-    m_errors_observer.notify_error(err);
-    return nullptr;
-  }
   constexpr auto list_generic_parameters{ 1u };
-  if (nested_types.size() > list_generic_parameters) {
-    const auto err = generic_parameters_error_creator();
-    m_errors_observer.notify_error(err);
+  if (!check_template_parameters_count(name, list_generic_parameters)) {
     return nullptr;
   }
 
@@ -210,10 +191,7 @@ const sema_type* sema_generic_type_factory::create_list(
                         list_name_representation };
   builder.build_homogeneous_generic_and_register_in_context(*value_type);
 
-  // At this point we know that list type is created and registered in context.
-  // We can safely dereference it.
-  const auto& list_type =
-    *m_generic_types_context.find_type(list_name_representation);
+  const auto& list_type = builder.built_type().ty;
   const auto& int_type = m_builtin_types.int_;
   const auto& void_type = m_builtin_types.void_;
   const auto& bool_type = m_builtin_types.bool_;
@@ -481,14 +459,135 @@ ast::type_representation
 sema_generic_type_factory::prepare_list_name_representation(
   const ast::type_representation& name) const
 {
-  const auto name_token = m_builtin_token_provider.list().name();
+  const auto primary_name = m_builtin_token_provider.list().name();
+
+  return prepare_generic_name_representation(name, primary_name);
+}
+
+ast::type_representation
+sema_generic_type_factory::prepare_generic_name_representation(
+  const ast::type_representation& name, const lexer::token& primary_name) const
+{
   auto tokens = name.tokens();
-  tokens.front() = name_token;
+  tokens.front() = primary_name;
   auto nested_types = name.nested_types();
 
   auto generic_name =
     ast::type_representation::generic_type_name{ std::move(tokens),
                                                  std::move(nested_types) };
   return ast::type_representation{ std::move(generic_name) };
+}
+
+const sema_type* sema_generic_type_factory::create_extern(
+  const ast::type_representation& name)
+{
+  constexpr auto expected_generic_params_count{ 1u };
+  if (!check_template_parameters_count(name, expected_generic_params_count)) {
+    return nullptr;
+  }
+
+  const auto& value_type_representation = name.nested_types().front();
+  const auto value_type =
+    try_get_or_create_value_type(value_type_representation);
+  if (!value_type) {
+    return nullptr;
+  }
+
+  const auto allowed_extern_value_types = {
+    std::cref(m_builtin_types.bool_), std::cref(m_builtin_types.int_),
+    std::cref(m_builtin_types.double_), std::cref(m_builtin_types.string)
+  };
+
+  const auto pred = [value_type](const auto& rhs) {
+    return *value_type == rhs.get();
+  };
+
+  if (!contains_if(allowed_extern_value_types, pred)) {
+    errors::error err;
+    err.message = "wrong generic type of an extern<>. Got '";
+    err.message += value_type->name().to_string();
+    err.message += "', expected 'bool', 'int', 'double' or 'string'";
+    err.range = value_type->name().src_range();
+    err.type = errors::error_type::error;
+    const auto source = name.generic_name().primary_name().source();
+    err.source_path = source.path();
+    const auto line_info =
+      source.line(name.generic_name().primary_name().src_range().begin.line);
+    err.line_start_pos = line_info.start_pos;
+    err.line_snippet = line_info.line;
+    m_errors_observer.notify_error(err);
+    return nullptr;
+  }
+
+  const auto name_representation = prepare_generic_name_representation(
+    name, m_builtin_token_provider.extern_().name());
+
+  type_builder builder{ m_factories, m_types_ctx, m_generic_types_context,
+                        name_representation };
+  builder.build_homogeneous_generic_and_register_in_context(*value_type);
+
+  const auto& extern_type = builder.built_type().ty;
+  const auto& bool_type = m_builtin_types.bool_;
+  const auto& string_type = m_builtin_types.string;
+
+  const auto token_provider = m_builtin_token_provider.extern_();
+
+  auto functions = {
+    // extern()
+    type_builder::builtin_function_info{
+      extern_type,
+      function_signature{
+        token_provider.constructor_name(),
+        { parameter_declaration{ string_type, make_id_token("") } } },
+      builtin_function_kind::extern_constructor_name },
+    // bool has_value()
+    type_builder::builtin_function_info{
+      bool_type, function_signature{ token_provider.has_value() },
+      builtin_function_kind::extern_has_value },
+    // T value()
+    type_builder::builtin_function_info{
+      *value_type, function_signature{ token_provider.value() },
+      builtin_function_kind::extern_value },
+  };
+
+  builder.with_builtin_functions(functions);
+
+  return &extern_type;
+}
+
+bool sema_generic_type_factory::check_template_parameters_count(
+  const ast::type_representation& name, unsigned expected_params_count)
+{
+  const auto generic_parameters_error_creator = [&name,
+                                                 expected_params_count] {
+    errors::error err;
+    err.message = name.primary_name_token().str();
+    err.message += "<> expects ";
+    err.message += std::to_string(expected_params_count);
+    const auto parameters_str =
+      expected_params_count == 1 ? "parameter" : "parameters";
+    err.message += "generic ";
+    err.message += parameters_str;
+    err.message += ", got ";
+    err.message += std::to_string(name.nested_types().size());
+    err.range = name.src_range();
+    err.type = errors::error_type::error;
+    const auto source = name.generic_name().primary_name().source();
+    err.source_path = source.path();
+    const auto line_info =
+      source.line(name.generic_name().primary_name().src_range().begin.line);
+    err.line_start_pos = line_info.start_pos;
+    err.line_snippet = line_info.line;
+    return err;
+  };
+
+  const auto& nested_types = name.nested_types();
+  if (nested_types.size() != expected_params_count) {
+    const auto err = generic_parameters_error_creator();
+    m_errors_observer.notify_error(err);
+    return false;
+  }
+
+  return true;
 }
 }

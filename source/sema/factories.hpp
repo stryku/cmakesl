@@ -59,6 +59,7 @@ public:
     : factory{ storage }
   {
   }
+
   ~sema_function_factory();
 
   user_sema_function& create_user(const sema_context& ctx,
@@ -78,6 +79,7 @@ public:
     : factory{ storage }
   {
   }
+
   ~sema_context_factory();
 
   sema_context_impl& create(
@@ -157,7 +159,18 @@ private:
 
   ast::type_representation prepare_list_name_representation(
     const ast::type_representation& name) const;
+
+  ast::type_representation prepare_generic_name_representation(
+    const ast::type_representation& name,
+    const lexer::token& primary_name) const;
+
   const sema_type* create_list(const ast::type_representation& name);
+
+  const sema_type* create_extern(const ast::type_representation& name);
+
+  // Todo: rename to check_generic_parameters_count
+  bool check_template_parameters_count(const ast::type_representation& name,
+                                       unsigned expected_params_count);
 
 private:
   sema_context& m_generic_types_context;

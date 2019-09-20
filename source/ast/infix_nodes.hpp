@@ -3,6 +3,7 @@
 #include "ast/ast_node.hpp"
 #include "ast/ast_node_visitor.hpp"
 #include "ast/qualified_name.hpp"
+#include "ast/type_representation.hpp"
 #include "lexer/token.hpp"
 
 #include <memory>
@@ -121,11 +122,34 @@ public:
                               token_t close_paren)
     : call_node{ names.back().name, open_paren, std::move(params),
                  close_paren }
-    , m_names{ std::move(names) }
+    , m_name_variant{ std::move(names) }
   {
   }
 
-  const std::vector<name_with_coloncolon>& names() const { return m_names; }
+  // Used in case of generic type constructor call
+  explicit function_call_node(type_representation generic_type_name,
+                              token_t open_paren, params_t params,
+                              token_t close_paren)
+    : call_node{ generic_type_name.primary_name_token(), open_paren,
+                 std::move(params), close_paren }
+    , m_name_variant{ std::move(generic_type_name) }
+  {
+  }
+
+  const std::vector<name_with_coloncolon>& names() const
+  {
+    return std::get<std::vector<name_with_coloncolon>>(m_name_variant);
+  }
+
+  const type_representation& generic_type_name() const
+  {
+    return std::get<type_representation>(m_name_variant);
+  }
+
+  bool is_generic_type_constructor_call() const
+  {
+    return std::holds_alternative<type_representation>(m_name_variant);
+  }
 
   void visit(ast_node_visitor& visitor) const override
   {
@@ -143,7 +167,8 @@ public:
   }
 
 private:
-  std::vector<name_with_coloncolon> m_names;
+  std::variant<std::vector<name_with_coloncolon>, type_representation>
+    m_name_variant;
 };
 
 class member_function_call_node : public call_node
