@@ -10,6 +10,7 @@ struct bool_tokens_provider;
 struct double_tokens_provider;
 struct executable_tokens_provider;
 struct library_tokens_provider;
+struct extern_tokens_provider;
 struct list_tokens_provider;
 struct project_tokens_provider;
 struct int_tokens_provider;
@@ -27,21 +28,37 @@ public:
   explicit builtin_token_provider(std::string builtin_documentation_path);
 
   builtin_token_provider(const builtin_token_provider&) = delete;
+
   builtin_token_provider& operator=(const builtin_token_provider&) = delete;
+
   builtin_token_provider(builtin_token_provider&&) = default;
+
   builtin_token_provider& operator=(builtin_token_provider&&) = default;
 
   bool_tokens_provider bool_() const;
+
   double_tokens_provider double_() const;
+
   executable_tokens_provider executable() const;
+
   library_tokens_provider library() const;
+
+  extern_tokens_provider extern_() const;
+
   list_tokens_provider list() const;
+
   project_tokens_provider project() const;
+
   int_tokens_provider int_() const;
+
   string_tokens_provider string() const;
+
   version_tokens_provider version() const;
+
   void_tokens_provider void_() const;
+
   option_tokens_provider option() const;
+
   cmake_tokens_provider cmake() const;
 
 private:
@@ -51,6 +68,7 @@ private:
     double_,
     executable,
     library,
+    extern_,
     list,
     project,
     option,

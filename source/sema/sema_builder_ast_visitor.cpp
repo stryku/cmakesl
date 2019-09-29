@@ -254,7 +254,9 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
     return nullptr;
   }
 
-  const auto function_lookup_result = find_functions(node.names());
+  const auto function_lookup_result = node.is_generic_type_constructor_call()
+    ? find_generict_type_constructor_functions(node.generic_type_name())
+    : find_functions(node.names());
   overload_resolution over_resolution{ m_.errors_observer, node.name() };
   const auto chosen_function =
     over_resolution.choose(function_lookup_result, *params);
@@ -295,8 +297,12 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
                                                   std::move(*params));
     } break;
     case sema_context::context_type::class_: {
-      const auto is_constructor = chosen_function->signature().name.str() ==
-        chosen_function->return_type().name().to_string();
+      const auto& name = chosen_function->return_type().name();
+      const auto& function_name =
+        name.is_generic() ? name.primary_name_token().str() : name.to_string();
+      const auto is_constructor =
+        chosen_function->signature().name.str() == function_name;
+
       if (is_constructor) {
         return std::make_unique<constructor_call_node>(
           node, chosen_function->return_type(), *chosen_function,
@@ -615,7 +621,9 @@ const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(
     return found_type;
   }
 
-  const auto proper_generic_token_types = { lexer::token_type::kw_list };
+  // Todo: introduce lexer::is_generic_type_token
+  const auto proper_generic_token_types = { lexer::token_type::kw_list,
+                                            lexer::token_type::kw_extern };
 
   const auto& primary_name = name.generic_name().primary_name();
   const auto is_proper_generic_type =
@@ -625,6 +633,10 @@ const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(
                 "'" + std::string{ primary_name.str() } +
                   "' is not a generic type.");
     return nullptr;
+  }
+
+  if (const auto found = m_.qualified_ctxs.types.find_generic(name)) {
+    return found;
   }
 
   auto factory = sema_generic_type_factory{
@@ -1368,6 +1380,17 @@ function_lookup_result_t sema_builder_ast_visitor::find_functions(
   }
 
   return result;
+}
+
+function_lookup_result_t
+sema_builder_ast_visitor::find_generict_type_constructor_functions(
+  const ast::type_representation& name)
+{
+  const auto ty = try_get_or_create_generic_type(m_.ctx, name);
+  if (!ty) {
+    return {};
+  }
+  return { ty->find_member_function(name.primary_name_token()) };
 }
 
 void sema_builder_ast_visitor::visit(const ast::unary_operator& node)

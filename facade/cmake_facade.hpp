@@ -2,6 +2,7 @@
 
 #include "visibility.hpp"
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -43,13 +44,9 @@ public:
   virtual version get_cmake_version() const = 0;
 
   virtual void message(const std::string& what) const = 0;
-
   virtual void warning(const std::string& what) const = 0;
-
   virtual void error(const std::string& what) const = 0;
-
   virtual void fatal_error(const std::string& what) = 0;
-
   virtual bool did_fatal_error_occure() const = 0;
 
   virtual void register_project(const std::string& name) = 0;
@@ -57,7 +54,6 @@ public:
   virtual void install(const std::string& target_name) = 0;
 
   virtual std::string get_current_binary_dir() const = 0;
-
   virtual std::string get_current_source_dir() const = 0;
 
   virtual void add_executable(
@@ -99,5 +95,8 @@ public:
   };
 
   virtual cxx_compiler_info get_cxx_compiler_info() const = 0;
+
+  virtual std::optional<std::string> try_get_extern_define(
+    const std::string& name) const = 0;
 };
 }

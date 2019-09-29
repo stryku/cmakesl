@@ -2,6 +2,7 @@
 
 #include "common/int_alias.hpp"
 #include "exec/instance/enum_constant_value.hpp"
+#include "exec/instance/extern_value.hpp"
 #include "exec/instance/instance_value_alternative.hpp"
 #include "exec/instance/list_value.hpp"
 #include "exec/instance/option_value.hpp"
@@ -21,27 +22,28 @@ class instance_value_variant
 private:
   using value_t =
     std::variant<bool, int_t, double, enum_constant_value, std::string,
-                 version_value, list_value, project_value, library_value,
-                 executable_value, option_value>;
+                 version_value, extern_value, list_value, project_value,
+                 library_value, executable_value, option_value>;
 
 public:
   using which_t = instance_value_alternative;
 
   explicit instance_value_variant();
 
+  instance_value_variant(instance_value_variant&&) = default;
+  instance_value_variant& operator=(instance_value_variant&&) = default;
+  instance_value_variant(const instance_value_variant&) = default;
+  instance_value_variant& operator=(const instance_value_variant&) = default;
+
   instance_value_variant(bool val);
-
   instance_value_variant(int_t val);
-
   instance_value_variant(double val);
   instance_value_variant(enum_constant_value val);
-
   // Prevent conversion from const char* to bool.
   instance_value_variant(const char* value);
   instance_value_variant(std::string val);
-
   instance_value_variant(version_value val);
-
+  instance_value_variant(extern_value val);
   instance_value_variant(list_value val);
   instance_value_variant(project_value val);
   instance_value_variant(library_value val);
@@ -69,6 +71,10 @@ public:
   const version_value& get_version_cref() const;
   version_value& get_version_ref();
   void set_version(version_value value);
+
+  const extern_value& get_extern_cref() const;
+  extern_value& get_extern_ref();
+  void set_extern(extern_value value);
 
   const list_value& get_list_cref() const;
   list_value& get_list_ref();

@@ -9,6 +9,7 @@ enum class instance_value_alternative
   enum_,
   string,
   version,
+  extern_,
   list,
   project,
   library,

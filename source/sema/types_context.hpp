@@ -2,6 +2,7 @@
 
 #include "sema/qualified_entries_finder.hpp"
 
+#include <ast/type_representation.hpp>
 #include <memory>
 
 namespace cmsl {
@@ -23,6 +24,9 @@ public:
   // Returns the non-reference type.
   virtual const sema_type* find(
     const std::vector<ast::name_with_coloncolon>& names) const = 0;
+
+  virtual const sema_type* find_generic(
+    const ast::type_representation& name) const = 0;
 
   virtual const sema_type* find_in_current_scope(
     const lexer::token& name) const = 0;
@@ -51,6 +55,9 @@ public:
 
   const sema_type* find(
     const std::vector<ast::name_with_coloncolon>& names) const override;
+
+  const sema_type* find_generic(
+    const ast::type_representation& name) const override;
 
   const sema_type* find_in_current_scope(
     const lexer::token& name) const override;

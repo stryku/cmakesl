@@ -12,8 +12,8 @@ simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type& type)
 {
 }
 
-simple_unnamed_instance::simple_unnamed_instance(const sema::sema_type& type,
-                                                 instance_value_variant value)
+simple_unnamed_instance::simple_unnamed_instance(
+  const sema::sema_type& type, instance_value_variant&& value)
   : m_sema_type{ type }
   , m_data{ std::move(value) }
 {
@@ -41,6 +41,8 @@ instance_value_variant simple_unnamed_instance::create_init_data() const
     return option_value{ "" };
   } else if (m_sema_type.is_enum()) {
     return enum_constant_value{};
+  } else if (starts_with(name, "extern")) {
+    return extern_value{ nullptr };
   }
 
   CMSL_UNREACHABLE("Unknown type");

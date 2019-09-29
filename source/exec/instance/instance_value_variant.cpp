@@ -45,6 +45,11 @@ instance_value_variant::instance_value_variant(version_value val)
 {
 }
 
+instance_value_variant::instance_value_variant(extern_value val)
+  : m_value{ std::move(val) }
+{
+}
+
 instance_value_variant::instance_value_variant(list_value val)
   : m_value{ val }
 {
@@ -157,6 +162,8 @@ void instance_value_variant::set_string(std::string value)
     case which_t::executable:                                                 \
       break;                                                                  \
     case which_t::option:                                                     \
+      break;                                                                  \
+    case which_t::extern_:                                                    \
       break;                                                                  \
   }                                                                           \
   CMSL_UNREACHABLE("Unknown alternative")
@@ -283,5 +290,20 @@ option_value& instance_value_variant::get_option_ref()
 void instance_value_variant::set_option(option_value value)
 {
   m_value = value;
+}
+
+const extern_value& instance_value_variant::get_extern_cref() const
+{
+  return std::get<extern_value>(m_value);
+}
+
+extern_value& instance_value_variant::get_extern_ref()
+{
+  return std::get<extern_value>(m_value);
+}
+
+void instance_value_variant::set_extern(extern_value value)
+{
+  m_value.emplace<extern_value>(std::move(value));
 }
 }

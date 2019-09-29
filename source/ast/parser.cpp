@@ -641,6 +641,19 @@ bool parser::current_is_possibly_qualified_name() const
     current_is(token_type_t::identifier);
 }
 
+bool parser::current_is_generic_type_constructor_call() const
+{
+  parse_errors_sink errs_sink;
+  type_parser p{ errs_sink, current_iterator(), end_iterator() };
+  const auto parsing_result = p.type();
+
+  if (!parsing_result.ty) {
+    return false;
+  }
+
+  return type_of_token_is(parsing_result.stopped_at, token_type_t::open_paren);
+}
+
 std::unique_ptr<ast_node> parser::fundamental_value()
 {
   const auto token = eat();
@@ -675,6 +688,8 @@ std::unique_ptr<ast_node> parser::parse_factor()
   }
   if (current_is_function_call()) {
     return function_call();
+  } else if (current_is_generic_type_constructor_call()) {
+    return parse_generic_type_constructor_call();
   } else if (current_is_fundamental_value()) {
     return fundamental_value();
   } else if (try_eat(token_type_t::open_paren)) {
@@ -755,8 +770,6 @@ parser::get_standalone_function_call_values()
     return std::nullopt;
   }
 
-  std::move(*params);
-
   return standalone_function_call_values{ params->open_paren,
                                           std::move(params->params),
                                           params->close_paren,
@@ -820,6 +833,27 @@ std::unique_ptr<ast_node> parser::function_call()
   return std::make_unique<function_call_node>(
     std::move(vals->names), vals->open_paren, std::move(vals->params),
     vals->close_paren);
+}
+
+std::unique_ptr<ast_node> parser::parse_generic_type_constructor_call()
+{
+  (void)try_eat(token_type_t::coloncolon);
+
+  auto ty = parse_type();
+  if (!ty) {
+    return nullptr;
+  }
+
+  auto params = parameter_list();
+  if (!params) {
+    return nullptr;
+  }
+
+  const auto open_paren = params->open_paren;
+  const auto close_paren = params->close_paren;
+
+  return std::make_unique<function_call_node>(
+    std::move(*ty), open_paren, std::move(params->params), close_paren);
 }
 
 bool parser::function_declaration_starts() const

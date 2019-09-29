@@ -31,7 +31,7 @@ const instance_value_variant& instance_reference::value_cref() const
 
 void instance_reference::assign(instance_value_variant val)
 {
-  m_instance.assign(val);
+  m_instance.assign(std::move(val));
 }
 
 void instance_reference::assign_member(unsigned index,

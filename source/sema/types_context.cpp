@@ -27,6 +27,24 @@ const sema_type* types_context_impl::find(
   }
 }
 
+const sema_type* types_context_impl::find_generic(
+  const ast::type_representation& name) const
+{
+  const auto found_entries =
+    m_types_finder.find_in_current_node(name.primary_name_token());
+  if (found_entries.empty()) {
+    return nullptr;
+  }
+
+  for (const auto& entry : found_entries) {
+    if (entry.entry.ty.name() == name) {
+      return &entry.entry.ty;
+    }
+  }
+
+  return nullptr;
+}
+
 const sema_type* types_context_impl::find_in_current_scope(
   const lexer::token& name) const
 {

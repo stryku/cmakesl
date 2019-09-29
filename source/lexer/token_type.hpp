@@ -78,10 +78,12 @@ enum class token_type
   kw_string,
   kw_version,
   kw_list,
+  kw_extern,
   kw_library,
   kw_executable,
   kw_project,
   kw_option,
+  kw_auto,
 
   _builtin_types_end,
 
@@ -91,7 +93,6 @@ enum class token_type
   kw_if,
   kw_else,
   kw_while,
-  kw_auto,
   kw_for,
   kw_break,
   kw_namespace,
@@ -102,6 +103,7 @@ enum class token_type
 };
 
 bool is_builtin_type(token_type type);
+
 bool is_unary_operator(token_type type);
 }
 
