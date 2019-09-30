@@ -11,8 +11,9 @@ public:
   MOCK_METHOD3(register_type,
                void(const lexer::token&, const sema_type&, bool));
 
-  MOCK_CONST_METHOD1(
-    find, const sema_type*(const std::vector<ast::name_with_coloncolon>&));
+  MOCK_CONST_METHOD1(find,
+                     std::optional<type_with_reference>(
+                       const std::vector<ast::name_with_coloncolon>&));
 
   MOCK_CONST_METHOD1(find_generic,
                      const sema_type*(const ast::type_representation&));

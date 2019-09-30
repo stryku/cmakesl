@@ -2,16 +2,15 @@
 #include "common/assert.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
-#include "factories.hpp"
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_sema_function.hpp"
 #include "sema/builtin_token_provider.hpp"
-#include "sema/builtin_types_finder.hpp"
 #include "sema/enum_type.hpp"
 #include "sema/homogeneous_generic_type.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
 #include "sema/type_builder.hpp"
+#include "sema/types_context.hpp"
 #include "sema/user_sema_function.hpp"
 
 #include <generated/builtin_token_providers.hpp>

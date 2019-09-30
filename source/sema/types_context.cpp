@@ -10,20 +10,22 @@ void types_context_impl::register_type(const lexer::token& name,
   m_types_finder.register_entry(name, type_data{ ty }, exported);
 }
 
-const sema_type* types_context_impl::find(
+std::optional<types_context::type_with_reference> types_context_impl::find(
   const std::vector<ast::name_with_coloncolon>& names) const
 {
   const auto found_entries = m_types_finder.find(names);
   if (found_entries.empty()) {
-    return nullptr;
+    return std::nullopt;
   }
 
   // At this point the only entries in the vector should be the type and its
   // reference. Return the type that is not the reference.
   if (!found_entries[0].entry.ty.is_reference()) {
-    return &found_entries[0].entry.ty;
+    return type_with_reference{ .ty = found_entries[0].entry.ty,
+                                .ref = found_entries[1].entry.ty };
   } else {
-    return &found_entries[1].entry.ty;
+    return type_with_reference{ .ty = found_entries[1].entry.ty,
+                                .ref = found_entries[0].entry.ty };
   }
 }
 
