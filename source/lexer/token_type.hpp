@@ -18,6 +18,7 @@ enum class token_type
   open_paren,
   close_paren,
   identifier,
+  comment,
 
   _operators_begin,
 

@@ -55,6 +55,7 @@ private:
   token_type get_arithmetical_token_type(char operator_char);
   token_type get_one_char_token_type(char c);
   token_type get_scope_operator();
+  token_type get_comment();
 
   void consume_integer();
   void consume_char();
@@ -67,6 +68,7 @@ private:
   bool is_arithmetical_operator(char c) const;
   bool is_one_char_token(char c) const;
   bool is_whitespace(char c) const;
+  bool comment_starts() const;
 
   char current() const;
   char next() const;
