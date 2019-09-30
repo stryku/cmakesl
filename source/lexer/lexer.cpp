@@ -23,8 +23,8 @@ std::vector<token> lexer::lex()
 
   while (!is_end()) {
     const auto t = get_next_token();
-
-    if (t.get_type() != token_type::undef) {
+    const auto type = t.get_type();
+    if (type != token_type::undef && type != token_type::comment) {
       tokens.push_back(t);
     }
   }
@@ -89,6 +89,9 @@ token_type lexer::get_next_token_type()
 
     consume_char();
     return token_type::colon;
+  }
+  if (comment_starts()) {
+    return get_comment();
   }
   if (curr == '=') {
     return get_equal_token_type();
@@ -320,6 +323,16 @@ bool lexer::is_whitespace(char c) const
   return chars.find(c) != cmsl::string_view::npos;
 }
 
+bool lexer::comment_starts() const
+{
+  if (!has_next()) {
+    return false;
+  }
+
+  const auto next_char = next();
+  return current() == '/' && (next_char == '/' || next_char == '*');
+}
+
 token_type lexer::get_one_char_token_type(char c)
 {
   const auto found = m_one_char_tokens.find(c);
@@ -374,5 +387,55 @@ token_type lexer::get_scope_operator()
   }
 
   return token_type::undef;
+}
+
+token_type lexer::get_comment()
+{
+  consume_char(); // Consume '/'
+
+  const auto is_one_line_comment = current() == '/';
+  consume_char(); // Consume '/' or '*'
+
+  auto last_char = '\0';
+  while (true) {
+    if (is_one_line_comment) {
+      if (is_end()) {
+        break;
+      }
+
+      const auto curr = current();
+      if (curr == '\n') {
+        consume_char();
+        break;
+      }
+    } else {
+      if (is_end()) {
+        const auto current_loc = m_source_loc.location();
+        errors::error err;
+        err.type = errors::error_type::error;
+        err.source_path = m_source.path();
+        err.range = source_range{ current_loc, current_loc };
+        err.message =
+          "Unexpected end of source in a middle of a multiline comment";
+
+        const auto line_info = m_source.line(current_loc.line);
+        err.line_snippet = line_info.line;
+        err.line_start_pos = line_info.start_pos;
+
+        m_err_observer.notify_error(std::move(err));
+        return token_type::undef;
+      }
+
+      if (last_char == '*' && current() == '/') {
+        consume_char();
+        break;
+      }
+    }
+
+    last_char = current();
+    consume_char();
+  }
+
+  return token_type::comment;
 }
 }

@@ -26,6 +26,8 @@ std::string to_string(lexer::token_type type)
       return ")";
     case lexer::token_type::identifier:
       return "identifier";
+    case lexer::token_type::comment:
+      return "comment";
     case lexer::token_type::equal:
       return "=";
     case lexer::token_type::equalequal:

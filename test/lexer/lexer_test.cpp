@@ -356,4 +356,50 @@ const auto values = testing::Values(
                    { token_type::identifier, token_type::coloncolon } });
 INSTANTIATE_TEST_CASE_P(Lexer, Lex_Colon, values);
 }
+
+namespace comments {
+struct Lex_Comment_State
+{
+  std::string source;
+  std::vector<token_type> expected_tokens;
+};
+
+struct Lex_Comment
+  : public testing::Test
+  , testing::WithParamInterface<Lex_Comment_State>
+{
+};
+
+TEST_P(Lex_Comment, TokensType)
+{
+  const auto state = GetParam();
+  auto lex = create_lexer(state.source);
+  const auto tokens = lex.lex();
+
+  ASSERT_THAT(tokens.size(), state.expected_tokens.size());
+
+  for (auto i = 0u; i < tokens.size(); ++i) {
+    EXPECT_THAT(tokens[i].get_type(), state.expected_tokens[i]);
+  }
+}
+
+const auto values = testing::Values(
+  Lex_Comment_State{ "//", {} }, Lex_Comment_State{ "//\n", {} },
+  Lex_Comment_State{ "////", {} },
+  Lex_Comment_State{ "// // 1 1.2 \"str\" false some.thing \n", {} },
+  Lex_Comment_State{ "// /*", {} }, Lex_Comment_State{ "// /*", {} },
+  Lex_Comment_State{ "42//", { token_type::integer } },
+  Lex_Comment_State{ "// \n 42", { token_type::integer } },
+  Lex_Comment_State{ "/**/", {} }, Lex_Comment_State{ "/* * /*/", {} },
+  Lex_Comment_State{ "/* // */", {} },
+  Lex_Comment_State{ "/* foo \n bar \n baz \n */", {} },
+  Lex_Comment_State{ "/**///", {} },
+  Lex_Comment_State{ "/**/42//", { token_type::integer } },
+  Lex_Comment_State{ "42/**/42",
+                     { token_type::integer, token_type::integer } },
+  Lex_Comment_State{
+    "foo./*\n\n\n*/bar",
+    { token_type::identifier, token_type::dot, token_type::identifier } });
+INSTANTIATE_TEST_CASE_P(Lexer, Lex_Comment, values);
+}
 }
