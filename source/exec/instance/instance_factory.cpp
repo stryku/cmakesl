@@ -5,7 +5,6 @@
 #include "exec/instance/instance_reference.hpp"
 #include "exec/instance/simple_unnamed_instance.hpp"
 #include "sema/builtin_types_accessor.hpp"
-#include "sema/builtin_types_finder.hpp"
 #include "sema/cmake_namespace_types_accessor.hpp"
 #include "sema/sema_context.hpp"
 

@@ -21,8 +21,13 @@ public:
   virtual void register_type(const lexer::token& name, const sema_type& ty,
                              bool exported) = 0;
 
-  // Returns the non-reference type.
-  virtual const sema_type* find(
+  // Todo: move to its own file and reuse
+  struct type_with_reference
+  {
+    const sema_type& ty;
+    const sema_type& ref;
+  };
+  virtual std::optional<type_with_reference> find(
     const std::vector<ast::name_with_coloncolon>& names) const = 0;
 
   virtual const sema_type* find_generic(
@@ -53,7 +58,7 @@ public:
   void register_type(const lexer::token& name, const sema_type& ty,
                      bool exported) override;
 
-  const sema_type* find(
+  std::optional<type_with_reference> find(
     const std::vector<ast::name_with_coloncolon>& names) const override;
 
   const sema_type* find_generic(

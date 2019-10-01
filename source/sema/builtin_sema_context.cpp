@@ -5,7 +5,6 @@
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_sema_function.hpp"
 #include "sema/builtin_token_provider.hpp"
-#include "sema/builtin_types_finder.hpp"
 #include "sema/factories.hpp"
 #include "sema/factories_provider.hpp"
 #include "sema/generic_type_creation_utils.hpp"

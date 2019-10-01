@@ -116,6 +116,10 @@ const sema::sema_function* global_executor::handle_add_subdirectory(
   auto contexts = m_builtin_qualified_contexts.clone();
   auto compiler = create_compiler(contexts);
   auto compiled = compiler.compile(*src_view);
+  if (!compiled) {
+    raise_unsuccessful_compilation_error(src_view->path());
+    return nullptr;
+  }
   const auto& sema_tree = compiled->sema_tree();
   m_sema_trees.emplace(src_view->path(), sema_tree);
 

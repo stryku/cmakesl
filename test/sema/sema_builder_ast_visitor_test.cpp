@@ -393,10 +393,16 @@ TEST_F(
 
   EXPECT_CALL(ids_ctx, register_identifier(_, _, _));
 
+  const auto expected_found_void =
+    types_context::type_with_reference{ m_void_type_data.ty,
+                                        m_void_type_data.ty };
+  const auto expected_found_int =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_void_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_void_type_data.ty));
+    .WillRepeatedly(Return(expected_found_void));
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_int));
 
   visitor.visit(*variable_node);
 
@@ -452,8 +458,11 @@ TEST_F(SemaBuilderAstVisitorTest,
   auto variable_node =
     create_standalone_variable_declaration_node(type_ref, name_token);
 
+  const auto expected_found_void =
+    types_context::type_with_reference{ m_void_type_data.ty,
+                                        m_void_type_data.ty };
   EXPECT_CALL(types_ctx, find(type_ref.qual_name().names()))
-    .WillRepeatedly(Return(&m_void_type_data.ty));
+    .WillRepeatedly(Return(expected_found_void));
 
   EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
 
@@ -513,8 +522,11 @@ TEST_F(
     ast::standalone_variable_declaration_node::initialization_values_t{
       tmp_token, std::move(initializaton_node) });
 
+  const auto expected_found_int =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_int));
 
   EXPECT_CALL(ids_ctx, register_identifier(_, _, _));
 
@@ -692,7 +704,7 @@ TEST_F(
     .WillRepeatedly(Return(&valid_type_data.ty));
 
   EXPECT_CALL(types_ctx, find(qualified_fun_name))
-    .WillRepeatedly(Return(nullptr));
+    .WillRepeatedly(Return(std::nullopt));
 
   EXPECT_CALL(function_mock, signature()).WillRepeatedly(ReturnRef(signature));
 
@@ -740,7 +752,7 @@ TEST_F(SemaBuilderAstVisitorTest,
     .WillRepeatedly(Return(nullptr));
 
   EXPECT_CALL(types_ctx, find(qualified_fun_name))
-    .WillRepeatedly(Return(nullptr));
+    .WillRepeatedly(Return(std::nullopt));
 
   EXPECT_CALL(function_mock, signature()).WillRepeatedly(ReturnRef(signature));
 
@@ -784,7 +796,7 @@ TEST_F(SemaBuilderAstVisitorTest,
     .WillOnce(Return(lookup_result));
 
   EXPECT_CALL(types_ctx, find(qualified_fun_name))
-    .WillRepeatedly(Return(nullptr));
+    .WillRepeatedly(Return(std::nullopt));
 
   EXPECT_CALL(function_mock, context()).WillRepeatedly(ReturnRef(ctx));
 
@@ -913,8 +925,11 @@ TEST_F(
   EXPECT_CALL(functions_ctx, find(qualified_fun_name))
     .WillOnce(Return(lookup_result));
 
+  const auto expected_found_type =
+    types_context::type_with_reference{ valid_type_data.ty,
+                                        valid_type_data.ty };
   EXPECT_CALL(types_ctx, find(qualified_fun_name))
-    .WillRepeatedly(Return(&valid_type_data.ty));
+    .WillRepeatedly(Return(expected_found_type));
 
   EXPECT_CALL(function_mock, context()).WillRepeatedly(ReturnRef(ctx));
 
@@ -1114,10 +1129,16 @@ TEST_F(SemaBuilderAstVisitorTest,
   auto node = create_user_function_node(m_int_type_data.representation,
                                         name_token, std::move(block));
 
+  const auto expected_found_void =
+    types_context::type_with_reference{ m_void_type_data.ty,
+                                        m_void_type_data.ty };
+  const auto expected_found_int =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_int));
   EXPECT_CALL(types_ctx, find(m_void_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_void_type_data.ty));
+    .WillRepeatedly(Return(expected_found_void));
 
   EXPECT_CALL(functions_ctx, find_in_current_scope(_))
     .WillRepeatedly(Return(nullptr));
@@ -1193,10 +1214,16 @@ TEST_F(SemaBuilderAstVisitorTest,
     create_user_function_node(m_int_type_data.representation, name_token,
                               std::move(block), std::move(params));
 
+  const auto expected_found_void =
+    types_context::type_with_reference{ m_void_type_data.ty,
+                                        m_void_type_data.ty };
+  const auto expected_found_int =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_int));
   EXPECT_CALL(types_ctx, find(m_void_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_void_type_data.ty));
+    .WillRepeatedly(Return(expected_found_void));
 
   EXPECT_CALL(functions_ctx, find_in_current_scope(_))
     .WillRepeatedly(Return(nullptr));
@@ -1239,8 +1266,11 @@ TEST_F(SemaBuilderAstVisitorTest,
   auto node = create_user_function_node(m_void_type_data.representation,
                                         name_token, std::move(block));
 
+  const auto expected_found_type =
+    types_context::type_with_reference{ m_void_type_data.ty,
+                                        m_void_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_void_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_void_type_data.ty));
+    .WillRepeatedly(Return(expected_found_type));
 
   EXPECT_CALL(functions_ctx, find_in_current_scope(_))
     .WillRepeatedly(Return(nullptr));
@@ -1293,8 +1323,11 @@ TEST_F(
   auto node = create_user_function_node(m_void_type_data.representation,
                                         name_token, std::move(block));
 
+  const auto expected_found_type =
+    types_context::type_with_reference{ m_void_type_data.ty,
+                                        m_void_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_void_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_void_type_data.ty));
+    .WillRepeatedly(Return(expected_found_type));
 
   EXPECT_CALL(functions_ctx, find_in_current_scope(_))
     .WillRepeatedly(Return(nullptr));
@@ -1402,10 +1435,16 @@ TEST_F(SemaBuilderAstVisitorTest,
   const auto class_type_name_ref =
     ast::type_representation{ class_name_token };
 
+  const auto expected_found_int =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
+  const auto expected_found_void =
+    types_context::type_with_reference{ m_void_type_data.ty,
+                                        m_void_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_int));
   EXPECT_CALL(types_ctx, find(m_void_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_void_type_data.ty));
+    .WillRepeatedly(Return(expected_found_void));
 
   EXPECT_CALL(ctx, add_type(_)).Times(2); // Type and reference
 
@@ -1467,10 +1506,16 @@ TEST_F(SemaBuilderAstVisitorTest,
   const auto class_type_name_ref =
     ast::type_representation{ class_name_token };
 
+  const auto expected_found_int =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
+  const auto expected_found_void =
+    types_context::type_with_reference{ m_void_type_data.ty,
+                                        m_void_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_int));
   EXPECT_CALL(types_ctx, find(m_void_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_void_type_data.ty));
+    .WillRepeatedly(Return(expected_found_void));
 
   EXPECT_CALL(ctx, add_type(_)).Times(2); // Type and reference
 
@@ -1543,10 +1588,16 @@ TEST_F(SemaBuilderAstVisitorTest,
   const auto class_type_name_ref =
     ast::type_representation{ class_name_token };
 
+  const auto expected_found_int =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
+  const auto expected_found_void =
+    types_context::type_with_reference{ m_void_type_data.ty,
+                                        m_void_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_int));
   EXPECT_CALL(types_ctx, find(m_void_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_void_type_data.ty));
+    .WillRepeatedly(Return(expected_found_void));
 
   EXPECT_CALL(ctx, add_type(_)).Times(2); // Type and reference
 
@@ -1889,8 +1940,11 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_TranslationUnit_GetTranslationUnitNode)
 
   ast::translation_unit_node node{ std::move(nodes) };
 
+  const auto expected_found_type =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_type));
 
   const auto class_type_name_ref =
     ast::type_representation{ class_name_token };
@@ -2070,11 +2124,14 @@ TEST_F(
   EXPECT_CALL(ctx, type())
     .WillRepeatedly(Return(sema_context::context_type::namespace_));
 
+  const auto expected_found_type =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_type));
 
   EXPECT_CALL(types_ctx, find(qualified_fun_name))
-    .WillRepeatedly(Return(nullptr));
+    .WillRepeatedly(Return(std::nullopt));
 
   const auto lookup_result = function_lookup_result_t{ { &function_mock } };
   EXPECT_CALL(functions_ctx, find(qualified_fun_name))
@@ -2183,10 +2240,16 @@ TEST_F(SemaBuilderAstVisitorTest,
     std::move(condition), token_question(), std::move(true_), token_colon(),
     std::move(false_));
 
+  const auto expected_found_bool =
+    types_context::type_with_reference{ m_bool_type_data.ty,
+                                        m_bool_type_data.ty };
+  const auto expected_found_int =
+    types_context::type_with_reference{ m_int_type_data.ty,
+                                        m_int_type_data.ty };
   EXPECT_CALL(types_ctx, find(m_int_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_int_type_data.ty));
+    .WillRepeatedly(Return(expected_found_int));
   EXPECT_CALL(types_ctx, find(m_bool_type_data.qualified_names))
-    .WillRepeatedly(Return(&m_bool_type_data.ty));
+    .WillRepeatedly(Return(expected_found_bool));
 
   EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
 

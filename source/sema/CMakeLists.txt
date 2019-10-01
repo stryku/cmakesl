@@ -28,7 +28,6 @@ set(SEMA_SOURCES
     builtin_token_provider.cpp
     builtin_token_provider.hpp
     builtin_types_accessor.hpp
-    builtin_types_finder.hpp
     cmake_namespace_types_accessor.hpp
     dumper.cpp
     dumper.hpp

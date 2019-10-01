@@ -24,7 +24,6 @@
 #include "sema/add_subdirectory_handler.hpp"
 #include "sema/block_node_manipulator.hpp"
 #include "sema/builtin_sema_function.hpp"
-#include "sema/builtin_types_finder.hpp"
 #include "sema/enum_creator.hpp"
 #include "sema/enum_values_context.hpp"
 #include "sema/factories.hpp"
@@ -605,20 +604,19 @@ const sema_type* sema_builder_ast_visitor::try_get_or_create_generic_type(
   const sema_context& search_context, const ast::type_representation& name)
 {
   if (!name.is_generic()) {
-    const auto found_type =
-      m_.qualified_ctxs.types.find(name.qual_name().names());
+    const auto found = m_.qualified_ctxs.types.find(name.qual_name().names());
 
-    if (!found_type) {
+    if (!found) {
       raise_error(name.source(), name.src_range(),
                   name.to_string() + " type not found.");
       return nullptr;
     }
 
     if (name.is_reference()) {
-      return search_context.find_reference_for(*found_type);
+      return &found->ref;
     }
 
-    return found_type;
+    return &found->ty;
   }
 
   // Todo: introduce lexer::is_generic_type_token
@@ -1373,7 +1371,7 @@ function_lookup_result_t sema_builder_ast_visitor::find_functions(
 {
   auto result = m_.qualified_ctxs.functions.find(names);
   if (const auto found_type = m_.qualified_ctxs.types.find(names)) {
-    const auto& type_ctx = found_type->context();
+    const auto& type_ctx = found_type->ty.context();
     const auto ctors = type_ctx.find_function_in_this_scope(names.back().name);
     result.front().insert(std::end(result.front()), std::cbegin(ctors),
                           std::cend(ctors));
