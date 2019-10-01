@@ -13,7 +13,7 @@ TEST_F(IntTypeSmokeTest, DefaultConstructor)
                       "    int i;"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -24,7 +24,7 @@ TEST_F(IntTypeSmokeTest, ExplicitDefaultConstructor)
                       "    int i = int();"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -35,7 +35,7 @@ TEST_F(IntTypeSmokeTest, ExplicitConstructorWithValue)
                       "    int i = int(42);"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -46,7 +46,7 @@ TEST_F(IntTypeSmokeTest, ValueInitialize)
                       "    int i = 42;"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -58,7 +58,7 @@ TEST_F(IntTypeSmokeTest, OperatorEqual)
                       "    i = 42;"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -68,7 +68,7 @@ TEST_F(IntTypeSmokeTest, OperatorPlus)
                       "{"
                       "    return 40 + 2;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -80,7 +80,7 @@ TEST_F(IntTypeSmokeTest, OperatorPlusPlus)
                       "    ++foo;"
                       "    return ++foo;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -90,7 +90,7 @@ TEST_F(IntTypeSmokeTest, OperatorMinus)
                       "{"
                       "    return 100 - 58;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -100,7 +100,7 @@ TEST_F(IntTypeSmokeTest, OperatorUnaryMinus)
                       "{"
                       "    return -42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-42));
 }
 
@@ -110,7 +110,7 @@ TEST_F(IntTypeSmokeTest, OperatorUnaryMinusAsFactor)
                       "{"
                       "    return 100 + -58;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -122,7 +122,7 @@ TEST_F(IntTypeSmokeTest, OperatorMinusMinus)
                       "    --foo;"
                       "    return --foo;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -132,7 +132,7 @@ TEST_F(IntTypeSmokeTest, OperatorStar)
                       "{"
                       "    return 11 * 4;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(44));
 }
 
@@ -142,7 +142,7 @@ TEST_F(IntTypeSmokeTest, OperatorSlash)
                       "{"
                       "    return 47 / 4;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(11));
 }
 
@@ -154,7 +154,7 @@ TEST_F(IntTypeSmokeTest, OperatorPlusEqual)
                       "    i += 2;"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -166,7 +166,7 @@ TEST_F(IntTypeSmokeTest, OperatorMinusEqual)
                       "    i -= 2;"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -178,7 +178,7 @@ TEST_F(IntTypeSmokeTest, OperatorStarEqual)
                       "    i *= 4;"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(44));
 }
 
@@ -190,7 +190,7 @@ TEST_F(IntTypeSmokeTest, OperatorSlashEqual)
                       "    i /= 4;"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(11));
 }
 
@@ -200,7 +200,7 @@ TEST_F(IntTypeSmokeTest, OperatorLess)
                       "{"
                       "    return int(44 < 55);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -210,7 +210,7 @@ TEST_F(IntTypeSmokeTest, OperatorLessEqual)
                       "{"
                       "    return int(44 <= 44);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -220,7 +220,7 @@ TEST_F(IntTypeSmokeTest, OperatorGreater)
                       "{"
                       "    return int(44 > 33);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -230,7 +230,7 @@ TEST_F(IntTypeSmokeTest, OperatorGreaterEqual)
                       "{"
                       "    return int(44 >= 44);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -240,7 +240,7 @@ TEST_F(IntTypeSmokeTest, OperatorEqualEqual)
                       "{"
                       "    return int(44 == 44);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 }

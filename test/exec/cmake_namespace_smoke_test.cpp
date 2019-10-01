@@ -13,7 +13,7 @@ TEST_F(CmakeNamespaceSmokeTest, ModulePath)
                       "{"
                       "    return cmake::module_path.size();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -25,7 +25,7 @@ TEST_F(CmakeNamespaceSmokeTest, CxxCompilerId)
     "    auto result = cmake::cxx_compiler_id::clang.to_string() == \"clang\";"
     "    return int(result);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -38,7 +38,7 @@ TEST_F(CmakeNamespaceSmokeTest, GetCxxCompilerInfo)
     "    auto is_clang = info.id == cmake::cxx_compiler_id::clang;"
     "    return int(is_clang);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -49,7 +49,7 @@ TEST_F(CmakeNamespaceSmokeTest, CmakeMinimumRequiredIsCallable)
                       "    cmake::minimum_required(cmake::version(0));"
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -63,7 +63,7 @@ TEST_F(CmakeNamespaceSmokeTest, Message_CallsFacadeMethod)
 
   EXPECT_CALL(m_facade, message("foo"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -77,7 +77,7 @@ TEST_F(CmakeNamespaceSmokeTest, Warning_CallsFacadeMethod)
 
   EXPECT_CALL(m_facade, warning("foo"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -91,7 +91,7 @@ TEST_F(CmakeNamespaceSmokeTest, Error_CallsFacadeMethod)
 
   EXPECT_CALL(m_facade, error("foo"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -105,7 +105,7 @@ TEST_F(CmakeNamespaceSmokeTest, FatalError_CallsFacadeMethod)
 
   EXPECT_CALL(m_facade, fatal_error("foo"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -122,7 +122,7 @@ TEST_F(CmakeNamespaceSmokeTest, InstallExecutable_CallsFacadeMethod)
 
   EXPECT_CALL(m_facade, install("exe"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -139,7 +139,7 @@ TEST_F(CmakeNamespaceSmokeTest, InstallLibrary_CallsFacadeMethod)
 
   EXPECT_CALL(m_facade, install("lib"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -153,7 +153,7 @@ TEST_F(CmakeNamespaceSmokeTest, EnableCtest_CallsFacadeMethod)
 
   EXPECT_CALL(m_facade, enable_ctest());
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -170,7 +170,7 @@ TEST_F(CmakeNamespaceSmokeTest, AddTest_CallsFacadeMethod)
 
   EXPECT_CALL(m_facade, add_test("exe"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

@@ -1371,6 +1371,11 @@ function_lookup_result_t sema_builder_ast_visitor::find_functions(
 {
   auto result = m_.qualified_ctxs.functions.find(names);
   if (const auto found_type = m_.qualified_ctxs.types.find(names)) {
+    // If no function was found, we still need to add constructor functions.
+    if (result.empty()) {
+      result.emplace_back();
+    }
+
     const auto& type_ctx = found_type->ty.context();
     const auto ctors = type_ctx.find_function_in_this_scope(names.back().name);
     result.front().insert(std::end(result.front()), std::cbegin(ctors),

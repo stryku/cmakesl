@@ -46,7 +46,7 @@ TEST_F(ReferenceTypeSmokeTest, BuiltinType)
     ""
     "    return int(result);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -94,7 +94,7 @@ TEST_F(ReferenceTypeSmokeTest, UserType)
     ""
     "    return int(result);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 }

@@ -15,7 +15,7 @@ TEST_F(EnumSmokeTest, EmptyEnum)
                       "{"
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -32,7 +32,7 @@ TEST_F(EnumSmokeTest, EnumWithEnumerators)
                       "{"
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -50,7 +50,7 @@ TEST_F(EnumSmokeTest, EnumCreation)
                       "    Foo foo;"
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -68,7 +68,7 @@ TEST_F(EnumSmokeTest, EnumAssignment)
                       "    Foo foo = Foo::bar;"
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -87,7 +87,7 @@ TEST_F(EnumSmokeTest, EnumReassignment)
                       "    foo = Foo::baz;"
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -107,7 +107,7 @@ TEST_F(EnumSmokeTest, AssignmentFromAnotherVariable)
                       "    foo = foo2;"
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -125,7 +125,7 @@ TEST_F(EnumSmokeTest, EqualToConstant)
                       "    Foo foo = Foo::bar;"
                       "    return int(foo == Foo::bar);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -144,7 +144,7 @@ TEST_F(EnumSmokeTest, EqualToAnotherVariable)
                       "    Foo foo2 = Foo::bar;"
                       "    return int(foo == foo2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -162,7 +162,7 @@ TEST_F(EnumSmokeTest, FailedEqualWithConstant)
                       "    Foo foo = Foo::bar;"
                       "    return int(foo == Foo::qux);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -181,7 +181,7 @@ TEST_F(EnumSmokeTest, FailedEqualWithAnotherVariable)
                       "    Foo foo2 = Foo::baz;"
                       "    return int(foo == foo2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -199,7 +199,7 @@ TEST_F(EnumSmokeTest, NotEqualToConstant)
                       "    Foo foo = Foo::bar;"
                       "    return int(foo != Foo::qux);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -218,7 +218,7 @@ TEST_F(EnumSmokeTest, NotEqualToAnotherVariable)
                       "    Foo foo2 = Foo::baz;"
                       "    return int(foo != foo2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -236,7 +236,7 @@ TEST_F(EnumSmokeTest, FailedNotEqualWithConstant)
                       "    Foo foo = Foo::bar;"
                       "    return int(foo != Foo::bar);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -255,7 +255,7 @@ TEST_F(EnumSmokeTest, FailedNotEqualWithAnotherVariable)
                       "    Foo foo2 = Foo::bar;"
                       "    return int(foo != foo2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -273,7 +273,7 @@ TEST_F(EnumSmokeTest, ConstantToString)
                       "    auto str = Foo::baz.to_string();"
                       "    return int(str == \"baz\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -292,7 +292,7 @@ TEST_F(EnumSmokeTest, ValueToString)
                       "    auto str = top.to_string();"
                       "    return int(str == \"qux\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 }

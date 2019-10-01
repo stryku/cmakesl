@@ -12,7 +12,7 @@ TEST_F(ListTypeSmokeTest, DefaultConstructor)
                       "    list<int> l;"
                       "    return 1;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -24,7 +24,7 @@ TEST_F(ListTypeSmokeTest, PushBackValue)
                       "    l.push_back(42);"
                       "    return int(l.size() == 1 && l.at(0) == 42);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -40,7 +40,7 @@ TEST_F(ListTypeSmokeTest, PushBackList)
     "    l2.push_back(l);"
     "    return int(l2.size() == 2 && l2.at(0) == 24 && l2.at(1) == 42);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -54,7 +54,7 @@ TEST_F(ListTypeSmokeTest, PushFrontValue)
     "    l.push_front(24);"
     "    return int(l.size() == 2 && l.at(0) == 24 && l.at(1) == 42);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -70,7 +70,7 @@ TEST_F(ListTypeSmokeTest, PushFrontList)
     "    l2.push_front(l);"
     "    return int(l2.size() == 2 && l2.at(0) == 42 && l2.at(1) == 24);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -84,7 +84,7 @@ TEST_F(ListTypeSmokeTest, PopBack)
                       "    l.pop_back();"
                       "    return int(l.size() == 1 && l.at(0) == 42);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -98,7 +98,7 @@ TEST_F(ListTypeSmokeTest, PopFront)
                       "    l.pop_front();"
                       "    return int(l.size() == 1 && l.at(0) == 24);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -111,7 +111,7 @@ TEST_F(ListTypeSmokeTest, Front)
                       "    l.push_back(24);"
                       "    return int(l.size() == 2 && l.front() == 42);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -124,7 +124,7 @@ TEST_F(ListTypeSmokeTest, Back)
                       "    l.push_back(24);"
                       "    return int(l.size() == 2 && l.back() == 24);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -138,7 +138,7 @@ TEST_F(ListTypeSmokeTest, InsertValue)
                       "    l.insert(1, 33);"
                       "    return int(l.size() == 3 && l.at(1) == 33);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -158,7 +158,7 @@ TEST_F(ListTypeSmokeTest, InsertList)
     "    l.insert(1, l2);"
     "    return int(l.size() == 4 && l.at(1) == 33 && l.at(2) == 35);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -174,7 +174,7 @@ TEST_F(ListTypeSmokeTest, Erase)
     "    l.erase(1);"
     "    return int(l.size() == 2 && l.at(0) == 24 && l.at(1) == 42);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -191,7 +191,7 @@ TEST_F(ListTypeSmokeTest, EraseCount)
     "    l.erase(1, 2);"
     "    return int(l.size() == 2 && l.at(0) == 24 && l.at(1) == 42);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -211,7 +211,7 @@ TEST_F(ListTypeSmokeTest, Remove)
     "    l.remove(33);"
     "    return int(l.size() == 2 && l.at(0) == 24 && l.at(1) == 42);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -234,7 +234,7 @@ TEST_F(ListTypeSmokeTest, RemoveCount)
                       "               && l.at(2) == 42"
                       "               && l.at(3) == 33);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -257,7 +257,7 @@ TEST_F(ListTypeSmokeTest, RemoveLastCount)
                       "               && l.at(2) == 33"
                       "               && l.at(3) == 42);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -272,7 +272,7 @@ TEST_F(ListTypeSmokeTest, Clear)
                       "    l.clear();"
                       "    return int(l.size() == 0);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -294,7 +294,7 @@ TEST_F(ListTypeSmokeTest, Resize)
                       "               && l2.size() == 1"
                       "               && l2.at(0) == 24);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -316,7 +316,7 @@ TEST_F(ListTypeSmokeTest, Sort)
                       "               && l.at(3) == 33"
                       "               && l.at(4) == 42);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -338,7 +338,7 @@ TEST_F(ListTypeSmokeTest, Reverse)
                       "               && l.at(3) == 24"
                       "               && l.at(4) == 24);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -355,7 +355,7 @@ TEST_F(ListTypeSmokeTest, Min)
                       "    int min_index = l.min();"
                       "    return int(min_index == 4);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -372,7 +372,7 @@ TEST_F(ListTypeSmokeTest, Max)
                       "    int max_index = l.max();"
                       "    return int(max_index == 2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -393,7 +393,7 @@ TEST_F(ListTypeSmokeTest, Sublist)
                       "               && l2.at(2) == 33"
                       "               && l2.at(3) == 11);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -412,7 +412,7 @@ TEST_F(ListTypeSmokeTest, SublistCount)
                       "               && l2.at(0) == 24"
                       "               && l2.at(1) == 42);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -425,7 +425,7 @@ TEST_F(ListTypeSmokeTest, Empty)
                       "    list<int> l2;"
                       "    return int(l.empty() == false && l2.empty());"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -445,7 +445,7 @@ TEST_F(ListTypeSmokeTest, Find)
                       "- 1));" // Todo: Change (0 - 1) to -1 when unary
                                // operators are implemented
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -463,7 +463,7 @@ TEST_F(ListTypeSmokeTest, FindPos)
                       "    int found_at = l.find(24, 2);"
                       "    return int(found_at == 4);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -474,7 +474,7 @@ TEST_F(ListTypeSmokeTest, Size)
                       "    list<int> l;"
                       "    return l.size();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -486,7 +486,7 @@ TEST_F(ListTypeSmokeTest, OperatorPlusValue)
                       "    list<int> l2 = l + 42;"
                       "    return int(l.size() == 0 && l2.size() == 1);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -498,7 +498,7 @@ TEST_F(ListTypeSmokeTest, OperatorPlusEqualValue)
                       "    l += 42;"
                       "    return l.size();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -516,7 +516,7 @@ TEST_F(ListTypeSmokeTest, OperatorPlusList)
                       "    list<int> l3  = l + l2;"
                       "    return int(l3.size() == 3);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -531,7 +531,7 @@ TEST_F(ListTypeSmokeTest, OperatorPlusEqualList)
                       "    l2 += l;"
                       "    return l2.size();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(2));
 }
 
@@ -547,7 +547,7 @@ TEST_F(ListTypeSmokeTest, At)
     "    l2 += l;"
     "    return int(l.at(0) == 42 && l2.at(0) == 24 && l2.at(1) == 42);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -567,7 +567,7 @@ TEST_F(ListTypeSmokeTest, InitializerList)
                       "               && l.at(4) == 5"
                       "               && l.at(5) == 6);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 }

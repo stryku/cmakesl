@@ -31,7 +31,7 @@ TEST_F(FunctionSmokeTest, Recursion)
                       "{"
                       "    return fib(9) + 8;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

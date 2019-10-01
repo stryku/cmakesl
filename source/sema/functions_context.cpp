@@ -26,6 +26,9 @@ function_lookup_result_t functions_context_impl::find(
   const std::vector<ast::name_with_coloncolon>& names) const
 {
   const auto found_entries = m_functions_finder.find(names);
+  if (found_entries.empty()) {
+    return {};
+  }
 
   single_scope_function_lookup_result_t results;
 

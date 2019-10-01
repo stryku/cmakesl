@@ -16,7 +16,7 @@ TEST_F(VoidTypeSmokeTest, EmptyVoidFunction)
                       "    foo();"
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -33,7 +33,7 @@ TEST_F(VoidTypeSmokeTest, FunctionReturningVoid)
                       "    foo( i );"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

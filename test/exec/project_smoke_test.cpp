@@ -18,7 +18,7 @@ TEST_F(ProjectSmokeTest, ConstructorCallsFacadeMethod)
 
   EXPECT_CALL(m_facade, register_project("foo"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -37,7 +37,7 @@ TEST_F(ProjectSmokeTest, AddExecutableCallsFacadeMethod)
   std::vector<std::string> expected_sources = { "foo/main.cpp" };
   EXPECT_CALL(m_facade, add_executable("exe", expected_sources));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -56,7 +56,7 @@ TEST_F(ProjectSmokeTest, AddLibraryCallsFacadeMethod)
   std::vector<std::string> expected_sources = { "foo/lib.cpp" };
   EXPECT_CALL(m_facade, add_library("lib", expected_sources));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

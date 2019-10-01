@@ -14,7 +14,7 @@ TEST_F(AutoTypeSmokeTest,
                       "    auto val = 42;"
                       "    return val;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -25,7 +25,7 @@ TEST_F(AutoTypeSmokeTest, VariableDeclarationDeduction_FromBinaryOperator)
                       "    auto val = 20 + 22;"
                       "    return val;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -41,7 +41,7 @@ TEST_F(AutoTypeSmokeTest, VariableDeclarationDeduction_FromFunctionReturn)
                       "    auto val = foo();"
                       "    return val;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -57,7 +57,7 @@ TEST_F(AutoTypeSmokeTest, FunctionReturnTypeDeduction_FromSimpleValue)
                       "    int val = foo();"
                       "    return val;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -78,7 +78,7 @@ TEST_F(AutoTypeSmokeTest, FunctionReturnTypeDeduction_FromFunctionReturn)
                       "    int val = bar();"
                       "    return val;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -107,7 +107,7 @@ TEST_F(AutoTypeSmokeTest,
                       "    int val = bar(true);"
                       "    return val;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -125,7 +125,7 @@ TEST_F(
                       "    auto val = foo();"
                       "    return val;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

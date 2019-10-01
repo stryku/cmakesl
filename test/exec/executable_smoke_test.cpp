@@ -20,7 +20,7 @@ TEST_F(ExecutableSmokeTest, NameReturnsProperName)
     "    return int(name == \"some name\");"
     "}";
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -44,7 +44,7 @@ TEST_F(ExecutableSmokeTest, LinkToCallsFacadeMethod)
     m_facade,
     target_link_library("exe", facade::visibility::private_, "some name"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -68,7 +68,7 @@ TEST_F(ExecutableSmokeTest, LinkToWithVisibilityCallsFacadeMethod)
     m_facade,
     target_link_library("exe", facade::visibility::interface, "some name"));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -91,7 +91,7 @@ TEST_F(ExecutableSmokeTest, IncludeDirectoriesCallsFacadeMethod)
               target_include_directories("exe", facade::visibility::private_,
                                          expected_dirs));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -114,7 +114,7 @@ TEST_F(ExecutableSmokeTest, IncludeDirectoriesWithVisibilityCallsFacadeMethod)
               target_include_directories("exe", facade::visibility::interface,
                                          expected_dirs));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

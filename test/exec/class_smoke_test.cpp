@@ -17,7 +17,7 @@ TEST_F(ClassSmokeTest, EmptyClass)
                       "    Foo foo;"
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -34,7 +34,7 @@ TEST_F(ClassSmokeTest, MemberAssignment)
                       "    foo.bar = 42;"
                       "    return foo.bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -59,7 +59,7 @@ TEST_F(ClassSmokeTest, ComplexMemberAssignment)
                       "    baz.foo = foo;"
                       "    return baz.foo.bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -82,7 +82,7 @@ TEST_F(ClassSmokeTest, MemberFunctionReturnTypeDeduction)
                       "    Foo foo;"
                       "    return foo.bar();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -107,7 +107,7 @@ TEST_F(ClassSmokeTest,
                       "    Foo foo;"
                       "    return foo.baz();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

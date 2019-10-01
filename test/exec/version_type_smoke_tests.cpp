@@ -13,7 +13,7 @@ TEST_F(VersionTypeSmokeTest, ConstructorMajor)
                       "    return int(v.major() == 1 && v.minor() == 0 && "
                       "v.patch() == 0 && v.tweak() == 0);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -25,7 +25,7 @@ TEST_F(VersionTypeSmokeTest, ConstructorMajorMinor)
                       "    return int(v.major() == 1 && v.minor() == 2 && "
                       "v.patch() == 0 && v.tweak() == 0);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -37,7 +37,7 @@ TEST_F(VersionTypeSmokeTest, ConstructorMajorMinorPatch)
                       "    return int(v.major() == 1 && v.minor() == 2 && "
                       "               v.patch() == 3 && v.tweak() == 0);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -49,7 +49,7 @@ TEST_F(VersionTypeSmokeTest, ConstructorMajorMinorPatchTweak)
                       "    return int(v.major() == 1 && v.minor() == 2 && "
                       "               v.patch() == 3 && v.tweak() == 4);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -69,7 +69,7 @@ TEST_F(VersionTypeSmokeTest, OperatorEqualEqualAndNotEqual)
                       "               v != v5 &&"
                       "               v != v6);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -89,7 +89,7 @@ TEST_F(VersionTypeSmokeTest, OperatorLess)
     "    cmake::version v8 = cmake::version(1, 2, 3, 5);"
     "    return int(v < v5 && v2 < v6 && v3 < v7 && v4 < v8);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -112,7 +112,7 @@ TEST_F(VersionTypeSmokeTest, OperatorLessEqual)
                       "    return int(v <= v5 && v2 <= v6 && v3 <= v7 && v4 "
                       "<= v8 && v9 <= v10);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -132,7 +132,7 @@ TEST_F(VersionTypeSmokeTest, OperatorGreater)
     "    cmake::version v8 = cmake::version(1, 2, 3, 5);"
     "    return int(v5 > v && v6 > v2 && v7 > v3 && v8 > v4);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -155,7 +155,7 @@ TEST_F(VersionTypeSmokeTest, OperatorGreaterEqual)
                       "    return int(v5 >= v && v6 >= v2 && v7 >= v3 && v8 "
                       ">= v4 && v10 >= v9);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -166,7 +166,7 @@ TEST_F(VersionTypeSmokeTest, ToString)
                       "    cmake::version v = cmake::version(1, 2, 3, 4);"
                       "    return int(v.to_string() == \"1.2.3.4\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 }

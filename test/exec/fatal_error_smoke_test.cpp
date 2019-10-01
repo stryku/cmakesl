@@ -17,7 +17,7 @@ TEST_F(FatalErrorSmokeTest, StandaloneCall_MainReturnsMinusOne)
 
   EXPECT_CALL(m_facade, did_fatal_error_occure()).WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 
@@ -35,7 +35,7 @@ TEST_F(FatalErrorSmokeTest, ErroInFunction_MainReturnsMinusOne)
 
   EXPECT_CALL(m_facade, did_fatal_error_occure()).WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 
@@ -53,7 +53,7 @@ TEST_F(FatalErrorSmokeTest, ErroInBinaryOperator_MainReturnsMinusOne)
 
   EXPECT_CALL(m_facade, did_fatal_error_occure()).WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 
@@ -74,7 +74,7 @@ TEST_F(FatalErrorSmokeTest, ErroInFunctionCallParameter_MainReturnsMinusOne)
 
   EXPECT_CALL(m_facade, did_fatal_error_occure()).WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 
@@ -98,7 +98,7 @@ TEST_F(FatalErrorSmokeTest,
     .WillOnce(Return(false))
     .WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 
@@ -116,7 +116,7 @@ TEST_F(FatalErrorSmokeTest, ErroInLhsOfMemberFunctionCall_MainReturnsMinusOne)
 
   EXPECT_CALL(m_facade, did_fatal_error_occure()).WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 
@@ -139,7 +139,7 @@ TEST_F(FatalErrorSmokeTest, ErroInLhsOfClassMemberAccess_MainReturnsMinusOne)
 
   EXPECT_CALL(m_facade, did_fatal_error_occure()).WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 
@@ -159,7 +159,7 @@ TEST_F(FatalErrorSmokeTest, ErroInInitializerList_MainReturnsMinusOne)
     .WillOnce(Return(false))
     .WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 
@@ -177,7 +177,7 @@ TEST_F(FatalErrorSmokeTest, ErroInTernaryOperatorCondition_MainReturnsMinusOne)
 
   EXPECT_CALL(m_facade, did_fatal_error_occure()).WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 
@@ -200,7 +200,7 @@ TEST_F(FatalErrorSmokeTest, ErroInDesignatedInitializers_MainReturnsMinusOne)
 
   EXPECT_CALL(m_facade, did_fatal_error_occure()).WillRepeatedly(Return(true));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-1));
 }
 }

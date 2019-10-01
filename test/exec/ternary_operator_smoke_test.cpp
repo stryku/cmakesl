@@ -13,7 +13,7 @@ TEST_F(TernaryOperatorSmokeTest, TrueCondition)
                       "{"
                       "    return true ? 42 : 0;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -23,7 +23,7 @@ TEST_F(TernaryOperatorSmokeTest, FalseCondition)
                       "{"
                       "    return false ? 0 : 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -37,7 +37,7 @@ TEST_F(TernaryOperatorSmokeTest, ReturnsReferences)
                       "    baz = 42;"
                       "    return foo;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }
