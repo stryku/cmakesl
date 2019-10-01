@@ -15,7 +15,7 @@ TEST_F(ForLoopSmokeTest, SimpleIncrement)
                       "    for(; i < 42; i += 1 ) {}"
                       "    return i;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -30,7 +30,7 @@ TEST_F(ForLoopSmokeTest, IncrementInitializedValue)
                       "    }"
                       "    return value;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

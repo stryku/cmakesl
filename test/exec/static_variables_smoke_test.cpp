@@ -15,7 +15,7 @@ TEST_F(StaticVariablesSmokeTest,
                       "{"
                       "    return foo;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -28,7 +28,7 @@ TEST_F(StaticVariablesSmokeTest,
                       "{"
                       "    return foo;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -45,7 +45,7 @@ TEST_F(StaticVariablesSmokeTest, StaticVariableWithInitializationFromFunction)
                       "{"
                       "    return bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

@@ -15,7 +15,7 @@ TEST_F(ImportSmokeTest, VariableImport)
                       "{"
                       "    return foo::bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -29,7 +29,7 @@ TEST_F(ImportSmokeTest, OneVariableInstanceDespiteMultipleImports)
                       "    auto result = (foo::bar == 24 && baz::qux == 42);"
                       "    return int(result);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -41,7 +41,7 @@ TEST_F(ImportSmokeTest, FunctionImport)
                       "{"
                       "    return foo::baz();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -54,7 +54,7 @@ TEST_F(ImportSmokeTest, ClassImport)
                       "    foo::qux q;"
                       "    return q.get();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -66,7 +66,7 @@ TEST_F(ImportSmokeTest, EnumImport)
                       "{"
                       "    return int(foo::top::kek.to_string() == \"kek\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 }

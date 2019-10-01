@@ -14,7 +14,7 @@ TEST_F(VariableTypeDeductionTest, InitByCopy)
                       "    auto foo = 42;"
                       "    return foo;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -27,7 +27,7 @@ TEST_F(VariableTypeDeductionTest, InitReference)
                       "    bar = 42;"
                       "    return int(foo == 42 && bar == 42);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 }

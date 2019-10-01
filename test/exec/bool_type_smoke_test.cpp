@@ -14,7 +14,7 @@ TEST_F(BoolTypeSmokeTest, DefaultConstructor)
                       "    bool b;"
                       "    return int(b);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -25,7 +25,7 @@ TEST_F(BoolTypeSmokeTest, ExplicitDefaultConstructor)
                       "    bool b = bool();"
                       "    return int(b);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -37,7 +37,7 @@ TEST_F(BoolTypeSmokeTest, ExplicitConstructor)
                       "    bool b2 = bool(false);"
                       "    return int(b);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -49,7 +49,7 @@ TEST_F(BoolTypeSmokeTest, ConstructorFromInt)
                       "    bool b = bool(foo);"
                       "    return int(b);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -61,7 +61,7 @@ TEST_F(BoolTypeSmokeTest, ConstructorFromIntZero)
                       "    bool b = bool(foo);"
                       "    return int(b);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -73,7 +73,7 @@ TEST_F(BoolTypeSmokeTest, OperatorEqual)
                       "    b = true;"
                       "    return int(b);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -83,7 +83,7 @@ TEST_F(BoolTypeSmokeTest, OperatorPipePipe)
                       "{"
                       "    return int(false || true);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -93,7 +93,7 @@ TEST_F(BoolTypeSmokeTest, OperatorUnaryExclaimFalse)
                       "{"
                       "    return int(!false);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -103,7 +103,7 @@ TEST_F(BoolTypeSmokeTest, OperatorUnaryExclaimTrue)
                       "{"
                       "    return int(!true);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -113,7 +113,7 @@ TEST_F(BoolTypeSmokeTest, OperatorAmpAmp)
                       "{"
                       "    return int(true && false);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 }

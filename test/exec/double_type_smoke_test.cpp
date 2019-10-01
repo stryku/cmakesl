@@ -14,7 +14,7 @@ TEST_F(DoubleTypeSmokeTest, DefaultConstructor)
                       "    double d;"
                       "    return int(d);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -25,7 +25,7 @@ TEST_F(DoubleTypeSmokeTest, ExplicitDefaultConstructor)
                       "    double d = double();"
                       "    return int(d);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
 }
 
@@ -36,7 +36,7 @@ TEST_F(DoubleTypeSmokeTest, ConstructorWithValue)
                       "    double d = double(42.6);"
                       "    return int(d);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -46,7 +46,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorPlus)
                       "{"
                       "    return int(40.42 + 1.58);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -58,7 +58,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorUnaryPlusPlus)
                       "    ++foo;"
                       "    return int(++foo);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -68,7 +68,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorMinus)
                       "{"
                       "    return int(44.123 - 2.123);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -78,7 +78,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorUnaryMinus)
                       "{"
                       "    return int(-42.0);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(-42));
 }
 
@@ -90,7 +90,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorUnaryMinusMinus)
                       "    --foo;"
                       "    return int(--foo);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -100,7 +100,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorStar)
                       "{"
                       "    return int(84.0 * 0.5);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -110,7 +110,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorSlash)
                       "{"
                       "    return int(21.0 / 0.5);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -122,7 +122,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorEqual)
                       "    d = 42.0;"
                       "    return int(d);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -134,7 +134,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorPlusEqual)
                       "    d += 20.3;"
                       "    return int(d);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -146,7 +146,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorMinusEqual)
                       "    d -= 21.7;"
                       "    return int(d);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -158,7 +158,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorStarEqual)
                       "    d *= 2.0;"
                       "    return int(d);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -170,7 +170,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorSlashEqual)
                       "    d /= 0.5;"
                       "    return int(d);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -180,7 +180,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorLess)
                       "{"
                       "    return int(43.0 < 44.1);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -190,7 +190,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorLessEqual)
                       "{"
                       "    return int(44.0 <= 44.0);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -200,7 +200,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorGreater)
                       "{"
                       "    return int(42.1 > 42.0);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -210,7 +210,7 @@ TEST_F(DoubleTypeSmokeTest, OperatorGreaterEqual)
                       "{"
                       "    return int(42.0 >= 42.0);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 }

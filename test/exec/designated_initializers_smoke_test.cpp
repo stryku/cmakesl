@@ -19,7 +19,7 @@ TEST_F(DesignatedInitializersSmokeTest, MemberInitialization)
                       "    Foo foo = { .bar = 42 };"
                       "    return foo.bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -40,7 +40,7 @@ TEST_F(DesignatedInitializersSmokeTest, NestedMemberInitialization)
                       "    Baz baz = { .foo = { .bar = 42 } };"
                       "    return baz.foo.bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -61,7 +61,7 @@ TEST_F(DesignatedInitializersSmokeTest, FunctionCallParameter)
                       "    auto qux = baz( { .bar = 42 } );"
                       "    return qux;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

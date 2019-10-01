@@ -23,7 +23,7 @@ TEST_F(AddSubdirectorySmokeTest, SimpleAddSubdirectory)
     .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
                            std::string{ "/add_subdirectory_test/foo" }));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -46,7 +46,7 @@ TEST_F(AddSubdirectorySmokeTest,
     .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
                            std::string{ "/add_subdirectory_test/import" }));
 
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

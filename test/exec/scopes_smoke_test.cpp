@@ -18,7 +18,7 @@ TEST_F(ScopesSmokeTest, SingleScope)
                       "    }"
                       "    return foo;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -38,7 +38,7 @@ TEST_F(ScopesSmokeTest, FunctionScope)
                       "    int foo;"
                       "    return fun(foo);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

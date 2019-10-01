@@ -22,7 +22,7 @@ TEST_F(BreakSmokeTest, BreakFromForLoop)
                       "    }"
                       "    return value;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -44,7 +44,7 @@ TEST_F(BreakSmokeTest, BreakFromNestedForLoop)
                       "    }"
                       "    return value;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -65,7 +65,7 @@ TEST_F(BreakSmokeTest, BreakFromWhileLoop)
                       "    }"
                       "    return value;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -91,7 +91,7 @@ TEST_F(BreakSmokeTest, BreakFromNestedWhileLoop)
                       "    }"
                       "    return value;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

@@ -13,7 +13,7 @@ TEST_F(StringTypeSmokeTest, DefaultConstructor)
                       "    string s;"
                       "    return int(s.size() == 0 && s.empty());"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -24,7 +24,7 @@ TEST_F(StringTypeSmokeTest, ExplicitDefaultConstructor)
                       "    string s = string();"
                       "    return int(s.size() == 0 && s.empty());"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -36,7 +36,7 @@ TEST_F(StringTypeSmokeTest, ExplicitConstructorWithValue)
     "    string s = string(\"foo\");"
     "    return int(s.size() == 3 && s.empty() == false && s == \"foo\");"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -48,7 +48,7 @@ TEST_F(StringTypeSmokeTest, ExplicitConstructorWithString)
                       "    string s2 = string(s);"
                       "    return int(s2 == \"foo\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -60,7 +60,7 @@ TEST_F(StringTypeSmokeTest, ExplicitConstructorWithRepeatedString)
                       "    string s2 = string(s, 4);"
                       "    return int(s2 == \"foo foo foo foo \");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -72,7 +72,7 @@ TEST_F(StringTypeSmokeTest, OperatorEqual)
                       "    string s2 = s;"
                       "    return int(s2.size() == 3 && s2.empty() == false);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -84,7 +84,7 @@ TEST_F(StringTypeSmokeTest, OperatorEqualEqual)
                       "    string s2 = s;"
                       "    return int(s == s2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -96,7 +96,7 @@ TEST_F(StringTypeSmokeTest, OperatorNotEqual)
                       "    string s2 = \"fooo\";"
                       "    return int(s != s2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -108,7 +108,7 @@ TEST_F(StringTypeSmokeTest, OperatorLess)
                       "    string s2 = \"foo\";"
                       "    return int(s < s2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -120,7 +120,7 @@ TEST_F(StringTypeSmokeTest, OperatorLessEqual)
                       "    string s2 = \"bar\";"
                       "    return int(s <= s2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -132,7 +132,7 @@ TEST_F(StringTypeSmokeTest, OperatorGreater)
                       "    string s2 = \"bar\";"
                       "    return int(s > s2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -144,7 +144,7 @@ TEST_F(StringTypeSmokeTest, OperatorGreaterEqual)
                       "    string s2 = \"bar\";"
                       "    return int(s >= s2);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -157,7 +157,7 @@ TEST_F(StringTypeSmokeTest, OperatorPlus)
                       "    string s3 = s + s2;"
                       "    return int(s3 == \"foo + bar\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -169,7 +169,7 @@ TEST_F(StringTypeSmokeTest, OperatorPlusEqual)
                       "    s += \" bar\";"
                       "    return int(s == \"foo + bar\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -181,7 +181,7 @@ TEST_F(StringTypeSmokeTest, Clear)
                       "    s.clear();"
                       "    return int(s.empty());"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -195,7 +195,7 @@ TEST_F(StringTypeSmokeTest, Insert)
                       "    s.insert(7, \" baz\");"
                       "    return int(s == \"foo bar baz\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -207,7 +207,7 @@ TEST_F(StringTypeSmokeTest, Erase)
                       "    s.erase(11);"
                       "    return int(s == \"foo bar baz\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -221,7 +221,7 @@ TEST_F(StringTypeSmokeTest, ErasePos)
                       "    s.erase(3, rubbish_size);"
                       "    return int(s == \"foo bar baz\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -233,7 +233,7 @@ TEST_F(StringTypeSmokeTest, StartsWith)
                       "    string s = \"foo bar baz\";"
                       "    return int(s.starts_with(\"foo b\"));"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -245,7 +245,7 @@ TEST_F(StringTypeSmokeTest, EndsWith)
                       "    string s = \"foo bar baz\";"
                       "    return int(s.ends_with(\"r baz\"));"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -258,7 +258,7 @@ TEST_F(StringTypeSmokeTest, Replace)
                       "    s.replace(4, rubbish_size, \"bar\");"
                       "    return int(s == \"foo bar baz\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -271,7 +271,7 @@ TEST_F(StringTypeSmokeTest, Substr)
                       "    string s2 = s.substr(rubbish_size);"
                       "    return int(s2 == \"foo bar baz\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -284,7 +284,7 @@ TEST_F(StringTypeSmokeTest, SubstrPosCount)
                       "    string s2 = s.substr(4, foobarbaz_size);"
                       "    return int(s2 == \"foo bar baz\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -297,7 +297,7 @@ TEST_F(StringTypeSmokeTest, Resize)
                       "    s.resize(foobarbaz_size);"
                       "    return int(s == \"foo bar baz\");"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -310,7 +310,7 @@ TEST_F(StringTypeSmokeTest, ResizeFill)
                       "    s.resize(expected.size(), \" qux\");"
                       "    return int(s == expected);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -323,7 +323,7 @@ TEST_F(StringTypeSmokeTest, Find)
                       "    int found_at = s.find(\"bar\");"
                       "    return int(found_at == 4);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -336,7 +336,7 @@ TEST_F(StringTypeSmokeTest, FindFromPos)
                       "    int found_at = s.find(\"bar\", 6);"
                       "    return int(found_at == 12);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -349,7 +349,7 @@ TEST_F(StringTypeSmokeTest, FindNotOf)
                       "    int found_at = s.find_not_of(\"abrz \");"
                       "    return int(found_at == 8);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -362,7 +362,7 @@ TEST_F(StringTypeSmokeTest, FindNotOfFromPos)
                       "    int found_at = s.find_not_of(\"abrz \", 3);"
                       "    return int(found_at == 12);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -375,7 +375,7 @@ TEST_F(StringTypeSmokeTest, FindLast)
                       "    int found_at = s.find_last(\"foo\");"
                       "    return int(found_at == 12);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -388,7 +388,7 @@ TEST_F(StringTypeSmokeTest, FindLastNotOf)
                       "    int found_at = s.find_last_not_of(\"fo \");"
                       "    return int(found_at == 10);"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -400,7 +400,7 @@ TEST_F(StringTypeSmokeTest, Contains)
                       "    string s = \"foo baz bar\";"
                       "    return int(s.contains(\"z b\"));"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -416,7 +416,7 @@ TEST_F(StringTypeSmokeTest, Lower)
     "    return int(s == "
     "\"qwertyuiopasdfghjklzxcvbnm01234567890qwertyuiopasdfghjklzxcvbnm\");"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -435,7 +435,7 @@ TEST_F(StringTypeSmokeTest, MakeLower)
     "\"qwertyuiopasdfghjklzxcvbnm01234567890qwertyuiopasdfghjklzxcvbnm\";"
     "    return int(test1 && test2);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -451,7 +451,7 @@ TEST_F(StringTypeSmokeTest, Upper)
     "    return int(s == "
     "\"QWERTYUIOPASDFGHJKLZXCVBNM01234567890QWERTYUIOPASDFGHJKLZXCVBNM\");"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 
@@ -470,7 +470,7 @@ TEST_F(StringTypeSmokeTest, MakeUpper)
     "\"QWERTYUIOPASDFGHJKLZXCVBNM01234567890QWERTYUIOPASDFGHJKLZXCVBNM\";"
     "    return int(test1 && test2);"
     "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
 }

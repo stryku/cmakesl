@@ -17,7 +17,7 @@ TEST_F(WhileLoopSmokeTest, SimpleWhileLoop)
                       "    }"
                       "    return counter;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

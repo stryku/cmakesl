@@ -18,7 +18,7 @@ TEST_F(IfElseSmokeTest, If_ExecuteIfBody)
                       ""
                       "    return 0;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -34,7 +34,7 @@ TEST_F(IfElseSmokeTest, If_DontExecuteIfBody)
                       ""
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -54,7 +54,7 @@ TEST_F(IfElseSmokeTest, IfElse_ExecuteIfBody)
                       ""
                       "    return 0;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -74,7 +74,7 @@ TEST_F(IfElseSmokeTest, IfElse_ExecuteElseBody)
                       ""
                       "    return 0;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -95,7 +95,7 @@ TEST_F(IfElseSmokeTest, IfElseIf_ExecuteIfBody)
                       ""
                       "    return 0;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -116,7 +116,7 @@ TEST_F(IfElseSmokeTest, IfElseIf_ExecuteElseIfBody)
                       ""
                       "    return 0;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -137,7 +137,7 @@ TEST_F(IfElseSmokeTest, IfElseIf_DontExecuteIfElseIfBody)
                       ""
                       "    return 42;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -164,7 +164,7 @@ TEST_F(IfElseSmokeTest, IfElseIfElse_ExecuteIfBody)
                       ""
                       "    return 0;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -189,7 +189,7 @@ TEST_F(IfElseSmokeTest, IfElseIfElse_ExecuteElseIfBody)
                       ""
                       "    return 0;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -214,7 +214,7 @@ TEST_F(IfElseSmokeTest, IfElseIfElse_ExecuteElseBody)
                       ""
                       "    return 22;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

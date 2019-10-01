@@ -14,7 +14,7 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalNamespace)
                       "{"
                       "    return ::foo;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -27,7 +27,7 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalNamespaceAndLocalScope)
                       "    int foo = 0;"
                       "    return ::foo;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -45,7 +45,7 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalAndNestedNamespace)
                       "    int foo = 0;"
                       "    return foo::bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -64,7 +64,7 @@ TEST_F(NamespacesSmokeTest,
                       "    int foo = 0;"
                       "    return ::foo::bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -81,7 +81,7 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalAndNestedNamespace_GetFromGlobal)
                       "{"
                       "    return ::bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -102,7 +102,7 @@ TEST_F(NamespacesSmokeTest, VariableInGlobalAndManyNestedNamespac)
                       "{"
                       "    return ::foo::baz::qux::kek;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -118,7 +118,7 @@ TEST_F(NamespacesSmokeTest, ClassInGlobalNamespaceAccessByUnqualifiedName)
                       "    Foo foo = { .bar = 42 };"
                       "    return foo.bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -134,7 +134,7 @@ TEST_F(NamespacesSmokeTest, ClassInGlobalNamespaceAccessByFullyQualifiedName)
                       "    ::Foo foo = { .bar = 42 };"
                       "    return foo.bar;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -153,7 +153,7 @@ TEST_F(NamespacesSmokeTest, ClassInNamespaceAccessByUnqualifiedName)
                       "    foo::Bar bar = { .baz = 42 };"
                       "    return bar.baz;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -176,7 +176,7 @@ TEST_F(NamespacesSmokeTest, ClassInSameNamespaceAccessByUnqualifiedName)
                       "{"
                       "    return foo::bar.baz;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -204,7 +204,7 @@ TEST_F(NamespacesSmokeTest, ClassInNestedNamespaceAccessByUnqualifiedName)
                       "{"
                       "    return foo::qux::top.kek;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -233,7 +233,7 @@ TEST_F(NamespacesSmokeTest,
                       "{"
                       "    return foo::qux::top.kek;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -248,7 +248,7 @@ TEST_F(NamespacesSmokeTest, FunctionInGlobalNamespaceAccessedByUnqualifiedName)
                       "{"
                       "    return foo();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -264,7 +264,7 @@ TEST_F(NamespacesSmokeTest,
                       "{"
                       "    return ::foo();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -282,7 +282,7 @@ TEST_F(NamespacesSmokeTest, FunctionInNamespaceAccessedByQualifiedName)
                       "{"
                       "    return foo::bar();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -300,7 +300,7 @@ TEST_F(NamespacesSmokeTest, FunctionInNamespaceAccessedByFullyQualifiedName)
                       "{"
                       "    return ::foo::bar();"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -323,7 +323,7 @@ TEST_F(NamespacesSmokeTest, FunctionInSameNamespaceAccessByUnqualifiedName)
                       "{"
                       "    return foo::baz;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -351,7 +351,7 @@ TEST_F(NamespacesSmokeTest, FunctionInNestedNamespaceAccessByUnqualifiedName)
                       "{"
                       "    return foo::baz::qux;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 
@@ -379,7 +379,7 @@ TEST_F(NamespacesSmokeTest, FunctionInNestedNamespaceAccessByQualifiedName)
                       "{"
                       "    return foo::baz::qux;"
                       "}";
-  const auto result = m_executor.execute(source);
+  const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
 }

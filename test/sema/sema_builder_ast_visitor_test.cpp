@@ -720,6 +720,37 @@ TEST_F(
   EXPECT_THAT(casted_node->param_expressions().size(), Eq(0u));
 }
 
+TEST_F(SemaBuilderAstVisitorTest, Visit_NotExistingFunctionCall_ReportsError)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  StrictMock<types_context_mock> types_ctx;
+  StrictMock<functions_context_mock> functions_ctx;
+  enum_values_context_mock enums_ctx;
+  auto [visitor_members, visitor] = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
+
+  const auto fun_name_token = token_identifier("foo");
+  const auto qualified_fun_name = create_qualified_name(fun_name_token);
+  function_signature signature;
+  signature.name = fun_name_token;
+  auto node = create_function_call(fun_name_token);
+
+  const auto lookup_result = function_lookup_result_t{};
+  EXPECT_CALL(functions_ctx, find(qualified_fun_name))
+    .WillOnce(Return(lookup_result));
+
+  EXPECT_CALL(types_ctx, find(qualified_fun_name))
+    .WillRepeatedly(Return(std::nullopt));
+
+  EXPECT_CALL(errs.mock, notify_error(_)).Times(AnyNumber());
+
+  visitor.visit(node);
+
+  ASSERT_THAT(visitor.m_result_node, IsNull());
+}
+
 TEST_F(SemaBuilderAstVisitorTest,
        Visit_FunctionCallOfReturnTypeNotKnownYet_RaiseError)
 {
