@@ -284,6 +284,13 @@ GENERATION_INFO = {
             'cxx_compiler_info_id': ['cxx_compiler_id id;', 'cxx_compiler_id ', 'id'],
             'get_cxx_compiler_info': ['cxx_compiler_info get_cxx_compiler_info();', 'cxx_compiler_info ', 'get_cxx_compiler_info'],
 
+            'cxx_standard_value_name': ['enum cxx_standard_value', 'enum ', 'cxx_standard_value'],
+            'cxx_standard_value_cpp_11': ['cpp_11,', '', 'cpp_11'],
+            'cxx_standard_value_cpp_14': ['cpp_14,', '', 'cpp_14'],
+            'cxx_standard_value_cpp_17': ['cpp_17,', '', 'cpp_17'],
+            'cxx_standard_value_cpp_20': ['cpp_20', '', 'cpp_20'],
+            'cxx_standard': ['cxx_standard_type cxx_standard;', 'cxx_standard_type ', 'cxx_standard'],
+
             'install_executable': ['void install(executable exe);', 'void ', 'install'],
             'install_library': ['void install(library lib);', 'void ', 'install'],
 
