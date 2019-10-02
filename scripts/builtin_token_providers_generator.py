@@ -304,7 +304,14 @@ GENERATION_INFO = {
             'visibility': ['enum visibility', 'enum ', 'visibility'],
             'visibility_interface': ['interface,', '', 'interface'],
             'visibility_private': ['private,', '', 'private'],
-            'visibility_public': ['public', '', 'public']
+            'visibility_public': ['public', '', 'public'],
+
+
+            'root_source_dir': ['string root_source_dir();', 'string ', 'root_source_dir'],
+            'current_binary_dir': ['string current_binary_dir();', 'string ', 'current_binary_dir'],
+
+            'add_custom_command': ['void add_custom_command(list<string> command, string output);', 'void ', 'add_custom_command'],
+            'make_directory': ['void make_directory(string dir);', 'void ', 'make_directory']
         }
     }
 }

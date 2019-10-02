@@ -55,6 +55,12 @@ public:
 
   virtual std::string get_current_binary_dir() const = 0;
   virtual std::string get_current_source_dir() const = 0;
+  virtual std::string get_root_source_dir() const = 0;
+
+  virtual void add_custom_command(const std::vector<std::string>& command,
+                                  const std::string& output) const = 0;
+
+  virtual void make_directory(const std::string& dir) const = 0;
 
   virtual void add_executable(
     const std::string& name,

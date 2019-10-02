@@ -41,8 +41,15 @@ public:
   void install(const std::string& target_name) override {}
 
   std::string get_current_binary_dir() const override { return {}; }
-
   std::string get_current_source_dir() const override { return {}; }
+  std::string get_root_source_dir() const override { return {}; }
+
+  void add_custom_command(const std::vector<std::string>& command,
+                          const std::string& output) const override
+  {
+  }
+
+  void make_directory(const std::string& dir) const override {}
 
   void add_executable(const std::string& name,
                       const std::vector<std::string>& sources) override

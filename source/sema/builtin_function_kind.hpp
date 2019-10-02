@@ -16,6 +16,10 @@ enum class builtin_function_kind
   cmake_install_library,
   cmake_enable_ctest,
   cmake_add_test,
+  cmake_root_source_dir,
+  cmake_current_binary_dir,
+  cmake_add_custom_command,
+  cmake_make_directory,
 
   // Class methods:
 

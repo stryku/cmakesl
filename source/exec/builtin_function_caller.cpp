@@ -4,6 +4,7 @@
 #include "exec/extern_argument_parser.hpp"
 #include "exec/instance/instance.hpp"
 #include "exec/instance/instances_holder.hpp"
+#include "exec/instance/list_value_utils.hpp"
 #include "exec/parameter_alternatives_getter.hpp"
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_accessor.hpp"
@@ -260,6 +261,11 @@ std::unique_ptr<inst::instance> builtin_function_caller::call(
     CASE_BUILTIN_FUNCTION_CALL(cmake_install_library);
     CASE_BUILTIN_FUNCTION_CALL(cmake_enable_ctest);
     CASE_BUILTIN_FUNCTION_CALL(cmake_add_test);
+
+    CASE_BUILTIN_FUNCTION_CALL(cmake_root_source_dir);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_current_binary_dir);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_add_custom_command);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_make_directory);
 
     default:
       CMSL_UNREACHABLE("Calling unimplemented function");
@@ -1904,6 +1910,38 @@ inst::instance* builtin_function_caller::cmake_add_test(
 {
   const auto& [exe] = get_params<alternative_t::executable>(params);
   m_cmake_facade.add_test(exe.name());
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::cmake_root_source_dir(
+  const builtin_function_caller::params_t& params)
+{
+  auto dir = m_cmake_facade.get_root_source_dir();
+  return m_instances.create(std::move(dir));
+}
+
+inst::instance* builtin_function_caller::cmake_add_custom_command(
+  const builtin_function_caller::params_t& params)
+{
+  const auto& [command_list, output] =
+    get_params<alternative_t::list, alternative_t ::string>(params);
+  const auto command = inst::list_value_utils{ command_list }.strings();
+  m_cmake_facade.add_custom_command(command, output);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::cmake_current_binary_dir(
+  const builtin_function_caller::params_t& params)
+{
+  auto dir = m_cmake_facade.get_current_binary_dir();
+  return m_instances.create(std::move(dir));
+}
+
+inst::instance* builtin_function_caller::cmake_make_directory(
+  const builtin_function_caller::params_t& params)
+{
+  const auto& [dir] = get_params<alternative_t ::string>(params);
+  m_cmake_facade.make_directory(dir);
   return m_instances.create_void();
 }
 }
