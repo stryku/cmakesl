@@ -654,18 +654,20 @@ void builtin_cmake_namespace_context::add_option_member_functions(
 
   const auto functions = {
     builtin_function_info{
-      // option(string description)
+      // option(string name, string description)
       option_type,
       function_signature{
         token_provider.constructor_description(),
-        { parameter_declaration{ string_type, param_token } } },
+        { parameter_declaration{ string_type, param_token },
+          parameter_declaration{ string_type, param_token } } },
       builtin_function_kind::option_ctor_description },
     builtin_function_info{
-      // option(string description, bool value)
+      // option(string name, string description, bool value)
       option_type,
       function_signature{
         token_provider.constructor_description_value(),
         { parameter_declaration{ string_type, param_token },
+          parameter_declaration{ string_type, param_token },
           parameter_declaration{ bool_type, param_token } } },
       builtin_function_kind::option_ctor_description_value },
     builtin_function_info{ // bool value()

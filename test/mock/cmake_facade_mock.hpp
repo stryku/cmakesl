@@ -45,5 +45,11 @@ public:
 
   MOCK_CONST_METHOD2(set_property,
                      void(const std::string&, const std::string&));
+
+  MOCK_CONST_METHOD1(get_option_value,
+                     std::optional<bool>(const std::string&));
+
+  MOCK_CONST_METHOD3(register_option,
+                     void(const std::string&, const std::string&, bool));
 };
 }

@@ -95,6 +95,16 @@ public:
 
   void set_property(const std::string&, const std::string&) const override {}
 
+  std::optional<bool> get_option_value(const std::string& name) const override
+  {
+    return std::nullopt;
+  }
+
+  void register_option(const std::string& name, const std::string& description,
+                       bool value) const override
+  {
+  }
+
 private:
   std::stack<std::string> m_directory_stack;
   bool m_fatal_error_occured{ false };
