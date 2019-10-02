@@ -374,6 +374,10 @@ private:
   inst::instance* cmake_install_library(const params_t& params);
   inst::instance* cmake_enable_ctest(const params_t& params);
   inst::instance* cmake_add_test(const params_t& params);
+  inst::instance* cmake_root_source_dir(const params_t& params);
+  inst::instance* cmake_add_custom_command(const params_t& params);
+  inst::instance* cmake_current_binary_dir(const params_t& params);
+  inst::instance* cmake_make_directory(const params_t& params);
 
 private:
   int_t string_pos_to_int(std::string::size_type pos) const;

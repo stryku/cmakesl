@@ -54,6 +54,8 @@ void builtin_cmake_namespace_context::add_functions()
   const auto& executable_type = m_types_accessor->executable;
   const auto& library_type = m_types_accessor->library;
   const auto& version_type = m_types_accessor->version;
+  const auto& list_of_strings_type =
+    m_generics_creation_utils.list_of_strings();
 
   const auto& token_provider = m_builtin_tokens.cmake();
 
@@ -122,7 +124,30 @@ void builtin_cmake_namespace_context::add_functions()
       function_signature{
         token_provider.add_test(),
         { parameter_declaration{ executable_type, param_token } } },
-      builtin_function_kind::cmake_add_test }
+      builtin_function_kind::cmake_add_test },
+    builtin_function_info{
+      // string root_source_dir()
+      string_type, function_signature{ token_provider.root_source_dir() },
+      builtin_function_kind::cmake_root_source_dir },
+    builtin_function_info{
+      // string current_binary_dir()
+      string_type, function_signature{ token_provider.current_binary_dir() },
+      builtin_function_kind::cmake_current_binary_dir },
+    builtin_function_info{
+      // void add_custom_command(list<string> command, string output)
+      void_type,
+      function_signature{
+        token_provider.add_custom_command(),
+        { parameter_declaration{ list_of_strings_type, param_token },
+          parameter_declaration{ string_type, param_token } } },
+      builtin_function_kind::cmake_add_custom_command },
+    builtin_function_info{
+      // void make_directory(string dir)
+      void_type,
+      function_signature{
+        token_provider.make_directory(),
+        { parameter_declaration{ string_type, param_token } } },
+      builtin_function_kind::cmake_make_directory }
   };
 
   auto factory = m_factories.function_factory();

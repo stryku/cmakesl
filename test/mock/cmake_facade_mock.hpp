@@ -20,6 +20,13 @@ public:
 
   MOCK_CONST_METHOD0(get_current_binary_dir, std::string());
   MOCK_CONST_METHOD0(get_current_source_dir, std::string());
+  MOCK_CONST_METHOD0(get_root_source_dir, std::string());
+
+  MOCK_CONST_METHOD2(add_custom_command,
+                     void(const std::vector<std::string>&,
+                          const std::string&));
+
+  MOCK_CONST_METHOD1(make_directory, void(const std::string&));
 
   MOCK_METHOD2(add_executable,
                void(const std::string&, const std::vector<std::string>&));

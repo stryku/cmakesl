@@ -110,4 +110,25 @@ enum visibility
   private,
   public
 };
+
+/** \brief The root source directory getter.
+ */
+string root_source_dir();
+
+/** \brief The current binary directory getter.
+ */
+string current_binary_dir();
+
+/** \brief Creates a custom command.
+ *
+ * \param command The command to be executed.
+ * \param output Output file that other targets can depend on.
+ */
+void add_custom_command(list<string> command, string output);
+
+/** \brief Creates the given directory.
+ *
+ * \param dir The directory path to be created.
+ */
+void make_directory(string dir);
 }

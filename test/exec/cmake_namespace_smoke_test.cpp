@@ -229,4 +229,60 @@ TEST_F(CmakeNamespaceSmokeTest, AddTest_CallsFacadeMethod)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(CmakeNamespaceSmokeTest, RootSourceDir_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::root_source_dir();"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, get_root_source_dir());
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(CmakeNamespaceSmokeTest, CurrentBinaryDir_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::current_binary_dir();"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, get_current_binary_dir());
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(CmakeNamespaceSmokeTest, AddCustomCommand_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::add_custom_command({\"ls\"}, \"\");"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, add_custom_command(_, _));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(CmakeNamespaceSmokeTest, MakeDirectory_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::make_directory(\"\");"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, make_directory(_));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }
