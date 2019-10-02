@@ -42,5 +42,8 @@ public:
   MOCK_CONST_METHOD0(get_cxx_compiler_info, cxx_compiler_info());
   MOCK_CONST_METHOD1(try_get_extern_define,
                      std::optional<std::string>(const std::string&));
+
+  MOCK_CONST_METHOD2(set_property,
+                     void(const std::string&, const std::string&));
 };
 }

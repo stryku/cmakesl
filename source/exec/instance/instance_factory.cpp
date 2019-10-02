@@ -3,6 +3,7 @@
 #include "common/assert.hpp"
 #include "exec/instance/complex_unnamed_instance.hpp"
 #include "exec/instance/instance_reference.hpp"
+#include "exec/instance/observable_instance.hpp"
 #include "exec/instance/simple_unnamed_instance.hpp"
 #include "sema/builtin_types_accessor.hpp"
 #include "sema/cmake_namespace_types_accessor.hpp"
@@ -67,5 +68,12 @@ std::unique_ptr<instance> instance_factory2::create(
   const sema::sema_type& type, instance_value_variant&& value) const
 {
   return std::make_unique<simple_unnamed_instance>(type, std::move(value));
+}
+
+std::unique_ptr<instance> instance_factory2::create_observable(
+  const sema::sema_type& type,
+  instance_value_observer_t observer) const
+{
+  return std::make_unique<observable_instance>(type, std::move(observer));
 }
 }

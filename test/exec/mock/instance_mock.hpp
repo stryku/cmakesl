@@ -11,7 +11,7 @@ public:
   MOCK_CONST_METHOD0(copy, std::unique_ptr<instance>());
 
   MOCK_CONST_METHOD0(value, instance_value_variant());
-  MOCK_METHOD0(value_ref, instance_value_variant&());
+  MOCK_METHOD0(value_accessor, instance_value_accessor());
   MOCK_CONST_METHOD0(value_cref, const instance_value_variant&());
   MOCK_METHOD1(assign, void(instance_value_variant));
   MOCK_METHOD1(assign, void(std::unique_ptr<instance>));

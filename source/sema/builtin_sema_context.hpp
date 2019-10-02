@@ -36,7 +36,7 @@ public:
 
   builtin_types_accessor builtin_types() const;
 
-  std::vector<identifier_info> builtin_identifiers_info() const;
+  std::vector<builtin_identifier_info> builtin_identifiers_info() const;
 
 private:
   using token_type_t = lexer::token_type;

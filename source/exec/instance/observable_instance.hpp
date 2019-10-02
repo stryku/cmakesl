@@ -1,17 +1,21 @@
 #pragma once
 
-#include "exec/instance/instance.hpp"
+#include "exec/instance/instance_value_observer.hpp"
+#include "exec/instance/simple_unnamed_instance.hpp"
 
 namespace cmsl::exec {
 class execution_context;
 
 namespace inst {
-class instance_reference : public instance
+class observable_instance : public instance
 {
 public:
-  instance_reference(unsigned index, execution_context& ctx);
+  explicit observable_instance(const sema::sema_type& type,
+                               instance_value_observer_t observer);
 
-  explicit instance_reference(instance& referenced_instance);
+  explicit observable_instance(const sema::sema_type& type,
+                               instance_value_variant&& value,
+                               instance_value_observer_t observer);
 
   instance_value_variant value() const override;
   instance_value_accessor value_accessor() override;
@@ -31,7 +35,8 @@ public:
   const sema::sema_type& type() const override;
 
 private:
-  instance& m_instance;
+  simple_unnamed_instance m_instance;
+  instance_value_observer_t m_observer;
 };
 }
 }

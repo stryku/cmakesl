@@ -61,6 +61,20 @@ inst::instance* instances_holder::create(const sema::sema_type& type)
   return ptr;
 }
 
+inst::instance* instances_holder::create_observable(
+  const sema::sema_type& type, instance_value_observer_t observer)
+{
+  if (observer == nullptr) {
+    return create(type);
+  }
+
+  auto instance =
+    instance_factory2{}.create_observable(type, std::move(observer));
+  auto ptr = instance.get();
+  m_instances.emplace_back(std::move(instance));
+  return ptr;
+}
+
 inst::instance* instances_holder::create_void()
 {
   return create(true); // Todo: introduce void type

@@ -25,7 +25,7 @@ public:
     generic_type_creation_utils& generics_creation_utils);
   virtual ~builtin_cmake_namespace_context();
 
-  const std::vector<identifier_info>& builtin_identifiers_info() const;
+  const std::vector<builtin_identifier_info>& builtin_identifiers_info() const;
   const cmake_namespace_types_accessor& types_accessor() const;
 
 private:
@@ -40,6 +40,7 @@ private:
   {
     const lexer::token& name;
     const sema_type& type;
+    std::string cmake_variable_name;
   };
 
   void add_types();
@@ -77,7 +78,8 @@ private:
   const builtin_token_provider& m_builtin_tokens;
   const builtin_types_accessor& m_builtin_types;
   generic_type_creation_utils& m_generics_creation_utils;
-  std::vector<identifier_info> m_builtin_identifiers_info;
+
+  std::vector<builtin_identifier_info> m_builtin_identifiers_info;
   std::unique_ptr<cmake_namespace_types_accessor> m_types_accessor;
 };
 }

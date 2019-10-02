@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/string.hpp"
+#include "exec/instance/instance_value_observer.hpp"
 #include "exec/instance/instance_value_variant.hpp"
 
 #include <memory>
@@ -26,6 +27,7 @@ class execution_context;
 namespace inst {
 class instance;
 
+// Todo: Change name
 class instance_factory2
 {
 public:
@@ -37,6 +39,8 @@ public:
     instance& referenced_instance) const;
 
   std::unique_ptr<instance> create(const sema::sema_type& type) const;
+  std::unique_ptr<instance> create_observable(
+    const sema::sema_type& type, instance_value_observer_t observer) const;
 
   std::unique_ptr<instance> create(const sema::sema_type& type,
                                    instance_value_variant&& value) const;

@@ -783,8 +783,8 @@ void builtin_sema_context::add_cmake_namespace_context()
   m_builtin_types->cmake = &(m_cmake_namespace_context->types_accessor());
 }
 
-std::vector<identifier_info> builtin_sema_context::builtin_identifiers_info()
-  const
+std::vector<builtin_identifier_info>
+builtin_sema_context::builtin_identifiers_info() const
 {
   return m_cmake_namespace_context->builtin_identifiers_info();
 }

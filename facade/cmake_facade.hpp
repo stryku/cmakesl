@@ -98,5 +98,8 @@ public:
 
   virtual std::optional<std::string> try_get_extern_define(
     const std::string& name) const = 0;
+
+  virtual void set_property(const std::string& property_name,
+                            const std::string& property_value) const = 0;
 };
 }

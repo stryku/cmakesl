@@ -1,6 +1,7 @@
 #pragma once
 
 #include "exec/cross_translation_unit_static_variables_accessor.hpp"
+#include "exec/instance/instance_value_observer.hpp"
 #include "exec/module_static_variables_initializer.hpp"
 #include "sema/builtin_types_accessor.hpp"
 #include "sema/identifier_info.hpp"
@@ -22,8 +23,10 @@ class sema_node;
 namespace exec {
 namespace inst {
 class instance;
+class instance_value_variant;
 }
 
+class builtin_identifiers_observer;
 class module_sema_tree_provider;
 
 class cross_translation_unit_static_variables
@@ -42,9 +45,15 @@ public:
   void initialize(cmsl::string_view import_path);
 
   void initialize_builtin_variables(
-    const std::vector<sema::identifier_info>& builtin_variables_info);
+    const std::vector<sema::builtin_identifier_info>& builtin_variables_info,
+    const builtin_identifiers_observer& observer);
 
   inst::instance* access_variable(unsigned index);
+
+private:
+  inst::instance_value_observer_t create_observer(
+    const std::string& variable_name,
+    const builtin_identifiers_observer& observer);
 
 private:
   facade::cmake_facade& m_cmake_facade;
