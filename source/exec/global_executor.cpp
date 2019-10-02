@@ -35,6 +35,7 @@ global_executor::global_executor(const std::string& root_path,
                                  facade::cmake_facade& cmake_facade)
   : m_root_path{ root_path }
   , m_cmake_facade{ cmake_facade }
+  , m_errors_observer{ &m_cmake_facade }
   , m_builtin_qualified_contexts{ create_qualified_contextes() }
   , m_builtin_tokens{ std::make_unique<sema::builtin_token_provider>("") }
   , m_builtin_context{ create_builtin_context() }

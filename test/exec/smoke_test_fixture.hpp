@@ -1,7 +1,7 @@
 #pragma once
 
 #include "exec/global_executor.hpp"
-#include "test/exec/mock/cmake_facade_mock.hpp"
+#include "test/mock/cmake_facade_mock.hpp"
 
 #include <gmock/gmock.h>
 
