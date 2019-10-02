@@ -59,4 +59,20 @@ TEST_F(ProjectSmokeTest, AddLibraryCallsFacadeMethod)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(ProjectSmokeTest, FindLibrary)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::project p = cmake::project(\"foo\");"
+                      "    p.add_library(\"lib\", {\"foo\"});"
+                      "    auto l = p.find_library(\"lib\");"
+                      "    return int(l.name() == \"lib\");"
+                      "}";
+
+  EXPECT_CALL(m_facade, current_directory()).WillRepeatedly(Return("foo"));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(1));
+}
 }

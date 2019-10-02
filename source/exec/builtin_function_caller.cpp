@@ -211,6 +211,7 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_name);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_add_executable);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_add_library);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(project_find_library);
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_name);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_link_to);
@@ -1640,6 +1641,13 @@ inst::instance* builtin_function_caller::project_add_library(
   const auto& [name, sources] =
     get_params<alternative_t::string, alternative_t::list>(params);
   project.add_library(m_cmake_facade, name, sources);
+  return m_instances.create(inst::library_value{ name });
+}
+
+inst::instance* builtin_function_caller::project_find_library(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [name] = get_params<alternative_t::string>(params);
   return m_instances.create(inst::library_value{ name });
 }
 

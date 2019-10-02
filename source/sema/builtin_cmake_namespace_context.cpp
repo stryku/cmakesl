@@ -656,7 +656,14 @@ void builtin_cmake_namespace_context::add_project_member_functions(
         token_provider.add_library(),
         { parameter_declaration{ string_type, param_token },
           parameter_declaration{ sources_type, param_token } } },
-      builtin_function_kind::project_add_library }
+      builtin_function_kind::project_add_library },
+    builtin_function_info{
+      // library find_library(string name)
+      library_type,
+      function_signature{
+        token_provider.find_library(),
+        { parameter_declaration{ string_type, param_token } } },
+      builtin_function_kind::project_find_library }
   };
 
   add_type_member_functions(project_manipulator, functions);

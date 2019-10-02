@@ -4,13 +4,14 @@ namespace cmake {
 class project
 {
 public:
-  /** Initializes and registers a new project.
+  /** \brief Initializes and registers a new project.
    *
    * @param name The name of the project.
    */
   project(string name);
 
-  /** Initializes and registers an executable target in scope of this project.
+  /** \brief Initializes and registers an executable target in scope of this
+   * project.
    *
    * @param name A name of the executable.
    * @param sources Source files of the executable.
@@ -18,13 +19,20 @@ public:
    */
   executable add_executable(string name, list<string> sources);
 
-  /** Initializes and registers an static library target in scope of this
-   * project.
+  /** \brief Initializes and registers an static library target in scope of
+   * this project.
    *
    * @param name A name of the library.
    * @param sources Source files of the library.
    * @return A created library object.
    */
   library add_library(string name, list<string> sources);
+
+  /** \brief Searches for a library, with a given name, in the project.
+   *
+   * @param name A name of the library.
+   * @return The found library.
+   */
+  library find_library(string name);
 };
 }
