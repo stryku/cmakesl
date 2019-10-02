@@ -1,0 +1,19 @@
+void main(cmake::project& project)
+{
+  auto sources = {
+    // clang-format: off
+    "algorithm.hpp",
+    "assert.hpp",
+    "enum_class_utils.hpp",
+    "int_alias.hpp",
+    "overloaded.hpp",
+    "source_location.hpp",
+    "source_view.cpp",
+    "source_view.hpp",
+    "string.hpp"
+    // clang-format: on
+  };
+  auto lib = project.add_library("common", sources);
+
+  lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
+}

@@ -1,0 +1,78 @@
+void main(cmake::project& project)
+{
+  auto sources = {
+    // clang-format: off
+    "builtin_function_caller.cpp",
+    "builtin_function_caller.hpp",
+    "builtin_identifiers_observer.cpp",
+    "builtin_identifiers_observer.hpp",
+    "compiled_source.cpp",
+    "compiled_source.hpp",
+    "cross_translation_unit_static_variables.cpp",
+    "cross_translation_unit_static_variables.hpp",
+    "cross_translation_unit_static_variables_accessor.hpp",
+    "execution.cpp",
+    "execution.hpp",
+    "execution_context.cpp",
+    "execution_context.hpp",
+    "expression_evaluation_context.hpp",
+    "expression_evaluation_visitor.hpp",
+    "extern_argument_parser.cpp",
+    "extern_argument_parser.hpp",
+    "function_caller.hpp",
+    "global_executor.cpp",
+    "global_executor.hpp",
+    "identifiers_context.hpp",
+    "module_sema_tree_provider.hpp",
+    "module_static_variables_initializer.hpp",
+    "parameter_alternatives_getter.hpp",
+    "scope_context.cpp",
+    "scope_context.hpp",
+    "source_compiler.cpp",
+    "source_compiler.hpp",
+    "static_variables_initializer.hpp",
+    "instance/complex_unnamed_instance.cpp",
+    "instance/complex_unnamed_instance.hpp",
+    "instance/enum_constant_value.hpp",
+    "instance/extern_value.cpp",
+    "instance/extern_value.hpp",
+    "instance/instance.hpp",
+    "instance/instance_factory.cpp",
+    "instance/instance_factory.hpp",
+    "instance/instance_reference.cpp",
+    "instance/instance_reference.hpp",
+    "instance/instance_value_accessor.cpp",
+    "instance/instance_value_accessor.hpp",
+    "instance/instance_value_alternative.hpp",
+    "instance/instance_value_observer.hpp",
+    "instance/instance_value_variant.cpp",
+    "instance/instance_value_variant.hpp",
+    "instance/instances_holder.cpp",
+    "instance/instances_holder.hpp",
+    "instance/instances_holder_interface.hpp",
+    "instance/list_value.cpp",
+    "instance/list_value.hpp",
+    "instance/list_value_utils.cpp",
+    "instance/list_value_utils.hpp",
+    "instance/observable_instance.cpp",
+    "instance/observable_instance.hpp",
+    "instance/option_value.cpp",
+    "instance/option_value.hpp",
+    "instance/project_value.cpp",
+    "instance/project_value.hpp",
+    "instance/simple_unnamed_instance.cpp",
+    "instance/simple_unnamed_instance.hpp",
+    "instance/target_value.cpp",
+    "instance/target_value.hpp",
+    "instance/version_value.cpp",
+    "instance/version_value.hpp"
+    // clang-format: on
+  };
+
+  auto lib = project.add_library("exec", sources);
+  lib.include_directories({ cmsl::source_dir, cmsl::facade_dir },
+                          cmake::visibility::private);
+
+  auto sema = project.find_library("sema");
+  lib.link_to(lexer, cmake::visibility::public);
+}

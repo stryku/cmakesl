@@ -1,0 +1,60 @@
+void main(cmake::project& project)
+{
+  auto sources = {
+    // clang-format: off
+    "ast_node.hpp",
+    "ast_node_visitor.hpp",
+    "block_node.cpp",
+    "block_node.hpp",
+    "break_node.cpp",
+    "break_node.hpp",
+    "class_node.cpp",
+    "class_node.hpp",
+    "conditional_node.cpp",
+    "conditional_node.hpp",
+    "designated_initializers_node.cpp",
+    "designated_initializers_node.hpp",
+    "enum_node.cpp",
+    "enum_node.hpp",
+    "for_node.cpp",
+    "for_node.hpp",
+    "if_else_node.cpp",
+    "if_else_node.hpp",
+    "import_node.cpp",
+    "import_node.hpp",
+    "infix_nodes.hpp",
+    "namespace_node.cpp",
+    "namespace_node.hpp",
+    "parameter_declaration.hpp",
+    "parse_errors_observer.hpp",
+    "parser.cpp",
+    "parser.hpp",
+    "parser_utils.cpp",
+    "parser_utils.hpp",
+    "qualified_name.cpp",
+    "qualified_name.hpp",
+    "return_node.cpp",
+    "return_node.hpp",
+    "ternary_operator_node.cpp",
+    "ternary_operator_node.hpp",
+    "translation_unit_node.cpp",
+    "translation_unit_node.hpp",
+    "type_parser.cpp",
+    "type_parser.hpp",
+    "type_parsing_result.hpp",
+    "type_representation.cpp",
+    "type_representation.hpp",
+    "user_function_node.cpp",
+    "user_function_node.hpp",
+    "variable_declaration_node.cpp",
+    "variable_declaration_node.hpp",
+    "while_node.cpp",
+    "while_node.hpp"
+    // clang-format: on
+  };
+  auto lib = project.add_library("ast", sources);
+  lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
+
+  auto lexer = project.find_library("lexer");
+  lib.link_to(lexer, cmake::visibility::public);
+}

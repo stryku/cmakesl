@@ -1,8 +1,8 @@
 set(EXEC_SOURCES
     builtin_function_caller.cpp
     builtin_function_caller.hpp
-        builtin_identifiers_observer.cpp
-        builtin_identifiers_observer.hpp
+    builtin_identifiers_observer.cpp
+    builtin_identifiers_observer.hpp
     compiled_source.cpp
     compiled_source.hpp
     cross_translation_unit_static_variables.cpp

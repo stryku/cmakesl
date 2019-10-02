@@ -1,0 +1,5 @@
+namespace cmsl {
+export auto source_dir = cmake::root_source_directory();
+export auto facade_dir = source_dir / "facade";
+export auto scripts_dir = source_dir / "scripts";
+}

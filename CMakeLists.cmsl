@@ -1,0 +1,24 @@
+int main()
+{
+  cmake::minimum_required(cmake::version(3.14));
+
+  auto project = cmake::project("CMakeSL");
+
+  cmake::cxx_standard = cmake::cxx_standard_value::cpp_17;
+
+  add_subdirectory("source", project);
+
+  auto with_tools =
+    cmake::option("With tools", "When ON, tools will be built", false);
+  if (with_tools.value()) {
+    add_subdirectory("tools");
+  }
+
+  auto with_examples =
+    cmake::option("With examples", "When ON, examples will be built", false);
+  if (with_examples.value()) {
+    add_subdirectory("examples");
+  }
+
+  return 0;
+}

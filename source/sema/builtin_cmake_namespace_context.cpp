@@ -506,7 +506,7 @@ void builtin_cmake_namespace_context::add_library_member_functions(
       // void link_to(library target, visibility v)
       void_type,
       function_signature{
-        token_provider.link_to(),
+        token_provider.link_to_lib_visibility(),
         { parameter_declaration{ library_type, param_token },
           parameter_declaration{ visibility_type, param_token } } },
       builtin_function_kind::library_link_to_visibility },
@@ -521,7 +521,7 @@ void builtin_cmake_namespace_context::add_library_member_functions(
       // void include_directories(list<string> dirs, visibility v)
       void_type,
       function_signature{
-        token_provider.include_directories(),
+        token_provider.include_directories_dirs_visibility(),
         { parameter_declaration{ directories_type, param_token },
           parameter_declaration{ visibility_type, param_token } } },
       builtin_function_kind::library_include_directories_visibility }
@@ -564,7 +564,7 @@ void builtin_cmake_namespace_context::add_executable_member_functions(
       // void link_to(library target, visibility v)
       void_type,
       function_signature{
-        token_provider.link_to(),
+        token_provider.link_to_lib_visibility(),
         { parameter_declaration{ library_type, param_token },
           parameter_declaration{ visibility_type, param_token } } },
       builtin_function_kind::executable_link_to_visibility },
@@ -579,7 +579,7 @@ void builtin_cmake_namespace_context::add_executable_member_functions(
       // void include_directories(list<string> dirs, visibility v)
       void_type,
       function_signature{
-        token_provider.include_directories(),
+        token_provider.include_directories_dirs_visibility(),
         { parameter_declaration{ directories_type, param_token },
           parameter_declaration{ visibility_type, param_token } } },
       builtin_function_kind::executable_include_directories_visibility }
