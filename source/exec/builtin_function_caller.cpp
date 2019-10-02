@@ -1786,17 +1786,37 @@ inst::instance* builtin_function_caller::user_type_operator_equal(
 inst::instance* builtin_function_caller::option_ctor_description(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
-  const auto& [description] = get_params<alternative_t::string>(params);
-  instance.assign(inst::option_value{ description });
+  const auto& [name, description] =
+    get_params<alternative_t::string, alternative_t::string>(params);
+  const auto existing_value = m_cmake_facade.get_option_value(name);
+  bool value = false;
+  if (existing_value) {
+    value = *existing_value;
+  } else {
+    m_cmake_facade.register_option(name, description, value);
+  }
+
+  instance.value_accessor().access().set_option(
+    inst::option_value{ description, value });
   return &instance;
 }
 
 inst::instance* builtin_function_caller::option_ctor_description_value(
   inst::instance& instance, const builtin_function_caller::params_t& params)
 {
-  const auto& [description, value] =
-    get_params<alternative_t::string, alternative_t::bool_>(params);
-  instance.assign(inst::option_value{ description, value });
+  const auto& [name, description, param_value] =
+    get_params<alternative_t::string, alternative_t::string,
+               alternative_t::bool_>(params);
+  const auto existing_value = m_cmake_facade.get_option_value(name);
+  bool value = param_value;
+  if (existing_value) {
+    value = *existing_value;
+  } else {
+    m_cmake_facade.register_option(name, description, value);
+  }
+
+  instance.value_accessor().access().set_option(
+    inst::option_value{ description, value });
   return &instance;
 }
 

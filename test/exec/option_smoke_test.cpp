@@ -11,7 +11,7 @@ TEST_F(OptionSmokeTest, ConstructorWithDescription)
 {
   const auto source = "int main()"
                       "{"
-                      "    auto foo = cmake::option(\"bar\");"
+                      "    auto foo = cmake::option(\"bar\", \"baz\");"
                       "    return int(foo.value() == false);"
                       "}";
   const auto result = m_executor->execute(source);
@@ -23,9 +23,9 @@ TEST_F(OptionSmokeTest, ConstructorWithDescriptionAndValue)
   const auto source =
     "int main()"
     "{"
-    "    auto foo = cmake::option(\"bar\", false);"
-    "    auto baz = cmake::option(\"qux\", true);"
-    "    return int(foo.value() == false && baz.value() == true);"
+    "    auto foo = cmake::option(\"bar\", \"baz\", false);"
+    "    auto qux = cmake::option(\"top\", \"kek\", true);"
+    "    return int(foo.value() == false && qux.value() == true);"
     "}";
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));

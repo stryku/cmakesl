@@ -263,8 +263,8 @@ GENERATION_INFO = {
     'option': {
         'tokens': {
             'name': ['class option', 'class ', 'option', 'kw_option'],
-            'constructor_description': ['option(string description);', '', 'option'],
-            'constructor_description_value': ['option(string description, bool value);', '', 'option'],
+            'constructor_description': ['option(string name, string description);', '', 'option'],
+            'constructor_description_value': ['option(string name, string description, bool value);', '', 'option'],
             'value': ['bool value();', 'bool ', 'value']
         }
     },

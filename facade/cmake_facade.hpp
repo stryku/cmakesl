@@ -101,5 +101,11 @@ public:
 
   virtual void set_property(const std::string& property_name,
                             const std::string& property_value) const = 0;
+
+  virtual std::optional<bool> get_option_value(
+    const std::string& name) const = 0;
+  virtual void register_option(const std::string& name,
+                               const std::string& description,
+                               bool value) const = 0;
 };
 }

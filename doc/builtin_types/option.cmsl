@@ -8,18 +8,20 @@ public:
    *
    * Sets value to false.
    *
+   * \param name The name of the option.
    * \param description The description to be initialized with.
    */
-  option(string description);
+  option(string name, string description);
 
   /** \brief Constructor.
    *
    * Sets value to \p value.
    *
+   * \param name The name of the option.
    * \param description The description to be initialized with.
    * \param value The value to be initialized with.
    */
-  option(string description, bool value);
+  option(string name, string description, bool value);
 
   /** \brief Value getter.
    *
