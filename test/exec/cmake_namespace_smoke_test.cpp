@@ -4,6 +4,7 @@
 
 namespace cmsl::exec::test {
 using ::testing::Eq;
+using ::testing::_;
 
 using CmakeNamespaceSmokeTest = ExecutionSmokeTest;
 
@@ -15,6 +16,20 @@ TEST_F(CmakeNamespaceSmokeTest, ModulePath)
                       "}";
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(0));
+}
+
+TEST_F(CmakeNamespaceSmokeTest, SettingModulePathCallsFacade)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::module_path += \"foo\";"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, set_property("CMAKE_MODULE_PATH", _));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
 }
 
 TEST_F(CmakeNamespaceSmokeTest, CxxCompilerId)
@@ -66,6 +81,21 @@ TEST_F(CmakeNamespaceSmokeTest, CxxStandard)
     "}";
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
+}
+
+TEST_F(CmakeNamespaceSmokeTest, SettingCxxStandardCallsFacade)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::cxx_standard = cmake::cxx_standard_value::cpp_20;"
+    "    return 42;"
+    "}";
+
+  EXPECT_CALL(m_facade, set_property("CMAKE_CXX_STANDARD", _));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
 }
 
 TEST_F(CmakeNamespaceSmokeTest, CmakeMinimumRequiredIsCallable)

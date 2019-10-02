@@ -144,22 +144,24 @@ void builtin_cmake_namespace_context::add_identifiers()
 
   const auto identifiers = {
     builtin_variable_info{ m_builtin_tokens.cmake().module_path(),
-                           list_of_string_type },
+                           list_of_string_type, "CMAKE_MODULE_PATH" },
     builtin_variable_info{ m_builtin_tokens.cmake().cxx_standard(),
-                           cxx_standard_value_type }
+                           cxx_standard_value_type, "CMAKE_CXX_STANDARD" }
   };
 
   for (const auto& identifier : identifiers) {
     const auto identifier_index = identifiers_index_provider::get_next();
     const auto id_info = identifier_info{ identifier.type, identifier_index };
+    const auto builtin_id_info =
+      builtin_identifier_info{ id_info, identifier.cmake_variable_name };
 
     m_qualified_ctxs.ids.register_identifier(identifier.name, id_info,
                                              /*exported=*/false);
-    m_builtin_identifiers_info.emplace_back(id_info);
+    m_builtin_identifiers_info.emplace_back(builtin_id_info);
   }
 }
 
-const std::vector<identifier_info>&
+const std::vector<builtin_identifier_info>&
 builtin_cmake_namespace_context::builtin_identifiers_info() const
 {
   return m_builtin_identifiers_info;

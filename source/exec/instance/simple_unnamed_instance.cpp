@@ -1,7 +1,7 @@
 #include "exec/instance/simple_unnamed_instance.hpp"
-
 #include "common/algorithm.hpp"
 #include "common/assert.hpp"
+#include "exec/instance/instance_value_accessor.hpp"
 #include "exec/instance/instance_value_variant.hpp"
 #include "sema/sema_type.hpp"
 
@@ -59,9 +59,9 @@ instance_value_variant simple_unnamed_instance::value() const
   return m_data;
 }
 
-instance_value_variant& simple_unnamed_instance::value_ref()
+instance_value_accessor simple_unnamed_instance::value_accessor()
 {
-  return m_data;
+  return instance_value_accessor{ type(), m_data };
 }
 
 const instance_value_variant& simple_unnamed_instance::value_cref() const

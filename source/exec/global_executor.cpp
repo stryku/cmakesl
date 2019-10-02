@@ -37,6 +37,7 @@ global_executor::global_executor(const std::string& root_path,
   , m_cmake_facade{ cmake_facade }
   , m_errors_observer{ &m_cmake_facade }
   , m_builtin_qualified_contexts{ create_qualified_contextes() }
+  , m_builtin_identifiers_observer{ m_cmake_facade }
   , m_builtin_tokens{ std::make_unique<sema::builtin_token_provider>("") }
   , m_builtin_context{ create_builtin_context() }
   , m_static_variables{ m_cmake_facade, m_builtin_context->builtin_types(),
@@ -81,7 +82,8 @@ int global_executor::execute(std::string source)
   const auto builtin_identifiers_info =
     m_builtin_context->builtin_identifiers_info();
 
-  m_static_variables.initialize_builtin_variables(builtin_identifiers_info);
+  m_static_variables.initialize_builtin_variables(
+    builtin_identifiers_info, m_builtin_identifiers_observer);
 
   execution e{ m_cmake_facade, compiled->builtin_types(), m_static_variables };
 

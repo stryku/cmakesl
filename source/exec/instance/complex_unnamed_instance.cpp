@@ -40,11 +40,11 @@ instance_value_variant complex_unnamed_instance::value() const
   return instance_value_variant{};
 }
 
-instance_value_variant& complex_unnamed_instance::value_ref()
+instance_value_accessor complex_unnamed_instance::value_accessor()
 {
   CMSL_UNREACHABLE("Getting value of a complex type");
   static instance_value_variant dummy;
-  return dummy;
+  return instance_value_accessor{ type(), dummy };
 }
 
 const instance_value_variant& complex_unnamed_instance::value_cref() const

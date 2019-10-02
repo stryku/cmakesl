@@ -1,6 +1,7 @@
 #pragma once
 
 #include "errors/errors_observer.hpp"
+#include "exec/builtin_identifiers_observer.hpp"
 #include "exec/cross_translation_unit_static_variables.hpp"
 #include "exec/module_sema_tree_provider.hpp"
 #include "sema/add_subdirectory_handler.hpp"
@@ -81,6 +82,7 @@ private:
   // Contextes are going to be initialized with builtin stuff at builtin
   // context creation.
   sema::qualified_contextes m_builtin_qualified_contexts;
+  builtin_identifiers_observer m_builtin_identifiers_observer;
 
   sema::factories_provider m_factories;
 

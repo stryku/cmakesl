@@ -1,6 +1,8 @@
 set(EXEC_SOURCES
     builtin_function_caller.cpp
     builtin_function_caller.hpp
+        builtin_identifiers_observer.cpp
+        builtin_identifiers_observer.hpp
     compiled_source.cpp
     compiled_source.hpp
     cross_translation_unit_static_variables.cpp
@@ -36,7 +38,10 @@ set(EXEC_SOURCES
     instance/instance_factory.hpp
     instance/instance_reference.cpp
     instance/instance_reference.hpp
+    instance/instance_value_accessor.cpp
+    instance/instance_value_accessor.hpp
     instance/instance_value_alternative.hpp
+    instance/instance_value_observer.hpp
     instance/instance_value_variant.cpp
     instance/instance_value_variant.hpp
     instance/instances_holder.cpp
@@ -46,6 +51,8 @@ set(EXEC_SOURCES
     instance/list_value.hpp
     instance/list_value_utils.cpp
     instance/list_value_utils.hpp
+    instance/observable_instance.cpp
+    instance/observable_instance.hpp
     instance/option_value.cpp
     instance/option_value.hpp
     instance/project_value.cpp

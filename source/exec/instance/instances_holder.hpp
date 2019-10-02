@@ -1,5 +1,6 @@
 #pragma once
 
+#include "exec/instance/instance_value_observer.hpp"
 #include "exec/instance/instances_holder_interface.hpp"
 #include "sema/builtin_types_accessor.hpp"
 
@@ -34,6 +35,8 @@ public:
   inst::instance* create_reference(
     inst::instance& referenced_instance) override;
   inst::instance* create(const sema::sema_type& type) override;
+  inst::instance* create_observable(const sema::sema_type& type,
+                                    instance_value_observer_t observer);
   inst::instance* create(const sema::sema_type& type,
                          instance_value_variant value) override;
   inst::instance* create_void() override;

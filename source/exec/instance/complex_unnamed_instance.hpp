@@ -22,7 +22,7 @@ public:
                                     instance_members_t members);
 
   instance_value_variant value() const override;
-  instance_value_variant& value_ref() override;
+  instance_value_accessor value_accessor() override;
   const instance_value_variant& value_cref() const override;
 
   void assign(instance_value_variant val) override;

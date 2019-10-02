@@ -228,7 +228,8 @@ public:
   void visit(const sema::initializer_list_node& node) override
   {
     auto list_instance = m_ctx.instances.create(node.type());
-    auto& list = list_instance->value_ref().get_list_ref();
+    auto accessor = list_instance->value_accessor();
+    auto& list = accessor.access().get_list_ref();
 
     for (const auto& value_expression : node.values()) {
       const auto evaluated = evaluate_child(*value_expression);

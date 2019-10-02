@@ -1,5 +1,4 @@
-#include "instance_reference.hpp"
-
+#include "exec/instance/instance_reference.hpp"
 #include "exec/execution_context.hpp"
 #include "lexer/token.hpp"
 
@@ -19,9 +18,9 @@ instance_value_variant instance_reference::value() const
   return m_instance.value();
 }
 
-instance_value_variant& instance_reference::value_ref()
+instance_value_accessor instance_reference::value_accessor()
 {
-  return m_instance.value_ref();
+  return m_instance.value_accessor();
 }
 
 const instance_value_variant& instance_reference::value_cref() const

@@ -93,6 +93,8 @@ public:
     return std::nullopt;
   }
 
+  void set_property(const std::string&, const std::string&) const override {}
+
 private:
   std::stack<std::string> m_directory_stack;
   bool m_fatal_error_occured{ false };
