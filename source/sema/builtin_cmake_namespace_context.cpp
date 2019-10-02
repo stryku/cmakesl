@@ -140,9 +140,14 @@ void builtin_cmake_namespace_context::add_identifiers()
 {
   const auto& list_of_string_type =
     m_generics_creation_utils.list_of_strings();
+  const auto& cxx_standard_value_type = m_types_accessor->cxx_standard_value;
 
-  const auto identifiers = { builtin_variable_info{
-    m_builtin_tokens.cmake().module_path(), list_of_string_type } };
+  const auto identifiers = {
+    builtin_variable_info{ m_builtin_tokens.cmake().module_path(),
+                           list_of_string_type },
+    builtin_variable_info{ m_builtin_tokens.cmake().cxx_standard(),
+                           cxx_standard_value_type }
+  };
 
   for (const auto& identifier : identifiers) {
     const auto identifier_index = identifiers_index_provider::get_next();
@@ -163,6 +168,7 @@ builtin_cmake_namespace_context::builtin_identifiers_info() const
 void builtin_cmake_namespace_context::add_types()
 {
   const auto& cxx_compiler_id_type = add_cxx_compiler_id_type();
+  const auto& cxx_standard_value_type = add_cxx_standard_value_type();
   const auto& visibility_type = add_visibility_type();
   auto cxx_compiler_info_manipulator =
     add_cxx_compiler_info_type(cxx_compiler_id_type);
@@ -186,6 +192,8 @@ void builtin_cmake_namespace_context::add_types()
     .cxx_compiler_id_ref = *find_reference_for(cxx_compiler_id_type),
     .cxx_compiler_info = cxx_compiler_info,
     .cxx_compiler_info_ref = cxx_compiler_info_ref,
+    .cxx_standard_value = cxx_standard_value_type,
+    .cxx_standard_value_ref = *find_reference_for(cxx_standard_value_type),
     .visibility = visibility_type,
     .visibility_ref = *find_reference_for(cxx_compiler_id_type),
     .version = version,
@@ -225,6 +233,41 @@ const sema_type& builtin_cmake_namespace_context::add_cxx_compiler_id_type()
   static const auto token = m_builtin_tokens.cmake().cxx_compiler_id_name();
   const std::vector<lexer::token> enumerators{
     m_builtin_tokens.cmake().cxx_compiler_id_clang()
+  };
+
+  enum_creator creator{ m_factories, m_qualified_ctxs.types, *this,
+                        m_builtin_types };
+
+  const auto& type =
+    creator.create(token, enumerators, sema_type::flags::builtin);
+
+  {
+    auto guard = m_qualified_ctxs.enums_ctx_guard(token, /*exported=*/false);
+
+    unsigned value{};
+
+    for (const auto& enumerator : enumerators) {
+      const auto enum_value_index = identifiers_index_provider::get_next();
+      const auto enum_value = value++;
+      m_qualified_ctxs.enums.register_identifier(
+        enumerator,
+        enum_values_context::enum_value_info{ type, enum_value,
+                                              enum_value_index },
+        /*exported=*/false);
+    }
+  }
+
+  return type;
+}
+
+const sema_type& builtin_cmake_namespace_context::add_cxx_standard_value_type()
+{
+  static const auto token = m_builtin_tokens.cmake().cxx_standard_value_name();
+  const std::vector<lexer::token> enumerators{
+    m_builtin_tokens.cmake().cxx_standard_value_cpp_11(),
+    m_builtin_tokens.cmake().cxx_standard_value_cpp_14(),
+    m_builtin_tokens.cmake().cxx_standard_value_cpp_17(),
+    m_builtin_tokens.cmake().cxx_standard_value_cpp_20()
   };
 
   enum_creator creator{ m_factories, m_qualified_ctxs.types, *this,

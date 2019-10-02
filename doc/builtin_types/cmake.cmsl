@@ -10,6 +10,20 @@ namespace cmake {
  */
 list<string> module_path;
 
+/** \brief An enum describing C++ standard.
+ */
+enum cxx_standard_value
+{
+  cpp_11,
+  cpp_14,
+  cpp_17,
+  cpp_20
+};
+
+/** \brief Value for C++ standard that is going to be globally used.
+ */
+cxx_standard_type cxx_standard;
+
 /** \brief Checks whether scripts are run by a proper CMake version.
  *
  * \param v The minimum CMake version.

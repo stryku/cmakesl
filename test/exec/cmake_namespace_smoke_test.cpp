@@ -42,6 +42,32 @@ TEST_F(CmakeNamespaceSmokeTest, GetCxxCompilerInfo)
   EXPECT_THAT(result, Eq(1));
 }
 
+TEST_F(CmakeNamespaceSmokeTest, CxxStandardValue)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    auto result = cmake::cxx_standard_value::cpp_17.to_string() == "
+    "\"cpp_17\";"
+    "    return int(result);"
+    "}";
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(1));
+}
+
+TEST_F(CmakeNamespaceSmokeTest, CxxStandard)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::cxx_standard = cmake::cxx_standard_value::cpp_20;"
+    "    auto result = cmake::cxx_standard.to_string() == \"cpp_20\";"
+    "    return int(result);"
+    "}";
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(1));
+}
+
 TEST_F(CmakeNamespaceSmokeTest, CmakeMinimumRequiredIsCallable)
 {
   const auto source = "int main()"

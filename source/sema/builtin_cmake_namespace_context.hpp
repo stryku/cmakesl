@@ -49,6 +49,7 @@ private:
   type_builder add_type(lexer::token name_token);
 
   const sema_type& add_cxx_compiler_id_type();
+  const sema_type& add_cxx_standard_value_type();
   const sema_type& add_visibility_type();
   type_builder add_cxx_compiler_info_type(const sema_type& cxx_compiler_id);
 

@@ -9,6 +9,8 @@ struct cmake_namespace_types_accessor
   const sema_type& cxx_compiler_id_ref;
   const sema_type& cxx_compiler_info;
   const sema_type& cxx_compiler_info_ref;
+  const sema_type& cxx_standard_value;
+  const sema_type& cxx_standard_value_ref;
   const sema_type& visibility;
   const sema_type& visibility_ref;
   const sema_type& version;
