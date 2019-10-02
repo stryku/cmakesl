@@ -6,7 +6,6 @@
 
 #include <sstream>
 
-// Todo: change to lexer::test
 namespace cmsl::lexer::test {
 using lexer_t = cmsl::lexer::lexer;
 

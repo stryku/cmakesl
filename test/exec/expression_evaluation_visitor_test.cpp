@@ -5,11 +5,11 @@
 
 #include "test/ast/mock/ast_node_mock.hpp"
 #include "test/common/tokens.hpp"
-#include "test/exec/mock/cmake_facade_mock.hpp"
 #include "test/exec/mock/function_caller_mock.hpp"
 #include "test/exec/mock/identifiers_context_mock.hpp"
 #include "test/exec/mock/instance_mock.hpp"
 #include "test/exec/mock/instances_holder_mock.hpp"
+#include "test/mock/cmake_facade_mock.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"
 #include "test/sema/mock/sema_function_mock.hpp"
 

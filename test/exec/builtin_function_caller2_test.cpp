@@ -5,9 +5,9 @@
 #include "sema/sema_type.hpp"
 
 #include "test/common/tokens.hpp"
-#include "test/exec/mock/cmake_facade_mock.hpp"
 #include "test/exec/mock/instance_mock.hpp"
 #include "test/exec/mock/instances_holder_mock.hpp"
+#include "test/mock/cmake_facade_mock.hpp"
 
 #include <gmock/gmock.h>
 #include <sema/builtin_function_kind.hpp>

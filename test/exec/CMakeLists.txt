@@ -37,7 +37,6 @@ cmsl_add_test(
         while_loop_smoke_test.cpp
         add_subdirectory_test/add_subdirectory_smoke_test.cpp
         import_test/import_smoke_test.cpp
-        mock/cmake_facade_mock.hpp
         mock/function_caller_mock.hpp
         mock/identifiers_context_mock.hpp
         mock/instance_mock.hpp

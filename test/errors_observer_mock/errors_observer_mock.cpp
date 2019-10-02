@@ -19,6 +19,10 @@ errors_observer_mock::~errors_observer_mock()
 }
 }
 
+errors_observer::errors_observer(facade::cmake_facade*)
+{
+}
+
 void errors_observer::notify_error(const cmsl::errors::error& error)
 {
   errors_observer_mock_ptr->notify_error(error);
