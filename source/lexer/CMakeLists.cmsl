@@ -1,0 +1,21 @@
+void main(cmake::project& project)
+{
+  auto sources = {
+    // clang-format: off
+    "lexer.cpp",
+    "lexer.hpp",
+    "source_location_manipulator.cpp",
+    "source_location_manipulator.hpp",
+    "token.cpp",
+    "token.hpp",
+    "token_type.cpp",
+    "token_type.hpp"
+    // clang-format: on
+  };
+
+  auto lib = project.add_library("lexer", sources);
+  lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
+
+  auto common = project.find_library("common");
+  lib.link_to(lexer, cmake::visibility::public);
+}

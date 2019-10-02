@@ -244,7 +244,9 @@ GENERATION_INFO = {
             'name': ['class library', 'class ', 'library', 'kw_library'],
             'method_name': ['string name();', 'string ', 'name'],
             'link_to': ['void link_to(library lib);', 'void ', 'link_to'],
-            'include_directories': ['void include_directories(list<string> dirs);', 'void ', 'include_directories']
+            'link_to_lib_visibility': ['void link_to(library lib, visibility v);', 'void ', 'link_to'],
+            'include_directories': ['void include_directories(list<string> dirs);', 'void ', 'include_directories'],
+            'include_directories_dirs_visibility': ['void include_directories(list<string> dirs, visibility v);', 'void ', 'include_directories']
         }
     },
     'executable': {
@@ -252,7 +254,9 @@ GENERATION_INFO = {
             'name': ['class executable', 'class ', 'executable', 'kw_executable'],
             'method_name': ['string name();', 'string ', 'name'],
             'link_to': ['void link_to(library lib);', 'void ', 'link_to'],
-            'include_directories': ['void include_directories(list<string> dirs);', 'void ', 'include_directories']
+            'link_to_lib_visibility': ['void link_to(library lib, visibility v);', 'void ', 'link_to'],
+            'include_directories': ['void include_directories(list<string> dirs);', 'void ', 'include_directories'],
+            'include_directories_dirs_visibility': ['void include_directories(list<string> dirs, visibility v);', 'void ', 'include_directories']
         }
     },
     'void': {

@@ -1,0 +1,10 @@
+
+int main(cmake::project& project)
+{
+  add_subdirectory("common", project);
+  add_subdirectory("errors", project);
+  add_subdirectory("lexer", project);
+  add_subdirectory("ast", project);
+  add_subdirectory("sema", project);
+  add_subdirectory("exec", project);
+}

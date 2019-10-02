@@ -1,0 +1,107 @@
+import "cmake/cmsl_directories.cmsl"
+
+  std::string created_builtin_tokens_generation_command()
+{
+  auto builtin_tokens_providers_dir =
+    cmake::current_binary_dir() / "generated";
+  auto result_file_path =
+    builtin_tokens_providers_dir / "builtin_token_providers.hpp";
+  auto builtin_tokens_generator_command = {
+    "python3", cmsl::scripts_dir / "builtin_types", result_file_path
+  };
+
+  cmake::make_directory(builtin_tokens_providers_dir);
+  cmake::add_custom_command(builtin_tokens_generator_command,
+                            result_file_path);
+
+  return result_file_path;
+}
+
+void main(cmake::project& project)
+{
+  auto builtin_tokens_providers_file = add_builtin_tokens_generation_command();
+
+  auto sources = {
+    // clang-format: off
+    "add_subdirectory_handler.hpp",
+    "block_node_manipulator.cpp",
+    "block_node_manipulator.hpp",
+    "builtin_cmake_namespace_context.cpp",
+    "builtin_cmake_namespace_context.hpp",
+    "builtin_function_kind.hpp",
+    "builtin_sema_context.cpp",
+    "builtin_sema_context.hpp",
+    "builtin_sema_function.hpp",
+    "builtin_token_provider.cpp",
+    "builtin_token_provider.hpp",
+    "builtin_types_accessor.hpp",
+    "cmake_namespace_types_accessor.hpp",
+    "dumper.cpp",
+    "dumper.hpp",
+    "enum_creator.cpp",
+    "enum_creator.hpp",
+    "enum_type.hpp",
+    "enum_values_context.cpp",
+    "enum_values_context.hpp",
+    "factories.cpp",
+    "factories.hpp",
+    "factories_provider.cpp",
+    "factories_provider.hpp",
+    "failed_initialization_errors_reporters.cpp",
+    "failed_initialization_errors_reporters.hpp",
+    "function_lookup_result.hpp",
+    "function_signature.cpp",
+    "function_signature.hpp",
+    "functions_context.cpp",
+    "functions_context.hpp",
+    "generic_type_creation_utils.cpp",
+    "generic_type_creation_utils.hpp",
+    "homogeneous_generic_type.cpp",
+    "homogeneous_generic_type.hpp",
+    "identifier_info.hpp",
+    "identifiers_context.cpp",
+    "identifiers_context.hpp",
+    "identifiers_index_provider.hpp",
+    "import_handler.hpp",
+    "overload_resolution.cpp",
+    "overload_resolution.hpp",
+    "qualified_contextes.cpp",
+    "qualified_contextes.hpp",
+    "qualified_contextes_refs.hpp",
+    "qualified_entries_finder.hpp",
+    "sema_builder.cpp",
+    "sema_builder.hpp",
+    "sema_builder_ast_visitor.cpp",
+    "sema_builder_ast_visitor.hpp",
+    "sema_context.hpp",
+    "sema_context_impl.cpp",
+    "sema_context_impl.hpp",
+    "sema_function.hpp",
+    "sema_node.cpp",
+    "sema_node.hpp",
+    "sema_node_visitor.hpp",
+    "sema_nodes.hpp",
+    "sema_tree_building_context.hpp",
+    "sema_type.cpp",
+    "sema_type.hpp",
+    "type_builder.cpp",
+    "type_builder.hpp",
+    "type_member_info.hpp",
+    "types_context.cpp",
+    "types_context.hpp",
+    "user_sema_function.hpp",
+    "variable_initialization_checker.cpp",
+    "variable_initialization_checker.hpp",
+    "variable_initialization_issue.hpp",
+
+    builtin_tokens_providers_file
+    // clang-format: on
+  };
+
+  auto lib = project.add_library("sema", sources);
+  lib.include_directories({ cmsl::source_dir, cmake::current_binary_dir() },
+                          cmake::visibility::private);
+
+  auto ast = project.find_library("ast");
+  lib.link_to(lexer, cmake::visibility::public);
+}
