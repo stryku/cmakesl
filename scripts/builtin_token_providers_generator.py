@@ -236,7 +236,8 @@ GENERATION_INFO = {
             'constructor_name': ['project(string name);', '', 'project'],
             'add_executable': ['executable add_executable(string name, list<string> sources);', 'executable ',
                                'add_executable'],
-            'add_library': ['library add_library(string name, list<string> sources);', 'library ', 'add_library']
+            'add_library': ['library add_library(string name, list<string> sources);', 'library ', 'add_library'],
+            'find_library': ['library find_library(string name);', 'library ', 'find_library']
         }
     },
     'library': {

@@ -176,6 +176,7 @@ enum class builtin_function_kind
   project_name,
   project_add_executable,
   project_add_library,
+  project_find_library,
 
   library_name,
   library_link_to,

@@ -322,6 +322,8 @@ private:
                                          const params_t& params);
   inst::instance* project_add_library(inst::instance& instance,
                                       const params_t& params);
+  inst::instance* project_find_library(inst::instance& instance,
+                                       const params_t& params);
 
   inst::instance* library_name(inst::instance& instance,
                                const params_t& params);
