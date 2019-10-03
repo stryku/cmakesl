@@ -9,15 +9,9 @@ int main()
   add_subdirectory("source", p);
 
   auto with_tools =
-    cmake::option("With tools", "When ON, tools will be built", false);
+    cmake::option("CMAKESL_WITH_TOOLS", "When ON, tools will be built", false);
   if (with_tools.value()) {
-    add_subdirectory("tools");
-  }
-
-  auto with_examples =
-    cmake::option("With examples", "When ON, examples will be built", false);
-  if (with_examples.value()) {
-    add_subdirectory("examples");
+    add_subdirectory("tools", p);
   }
 
   return 0;
