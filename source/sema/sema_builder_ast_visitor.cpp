@@ -942,6 +942,14 @@ void sema_builder_ast_visitor::visit(const ast::initializer_list_node& node)
       return;
     }
 
+    if (!expression->produces_temporary_value()) {
+      const auto& desired_type = expression->type().is_reference()
+        ? expression->type().referenced_type()
+        : expression->type();
+      expression = std::make_unique<cast_to_value_node>(
+        expression->ast_node(), desired_type, std::move(expression));
+    }
+
     const auto& expr_type = expression->type();
     if (value_type && *value_type != expr_type) {
       raise_error(node.open_brace(),

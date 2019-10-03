@@ -163,6 +163,8 @@ std::unique_ptr<sema::qualified_contextes> global_executor::handle_import(
     return nullptr;
   }
 
+  m_static_variables.initialize_module(compiled->sema_tree());
+
   const auto& sema_tree = compiled->sema_tree();
 
   auto exported_stuff = contexts.collect_exported_stuff();
