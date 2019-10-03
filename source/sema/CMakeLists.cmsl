@@ -1,13 +1,14 @@
 import "cmake/cmsl_directories.cmsl"
 
-  std::string created_builtin_tokens_generation_command()
+  string add_builtin_tokens_generation_command()
 {
   auto builtin_tokens_providers_dir =
-    cmake::current_binary_dir() / "generated";
+    cmake::current_binary_dir() + "/generated";
   auto result_file_path =
-    builtin_tokens_providers_dir / "builtin_token_providers.hpp";
+    builtin_tokens_providers_dir + "/builtin_token_providers.hpp";
   auto builtin_tokens_generator_command = {
-    "python3", cmsl::scripts_dir / "builtin_types", result_file_path
+    "python3", cmsl::scripts_dir + "/builtin_token_providers_generator.py",
+    cmsl::doc_dir + "/builtin_types", result_file_path
   };
 
   cmake::make_directory(builtin_tokens_providers_dir);
@@ -17,7 +18,7 @@ import "cmake/cmsl_directories.cmsl"
   return result_file_path;
 }
 
-void main(cmake::project& project)
+void main(cmake::project& p)
 {
   auto builtin_tokens_providers_file = add_builtin_tokens_generation_command();
 
@@ -98,10 +99,10 @@ void main(cmake::project& project)
     // clang-format: on
   };
 
-  auto lib = project.add_library("sema", sources);
+  auto lib = p.add_library("sema", sources);
   lib.include_directories({ cmsl::source_dir, cmake::current_binary_dir() },
                           cmake::visibility::private);
 
-  auto ast = project.find_library("ast");
-  lib.link_to(lexer, cmake::visibility::public);
+  auto ast = p.find_library("ast");
+  lib.link_to(ast, cmake::visibility::public);
 }

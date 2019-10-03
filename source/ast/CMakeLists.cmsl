@@ -1,4 +1,6 @@
-void main(cmake::project& project)
+import "cmake/cmsl_directories.cmsl"
+
+  void main(cmake::project & p)
 {
   auto sources = {
     // clang-format: off
@@ -52,9 +54,9 @@ void main(cmake::project& project)
     "while_node.hpp"
     // clang-format: on
   };
-  auto lib = project.add_library("ast", sources);
+  auto lib = p.add_library("ast", sources);
   lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
 
-  auto lexer = project.find_library("lexer");
+  auto lexer = p.find_library("lexer");
   lib.link_to(lexer, cmake::visibility::public);
 }

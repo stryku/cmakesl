@@ -1,4 +1,6 @@
-void main(cmake::project& project)
+import "cmake/cmsl_directories.cmsl"
+
+  void main(cmake::project & p)
 {
   auto sources = {
     // clang-format: off
@@ -13,7 +15,6 @@ void main(cmake::project& project)
     "string.hpp"
     // clang-format: on
   };
-  auto lib = project.add_library("common", sources);
-
+  auto lib = p.add_library("common", sources);
   lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
 }

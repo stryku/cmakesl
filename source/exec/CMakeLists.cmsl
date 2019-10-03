@@ -1,4 +1,6 @@
-void main(cmake::project& project)
+import "cmake/cmsl_directories.cmsl"
+
+  void main(cmake::project & p)
 {
   auto sources = {
     // clang-format: off
@@ -69,10 +71,10 @@ void main(cmake::project& project)
     // clang-format: on
   };
 
-  auto lib = project.add_library("exec", sources);
+  auto lib = p.add_library("exec", sources);
   lib.include_directories({ cmsl::source_dir, cmsl::facade_dir },
                           cmake::visibility::private);
 
-  auto sema = project.find_library("sema");
-  lib.link_to(lexer, cmake::visibility::public);
+  auto sema = p.find_library("sema");
+  lib.link_to(sema, cmake::visibility::public);
 }

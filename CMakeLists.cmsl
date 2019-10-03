@@ -1,12 +1,12 @@
 int main()
 {
-  cmake::minimum_required(cmake::version(3.14));
-
-  auto project = cmake::project("CMakeSL");
+  cmake::minimum_required(cmake::version(3, 14));
 
   cmake::cxx_standard = cmake::cxx_standard_value::cpp_17;
 
-  add_subdirectory("source", project);
+  auto p = cmake::project("CMakeSL");
+
+  add_subdirectory("source", p);
 
   auto with_tools =
     cmake::option("With tools", "When ON, tools will be built", false);

@@ -1,4 +1,6 @@
-void main(cmake::project& project)
+import "cmake/cmsl_directories.cmsl"
+
+  void main(cmake::project & p)
 {
   auto sources = {
     // clang-format: off
@@ -13,9 +15,9 @@ void main(cmake::project& project)
     // clang-format: on
   };
 
-  auto lib = project.add_library("lexer", sources);
+  auto lib = p.add_library("lexer", sources);
   lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
 
-  auto common = project.find_library("common");
-  lib.link_to(lexer, cmake::visibility::public);
+  auto common = p.find_library("common");
+  lib.link_to(common, cmake::visibility::public);
 }

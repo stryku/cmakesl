@@ -1,9 +1,11 @@
 import "cmake/cmsl_directories.cmsl"
 
-  void main(cmake::project & project)
+  void main(cmake::project & p)
 {
-  auto lib = project.add_library(
+  auto lib = p.add_library(
     "errors", { "error.hpp", "errors_observer.hpp", "errors_observer.cpp" });
 
-  lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
+  cmake::message(cmsl::facade_dir);
+  lib.include_directories({ cmsl::source_dir, cmsl::facade_dir },
+                          cmake::visibility::private);
 }
