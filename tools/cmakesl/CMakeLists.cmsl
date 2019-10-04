@@ -2,11 +2,10 @@ import "cmake/cmsl_directories.cmsl"
 
   void main(cmake::project & p)
 {
-  auto sources = {
-    "main.cpp"
-  };
+  auto sources = { "main.cpp" };
   auto exe = p.add_executable("cmakesl", sources);
-  exe.include_directories({ cmsl::source_dir, cmsl::facade_dir }, cmake::visibility::private);
+  exe.include_directories({ cmsl::source_dir, cmsl::facade_dir },
+                          cmake::visibility::private);
 
   exe.link_to(p.find_library("exec"), cmake::visibility::private);
   exe.link_to(p.find_library("sema"), cmake::visibility::private);

@@ -2,28 +2,27 @@ import "cmake/cmsl_directories.cmsl"
 
   void main(cmake::project & p)
 {
-  auto sources = {
-    "cmsl_complete.cpp",
-    "cmsl_complete.hpp",
-    "cmsl_index.cpp",
-    "cmsl_index.hpp",
-    "cmsl_parse_source.cpp",
-    "cmsl_parse_source.hpp",
-    "cmsl_parsed_source.cpp",
-    "cmsl_parsed_source.hpp",
-    "completer.cpp",
-    "completer.hpp",
-    "completion_context_finder.cpp",
-    "completion_context_finder.hpp",
-    "completion_contextes_visitor.cpp",
-    "completion_contextes_visitor.hpp",
-    "identifier_names_collector.cpp",
-    "identifier_names_collector.hpp",
-    "type_names_collector.cpp",
-    "type_names_collector.hpp"
-  };
+  auto sources = { "cmsl_complete.cpp",
+                   "cmsl_complete.hpp",
+                   "cmsl_index.cpp",
+                   "cmsl_index.hpp",
+                   "cmsl_parse_source.cpp",
+                   "cmsl_parse_source.hpp",
+                   "cmsl_parsed_source.cpp",
+                   "cmsl_parsed_source.hpp",
+                   "completer.cpp",
+                   "completer.hpp",
+                   "completion_context_finder.cpp",
+                   "completion_context_finder.hpp",
+                   "completion_contextes_visitor.cpp",
+                   "completion_contextes_visitor.hpp",
+                   "identifier_names_collector.cpp",
+                   "identifier_names_collector.hpp",
+                   "type_names_collector.cpp",
+                   "type_names_collector.hpp" };
   auto exe = p.add_library("cmsl_tools", sources);
-  exe.include_directories({ cmsl::source_dir, cmsl::facade_dir }, cmake::visibility::private);
+  exe.include_directories({ cmsl::source_dir, cmsl::facade_dir },
+                          cmake::visibility::private);
 
   exe.link_to(p.find_library("sema"), cmake::visibility::private);
   exe.link_to(p.find_library("errors"), cmake::visibility::private);

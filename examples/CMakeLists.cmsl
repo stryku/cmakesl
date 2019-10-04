@@ -1,32 +1,27 @@
 import "cmake/cmsl_directories.cmsl"
 
-class example_adder
+  class example_adder
 {
-    cmake::project p;
-    cmake::library cmsl_tools;
+  cmake::project p;
+  cmake::library cmsl_tools;
 
-    void add(string name, list<string> sources)
-    {
-        auto include_dirs = {
-            cmsl::tools_dir, cmsl::source_dir
-        };
-        auto visibility = cmake::visibility::private;
+  void add(string name, list<string> sources)
+  {
+    auto include_dirs = { cmsl::tools_dir, cmsl::source_dir };
+    auto visibility = cmake::visibility::private;
 
-        auto example = p.add_executable(name, sources);
-        example.link_to(cmsl_tools);
-        example.include_directories(include_dirs, visibility);
-        cmake::install(example);
-    }
+    auto example = p.add_executable(name, sources);
+    example.link_to(cmsl_tools);
+    example.include_directories(include_dirs, visibility);
+    cmake::install(example);
+  }
 };
 
 void main(cmake::library& cmsl_tools)
 {
-    auto p = cmake::project("examples");
-    example_adder examples = {
-        .p = p,
-        .cmsl_tools = cmsl_tools
-    };
+  auto p = cmake::project("examples");
+  example_adder examples = { .p = p, .cmsl_tools = cmsl_tools };
 
-    examples.add("complete", {"complete.c"});
-    examples.add("index", {"index.c"});
+  examples.add("complete", { "complete.c" });
+  examples.add("index", { "index.c" });
 }

@@ -14,5 +14,12 @@ int main()
     add_subdirectory("tools", p);
   }
 
+  auto with_examples_tools = cmake::option(
+    "CMAKESL_WITH_EXAMPLES", "When ON, examples will be built", false);
+  if (with_tools.value()) {
+    auto cmsl_tools = p.find_library("cmsl_tools");
+    add_subdirectory("examples", cmsl_tools);
+  }
+
   return 0;
 }
