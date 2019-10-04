@@ -93,7 +93,7 @@ void dumper::visit(const double_value_node& node)
 
 void dumper::visit(const string_value_node& node)
 {
-  out() << "-double value: value: \"" << node.value() << "\"";
+  out() << "-string value: value: \"" << node.value() << "\"";
 }
 
 void dumper::visit(const id_node& node)
@@ -211,7 +211,8 @@ void dumper::visit(const function_node& node)
 
     const auto& params = node.signature().params;
     for (auto i = 0u; i < params.size(); ++i) {
-      out() << "-param " << i << "; type: " << &params[i].ty << " "
+      out() << "-param " << i << "; index: " << params[i].index
+            << "; type: " << &params[i].ty << " "
             << params[i].ty.name().to_string()
             << "; name: " << params[i].name.str();
     }

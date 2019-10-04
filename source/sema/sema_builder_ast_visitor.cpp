@@ -115,6 +115,14 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
   std::vector<std::unique_ptr<function_node>> functions;
 
   for (auto function_declaration : members->functions) {
+    auto function_params_guard = m_.qualified_ctxs.local_ids_guard();
+    for (const auto& param_decl :
+         function_declaration.fun->signature().params) {
+      m_.qualified_ctxs.ids.register_identifier(
+        param_decl.name, { param_decl.ty, param_decl.index },
+        /*exported=*/false);
+    }
+
     m_.parsing_ctx.function_parsing_ctx.function = function_declaration.fun;
     m_.parsing_ctx.function_parsing_ctx.return_nodes.clear();
     auto body = visit_child_node<block_node>(
@@ -805,7 +813,9 @@ sema_builder_ast_visitor::get_function_declaration_and_add_to_ctx(
       return {};
     }
 
-    params.emplace_back(parameter_declaration{ *param_type, param_decl.name });
+    const auto param_identifier_index = identifiers_index_provider::get_next();
+    params.emplace_back(parameter_declaration{ *param_type, param_decl.name,
+                                               param_identifier_index });
     const auto idenfitied_context = identifiers_index_provider::get_next();
     m_.qualified_ctxs.ids.register_identifier(
       param_decl.name, { *param_type, idenfitied_context },
