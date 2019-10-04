@@ -132,6 +132,8 @@ void sema_builder_ast_visitor::visit(const ast::class_node& node)
       return;
     }
 
+    add_implicit_return_node_if_need(*body);
+
     if (function_declaration.should_deduce_return_type) {
       const auto return_type =
         try_deduce_currently_parsed_function_return_type();

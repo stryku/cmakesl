@@ -129,4 +129,23 @@ TEST_F(ClassSmokeTest, MemberFunctionParameterLookup)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(ClassSmokeTest, EmptyMemberFunction)
+{
+  const auto source = "class Foo"
+                      "{"
+                      "    void bar()"
+                      "    {"
+                      "    }"
+                      "};"
+                      ""
+                      "int main()"
+                      "{"
+                      "    Foo foo;"
+                      "    foo.bar();"
+                      "    return 42;"
+                      "}";
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }
