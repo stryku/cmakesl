@@ -43,6 +43,8 @@ instance_value_variant simple_unnamed_instance::create_init_data() const
     return enum_constant_value{};
   } else if (starts_with(name, "extern")) {
     return extern_value{ nullptr };
+  } else if (name == "library") {
+    return library_value{ "" };
   }
 
   CMSL_UNREACHABLE("Unknown type");
