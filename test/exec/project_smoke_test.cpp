@@ -34,7 +34,7 @@ TEST_F(ProjectSmokeTest, AddExecutableCallsFacadeMethod)
 
   EXPECT_CALL(m_facade, current_directory()).WillRepeatedly(Return("foo"));
 
-  std::vector<std::string> expected_sources = { "foo/main.cpp" };
+  std::vector<std::string> expected_sources = { "main.cpp" };
   EXPECT_CALL(m_facade, add_executable("exe", expected_sources));
 
   const auto result = m_executor->execute(source);
@@ -53,7 +53,7 @@ TEST_F(ProjectSmokeTest, AddLibraryCallsFacadeMethod)
 
   EXPECT_CALL(m_facade, current_directory()).WillRepeatedly(Return("foo"));
 
-  std::vector<std::string> expected_sources = { "foo/lib.cpp" };
+  std::vector<std::string> expected_sources = { "lib.cpp" };
   EXPECT_CALL(m_facade, add_library("lib", expected_sources));
 
   const auto result = m_executor->execute(source);

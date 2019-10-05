@@ -19,32 +19,17 @@ void project_value::add_executable(facade::cmake_facade& cmake_facade,
                                    const std::string& name,
                                    const list_value& sources)
 {
-  const auto prefix = cmake_facade.current_directory() + '/';
-  std::vector<std::string> prefixed_sources =
+  std::vector<std::string> extracted_sources =
     list_value_utils{ sources }.strings();
-
-  for (auto& src : prefixed_sources) {
-    if (src[0] != '/') {
-      src = prefix + src;
-    }
-  }
-
-  cmake_facade.add_executable(name, prefixed_sources);
+  cmake_facade.add_executable(name, extracted_sources);
 }
 
 void project_value::add_library(facade::cmake_facade& cmake_facade,
                                 const std::string& name,
                                 const list_value& sources)
 {
-  const auto prefix = cmake_facade.current_directory() + '/';
-  std::vector<std::string> prefixed_sources =
+  std::vector<std::string> extracted_sources =
     list_value_utils{ sources }.strings();
-
-  for (auto& src : prefixed_sources) {
-    if (src[0] != '/') {
-      src = prefix + src;
-    }
-  }
-  cmake_facade.add_library(name, prefixed_sources);
+  cmake_facade.add_library(name, extracted_sources);
 }
 }
