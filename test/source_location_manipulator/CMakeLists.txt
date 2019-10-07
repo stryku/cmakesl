@@ -1,3 +1,5 @@
+include(${CMAKESL_DIR}/cmake/cmsl_cmake_utils.cmake)
+
 cmsl_add_test(
     NAME
         source_location_manipulator
