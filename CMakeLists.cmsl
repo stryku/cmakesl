@@ -33,6 +33,7 @@ import "cmake/cmsl_directories.cmsl"
   auto with_tests =
     cmake::option("CMAKESL_WITH_TESTS", "When ON, tests will be built", false);
   if (with_tests.value()) {
+    cmake::enable_ctest();
     add_subdirectory("external/googletest");
     add_subdirectory("test");
   }
