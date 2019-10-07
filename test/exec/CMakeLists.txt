@@ -45,6 +45,7 @@ cmsl_add_test(
         mock/instances_holder_mock.hpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
+        ${CMAKESL_FACADE_SOURCES_DIR}
         ${CMAKESL_DIR}
     LIBRARIES
         exec

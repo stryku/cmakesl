@@ -1,8 +1,17 @@
-int main()
+import "cmake/cmsl_directories.cmsl"
+
+  int main()
 {
   cmake::minimum_required(cmake::version(3, 14));
 
   cmake::cxx_standard = cmake::cxx_standard_value::cpp_17;
+
+  // Variables needed by old-style test CMakeLists. To be removed when tests
+  // are implemented in CMakeSL.
+  cmake::set_old_style_variable("CMAKESL_DIR", cmake::root_source_dir());
+  cmake::set_old_style_variable("CMAKESL_SOURCES_DIR", cmsl::source_dir);
+  cmake::set_old_style_variable("CMAKESL_TESTS_DIR", cmsl::test_dir);
+  cmake::set_old_style_variable("CMAKESL_FACADE_DIR", cmsl::facade_dir);
 
   auto p = cmake::project("CMakeSL");
 

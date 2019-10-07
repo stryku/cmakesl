@@ -18,6 +18,7 @@ cmsl_add_test(
         vatiable_initialization_check_test.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
+        ${CMAKESL_FACADE_SOURCES_DIR}
         ${CMAKESL_TESTS_DIR}
         ${CMAKESL_DIR}
     LIBRARIES

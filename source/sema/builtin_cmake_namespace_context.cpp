@@ -147,7 +147,15 @@ void builtin_cmake_namespace_context::add_functions()
       function_signature{
         token_provider.make_directory(),
         { parameter_declaration{ string_type, param_token } } },
-      builtin_function_kind::cmake_make_directory }
+      builtin_function_kind::cmake_make_directory },
+    builtin_function_info{
+      // void set_old_style_variable(string name, string value)
+      void_type,
+      function_signature{
+        token_provider.set_old_style_variable(),
+        { parameter_declaration{ string_type, param_token },
+          parameter_declaration{ string_type, param_token } } },
+      builtin_function_kind::cmake_set_old_style_variable }
   };
 
   auto factory = m_factories.function_factory();

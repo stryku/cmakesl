@@ -8,7 +8,8 @@ cmsl_add_test(
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
         ${CMAKESL_TESTS_DIR}
-    LIBRARIES
+        ${CMAKESL_FACADE_SOURCES_DIR}
+        LIBRARIES
         lexer
         errors_observer_mock
 )

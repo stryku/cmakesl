@@ -131,4 +131,13 @@ void add_custom_command(list<string> command, string output);
  * \param dir The directory path to be created.
  */
 void make_directory(string dir);
+
+/** \brief Sets an old style variable.
+ *
+ * Equivalent of `set(name ${value})` in old CMake.
+ *
+ * \param name The name of the variable to be set.
+ * \param value The value of the variable to be set.
+ */
+void set_old_style_variable(string name, string value);
 }

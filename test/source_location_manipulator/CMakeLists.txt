@@ -7,6 +7,7 @@ cmsl_add_test(
         source_location_test.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
-    LIBRARIES
+        ${CMAKESL_FACADE_SOURCES_DIR}
+        LIBRARIES
         lexer
 )

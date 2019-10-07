@@ -558,4 +558,11 @@ void dumper::dump_exported(const sema_node& node)
 {
   out() << "-exported: " << (node.ast_node().is_exported() ? "true" : "false");
 }
+
+void dumper::visit(const add_subdirectory_with_old_script_node& node)
+{
+  out() << "-add_subdirectory with old script";
+  auto ig = ident();
+  out() << "-name: " << node.dir_name().value();
+}
 }

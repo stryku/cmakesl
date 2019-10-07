@@ -399,6 +399,33 @@ private:
   std::unique_ptr<string_value_node> m_directory_name;
 };
 
+class add_subdirectory_with_old_script_node : public expression_node
+{
+public:
+  explicit add_subdirectory_with_old_script_node(
+    const ast::ast_node& ast_node,
+    std::unique_ptr<string_value_node> directory_name,
+    const sema_type& void_type)
+    : expression_node{ ast_node }
+    , m_directory_name{ std::move(directory_name) }
+    , m_void_type{ void_type }
+  {
+    m_directory_name->set_parent(*this, passkey{});
+  }
+
+  const string_value_node& dir_name() const { return *m_directory_name; }
+
+  const sema_type& type() const override { return m_void_type; }
+
+  bool produces_temporary_value() const override { return true; }
+
+  VISIT_METHOD
+
+private:
+  std::unique_ptr<string_value_node> m_directory_name;
+  const sema_type& m_void_type;
+};
+
 class block_node_manipulator;
 
 class block_node : public sema_node

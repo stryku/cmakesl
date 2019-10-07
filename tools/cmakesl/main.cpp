@@ -78,6 +78,8 @@ public:
     return m_directory_stack.top();
   }
 
+  void add_subdirectory_with_old_script(const std::string& dir) override {}
+
   void go_into_subdirectory(const std::string& dir) override
   {
     m_directory_stack.push(dir);
@@ -109,6 +111,11 @@ public:
 
   void register_option(const std::string& name, const std::string& description,
                        bool value) const override
+  {
+  }
+
+  void set_old_style_variable(const std::string&,
+                              const std::string&) const override
   {
   }
 

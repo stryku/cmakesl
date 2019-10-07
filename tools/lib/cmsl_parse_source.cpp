@@ -21,11 +21,11 @@ namespace cmsl::sema::details {
 class add_subdir_handler : public add_subdirectory_handler
 {
 public:
-  const sema_function* handle_add_subdirectory(
+  add_subdirectory_result_t handle_add_subdirectory(
     cmsl::string_view name,
     const std::vector<std::unique_ptr<expression_node>>& params) override
   {
-    return nullptr;
+    return no_script_found{};
   }
 };
 }

@@ -7,6 +7,7 @@ cmsl_add_test(
         errors_observer.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
+        ${CMAKESL_FACADE_SOURCES_DIR}
         ${CMAKESL_DIR}
     LIBRARIES
         errors

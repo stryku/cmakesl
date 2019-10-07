@@ -82,8 +82,8 @@ public:
 
   virtual std::string current_directory() const = 0;
 
+  virtual void add_subdirectory_with_old_script(const std::string& dir) = 0;
   virtual void go_into_subdirectory(const std::string& dir) = 0;
-
   virtual void go_directory_up() = 0;
 
   virtual void enable_ctest() const = 0;
@@ -113,5 +113,8 @@ public:
   virtual void register_option(const std::string& name,
                                const std::string& description,
                                bool value) const = 0;
+
+  virtual void set_old_style_variable(const std::string& name,
+                                      const std::string& value) const = 0;
 };
 }

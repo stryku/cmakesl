@@ -36,6 +36,7 @@ class unary_operator_node;
 class enum_node;
 class enum_constant_access_node;
 class import_node;
+class add_subdirectory_with_old_script_node;
 
 class sema_node_visitor
 {
@@ -76,6 +77,7 @@ public:
   virtual void visit(const enum_node& node) = 0;
   virtual void visit(const enum_constant_access_node& node) = 0;
   virtual void visit(const import_node& node) = 0;
+  virtual void visit(const add_subdirectory_with_old_script_node& node) = 0;
 };
 
 class empty_sema_node_visitor : public sema_node_visitor
@@ -117,5 +119,6 @@ public:
   virtual void visit(const enum_node&) override {}
   virtual void visit(const enum_constant_access_node&) override {}
   virtual void visit(const import_node&) override {}
+  virtual void visit(const add_subdirectory_with_old_script_node&) override {}
 };
 }

@@ -285,4 +285,18 @@ TEST_F(CmakeNamespaceSmokeTest, MakeDirectory_CallsFacadeMethod)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(CmakeNamespaceSmokeTest, SetOldStyleVariable_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::set_old_style_variable(\"foo\", \"bar\");"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, set_old_style_variable("foo", "bar"));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }

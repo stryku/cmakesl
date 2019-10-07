@@ -19,6 +19,7 @@
 #include "builtin_function_kind.hpp"
 #include "common/algorithm.hpp"
 #include "common/assert.hpp"
+#include "common/overloaded.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
 #include "sema/add_subdirectory_handler.hpp"
@@ -359,14 +360,25 @@ sema_builder_ast_visitor::build_add_subdirectory_call(
                  std::back_inserter(params_but_name),
                  [](auto& param) { return std::move(param); });
 
-  const auto fun =
+  const auto result =
     m_.add_subdir_handler.handle_add_subdirectory(name, params_but_name);
-  if (!fun) {
-    return nullptr;
-  }
 
-  return std::make_unique<add_subdirectory_node>(
-    node, std::move(name_string_node), *fun, std::move(params_but_name));
+  const auto visitor = overloaded{
+    [&](const add_subdirectory_handler::contains_cmakesl_script& val)
+      -> std::unique_ptr<expression_node> {
+      return std::make_unique<add_subdirectory_node>(
+        node, std::move(name_string_node), *val.main_function,
+        std::move(params_but_name));
+    },
+    [&](const add_subdirectory_handler::contains_old_cmake_script& val)
+      -> std::unique_ptr<expression_node> {
+      return std::make_unique<add_subdirectory_with_old_script_node>(
+        node, std::move(name_string_node), m_.builtin_types.void_);
+    },
+    [](auto) -> std::unique_ptr<expression_node> { return nullptr; }
+  };
+
+  return std::visit(visitor, result);
 }
 
 void sema_builder_ast_visitor::visit(const ast::function_call_node& node)

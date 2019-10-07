@@ -50,6 +50,7 @@ public:
   void visit(const unary_operator_node& node) override;
   void visit(const while_node&) override;
   void visit(const variable_declaration_node&) override;
+  void visit(const add_subdirectory_with_old_script_node&) override;
 
 private:
   class ident_guard

@@ -38,7 +38,7 @@ public:
 
   int execute(std::string source);
 
-  const sema::sema_function* handle_add_subdirectory(
+  add_subdirectory_result_t handle_add_subdirectory(
     cmsl::string_view name,
     const std::vector<std::unique_ptr<sema::expression_node>>& params)
     override;
@@ -63,6 +63,8 @@ private:
   std::optional<source_view> load_source(std::string path);
   cmsl::string_view store_source(std::string path);
   cmsl::string_view store_path(std::string path);
+
+  bool file_exists(const std::string& path) const;
 
 private:
   class directory_guard
