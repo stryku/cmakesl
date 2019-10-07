@@ -21,5 +21,11 @@ int main()
     add_subdirectory("examples", cmsl_tools);
   }
 
+  auto with_tests =
+    cmake::option("CMAKESL_WITH_TESTS", "When ON, tests will be built", false);
+  if (with_tests.value()) {
+    add_subdirectory("test");
+  }
+
   return 0;
 }
