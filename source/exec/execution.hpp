@@ -60,6 +60,8 @@ private:
   void execute_while_node(const sema::while_node& node);
   void execute_for_node(const sema::for_node& node);
   void execute_break_node(const sema::break_node& node);
+  void execute_add_subdirectory_with_old_script(
+    const sema::add_subdirectory_with_old_script_node& node);
 
   bool returning_from_function() const;
 

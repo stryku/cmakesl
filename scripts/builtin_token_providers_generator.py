@@ -312,7 +312,8 @@ GENERATION_INFO = {
             'current_binary_dir': ['string current_binary_dir();', 'string ', 'current_binary_dir'],
 
             'add_custom_command': ['void add_custom_command(list<string> command, string output);', 'void ', 'add_custom_command'],
-            'make_directory': ['void make_directory(string dir);', 'void ', 'make_directory']
+            'make_directory': ['void make_directory(string dir);', 'void ', 'make_directory'],
+            'set_old_style_variable': ['void set_old_style_variable(string name, string value);', 'void ', 'set_old_style_variable']
         }
     }
 }

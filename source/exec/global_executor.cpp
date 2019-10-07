@@ -1,5 +1,6 @@
 #include "exec/global_executor.hpp"
 
+#include "common/assert.hpp"
 #include "exec/compiled_source.hpp"
 #include "exec/execution.hpp"
 #include "exec/source_compiler.hpp"
@@ -103,25 +104,32 @@ int global_executor::execute(std::string source)
   return main_result->value_cref().get_int();
 }
 
-const sema::sema_function* global_executor::handle_add_subdirectory(
+sema::add_subdirectory_handler::add_subdirectory_result_t
+global_executor::handle_add_subdirectory(
   cmsl::string_view name,
   const std::vector<std::unique_ptr<sema::expression_node>>&)
 {
   directory_guard dg{ m_cmake_facade, std::string{ name } };
 
-  const auto src_view =
-    load_source(m_cmake_facade.current_directory() + "/CMakeLists.cmsl");
-  if (!src_view) {
-    // Todo: file not found
-    return nullptr;
+  auto cmakesl_script_path =
+    m_cmake_facade.current_directory() + "/CMakeLists.cmsl";
+  if (!file_exists(cmakesl_script_path)) {
+    if (file_exists(m_cmake_facade.current_directory() + "/CMakeLists.txt")) {
+      return contains_old_cmake_script{};
+    }
+
+    return no_script_found{};
   }
+
+  const auto src_view = load_source(std::move(cmakesl_script_path));
+  CMSL_ASSERT(src_view);
 
   auto contexts = m_builtin_qualified_contexts.clone();
   auto compiler = create_compiler(contexts);
   auto compiled = compiler.compile(*src_view);
   if (!compiled) {
     raise_unsuccessful_compilation_error(src_view->path());
-    return nullptr;
+    return compilation_failed{};
   }
   const auto& sema_tree = compiled->sema_tree();
   m_sema_trees.emplace(src_view->path(), sema_tree);
@@ -129,13 +137,13 @@ const sema::sema_function* global_executor::handle_add_subdirectory(
   const auto main_function = compiled->get_main();
   if (!main_function) {
     raise_no_main_function_error(src_view->path());
-    return nullptr;
+    return contains_cmakesl_script{ nullptr };
   }
 
   m_compiled_sources.emplace_back(std::move(compiled));
 
   // Todo: handle not matching params.
-  return main_function;
+  return contains_cmakesl_script{ main_function };
 }
 
 std::unique_ptr<sema::qualified_contextes> global_executor::handle_import(
@@ -266,5 +274,10 @@ std::optional<source_view> global_executor::load_source(std::string path)
   std::string source(std::istreambuf_iterator<char>{ file }, {});
   const auto source_content_view = store_source(std::move(source));
   return source_view{ path_view, source_content_view };
+}
+
+bool global_executor::file_exists(const std::string& path) const
+{
+  return std::ifstream{ path }.good();
 }
 }

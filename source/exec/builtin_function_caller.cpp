@@ -262,11 +262,11 @@ std::unique_ptr<inst::instance> builtin_function_caller::call(
     CASE_BUILTIN_FUNCTION_CALL(cmake_install_library);
     CASE_BUILTIN_FUNCTION_CALL(cmake_enable_ctest);
     CASE_BUILTIN_FUNCTION_CALL(cmake_add_test);
-
     CASE_BUILTIN_FUNCTION_CALL(cmake_root_source_dir);
     CASE_BUILTIN_FUNCTION_CALL(cmake_current_binary_dir);
     CASE_BUILTIN_FUNCTION_CALL(cmake_add_custom_command);
     CASE_BUILTIN_FUNCTION_CALL(cmake_make_directory);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_set_old_style_variable);
 
     default:
       CMSL_UNREACHABLE("Calling unimplemented function");
@@ -1950,6 +1950,15 @@ inst::instance* builtin_function_caller::cmake_make_directory(
 {
   const auto& [dir] = get_params<alternative_t ::string>(params);
   m_cmake_facade.make_directory(dir);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::cmake_set_old_style_variable(
+  const builtin_function_caller::params_t& params)
+{
+  const auto& [name, value] =
+    get_params<alternative_t ::string, alternative_t ::string>(params);
+  m_cmake_facade.set_old_style_variable(name, value);
   return m_instances.create_void();
 }
 }

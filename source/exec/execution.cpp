@@ -127,6 +127,9 @@ void execution::execute_node(const sema::sema_node& node)
     execute_break_node(*break_);
   } else if (auto block = dynamic_cast<const sema::block_node*>(&node)) {
     execute_block(*block);
+  } else if (auto add_subdirectory_old = dynamic_cast<
+               const sema::add_subdirectory_with_old_script_node*>(&node)) {
+    execute_add_subdirectory_with_old_script(*add_subdirectory_old);
   } else {
     // A stand alone infix expression.
     (void)execute_infix_expression(node);
@@ -302,5 +305,12 @@ void execution::initialize_static_variables(
   auto instances = initializer.gather_instances();
   std::move(std::begin(instances), std::end(instances),
             std::inserter(m_global_variables, std::end(m_global_variables)));
+}
+
+void execution::execute_add_subdirectory_with_old_script(
+  const sema::add_subdirectory_with_old_script_node& node)
+{
+  m_cmake_facade.add_subdirectory_with_old_script(
+    std::string{ node.dir_name().value() });
 }
 }

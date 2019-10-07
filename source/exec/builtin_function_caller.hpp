@@ -380,6 +380,7 @@ private:
   inst::instance* cmake_add_custom_command(const params_t& params);
   inst::instance* cmake_current_binary_dir(const params_t& params);
   inst::instance* cmake_make_directory(const params_t& params);
+  inst::instance* cmake_set_old_style_variable(const params_t& params);
 
 private:
   int_t string_pos_to_int(std::string::size_type pos) const;

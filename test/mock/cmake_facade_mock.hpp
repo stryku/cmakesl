@@ -41,6 +41,7 @@ public:
 
   MOCK_CONST_METHOD0(current_directory, std::string());
   MOCK_METHOD1(go_into_subdirectory, void(const std::string&));
+  MOCK_METHOD1(add_subdirectory_with_old_script, void(const std::string&));
   MOCK_METHOD0(go_directory_up, void());
 
   MOCK_CONST_METHOD0(enable_ctest, void());
@@ -58,5 +59,8 @@ public:
 
   MOCK_CONST_METHOD3(register_option,
                      void(const std::string&, const std::string&, bool));
+
+  MOCK_CONST_METHOD2(set_old_style_variable,
+                     void(const std::string&, const std::string&));
 };
 }

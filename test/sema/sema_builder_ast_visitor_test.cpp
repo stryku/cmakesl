@@ -915,7 +915,8 @@ TEST_F(SemaBuilderAstVisitorTest,
 
   EXPECT_CALL(m_add_subdirectory_mock,
               handle_add_subdirectory(cmsl::string_view{ "subdir" }, _))
-    .WillRepeatedly(Return(&function_mock));
+    .WillRepeatedly(Return(
+      add_subdirectory_handler::contains_cmakesl_script{ &function_mock }));
 
   visitor.visit(node);
 

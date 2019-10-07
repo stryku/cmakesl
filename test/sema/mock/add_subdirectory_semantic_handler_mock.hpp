@@ -9,7 +9,7 @@ class add_subdirectory_semantic_handler_mock : public add_subdirectory_handler
 {
 public:
   MOCK_METHOD2(handle_add_subdirectory,
-               const sema_function*(
+               add_subdirectory_result_t(
                  cmsl::string_view,
                  const std::vector<std::unique_ptr<expression_node>>&));
 };
