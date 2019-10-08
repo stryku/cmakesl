@@ -94,6 +94,11 @@ public:
 
   void add_test(const std::string& test_executable_name) override {}
 
+  system_info get_system_info() const override
+  {
+    return system_info{ system_id::windows };
+  }
+
   cxx_compiler_info get_cxx_compiler_info() const override
   {
     return cxx_compiler_info{ cxx_compiler_id::clang };

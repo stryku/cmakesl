@@ -54,6 +54,7 @@ void builtin_cmake_namespace_context::add_functions()
   const auto& executable_type = m_types_accessor->executable;
   const auto& library_type = m_types_accessor->library;
   const auto& version_type = m_types_accessor->version;
+  const auto& system_info_type = m_types_accessor->system_info;
   const auto& list_of_strings_type =
     m_generics_creation_utils.list_of_strings();
 
@@ -171,7 +172,11 @@ void builtin_cmake_namespace_context::add_functions()
         token_provider.set_old_style_variable(),
         { parameter_declaration{ string_type, param_token },
           parameter_declaration{ string_type, param_token } } },
-      builtin_function_kind::cmake_set_old_style_variable }
+      builtin_function_kind::cmake_set_old_style_variable },
+    builtin_function_info{
+      // system_info get_system_info()
+      system_info_type, function_signature{ token_provider.get_system_info() },
+      builtin_function_kind::cmake_get_system_info }
   };
 
   auto factory = m_factories.function_factory();
@@ -221,6 +226,8 @@ void builtin_cmake_namespace_context::add_types()
   const auto& cxx_compiler_id_type = add_cxx_compiler_id_type();
   const auto& cxx_standard_value_type = add_cxx_standard_value_type();
   const auto& visibility_type = add_visibility_type();
+  const auto& system_id_type = add_system_id_type();
+  const auto& system_info_type = add_system_info_type(system_id_type);
   auto cxx_compiler_info_manipulator =
     add_cxx_compiler_info_type(cxx_compiler_id_type);
   auto version_manipulator = add_version_type();
@@ -256,7 +263,8 @@ void builtin_cmake_namespace_context::add_types()
     .project = project,
     .project_ref = project_ref,
     .option = option,
-    .option_ref = option_ref
+    .option_ref = option_ref,
+    .system_info = system_info_type
   };
 
   m_types_accessor =
@@ -743,5 +751,61 @@ void builtin_cmake_namespace_context::add_type_member_functions(
     manipulator.with_builtin_function(
       function.return_type, std::move(function.signature), function.kind);
   }
+}
+
+const sema_type& builtin_cmake_namespace_context::add_system_id_type()
+{
+  static const auto token = m_builtin_tokens.cmake().system_id_name();
+  const std::vector<lexer::token> enumerators{
+    m_builtin_tokens.cmake().system_id_windows(),
+    m_builtin_tokens.cmake().system_id_unix(),
+  };
+
+  enum_creator creator{ m_factories, m_qualified_ctxs.types, *this,
+                        m_builtin_types };
+
+  const auto& type =
+    creator.create(token, enumerators, sema_type::flags::builtin);
+
+  {
+    auto guard = m_qualified_ctxs.enums_ctx_guard(token, /*exported=*/false);
+
+    unsigned value{};
+
+    for (const auto& enumerator : enumerators) {
+      const auto enum_value_index = identifiers_index_provider::get_next();
+      const auto enum_value = value++;
+      m_qualified_ctxs.enums.register_identifier(
+        enumerator,
+        enum_values_context::enum_value_info{ type, enum_value,
+                                              enum_value_index },
+        /*exported=*/false);
+    }
+  }
+
+  return type;
+}
+
+const sema_type& builtin_cmake_namespace_context::add_system_info_type(
+  const sema_type& system_id)
+{
+
+  static const auto token = m_builtin_tokens.cmake().system_info_name();
+  const auto name_representation =
+    ast::type_representation{ ast::qualified_name{ token } };
+  type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
+                        name_representation };
+
+  const auto members = { builtin_variable_info{
+    m_builtin_tokens.cmake().system_info_id(), system_id } };
+
+  for (const auto& member : members) {
+    const auto id_index = identifiers_index_provider::get_next();
+    member_info info{ member.name, member.type, id_index };
+    builder.with_member(info);
+  }
+
+  builder.build_builtin_and_register_in_context();
+  return builder.built_type().ty;
 }
 }

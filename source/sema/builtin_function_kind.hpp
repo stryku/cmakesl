@@ -23,6 +23,7 @@ enum class builtin_function_kind
   cmake_add_custom_command,
   cmake_make_directory,
   cmake_set_old_style_variable,
+  cmake_get_system_info,
 
   // Class methods:
 

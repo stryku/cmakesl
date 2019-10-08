@@ -54,6 +54,9 @@ private:
   const sema_type& add_visibility_type();
   type_builder add_cxx_compiler_info_type(const sema_type& cxx_compiler_id);
 
+  const sema_type& add_system_id_type();
+  const sema_type& add_system_info_type(const sema_type& system_id);
+
   type_builder add_version_type();
   void add_version_member_functions(type_builder& string_manipulator);
   type_builder add_library_type();

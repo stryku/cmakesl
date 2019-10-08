@@ -156,4 +156,17 @@ void make_directory(string dir);
  * \param value The value of the variable to be set.
  */
 void set_old_style_variable(string name, string value);
+
+enum system_id
+{
+  windows,
+  unix
+};
+
+struct system_info
+{
+  system_id id;
+};
+
+system_info get_system_info();
 }
