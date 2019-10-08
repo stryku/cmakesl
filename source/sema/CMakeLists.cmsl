@@ -1,6 +1,6 @@
-import "cmake/cmsl_directories.cmsl"
+import "cmake/cmsl_directories.cmsl";
 
-  string add_builtin_tokens_generation_command()
+string add_builtin_tokens_generation_command()
 {
   auto builtin_tokens_providers_dir =
     cmake::current_binary_dir() + "/generated";

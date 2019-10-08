@@ -1,6 +1,6 @@
-import "cmake/cmsl_directories.cmsl"
+import "cmake/cmsl_directories.cmsl";
 
-  int main()
+int main()
 {
   cmake::minimum_required(cmake::version(3, 14));
 
