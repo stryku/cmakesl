@@ -27,9 +27,7 @@ int main()
                                      "When ON, examples will be built", false);
   if (with_examples.value()) {
     if (!with_tools.value()) {
-      cmake::fatal_error(
-        "Examples can not be built without tools support. Enable "
-        "CMAKESL_WITH_TOOLS option and try again");
+      cmake::fatal_error("Examples can not be built without tools support.");
     }
 
     auto cmsl_tools = p.find_library("cmsl_tools");
