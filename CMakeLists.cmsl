@@ -23,9 +23,15 @@ int main()
     add_subdirectory("tools", p);
   }
 
-  auto with_examples_tools = cmake::option(
-    "CMAKESL_WITH_EXAMPLES", "When ON, examples will be built", false);
-  if (with_tools.value()) {
+  auto with_examples = cmake::option("CMAKESL_WITH_EXAMPLES",
+                                     "When ON, examples will be built", false);
+  if (with_examples.value()) {
+    if (!with_tools.value()) {
+      cmake::fatal_error(
+        "Examples can not be built without tools support. Enable "
+        "CMAKESL_WITH_TOOLS option and try again");
+    }
+
     auto cmsl_tools = p.find_library("cmsl_tools");
     add_subdirectory("examples", cmsl_tools);
   }

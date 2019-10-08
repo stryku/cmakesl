@@ -20,6 +20,12 @@ endif ()
 
 option(CMAKESL_WITH_EXAMPLES "When ON, examples will be built" OFF)
 if (CMAKESL_WITH_EXAMPLES)
+    if(NOT CMAKESL_WITH_TOOLS)
+        message(FATAL_ERROR
+                Examples can not be built without tools support.
+                Enable CMAKESL_WITH_TOOLS option and try again)
+    endif()
+
     add_subdirectory(examples)
 endif ()
 
