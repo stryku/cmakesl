@@ -373,7 +373,9 @@ private:
   inst::instance* cmake_fatal_error(const params_t& params);
   inst::instance* cmake_get_cxx_compiler_info(const params_t& params);
   inst::instance* cmake_install_executable(const params_t& params);
+  inst::instance* cmake_install_executable_destination(const params_t& params);
   inst::instance* cmake_install_library(const params_t& params);
+  inst::instance* cmake_install_library_destination(const params_t& params);
   inst::instance* cmake_enable_ctest(const params_t& params);
   inst::instance* cmake_add_test(const params_t& params);
   inst::instance* cmake_root_source_dir(const params_t& params);

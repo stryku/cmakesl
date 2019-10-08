@@ -259,7 +259,9 @@ std::unique_ptr<inst::instance> builtin_function_caller::call(
     CASE_BUILTIN_FUNCTION_CALL(cmake_fatal_error);
     CASE_BUILTIN_FUNCTION_CALL(cmake_get_cxx_compiler_info);
     CASE_BUILTIN_FUNCTION_CALL(cmake_install_executable);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_install_executable_destination);
     CASE_BUILTIN_FUNCTION_CALL(cmake_install_library);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_install_library_destination);
     CASE_BUILTIN_FUNCTION_CALL(cmake_enable_ctest);
     CASE_BUILTIN_FUNCTION_CALL(cmake_add_test);
     CASE_BUILTIN_FUNCTION_CALL(cmake_root_source_dir);
@@ -1898,12 +1900,28 @@ inst::instance* builtin_function_caller::cmake_install_executable(
   return m_instances.create_void();
 }
 
+inst::instance* builtin_function_caller::cmake_install_executable_destination(
+  const builtin_function_caller::params_t& params)
+{
+    const auto& [exe, destination] = get_params<alternative_t::executable, alternative_t ::string>(params);
+    m_cmake_facade.install(exe.name(), destination);
+    return m_instances.create_void();
+}
+
 inst::instance* builtin_function_caller::cmake_install_library(
   const builtin_function_caller::params_t& params)
 {
-  const auto& [lib] = get_params<alternative_t::library>(params);
-  m_cmake_facade.install(lib.name());
-  return m_instances.create_void();
+    const auto& [lib] = get_params<alternative_t::library>(params);
+    m_cmake_facade.install(lib.name());
+    return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::cmake_install_library_destination(
+  const builtin_function_caller::params_t& params)
+{
+    const auto& [lib,destination] = get_params<alternative_t::library, alternative_t ::string>(params);
+    m_cmake_facade.install(lib.name(),destination);
+    return m_instances.create_void();
 }
 
 inst::instance* builtin_function_caller::cmake_enable_ctest(

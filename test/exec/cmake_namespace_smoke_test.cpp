@@ -176,7 +176,25 @@ TEST_F(CmakeNamespaceSmokeTest, InstallExecutable_CallsFacadeMethod)
                       "    return 42;"
                       "}";
 
-  EXPECT_CALL(m_facade, install("exe"));
+  EXPECT_CALL(m_facade, install("exe", _));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(CmakeNamespaceSmokeTest,
+       InstallExecutableWithDestination_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::project p = cmake::project(\"p\");"
+                      "    list<string> sources;"
+                      "    auto exe = p.add_executable(\"exe\", sources);"
+                      "    cmake::install(exe, \"binaries\");"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, install("exe", "binaries"));
 
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
@@ -193,7 +211,25 @@ TEST_F(CmakeNamespaceSmokeTest, InstallLibrary_CallsFacadeMethod)
                       "    return 42;"
                       "}";
 
-  EXPECT_CALL(m_facade, install("lib"));
+  EXPECT_CALL(m_facade, install("lib", _));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(CmakeNamespaceSmokeTest,
+       InstallLibraryWithDestination_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::project p = cmake::project(\"p\");"
+                      "    list<string> sources;"
+                      "    auto lib = p.add_library(\"lib\", sources);"
+                      "    cmake::install(lib, \"libs\");"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, install("lib", "libs"));
 
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
