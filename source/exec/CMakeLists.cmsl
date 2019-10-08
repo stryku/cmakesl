@@ -72,8 +72,7 @@ void main(cmake::project& p)
   };
 
   auto lib = p.add_library("exec", sources);
-  lib.include_directories({ cmsl::source_dir, cmsl::facade_dir },
-                          cmake::visibility::private);
+  lib.include_directories({ cmsl::source_dir, cmsl::facade_dir });
 
   auto sema = p.find_library("sema");
   lib.link_to(sema, cmake::visibility::public);

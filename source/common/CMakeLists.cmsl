@@ -16,5 +16,5 @@ void main(cmake::project& p)
     // clang-format: on
   };
   auto lib = p.add_library("common", sources);
-  lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
+  lib.include_directories({ cmsl::source_dir });
 }

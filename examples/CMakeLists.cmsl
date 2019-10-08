@@ -8,11 +8,10 @@ class example_adder
   void add(string name, list<string> sources)
   {
     auto include_dirs = { cmsl::tools_dir, cmsl::source_dir };
-    auto visibility = cmake::visibility::private;
 
     auto example = p.add_executable(name, sources);
     example.link_to(cmsl_tools);
-    example.include_directories(include_dirs, visibility);
+    example.include_directories(include_dirs);
     cmake::install(example);
   }
 };

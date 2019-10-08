@@ -55,7 +55,7 @@ void main(cmake::project& p)
     // clang-format: on
   };
   auto lib = p.add_library("ast", sources);
-  lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
+  lib.include_directories({ cmsl::source_dir });
 
   auto lexer = p.find_library("lexer");
   lib.link_to(lexer, cmake::visibility::public);

@@ -4,12 +4,11 @@ void main(cmake::project& p)
 {
   auto sources = { "main.cpp" };
   auto exe = p.add_executable("cmakesl", sources);
-  exe.include_directories({ cmsl::source_dir, cmsl::facade_dir },
-                          cmake::visibility::private);
+  exe.include_directories({ cmsl::source_dir, cmsl::facade_dir });
 
-  exe.link_to(p.find_library("exec"), cmake::visibility::private);
-  exe.link_to(p.find_library("sema"), cmake::visibility::private);
-  exe.link_to(p.find_library("errors"), cmake::visibility::private);
+  exe.link_to(p.find_library("exec"));
+  exe.link_to(p.find_library("sema"));
+  exe.link_to(p.find_library("errors"));
 
   cmake::install(exe);
 }

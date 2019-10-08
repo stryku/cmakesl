@@ -6,6 +6,5 @@ void main(cmake::project& p)
     "errors", { "error.hpp", "errors_observer.hpp", "errors_observer.cpp" });
 
   cmake::message(cmsl::facade_dir);
-  lib.include_directories({ cmsl::source_dir, cmsl::facade_dir },
-                          cmake::visibility::private);
+  lib.include_directories({ cmsl::source_dir, cmsl::facade_dir });
 }

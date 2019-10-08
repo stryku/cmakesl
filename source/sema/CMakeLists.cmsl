@@ -100,8 +100,7 @@ void main(cmake::project& p)
   };
 
   auto lib = p.add_library("sema", sources);
-  lib.include_directories({ cmsl::source_dir, cmake::current_binary_dir() },
-                          cmake::visibility::private);
+  lib.include_directories({ cmsl::source_dir, cmake::current_binary_dir() });
 
   auto ast = p.find_library("ast");
   lib.link_to(ast, cmake::visibility::public);

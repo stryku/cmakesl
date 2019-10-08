@@ -21,9 +21,8 @@ void main(cmake::project& p)
                    "type_names_collector.cpp",
                    "type_names_collector.hpp" };
   auto exe = p.add_library("cmsl_tools", sources);
-  exe.include_directories({ cmsl::source_dir, cmsl::facade_dir },
-                          cmake::visibility::private);
+  exe.include_directories({ cmsl::source_dir, cmsl::facade_dir });
 
-  exe.link_to(p.find_library("sema"), cmake::visibility::private);
-  exe.link_to(p.find_library("errors"), cmake::visibility::private);
+  exe.link_to(p.find_library("sema"));
+  exe.link_to(p.find_library("errors"));
 }

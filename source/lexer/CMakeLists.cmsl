@@ -16,7 +16,7 @@ void main(cmake::project& p)
   };
 
   auto lib = p.add_library("lexer", sources);
-  lib.include_directories({ cmsl::source_dir }, cmake::visibility::private);
+  lib.include_directories({ cmsl::source_dir });
 
   auto common = p.find_library("common");
   lib.link_to(common, cmake::visibility::public);
