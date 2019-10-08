@@ -108,12 +108,28 @@ void builtin_cmake_namespace_context::add_functions()
         { parameter_declaration{ executable_type, param_token } } },
       builtin_function_kind::cmake_install_executable },
     builtin_function_info{
+      // void install(executable exe, string destination)
+      void_type,
+      function_signature{
+        token_provider.install_executable(),
+        { parameter_declaration{ executable_type, param_token },
+          parameter_declaration{ string_type, param_token } } },
+      builtin_function_kind::cmake_install_executable_destination },
+    builtin_function_info{
       // void install(library lib)
       void_type,
       function_signature{
         token_provider.install_library(),
         { parameter_declaration{ library_type, param_token } } },
       builtin_function_kind::cmake_install_library },
+    builtin_function_info{
+      // void install(library lib, string destination)
+      void_type,
+      function_signature{
+        token_provider.install_library(),
+        { parameter_declaration{ library_type, param_token },
+          parameter_declaration{ string_type, param_token } } },
+      builtin_function_kind::cmake_install_library_destination },
     builtin_function_info{ // void enable_ctest()
                            void_type,
                            function_signature{ token_provider.enable_ctest() },

@@ -16,7 +16,7 @@ public:
   MOCK_CONST_METHOD0(did_fatal_error_occure, bool());
 
   MOCK_METHOD1(register_project, void(const std::string&));
-  MOCK_METHOD1(install, void(const std::string&));
+  MOCK_METHOD2(install, void(const std::string&, const std::string&));
 
   MOCK_CONST_METHOD0(get_current_binary_dir, std::string());
   MOCK_CONST_METHOD0(get_current_source_dir, std::string());

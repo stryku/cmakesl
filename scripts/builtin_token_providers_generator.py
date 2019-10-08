@@ -297,7 +297,9 @@ GENERATION_INFO = {
             'cxx_standard': ['cxx_standard_type cxx_standard;', 'cxx_standard_type ', 'cxx_standard'],
 
             'install_executable': ['void install(executable exe);', 'void ', 'install'],
+            'install_executable_destination': ['void install(executable exe, string destination);', 'void ', 'install'],
             'install_library': ['void install(library lib);', 'void ', 'install'],
+            'install_library_destination': ['void install(library lib, string destination);', 'void ', 'install'],
 
             'enable_ctest': ['void enable_ctest();', 'void ', 'enable_ctest'],
             'add_test': ['void add_test(executable exe);', 'void ', 'add_test'],
@@ -306,7 +308,6 @@ GENERATION_INFO = {
             'visibility_interface': ['interface,', '', 'interface'],
             'visibility_private': ['private,', '', 'private'],
             'visibility_public': ['public', '', 'public'],
-
 
             'root_source_dir': ['string root_source_dir();', 'string ', 'root_source_dir'],
             'current_binary_dir': ['string current_binary_dir();', 'string ', 'current_binary_dir'],

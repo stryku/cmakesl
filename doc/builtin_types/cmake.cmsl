@@ -87,9 +87,25 @@ cxx_compiler_info get_cxx_compiler_info();
  */
 void install(executable exe);
 
+/** \brief Adds the \p exe to installation rules.
+ *
+ * \param exe The executable to be installed.
+ * \param destination Destination within the installation directory, where the
+ * \p exe should be installed.
+ */
+void install(executable exe, string destination);
+
 /** \brief Adds the \p lib to installation rules.
  */
 void install(library lib);
+
+/** \brief Adds the \p lib to installation rules.
+ *
+ * \param lib The library to be installed.
+ * \param destination Destination within the installation directory, where the
+ * \p lib should be installed.
+ */
+void install(library lib, string destination);
 
 /** \brief Enables testing and ctest. Should be called in the root script.
  */
