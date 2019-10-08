@@ -9,7 +9,7 @@ using ImportSmokeTest = ExecutionSmokeTest;
 
 TEST_F(ImportSmokeTest, VariableImport)
 {
-  const auto source = "import \"import_test/foo.cmsl\""
+  const auto source = "import \"import_test/foo.cmsl\";"
                       ""
                       "int main()"
                       "{"
@@ -21,8 +21,8 @@ TEST_F(ImportSmokeTest, VariableImport)
 
 TEST_F(ImportSmokeTest, OneVariableInstanceDespiteMultipleImports)
 {
-  const auto source = "import \"import_test/foo.cmsl\""
-                      "import \"import_test/baz.cmsl\""
+  const auto source = "import \"import_test/foo.cmsl\";"
+                      "import \"import_test/baz.cmsl\";"
                       ""
                       "int main()"
                       "{"
@@ -35,7 +35,7 @@ TEST_F(ImportSmokeTest, OneVariableInstanceDespiteMultipleImports)
 
 TEST_F(ImportSmokeTest, FunctionImport)
 {
-  const auto source = "import \"import_test/foo.cmsl\""
+  const auto source = "import \"import_test/foo.cmsl\";"
                       ""
                       "int main()"
                       "{"
@@ -47,7 +47,7 @@ TEST_F(ImportSmokeTest, FunctionImport)
 
 TEST_F(ImportSmokeTest, ClassImport)
 {
-  const auto source = "import \"import_test/foo.cmsl\""
+  const auto source = "import \"import_test/foo.cmsl\";"
                       ""
                       "int main()"
                       "{"
@@ -60,7 +60,7 @@ TEST_F(ImportSmokeTest, ClassImport)
 
 TEST_F(ImportSmokeTest, EnumImport)
 {
-  const auto source = "import \"import_test/foo.cmsl\""
+  const auto source = "import \"import_test/foo.cmsl\";"
                       ""
                       "int main()"
                       "{"
