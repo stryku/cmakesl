@@ -2730,16 +2730,17 @@ TEST_F(ParserTest, EnumWithEnumerators_GetEnum)
 
 TEST_F(ParserTest, Import_GetImportNode)
 {
-  // import "foo/bar"
+  // import "foo/bar";
   const auto file_token = token_string("\"foo/bar\"");
 
-  auto expected_ast =
-    std::make_unique<import_node>(token_kw_import(), file_token);
+  auto expected_ast = std::make_unique<import_node>(
+    token_kw_import(), file_token, token_semicolon());
 
   const auto tokens = tokens_container_t{
     // clang-format off
     token_kw_import(),
-    file_token
+    file_token,
+    token_semicolon()
     // clang-format on
   };
 

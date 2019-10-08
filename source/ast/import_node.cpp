@@ -5,9 +5,11 @@
 namespace cmsl::ast {
 
 import_node::import_node(const ast_node::token_t& import_token,
-                         const ast_node::token_t& file_path)
+                         const ast_node::token_t& file_path,
+                         const token_t& semicolon)
   : m_import{ import_token }
   , m_file_path{ file_path }
+  , m_semicolon{ semicolon }
 {
 }
 
@@ -33,6 +35,6 @@ source_location import_node::begin_location() const
 
 source_location import_node::end_location() const
 {
-  return m_file_path.src_range().end;
+  return m_semicolon.src_range().end;
 }
 }

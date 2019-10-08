@@ -2456,7 +2456,7 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_Import_HandlerFailed_ReportError)
 
   const auto foo_token = token_string("\"foo\"");
 
-  ast::import_node node{ token_kw_import(), foo_token };
+  ast::import_node node{ token_kw_import(), foo_token, token_semicolon() };
 
   EXPECT_CALL(m_import_handler_mock, handle_import(_))
     .WillRepeatedly(Return(ByMove(nullptr)));
@@ -2483,7 +2483,7 @@ TEST_F(SemaBuilderAstVisitorTest,
 
   const auto foo_token = token_string("\"foo\"");
 
-  ast::import_node node{ token_kw_import(), foo_token };
+  ast::import_node node{ token_kw_import(), foo_token, token_semicolon() };
 
   auto qualified =
     qualified_contextes{ std::make_unique<enum_values_context_mock>(),

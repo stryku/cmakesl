@@ -643,9 +643,11 @@ const auto imp = token_kw_import();
 const auto foo_bar = token_string("\"foo/bar\"");
 const auto id = token_identifier("baz");
 
-const auto values = Values(tokens_container_t{ imp },      // include
-                           tokens_container_t{ foo_bar },  // "foo/bar"
-                           tokens_container_t{ imp, id }); // include baz
+const auto values =
+  Values(tokens_container_t{ imp },           // import
+         tokens_container_t{ foo_bar },       // "foo/bar"
+         tokens_container_t{ imp, id },       // import baz;
+         tokens_container_t{ imp, foo_bar }); // import "foo/bar"
 
 INSTANTIATE_TEST_CASE_P(ParserErrorTest, Import, values);
 }

@@ -1284,6 +1284,11 @@ std::unique_ptr<import_node> parser::parse_import()
     return nullptr;
   }
 
-  return std::make_unique<import_node>(*include, *file);
+  const auto semicolon = eat(token_type_t::semicolon);
+  if (!semicolon) {
+    return nullptr;
+  }
+
+  return std::make_unique<import_node>(*include, *file, *semicolon);
 }
 }

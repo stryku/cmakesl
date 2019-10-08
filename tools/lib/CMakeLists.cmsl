@@ -1,6 +1,6 @@
-import "cmake/cmsl_directories.cmsl"
+import "cmake/cmsl_directories.cmsl";
 
-  void main(cmake::project & p)
+void main(cmake::project& p)
 {
   auto sources = { "cmsl_complete.cpp",
                    "cmsl_complete.hpp",

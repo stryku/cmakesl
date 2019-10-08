@@ -30,7 +30,7 @@ TEST_F(AddSubdirectorySmokeTest, SimpleAddSubdirectory)
 TEST_F(AddSubdirectorySmokeTest,
        OneVariableInstanceDespiteMultipleImportsWhileAddSubdirectory)
 {
-  const auto source = "import \"add_subdirectory_test/import/foo.cmsl\""
+  const auto source = "import \"add_subdirectory_test/import/foo.cmsl\";"
                       ""
                       "int main()"
                       "{"

@@ -1,6 +1,6 @@
-import "cmake/cmsl_directories.cmsl"
+import "cmake/cmsl_directories.cmsl";
 
-  void main(cmake::project & p)
+void main(cmake::project& p)
 {
   auto sources = { "main.cpp" };
   auto exe = p.add_executable("cmakesl", sources);

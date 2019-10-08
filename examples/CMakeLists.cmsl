@@ -1,6 +1,6 @@
-import "cmake/cmsl_directories.cmsl"
+import "cmake/cmsl_directories.cmsl";
 
-  class example_adder
+class example_adder
 {
   cmake::project p;
   cmake::library cmsl_tools;
