@@ -308,6 +308,20 @@ TEST_F(CmakeNamespaceSmokeTest, AddCustomCommand_CallsFacadeMethod)
   EXPECT_THAT(result, Eq(42));
 }
 
+TEST_F(CmakeNamespaceSmokeTest, AddCustomTarget_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::add_custom_target(\"foo\", {\"ls\"});"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, add_custom_target("foo", _));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
 TEST_F(CmakeNamespaceSmokeTest, MakeDirectory_CallsFacadeMethod)
 {
   const auto source = "int main()"

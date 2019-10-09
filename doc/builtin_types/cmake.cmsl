@@ -157,16 +157,33 @@ void make_directory(string dir);
  */
 void set_old_style_variable(string name, string value);
 
+/** \brief En enumaration for possible operating systems.
+ */
 enum system_id
 {
   windows,
   unix
 };
 
+/** \brief A system information aggregator.
+ */
 struct system_info
 {
   system_id id;
 };
 
+/** \brief A system information getter.
+ *
+ * Gathers information about the system that CMake is run on.
+ *
+ * \return Collected system info.
+ */
 system_info get_system_info();
+
+/** \brief Add a target with no output so it will always be built.
+ *
+ * @param name The name of the new target.
+ * @param command The command to be executed at build time.
+ */
+void add_custom_target(string name, list<string> command);
 }

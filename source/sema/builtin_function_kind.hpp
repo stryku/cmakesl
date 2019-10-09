@@ -3,10 +3,8 @@
 namespace cmsl::sema {
 enum class builtin_function_kind
 {
-  // Stand-alone functions:
-  cmake_minimum_required,
-
   // cmake namespace functions:
+  cmake_minimum_required,
   cmake_message,
   cmake_warning,
   cmake_error,
@@ -24,6 +22,7 @@ enum class builtin_function_kind
   cmake_make_directory,
   cmake_set_old_style_variable,
   cmake_get_system_info,
+  cmake_add_custom_target,
 
   // Class methods:
 

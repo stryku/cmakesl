@@ -176,7 +176,15 @@ void builtin_cmake_namespace_context::add_functions()
     builtin_function_info{
       // system_info get_system_info()
       system_info_type, function_signature{ token_provider.get_system_info() },
-      builtin_function_kind::cmake_get_system_info }
+      builtin_function_kind::cmake_get_system_info },
+    builtin_function_info{
+      // void add_custom_target(string name, list<string> command)
+      void_type,
+      function_signature{
+        token_provider.add_custom_target(),
+        { parameter_declaration{ string_type, param_token },
+          parameter_declaration{ list_of_strings_type, param_token } } },
+      builtin_function_kind::cmake_add_custom_target }
   };
 
   auto factory = m_factories.function_factory();

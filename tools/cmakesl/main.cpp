@@ -52,6 +52,12 @@ public:
   {
   }
 
+  void add_custom_target(
+    const std::string& name,
+    const std::vector<std::string>& command) const override
+  {
+  }
+
   void make_directory(const std::string& dir) const override {}
 
   void add_executable(const std::string& name,
