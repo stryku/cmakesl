@@ -270,6 +270,7 @@ std::unique_ptr<inst::instance> builtin_function_caller::call(
     CASE_BUILTIN_FUNCTION_CALL(cmake_add_custom_command);
     CASE_BUILTIN_FUNCTION_CALL(cmake_make_directory);
     CASE_BUILTIN_FUNCTION_CALL(cmake_set_old_style_variable);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_add_custom_target);
 
     default:
       CMSL_UNREACHABLE("Calling unimplemented function");
@@ -1998,5 +1999,15 @@ inst::instance* builtin_function_caller::cmake_get_system_info(
   id_member->value_accessor().access().set_enum_constant(enum_val);
 
   return created_variable;
+}
+
+inst::instance* builtin_function_caller::cmake_add_custom_target(
+  const builtin_function_caller::params_t& params)
+{
+  const auto& [name, command_list] =
+    get_params<alternative_t ::string, alternative_t ::list>(params);
+  const auto command = inst::list_value_utils{ command_list }.strings();
+  m_cmake_facade.add_custom_target(name, command);
+  return m_instances.create_void();
 }
 }

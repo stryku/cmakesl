@@ -323,6 +323,7 @@ GENERATION_INFO = {
             'system_info_id': ['system_id id;', 'system_id ', 'id'],
             'get_system_info': ['system_info get_system_info();', 'system_info ', 'get_system_info'],
 
+            'add_custom_target': ['void add_custom_target(string name, list<string> command);', 'void ', 'add_custom_target'],
         }
     }
 }

@@ -179,4 +179,11 @@ struct system_info
  * \return Collected system info.
  */
 system_info get_system_info();
+
+/** \brief Add a target with no output so it will always be built.
+ *
+ * @param name The name of the new target.
+ * @param command The command to be executed at build time.
+ */
+void add_custom_target(string name, list<string> command);
 }

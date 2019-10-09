@@ -61,6 +61,10 @@ public:
   virtual void add_custom_command(const std::vector<std::string>& command,
                                   const std::string& output) const = 0;
 
+  virtual void add_custom_target(
+    const std::string& name,
+    const std::vector<std::string>& command) const = 0;
+
   virtual void make_directory(const std::string& dir) const = 0;
 
   virtual void add_executable(

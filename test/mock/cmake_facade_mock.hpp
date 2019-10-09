@@ -26,6 +26,10 @@ public:
                      void(const std::vector<std::string>&,
                           const std::string&));
 
+  MOCK_CONST_METHOD2(add_custom_target,
+                     void(const std::string&,
+                          const std::vector<std::string>&));
+
   MOCK_CONST_METHOD1(make_directory, void(const std::string&));
 
   MOCK_METHOD2(add_executable,
