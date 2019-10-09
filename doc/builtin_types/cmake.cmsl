@@ -186,4 +186,8 @@ system_info get_system_info();
  * @param command The command to be executed at build time.
  */
 void add_custom_target(string name, list<string> command);
+
+/** \return Full path to ctest command installed with CMake.
+ */
+string ctest_command();
 }

@@ -324,6 +324,7 @@ GENERATION_INFO = {
             'get_system_info': ['system_info get_system_info();', 'system_info ', 'get_system_info'],
 
             'add_custom_target': ['void add_custom_target(string name, list<string> command);', 'void ', 'add_custom_target'],
+            'ctest_command': ['string ctest_command();', 'string ', 'ctest_command'],
         }
     }
 }
