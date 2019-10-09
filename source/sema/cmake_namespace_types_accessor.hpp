@@ -23,5 +23,6 @@ struct cmake_namespace_types_accessor
   const sema_type& project_ref;
   const sema_type& option;
   const sema_type& option_ref;
+  const sema_type& system_info;
 };
 }

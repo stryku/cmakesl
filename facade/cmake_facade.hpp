@@ -51,7 +51,8 @@ public:
 
   virtual void register_project(const std::string& name) = 0;
 
-  virtual void install(const std::string& target_name, const std::string& destination = "bin") = 0;
+  virtual void install(const std::string& target_name,
+                       const std::string& destination = "bin") = 0;
 
   virtual std::string get_current_binary_dir() const = 0;
   virtual std::string get_current_source_dir() const = 0;
@@ -101,6 +102,19 @@ public:
   };
 
   virtual cxx_compiler_info get_cxx_compiler_info() const = 0;
+
+  enum class system_id
+  {
+    windows,
+    unix_
+  };
+
+  struct system_info
+  {
+    system_id id;
+  };
+
+  virtual system_info get_system_info() const = 0;
 
   virtual std::optional<std::string> try_get_extern_define(
     const std::string& name) const = 0;

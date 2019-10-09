@@ -258,6 +258,7 @@ std::unique_ptr<inst::instance> builtin_function_caller::call(
     CASE_BUILTIN_FUNCTION_CALL(cmake_error);
     CASE_BUILTIN_FUNCTION_CALL(cmake_fatal_error);
     CASE_BUILTIN_FUNCTION_CALL(cmake_get_cxx_compiler_info);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_get_system_info);
     CASE_BUILTIN_FUNCTION_CALL(cmake_install_executable);
     CASE_BUILTIN_FUNCTION_CALL(cmake_install_executable_destination);
     CASE_BUILTIN_FUNCTION_CALL(cmake_install_library);
@@ -1903,25 +1904,27 @@ inst::instance* builtin_function_caller::cmake_install_executable(
 inst::instance* builtin_function_caller::cmake_install_executable_destination(
   const builtin_function_caller::params_t& params)
 {
-    const auto& [exe, destination] = get_params<alternative_t::executable, alternative_t ::string>(params);
-    m_cmake_facade.install(exe.name(), destination);
-    return m_instances.create_void();
+  const auto& [exe, destination] =
+    get_params<alternative_t::executable, alternative_t ::string>(params);
+  m_cmake_facade.install(exe.name(), destination);
+  return m_instances.create_void();
 }
 
 inst::instance* builtin_function_caller::cmake_install_library(
   const builtin_function_caller::params_t& params)
 {
-    const auto& [lib] = get_params<alternative_t::library>(params);
-    m_cmake_facade.install(lib.name());
-    return m_instances.create_void();
+  const auto& [lib] = get_params<alternative_t::library>(params);
+  m_cmake_facade.install(lib.name());
+  return m_instances.create_void();
 }
 
 inst::instance* builtin_function_caller::cmake_install_library_destination(
   const builtin_function_caller::params_t& params)
 {
-    const auto& [lib,destination] = get_params<alternative_t::library, alternative_t ::string>(params);
-    m_cmake_facade.install(lib.name(),destination);
-    return m_instances.create_void();
+  const auto& [lib, destination] =
+    get_params<alternative_t::library, alternative_t ::string>(params);
+  m_cmake_facade.install(lib.name(), destination);
+  return m_instances.create_void();
 }
 
 inst::instance* builtin_function_caller::cmake_enable_ctest(
@@ -1978,5 +1981,22 @@ inst::instance* builtin_function_caller::cmake_set_old_style_variable(
     get_params<alternative_t ::string, alternative_t ::string>(params);
   m_cmake_facade.set_old_style_variable(name, value);
   return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::cmake_get_system_info(
+  const builtin_function_caller::params_t& params)
+{
+  auto created_variable =
+    m_instances.create(m_builtin_types.cmake->system_info);
+  auto id_member_info = created_variable->type().find_member("id");
+  auto id_member = created_variable->find_member(id_member_info->index);
+
+  const auto info = m_cmake_facade.get_system_info();
+
+  const auto enum_val =
+    inst::enum_constant_value{ static_cast<unsigned>(info.id) };
+  id_member->value_accessor().access().set_enum_constant(enum_val);
+
+  return created_variable;
 }
 }
