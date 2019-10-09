@@ -1,4 +1,5 @@
 namespace cmsl {
+export auto root_dir = cmake::root_source_dir();
 export auto source_dir = cmake::root_source_dir() + "/source";
 export auto facade_dir = cmake::root_source_dir() + "/facade";
 export auto scripts_dir = cmake::root_source_dir() + "/scripts";

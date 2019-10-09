@@ -1,0 +1,25 @@
+namespace cmsl {
+class add_test_params
+{
+  string name;
+  list<string> sources;
+  list<string> include_dirs;
+  list<string> libraries;
+};
+
+void add_test(cmake::project p, add_test_params params)
+{
+  auto test_name = params.name + "_test";
+  auto exe = p.add_executable(test_name, params.sources);
+
+  for (auto i = 0; i < params.libraries.size(); ++i) {
+    auto lib_name = params.libraries.at(i);
+    auto lib = p.find_library(lib_name);
+    exe.link_to(lib);
+  }
+
+  exe.include_directories(params.include_dirs);
+
+  cmake::add_test(exe);
+}
+}
