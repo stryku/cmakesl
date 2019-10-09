@@ -67,5 +67,7 @@ public:
 
   MOCK_CONST_METHOD2(set_old_style_variable,
                      void(const std::string&, const std::string&));
+
+  MOCK_CONST_METHOD0(ctest_command, std::string());
 };
 }

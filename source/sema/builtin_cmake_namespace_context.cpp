@@ -184,7 +184,11 @@ void builtin_cmake_namespace_context::add_functions()
         token_provider.add_custom_target(),
         { parameter_declaration{ string_type, param_token },
           parameter_declaration{ list_of_strings_type, param_token } } },
-      builtin_function_kind::cmake_add_custom_target }
+      builtin_function_kind::cmake_add_custom_target },
+    builtin_function_info{
+      // string ctest_command()
+      string_type, function_signature{ token_provider.ctest_command() },
+      builtin_function_kind::cmake_ctest_command }
   };
 
   auto factory = m_factories.function_factory();

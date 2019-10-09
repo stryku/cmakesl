@@ -133,6 +133,8 @@ public:
   {
   }
 
+  std::string ctest_command() const override { return ""; }
+
 private:
   std::stack<std::string> m_directory_stack;
   bool m_fatal_error_occured{ false };

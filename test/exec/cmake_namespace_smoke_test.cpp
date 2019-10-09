@@ -361,4 +361,18 @@ TEST_F(CmakeNamespaceSmokeTest, GetSystemInfo_IsCallable)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(CmakeNamespaceSmokeTest, CtestCommand_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::ctest_command();"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, ctest_command());
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }

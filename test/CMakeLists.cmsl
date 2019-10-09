@@ -12,6 +12,6 @@ void main()
 
   auto system = cmake::get_system_info().id;
   if (system != cmake::system_id::windows) {
-    cmake::add_custom_target("RUN_ALL_TEST", cmake::ctest_command());
+    cmake::add_custom_target("RUN_ALL_TEST", { cmake::ctest_command() });
   }
 }

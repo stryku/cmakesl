@@ -23,6 +23,7 @@ enum class builtin_function_kind
   cmake_set_old_style_variable,
   cmake_get_system_info,
   cmake_add_custom_target,
+  cmake_ctest_command,
 
   // Class methods:
 
