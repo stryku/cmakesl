@@ -1,0 +1,17 @@
+void main()
+{
+  add_subdirectory("ast");
+  add_subdirectory("common");
+  add_subdirectory("errors_observer");
+  add_subdirectory("errors_observer_mock");
+  add_subdirectory("exec");
+  add_subdirectory("lexer");
+  add_subdirectory("lexer_error");
+  add_subdirectory("sema");
+  add_subdirectory("source_location_manipulator");
+
+  auto system = cmake::get_system_info().id;
+  if (system != cmake::system_id::windows) {
+    cmake::add_custom_target("RUN_ALL_TEST", cmake::ctest_command());
+  }
+}
