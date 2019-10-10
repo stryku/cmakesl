@@ -350,6 +350,20 @@ TEST_F(CmakeNamespaceSmokeTest, SetOldStyleVariable_CallsFacadeMethod)
   EXPECT_THAT(result, Eq(42));
 }
 
+TEST_F(CmakeNamespaceSmokeTest, GetOldStyleVariable_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    cmake::get_old_style_variable(\"foo\");"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, get_old_style_variable("foo"));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
 TEST_F(CmakeNamespaceSmokeTest, GetSystemInfo_IsCallable)
 {
   const auto source = "int main()"

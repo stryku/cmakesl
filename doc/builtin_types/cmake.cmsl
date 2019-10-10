@@ -157,6 +157,14 @@ void make_directory(string dir);
  */
 void set_old_style_variable(string name, string value);
 
+/** \brief Gets an old style variable.
+ *
+ * Equivalent of `${value}` in old CMake.
+ *
+ * \param name The name of the variable to be set.
+ */
+void get_old_style_variable(string name);
+
 /** \brief En enumaration for possible operating systems.
  */
 enum system_id

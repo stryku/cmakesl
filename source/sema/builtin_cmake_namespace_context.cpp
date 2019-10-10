@@ -174,6 +174,13 @@ void builtin_cmake_namespace_context::add_functions()
           parameter_declaration{ string_type, param_token } } },
       builtin_function_kind::cmake_set_old_style_variable },
     builtin_function_info{
+      // void get_old_style_variable(string name, string value)
+      void_type,
+      function_signature{
+        token_provider.get_old_style_variable(),
+        { parameter_declaration{ string_type, param_token } } },
+      builtin_function_kind::cmake_get_old_style_variable },
+    builtin_function_info{
       // system_info get_system_info()
       system_info_type, function_signature{ token_provider.get_system_info() },
       builtin_function_kind::cmake_get_system_info },
