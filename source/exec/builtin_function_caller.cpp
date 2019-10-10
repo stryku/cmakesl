@@ -270,6 +270,7 @@ std::unique_ptr<inst::instance> builtin_function_caller::call(
     CASE_BUILTIN_FUNCTION_CALL(cmake_add_custom_command);
     CASE_BUILTIN_FUNCTION_CALL(cmake_make_directory);
     CASE_BUILTIN_FUNCTION_CALL(cmake_set_old_style_variable);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_get_old_style_variable);
     CASE_BUILTIN_FUNCTION_CALL(cmake_add_custom_target);
     CASE_BUILTIN_FUNCTION_CALL(cmake_ctest_command);
 
@@ -1983,6 +1984,14 @@ inst::instance* builtin_function_caller::cmake_set_old_style_variable(
     get_params<alternative_t ::string, alternative_t ::string>(params);
   m_cmake_facade.set_old_style_variable(name, value);
   return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::cmake_get_old_style_variable(
+  const builtin_function_caller::params_t& params)
+{
+  const auto& [name] = get_params<alternative_t ::string>(params);
+  auto value = m_cmake_facade.get_old_style_variable(name);
+  return m_instances.create(std::move(value));
 }
 
 inst::instance* builtin_function_caller::cmake_get_system_info(

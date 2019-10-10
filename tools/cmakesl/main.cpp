@@ -133,6 +133,11 @@ public:
   {
   }
 
+  std::string get_old_style_variable(const std::string&) const override
+  {
+    return {};
+  }
+
   std::string ctest_command() const override { return ""; }
 
 private:
