@@ -1,0 +1,59 @@
+import "cmake/cmsl_directories.cmsl";
+import "cmake/test_utils.cmsl";
+
+void main(cmake::project p)
+{
+  auto sources = { "auto_type_smoke_test.cpp",
+                   "bool_type_smoke_test.cpp",
+                   "break_smoke_test.cpp",
+                   "builtin_function_caller2_test.cpp",
+                   "class_smoke_test.cpp",
+                   "cmake_namespace_smoke_test.cpp",
+                   "designated_initializers_smoke_test.cpp",
+                   "double_type_smoke_test.cpp",
+                   "enum_smoke_test.cpp",
+                   "executable_smoke_test.cpp",
+                   "expression_evaluation_visitor_test.cpp",
+                   "extern_type_smoke_test.cpp",
+                   "fatal_error_smoke_test.cpp",
+                   "for_loop_smoke_test.cpp",
+                   "function_smoke_test.cpp",
+                   "if_else_smoke_test.cpp",
+                   "instance_value_variant_test.cpp",
+                   "int_type_smoke_test.cpp",
+                   "library_smoke_test.cpp",
+                   "list_type_smoke_test.cpp",
+                   "namespaces_smoke_test.cpp",
+                   "option_smoke_test.cpp",
+                   "project_smoke_test.cpp",
+                   "reference_smoke_tests.cpp",
+                   "scopes_smoke_test.cpp",
+                   "smoke_test_fixture.hpp",
+                   "static_variables_smoke_test.cpp",
+                   "string_type_smoke_tests.cpp",
+                   "ternary_operator_smoke_test.cpp",
+                   "variable_type_deduction.cpp",
+                   "version_type_smoke_tests.cpp",
+                   "void_type_smoke_test.cpp",
+                   "while_loop_smoke_test.cpp",
+                   "add_subdirectory_test/add_subdirectory_smoke_test.cpp",
+                   "import_test/import_smoke_test.cpp",
+                   "mock/function_caller_mock.hpp",
+                   "mock/identifiers_context_mock.hpp",
+                   "mock/instance_mock.hpp",
+                   "mock/instances_holder_mock.hpp" };
+
+  auto include_dirs = { cmsl::root_dir, cmsl::source_dir, cmsl::facade_dir };
+
+  auto libs = { "exec",        "lexer", "ast", "sema", "errors_observer_mock",
+                "tests_common" };
+
+  auto test_exe = cmsl::test::add_test(p,
+                                       { .name = "exec",
+                                         .sources = sources,
+                                         .include_dirs = include_dirs,
+                                         .libraries = libs });
+
+  test_exe.compile_definitions({ "-DCMAKESL_EXEC_SMOKE_TEST_ROOT_DIR=\"" +
+                                 cmake::current_source_dir() + "\"" });
+}

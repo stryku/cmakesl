@@ -1,19 +1,21 @@
 import "cmake/cmsl_directories.cmsl";
 import "cmake/test_utils.cmsl";
 
-void main()
+void main(cmake::project p)
 {
   auto include_dirs = { cmsl::source_dir, cmsl::facade_dir, cmsl::root_dir };
 
-  cmsl::add_test(
+  cmsl::test::add_test(
+    p,
     { .name = "ast",
       .sources = { "parser_test.cpp", "escaped_string_builder_test.cpp" },
       .include_dirs = include_dirs,
       .libraries = { "ast", "lexer", "errors", "tests_common" } });
 
-  cmsl::add_test({ .name = "ast_error",
-                   .sources = { "parser_error_test.cpp" },
-                   .include_dirs = include_dirs,
-                   .libraries = { "ast", "lexer", "errors_observer_mock",
-                                  "tests_common" } });
+  cmsl::test::add_test(p,
+                       { .name = "ast_error",
+                         .sources = { "parser_error_test.cpp" },
+                         .include_dirs = include_dirs,
+                         .libraries = { "ast", "lexer", "errors_observer_mock",
+                                        "tests_common" } });
 }

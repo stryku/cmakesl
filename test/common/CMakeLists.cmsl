@@ -1,7 +1,11 @@
 import "cmake/cmsl_directories.cmsl";
+import "cmake/test_utils.cmsl";
 
 void main(cmake::project p)
 {
-  auto lib = p.add_library("tests_common", { "tokens.cpp", "tokens.hpp" });
-  lib.include_directories({ cmsl::root_dir, cmsl::source_dir });
+  cmsl::test::add_library(
+    p,
+    { .name = "tests_common",
+      .sources = { "tokens.cpp", "tokens.hpp" },
+      .include_dirs = { cmsl::root_dir, cmsl::source_dir } });
 }

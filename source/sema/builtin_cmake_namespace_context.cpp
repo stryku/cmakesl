@@ -159,9 +159,9 @@ void builtin_cmake_namespace_context::add_functions()
       token_provider.set_old_style_variable(),
       { string_type, string_type } },
     builtin_function_info{
-      // void get_old_style_variable(string name, string value)
+      // string get_old_style_variable(string name, string value)
       builtin_function_kind::cmake_get_old_style_variable,
-      void_type,
+      string_type,
       token_provider.get_old_style_variable(),
       { string_type },
     },

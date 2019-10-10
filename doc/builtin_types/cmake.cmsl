@@ -166,8 +166,9 @@ void set_old_style_variable(string name, string value);
  * Equivalent of `${value}` in old CMake.
  *
  * \param name The name of the variable to be set.
+ * \return The value of the variable.
  */
-void get_old_style_variable(string name);
+string get_old_style_variable(string name);
 
 /** \brief En enumaration for possible operating systems.
  */

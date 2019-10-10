@@ -1,5 +1,14 @@
-namespace cmsl {
-class add_test_params
+namespace cmsl::test {
+
+namespace detail {
+auto get_googletest_include_dirs()
+{
+  return { cmake::get_old_style_variable("gtest_SOURCE_DIR") + "/include",
+           cmake::get_old_style_variable("gmock_SOURCE_DIR") + "/include" };
+}
+}
+
+export class add_target_params
 {
   string name;
   list<string> sources;
@@ -7,10 +16,13 @@ class add_test_params
   list<string> libraries;
 };
 
-void add_test(cmake::project p, add_test_params params)
+export cmake::executable add_test(cmake::project p, add_target_params params)
 {
   auto test_name = params.name + "_test";
   auto exe = p.add_executable(test_name, params.sources);
+
+  auto gmock_main = p.find_library("gmock_main");
+  exe.link_to(gmock_main);
 
   for (auto i = 0; i < params.libraries.size(); ++i) {
     auto lib_name = params.libraries.at(i);
@@ -18,8 +30,29 @@ void add_test(cmake::project p, add_test_params params)
     exe.link_to(lib);
   }
 
-  exe.include_directories(params.include_dirs);
+  auto include_dirs =
+    params.include_dirs + detail::get_googletest_include_dirs();
+  exe.include_directories(include_dirs);
 
   cmake::add_test(exe);
+
+  return exe;
+}
+
+export cmake::library add_library(cmake::project p, add_target_params params)
+{
+  auto lib = p.add_library(params.name, params.sources);
+
+  for (auto i = 0; i < params.libraries.size(); ++i) {
+    auto lib_name = params.libraries.at(i);
+    auto found_lib = p.find_library(lib_name);
+    lib.link_to(found_lib);
+  }
+
+  auto include_dirs =
+    params.include_dirs + detail::get_googletest_include_dirs();
+  lib.include_directories(include_dirs);
+
+  return lib;
 }
 }

@@ -1,0 +1,29 @@
+import "cmake/cmsl_directories.cmsl";
+import "cmake/test_utils.cmsl";
+
+void main(cmake::project p)
+{
+  auto sources = { "mock/add_subdirectory_semantic_handler_mock.hpp",
+                   "mock/enum_values_context_mock.hpp",
+                   "mock/expression_node_mock.hpp",
+                   "mock/identifiers_context_mock.hpp",
+                   "mock/import_handler_mock.hpp",
+                   "mock/sema_context_mock.hpp",
+                   "mock/sema_function_mock.hpp",
+                   "identifiers_context_test.cpp",
+                   "overload_resolution_test.cpp",
+                   "sema_builder_ast_visitor_test.cpp",
+                   "sema_dumper_smoke_test.cpp",
+                   "vatiable_initialization_check_test.cpp" };
+
+  auto include_dirs = { cmsl::source_dir, cmsl::facade_dir, cmsl::test_dir,
+                        cmsl::root_dir };
+  auto libs = { "lexer", "ast", "sema", "errors_observer_mock",
+                "tests_common" };
+
+  cmsl::test::add_test(p,
+                       { .name = "sema",
+                         .sources = sources,
+                         .include_dirs = include_dirs,
+                         .libraries = libs });
+}

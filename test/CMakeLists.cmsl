@@ -1,14 +1,14 @@
-void main()
+void main(cmake::project p)
 {
-  add_subdirectory("ast");
-  add_subdirectory("common");
-  add_subdirectory("errors_observer");
-  add_subdirectory("errors_observer_mock");
-  add_subdirectory("exec");
-  add_subdirectory("lexer");
-  add_subdirectory("lexer_error");
-  add_subdirectory("sema");
-  add_subdirectory("source_location_manipulator");
+  add_subdirectory("ast", p);
+  add_subdirectory("common", p);
+  add_subdirectory("errors_observer", p);
+  add_subdirectory("errors_observer_mock", p);
+  add_subdirectory("exec", p);
+  add_subdirectory("lexer", p);
+  add_subdirectory("lexer_error", p);
+  add_subdirectory("sema", p);
+  add_subdirectory("source_location_manipulator", p);
 
   auto system = cmake::get_system_info().id;
   if (system != cmake::system_id::windows) {
