@@ -25,6 +25,10 @@ public:
   void include_directories(facade::cmake_facade& cmake_facade,
                            facade::visibility, const list_value& dirs) const;
 
+  void compile_definitions(facade::cmake_facade& cmake_facade,
+                           const list_value& definitions,
+                           facade::visibility v) const;
+
 private:
   std::string m_name;
 };

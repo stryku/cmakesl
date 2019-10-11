@@ -561,7 +561,8 @@ void builtin_cmake_namespace_context::add_library_member_functions(
   const auto& string_type = m_builtin_types.string;
   const auto& library_type = m_types_accessor->library;
   const auto& void_type = m_builtin_types.void_;
-  const auto& directories_type = m_generics_creation_utils.list_of_strings();
+  const auto& list_of_strings_type =
+    m_generics_creation_utils.list_of_strings();
   const auto& visibility_type = m_types_accessor->visibility;
 
   const auto token_provider = m_builtin_tokens.library();
@@ -591,16 +592,31 @@ void builtin_cmake_namespace_context::add_library_member_functions(
       void_type,
       function_signature{
         token_provider.include_directories(),
-        { parameter_declaration{ directories_type, param_token } } },
+        { parameter_declaration{ list_of_strings_type, param_token } } },
       builtin_function_kind::library_include_directories },
     builtin_function_info{
       // void include_directories(list<string> dirs, visibility v)
       void_type,
       function_signature{
         token_provider.include_directories_dirs_visibility(),
-        { parameter_declaration{ directories_type, param_token },
+        { parameter_declaration{ list_of_strings_type, param_token },
           parameter_declaration{ visibility_type, param_token } } },
-      builtin_function_kind::library_include_directories_visibility }
+      builtin_function_kind::library_include_directories_visibility },
+    builtin_function_info{
+      // void compile_definitions(list<string> definitions)
+      void_type,
+      function_signature{
+        token_provider.compile_definitions(),
+        { parameter_declaration{ list_of_strings_type, param_token } } },
+      builtin_function_kind::library_compile_definitions },
+    builtin_function_info{
+      // void compile_definitions(list<string> definitions, visibility v)
+      void_type,
+      function_signature{
+        token_provider.compile_definitions_visibility(),
+        { parameter_declaration{ list_of_strings_type, param_token },
+          parameter_declaration{ visibility_type, param_token } } },
+      builtin_function_kind::library_compile_definitions_visibility }
   };
 
   add_type_member_functions(project_manipulator, functions);
@@ -619,7 +635,8 @@ void builtin_cmake_namespace_context::add_executable_member_functions(
   const auto& string_type = m_builtin_types.string;
   const auto& library_type = m_types_accessor->library;
   const auto& void_type = m_builtin_types.void_;
-  const auto& directories_type = m_generics_creation_utils.list_of_strings();
+  const auto& list_of_strings_type =
+    m_generics_creation_utils.list_of_strings();
   const auto& visibility_type = m_types_accessor->visibility;
 
   const auto token_provider = m_builtin_tokens.executable();
@@ -649,16 +666,31 @@ void builtin_cmake_namespace_context::add_executable_member_functions(
       void_type,
       function_signature{
         token_provider.include_directories(),
-        { parameter_declaration{ directories_type, param_token } } },
+        { parameter_declaration{ list_of_strings_type, param_token } } },
       builtin_function_kind::executable_include_directories },
     builtin_function_info{
       // void include_directories(list<string> dirs, visibility v)
       void_type,
       function_signature{
         token_provider.include_directories_dirs_visibility(),
-        { parameter_declaration{ directories_type, param_token },
+        { parameter_declaration{ list_of_strings_type, param_token },
           parameter_declaration{ visibility_type, param_token } } },
-      builtin_function_kind::executable_include_directories_visibility }
+      builtin_function_kind::executable_include_directories_visibility },
+    builtin_function_info{
+      // void compile_definitions(list<string> definitions)
+      void_type,
+      function_signature{
+        token_provider.compile_definitions(),
+        { parameter_declaration{ list_of_strings_type, param_token } } },
+      builtin_function_kind::executable_compile_definitions },
+    builtin_function_info{
+      // void compile_definitions(list<string> definitions, visibility v)
+      void_type,
+      function_signature{
+        token_provider.compile_definitions_visibility(),
+        { parameter_declaration{ list_of_strings_type, param_token },
+          parameter_declaration{ visibility_type, param_token } } },
+      builtin_function_kind::executable_compile_definitions_visibility }
   };
 
   add_type_member_functions(project_manipulator, functions);

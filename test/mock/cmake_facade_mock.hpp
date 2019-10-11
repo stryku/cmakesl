@@ -42,6 +42,9 @@ public:
   MOCK_METHOD3(target_include_directories,
                void(const std::string&, facade::visibility,
                     const std::vector<std::string>&));
+  MOCK_METHOD3(target_compile_definitions,
+               void(const std::string&, facade::visibility v,
+                    const std::vector<std::string>&));
 
   MOCK_CONST_METHOD0(current_directory, std::string());
   MOCK_METHOD1(go_into_subdirectory, void(const std::string&));
