@@ -1,10 +1,10 @@
 #pragma once
 
+#include "sema/builtin_context_base.hpp"
 #include "sema/builtin_function_kind.hpp"
 #include "sema/builtin_types_accessor.hpp"
 #include "sema/function_signature.hpp"
 #include "sema/identifier_info.hpp"
-#include "sema/sema_context_impl.hpp"
 
 namespace cmsl {
 namespace errors {
@@ -24,7 +24,7 @@ class qualified_contextes_refs;
 class generic_type_creation_utils;
 class builtin_cmake_namespace_context;
 
-class builtin_sema_context : public sema_context_impl
+class builtin_sema_context : public builtin_context_base
 {
 public:
   explicit builtin_sema_context(
@@ -41,13 +41,6 @@ public:
 private:
   using token_type_t = lexer::token_type;
 
-  struct builtin_function_info
-  {
-    const sema_type& return_type;
-    function_signature signature;
-    builtin_function_kind kind;
-  };
-
   // Types are added in two phases:
   // 1. Adding types with its members to sema context.
   // 2. Adding member functions to already created members.
@@ -58,10 +51,6 @@ private:
   void add_functions();
 
   void add_cmake_namespace_context();
-
-  template <typename Functions>
-  void add_type_member_functions(type_builder& manipulator,
-                                 Functions&& functions);
 
   type_builder add_type(lexer::token name_token);
 
@@ -75,17 +64,8 @@ private:
   void add_string_member_functions(type_builder& string_manipulator);
   type_builder add_void_type();
 
-  template <unsigned N>
-  lexer::token make_token(token_type_t token_type, const char (&tok)[N]);
-
-  template <unsigned N>
-  lexer::token make_id_token(const char (&tok)[N]);
-
 private:
-  factories_provider& m_factories;
   errors::errors_observer& m_errors_observer;
-  const builtin_token_provider& m_builtin_token_provider;
-  qualified_contextes_refs& m_qualified_ctxs;
 
   std::unique_ptr<builtin_types_accessor> m_builtin_types;
   std::unique_ptr<generic_type_creation_utils> m_generics_creation_utils;
