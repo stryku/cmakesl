@@ -24,7 +24,7 @@ TEST_F(ExecutableSmokeTest, NameReturnsProperName)
   EXPECT_THAT(result, Eq(1));
 }
 
-TEST_F(ExecutableSmokeTest, LinkToCallsFacadeMethod)
+TEST_F(ExecutableSmokeTest, LinkTo_CallsFacadeMethod)
 {
   const auto source =
     "int main()"
@@ -48,7 +48,7 @@ TEST_F(ExecutableSmokeTest, LinkToCallsFacadeMethod)
   EXPECT_THAT(result, Eq(42));
 }
 
-TEST_F(ExecutableSmokeTest, LinkToWithVisibilityCallsFacadeMethod)
+TEST_F(ExecutableSmokeTest, LinkToWithVisibility_CallsFacadeMethod)
 {
   const auto source =
     "int main()"
@@ -72,17 +72,17 @@ TEST_F(ExecutableSmokeTest, LinkToWithVisibilityCallsFacadeMethod)
   EXPECT_THAT(result, Eq(42));
 }
 
-TEST_F(ExecutableSmokeTest, IncludeDirectoriesCallsFacadeMethod)
+TEST_F(ExecutableSmokeTest, IncludeDirectories_CallsFacadeMethod)
 {
   const auto source =
     "int main()"
     "{"
     "    cmake::project p = cmake::project(\"foo\");"
     "    list<string> sources;"
-    "    cmake::library lib = p.add_library(\"exe\", sources);"
+    "    cmake::executable exe = p.add_executable(\"exe\", sources);"
     ""
     "    list<string> include_dirs = { \"dir\" };"
-    "    lib.include_directories(include_dirs);"
+    "    exe.include_directories(include_dirs);"
     "    return 42;"
     "}";
 
@@ -95,17 +95,17 @@ TEST_F(ExecutableSmokeTest, IncludeDirectoriesCallsFacadeMethod)
   EXPECT_THAT(result, Eq(42));
 }
 
-TEST_F(ExecutableSmokeTest, IncludeDirectoriesWithVisibilityCallsFacadeMethod)
+TEST_F(ExecutableSmokeTest, IncludeDirectoriesWithVisibility_CallsFacadeMethod)
 {
   const auto source =
     "int main()"
     "{"
     "    cmake::project p = cmake::project(\"foo\");"
     "    list<string> sources;"
-    "    cmake::library lib = p.add_library(\"exe\", sources);"
+    "    cmake::executable exe = p.add_executable(\"exe\", sources);"
     ""
     "    list<string> include_dirs = { \"dir\" };"
-    "    lib.include_directories(include_dirs, cmake::visibility::interface);"
+    "    exe.include_directories(include_dirs, cmake::visibility::interface);"
     "    return 42;"
     "}";
 
@@ -113,6 +113,52 @@ TEST_F(ExecutableSmokeTest, IncludeDirectoriesWithVisibilityCallsFacadeMethod)
   EXPECT_CALL(m_facade,
               target_include_directories("exe", facade::visibility::interface,
                                          expected_dirs));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(ExecutableSmokeTest, CompileDefinitions_CallsFacadeMethod)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::project p = cmake::project(\"foo\");"
+    "    list<string> sources;"
+    "    cmake::executable exe = p.add_executable(\"exe\", sources);"
+    ""
+    "    list<string> defs = { \"-DFOO\" };"
+    "    exe.compile_definitions(defs);"
+    "    return 42;"
+    "}";
+
+  std::vector<std::string> expected_definitions = { "-DFOO" };
+  EXPECT_CALL(m_facade,
+              target_compile_definitions("exe", facade::visibility::private_,
+                                         expected_definitions));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(ExecutableSmokeTest, CompileDefinitionsWithVisibility_CallsFacadeMethod)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::project p = cmake::project(\"foo\");"
+    "    list<string> sources;"
+    "    cmake::executable exe = p.add_executable(\"exe\", sources);"
+    ""
+    "    list<string> defs = { \"-DFOO\" };"
+    "    exe.compile_definitions(defs);"
+    "    return 42;"
+    "}";
+
+  std::vector<std::string> expected_definitions = { "-DFOO" };
+  EXPECT_CALL(m_facade,
+              target_compile_definitions("exe", facade::visibility::private_,
+                                         expected_definitions));
 
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));

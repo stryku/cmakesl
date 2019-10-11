@@ -82,6 +82,12 @@ public:
   {
   }
 
+  void target_compile_definitions(
+    const std::string& target_name, cmsl::facade::visibility v,
+    const std::vector<std::string>& definitions) override
+  {
+  }
+
   std::string current_directory() const override
   {
     return m_directory_stack.top();

@@ -28,4 +28,12 @@ void target_value::include_directories(facade::cmake_facade& cmake_facade,
   const auto dir_values = list_value_utils{ dirs }.strings();
   cmake_facade.target_include_directories(m_name, v, dir_values);
 }
+
+void target_value::compile_definitions(facade::cmake_facade& cmake_facade,
+                                       const list_value& definitions_list,
+                                       facade::visibility v) const
+{
+  const auto definitions = list_value_utils{ definitions_list }.strings();
+  cmake_facade.target_compile_definitions(m_name, v, definitions);
+}
 }

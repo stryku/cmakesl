@@ -335,6 +335,10 @@ private:
                                               const params_t& params);
   inst::instance* library_include_directories_visibility(
     inst::instance& instance, const params_t& params);
+  inst::instance* library_compile_definitions(inst::instance& instance,
+                                              const params_t& params);
+  inst::instance* library_compile_definitions_visibility(
+    inst::instance& instance, const params_t& params);
 
   inst::instance* executable_name(inst::instance& instance,
                                   const params_t& params);
@@ -345,6 +349,10 @@ private:
   inst::instance* executable_include_directories(inst::instance& instance,
                                                  const params_t& params);
   inst::instance* executable_include_directories_visibility(
+    inst::instance& instance, const params_t& params);
+  inst::instance* executable_compile_definitions(inst::instance& instance,
+                                                 const params_t& params);
+  inst::instance* executable_compile_definitions_visibility(
     inst::instance& instance, const params_t& params);
 
   inst::instance* enum_to_string(inst::instance& instance,

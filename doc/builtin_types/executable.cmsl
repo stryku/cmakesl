@@ -42,5 +42,20 @@ public:
    * @param v The visibility.
    */
   void include_directories(list<string> dirs, visibility v);
+
+  /** @brief Adds compile definitions of the executable.
+   *
+   * Uses cmake::visibility::private.
+   *
+   * @param definitions The compile definitions to be added.
+   */
+  void compile_definitions(list<string> definitions);
+
+  /** @brief Adds compile definitions of the executable.
+   *
+   * @param definitions The compile definitions to be added.
+   * @param v The visibility.
+   */
+  void compile_definitions(list<string> definitions, visibility v);
 };
 }

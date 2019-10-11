@@ -247,7 +247,9 @@ GENERATION_INFO = {
             'link_to': ['void link_to(library lib);', 'void ', 'link_to'],
             'link_to_lib_visibility': ['void link_to(library lib, visibility v);', 'void ', 'link_to'],
             'include_directories': ['void include_directories(list<string> dirs);', 'void ', 'include_directories'],
-            'include_directories_dirs_visibility': ['void include_directories(list<string> dirs, visibility v);', 'void ', 'include_directories']
+            'include_directories_dirs_visibility': ['void include_directories(list<string> dirs, visibility v);', 'void ', 'include_directories'],
+            'compile_definitions': ['void compile_definitions(list<string> definitions);', 'void ', 'compile_definitions'],
+            'compile_definitions_visibility': ['void compile_definitions(list<string> definitions, visibility v);', 'void ', 'compile_definitions'],
         }
     },
     'executable': {
@@ -257,7 +259,9 @@ GENERATION_INFO = {
             'link_to': ['void link_to(library lib);', 'void ', 'link_to'],
             'link_to_lib_visibility': ['void link_to(library lib, visibility v);', 'void ', 'link_to'],
             'include_directories': ['void include_directories(list<string> dirs);', 'void ', 'include_directories'],
-            'include_directories_dirs_visibility': ['void include_directories(list<string> dirs, visibility v);', 'void ', 'include_directories']
+            'include_directories_dirs_visibility': ['void include_directories(list<string> dirs, visibility v);', 'void ', 'include_directories'],
+            'compile_definitions': ['void compile_definitions(list<string> definitions);', 'void ', 'compile_definitions'],
+            'compile_definitions_visibility': ['void compile_definitions(list<string> definitions, visibility v);', 'void ', 'compile_definitions'],
         }
     },
     'void': {

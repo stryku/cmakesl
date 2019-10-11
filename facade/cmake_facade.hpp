@@ -85,6 +85,11 @@ public:
     const std::vector<std::string>&
       dirs) = 0; // Todo: Change dirs to vector of string_views
 
+  virtual void target_compile_definitions(
+    const std::string& target_name, visibility v,
+    const std::vector<std::string>&
+      definitions) = 0; // Todo: Change dirs to vector of string_views
+
   virtual std::string current_directory() const = 0;
 
   virtual void add_subdirectory_with_old_script(const std::string& dir) = 0;
