@@ -33,4 +33,19 @@ TEST_F(ForLoopSmokeTest, IncrementInitializedValue)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(ForLoopSmokeTest, ChecksConditionBeforeFirstIteration)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    int value = 42;"
+                      "    for(int i = 0; i < 0; i += 1 )"
+                      "    {"
+                      "        value = 24;"
+                      "    }"
+                      "    return value;"
+                      "}";
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }
