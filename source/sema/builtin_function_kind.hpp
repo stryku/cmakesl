@@ -18,6 +18,7 @@ enum class builtin_function_kind
   cmake_add_test,
   cmake_root_source_dir,
   cmake_current_binary_dir,
+  cmake_current_source_dir,
   cmake_add_custom_command,
   cmake_make_directory,
   cmake_set_old_style_variable,

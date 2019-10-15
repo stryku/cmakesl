@@ -272,6 +272,7 @@ std::unique_ptr<inst::instance> builtin_function_caller::call(
     CASE_BUILTIN_FUNCTION_CALL(cmake_add_test);
     CASE_BUILTIN_FUNCTION_CALL(cmake_root_source_dir);
     CASE_BUILTIN_FUNCTION_CALL(cmake_current_binary_dir);
+    CASE_BUILTIN_FUNCTION_CALL(cmake_current_source_dir);
     CASE_BUILTIN_FUNCTION_CALL(cmake_add_custom_command);
     CASE_BUILTIN_FUNCTION_CALL(cmake_make_directory);
     CASE_BUILTIN_FUNCTION_CALL(cmake_set_old_style_variable);
@@ -2017,9 +2018,16 @@ inst::instance* builtin_function_caller::cmake_add_custom_command(
 }
 
 inst::instance* builtin_function_caller::cmake_current_binary_dir(
-  const builtin_function_caller::params_t& params)
+  const builtin_function_caller::params_t&)
 {
   auto dir = m_cmake_facade.get_current_binary_dir();
+  return m_instances.create(std::move(dir));
+}
+
+inst::instance* builtin_function_caller::cmake_current_source_dir(
+  const builtin_function_caller::params_t&)
+{
+  auto dir = m_cmake_facade.get_current_source_dir();
   return m_instances.create(std::move(dir));
 }
 

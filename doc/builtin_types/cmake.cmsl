@@ -135,6 +135,10 @@ string root_source_dir();
  */
 string current_binary_dir();
 
+/** \brief The current source directory getter.
+ */
+string current_source_dir();
+
 /** \brief Creates a custom command.
  *
  * \param command The command to be executed.
