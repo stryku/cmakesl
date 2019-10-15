@@ -264,9 +264,16 @@ void execution::execute_for_node(const sema::for_node& node)
     }
   }
 
-  std::unique_ptr<inst::instance> condition_result;
+  const auto should_continue = [&] {
+    if (node.condition() == nullptr) {
+      return true;
+    }
 
-  while (true) {
+    auto condition_result = execute_infix_expression(*node.condition());
+    return condition_result->value_cref().get_bool();
+  };
+
+  while (should_continue()) {
     execute_block(node.body());
     if (returning_from_function()) {
       break;
@@ -278,13 +285,6 @@ void execution::execute_for_node(const sema::for_node& node)
 
     if (node.iteration()) {
       execute_infix_expression(*node.iteration());
-    }
-
-    if (node.condition()) {
-      condition_result = execute_infix_expression(*node.condition());
-      if (!condition_result->value_cref().get_bool()) {
-        break;
-      }
     }
   }
 }
