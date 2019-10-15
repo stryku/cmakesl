@@ -38,13 +38,13 @@ protected:
   {
     builtin_function_kind kind{};
     const sema_type& return_type;
-    const lexer::token& name;
+    lexer::token name;
     std::vector<std::reference_wrapper<const sema_type>> parameter_types;
   };
 
   struct builtin_variable_info
   {
-    const lexer::token& name;
+    lexer::token name;
     const sema_type& type;
     std::string cmake_variable_name;
   };
