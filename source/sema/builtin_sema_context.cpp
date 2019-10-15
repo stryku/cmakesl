@@ -14,15 +14,12 @@
 
 namespace cmsl::sema {
 builtin_sema_context::builtin_sema_context(
-  factories_provider& factories_provider,
-  errors::errors_observer& errors_observer,
+  factories_provider& factories, errors::errors_observer& errors_observer,
   const builtin_token_provider& builtin_token_provider,
   qualified_contextes_refs& qualified_ctxs)
-  : sema_context_impl{ "" }
-  , m_factories{ factories_provider }
+  : builtin_context_base{ qualified_ctxs, factories, builtin_token_provider,
+                          "" }
   , m_errors_observer{ errors_observer }
-  , m_builtin_token_provider{ builtin_token_provider }
-  , m_qualified_ctxs{ qualified_ctxs }
 {
   add_types();
   add_functions();
@@ -31,22 +28,6 @@ builtin_sema_context::builtin_sema_context(
 
 builtin_sema_context::~builtin_sema_context()
 {
-}
-
-template <unsigned N>
-lexer::token builtin_sema_context::make_token(lexer::token_type token_type,
-                                              const char (&tok)[N])
-{
-  // N counts also '\0'
-  const auto src_range = source_range{ source_location{ 1u, 1u, 0u },
-                                       source_location{ 1u, N, N - 1u } };
-  return lexer::token{ token_type, src_range, cmsl::source_view{ tok } };
-}
-
-template <unsigned N>
-lexer::token builtin_sema_context::make_id_token(const char (&tok)[N])
-{
-  return make_token(token_type_t::identifier, tok);
 }
 
 void builtin_sema_context::add_types()
@@ -76,8 +57,8 @@ void builtin_sema_context::add_types()
   m_builtin_types = std::make_unique<builtin_types_accessor>(types);
 
   m_generics_creation_utils = std::make_unique<generic_type_creation_utils>(
-    *this, m_factories, m_errors_observer, m_builtin_token_provider,
-    *m_builtin_types, m_qualified_ctxs.types);
+    *this, m_factories, m_errors_observer, m_builtin_tokens, *m_builtin_types,
+    m_qualified_ctxs.types);
 
   add_bool_member_functions(bool_manipulator);
   add_int_member_functions(int_manipulator);
@@ -90,19 +71,9 @@ void builtin_sema_context::add_functions()
   // No functions yet.
 }
 
-template <typename Functions>
-void builtin_sema_context::add_type_member_functions(type_builder& manipulator,
-                                                     Functions&& functions)
-{
-  for (const auto& function : functions) {
-    manipulator.with_builtin_function(
-      function.return_type, std::move(function.signature), function.kind);
-  }
-}
-
 type_builder builtin_sema_context::add_bool_type()
 {
-  static const auto token = m_builtin_token_provider.bool_().name();
+  static const auto token = m_builtin_tokens.bool_().name();
   return add_type(token);
 }
 
@@ -114,64 +85,49 @@ void builtin_sema_context::add_bool_member_functions(
   const auto& string_type = m_builtin_types->string;
   const auto& bool_reference_type = m_builtin_types->bool_ref;
 
-  const auto token_provider = m_builtin_token_provider.bool_();
+  const auto token_provider = m_builtin_tokens.bool_();
 
-  const auto functions = {
-    builtin_function_info{
-      // bool()
-      bool_type, function_signature{ token_provider.default_constructor() },
-      builtin_function_kind::bool_ctor },
-    builtin_function_info{
-      // bool(bool)
-      bool_type,
-      function_signature{
-        token_provider.copy_constructor(),
-        { parameter_declaration{ bool_type, make_id_token("") } } },
-      builtin_function_kind::bool_ctor_bool },
-    builtin_function_info{
-      // bool(int)
-      bool_type,
-      function_signature{
-        token_provider.conversion_from_int_constructor(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::bool_ctor_int },
-    builtin_function_info{
-      // operator=(bool)
-      bool_reference_type,
-      function_signature{
-        token_provider.operator_equal(),
-        { parameter_declaration{ bool_type, make_id_token("") } } },
-      builtin_function_kind::bool_operator_equal },
-    builtin_function_info{
-      // operator==(bool)
-      bool_type,
-      function_signature{
-        token_provider.operator_equal_equal(),
-        { parameter_declaration{ bool_type, make_id_token("") } } },
-      builtin_function_kind::bool_operator_equal_equal },
-    builtin_function_info{
-      // operator||(bool)
-      bool_type,
-      function_signature{
-        token_provider.operator_pipe_pipe(),
-        { parameter_declaration{ bool_type, make_id_token("") } } },
-      builtin_function_kind::bool_operator_pipe_pipe },
-    builtin_function_info{
-      // operator&&(bool)
-      bool_type,
-      function_signature{
-        token_provider.operator_amp_amp(),
-        { parameter_declaration{ bool_type, make_id_token("") } } },
-      builtin_function_kind::bool_operator_amp_amp },
-    builtin_function_info{
-      // operator!()
-      bool_type,
-      function_signature{ token_provider.operator_unary_exclaim(), {} },
-      builtin_function_kind::bool_operator_unary_exclaim },
+  const builtin_functions_t functions = {
+    builtin_function_info{ // bool()
+                           builtin_function_kind::bool_ctor, bool_type,
+                           token_provider.default_constructor() },
+    builtin_function_info{ // bool(bool)
+                           builtin_function_kind::bool_ctor_bool,
+                           bool_type,
+                           token_provider.copy_constructor(),
+                           { bool_type } },
+    builtin_function_info{ // bool(int)
+                           builtin_function_kind::bool_ctor_int,
+                           bool_type,
+                           token_provider.conversion_from_int_constructor(),
+                           { int_type } },
+    builtin_function_info{ // operator=(bool)
+                           builtin_function_kind::bool_operator_equal,
+                           bool_reference_type,
+                           token_provider.operator_equal(),
+                           { bool_type } },
+    builtin_function_info{ // operator==(bool)
+                           builtin_function_kind::bool_operator_equal_equal,
+                           bool_type,
+                           token_provider.operator_equal_equal(),
+                           { bool_type } },
+    builtin_function_info{ // operator||(bool)
+                           builtin_function_kind::bool_operator_pipe_pipe,
+                           bool_type,
+                           token_provider.operator_pipe_pipe(),
+                           { bool_type } },
+    builtin_function_info{ // operator&&(bool)
+                           builtin_function_kind::bool_operator_amp_amp,
+                           bool_type,
+                           token_provider.operator_amp_amp(),
+                           { bool_type } },
+    builtin_function_info{ // operator!()
+                           builtin_function_kind::bool_operator_unary_exclaim,
+                           bool_type,
+                           token_provider.operator_unary_exclaim() },
     builtin_function_info{ // to_string()
-                           string_type,
-                           function_signature{ token_provider.to_string() },
-                           builtin_function_kind::bool_to_string }
+                           builtin_function_kind::bool_to_string, string_type,
+                           token_provider.to_string() }
   };
 
   add_type_member_functions(bool_manipulator, functions);
@@ -179,7 +135,7 @@ void builtin_sema_context::add_bool_member_functions(
 
 type_builder builtin_sema_context::add_int_type()
 {
-  static const auto token = m_builtin_token_provider.int_().name();
+  static const auto token = m_builtin_tokens.int_().name();
   return add_type(token);
 }
 
@@ -192,151 +148,111 @@ void builtin_sema_context::add_int_member_functions(
   const auto& double_type = m_builtin_types->double_;
   const auto& string_type = m_builtin_types->string;
 
-  const auto token_provider = m_builtin_token_provider.int_();
+  const auto token_provider = m_builtin_tokens.int_();
 
-  const auto functions = {
-    builtin_function_info{
-      // int()
-      int_type, function_signature{ token_provider.default_constructor() },
-      builtin_function_kind::int_ctor },
-    builtin_function_info{
-      // int(bool)
-      int_type,
-      function_signature{
-        token_provider.conversion_from_bool_constructor(),
-        { parameter_declaration{ bool_type, make_id_token("") } } },
-      builtin_function_kind::int_ctor_bool },
-    builtin_function_info{
-      // int(int)
-      int_type,
-      function_signature{
-        token_provider.copy_constructor(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_ctor_int },
-    builtin_function_info{
-      // int(double)
-      int_type,
-      function_signature{
-        token_provider.conversion_from_double_constructor(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::int_ctor_double },
-    builtin_function_info{
-      // to_string()
-      string_type, function_signature{ token_provider.to_string(), {} },
-      builtin_function_kind::int_to_string },
-    builtin_function_info{
-      // operator+(int)
-      int_type,
-      function_signature{
-        token_provider.operator_plus(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_plus },
-    builtin_function_info{
-      // operator++()
-      int_reference_type,
-      function_signature{ token_provider.operator_unary_plusplus(), {} },
-      builtin_function_kind::int_operator_unary_plusplus },
-    builtin_function_info{
-      // operator-(int)
-      int_type,
-      function_signature{
-        token_provider.operator_minus(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_minus },
-    builtin_function_info{
-      // operator-()
-      int_type,
-      function_signature{ token_provider.operator_unary_minus(), {} },
-      builtin_function_kind::int_operator_unary_minus },
+  const builtin_functions_t functions = {
+    builtin_function_info{ // int()
+                           builtin_function_kind::int_ctor, int_type,
+                           token_provider.default_constructor() },
+    builtin_function_info{ // int(bool)
+                           builtin_function_kind::int_ctor_bool,
+                           int_type,
+                           token_provider.conversion_from_bool_constructor(),
+                           { bool_type } },
+    builtin_function_info{ // int(int)
+                           builtin_function_kind::int_ctor_int,
+                           int_type,
+                           token_provider.copy_constructor(),
+                           { int_type } },
+    builtin_function_info{ // int(double)
+                           builtin_function_kind::int_ctor_double,
+                           int_type,
+                           token_provider.conversion_from_double_constructor(),
+                           { double_type } },
+    builtin_function_info{ // to_string()
+                           builtin_function_kind::int_to_string, string_type,
+                           token_provider.to_string() },
+    builtin_function_info{ // operator+(int)
+                           builtin_function_kind::int_operator_plus,
+                           int_type,
+                           token_provider.operator_plus(),
+                           { int_type } },
+    builtin_function_info{ // operator++()
+                           builtin_function_kind::int_operator_unary_plusplus,
+                           int_reference_type,
+                           token_provider.operator_unary_plusplus() },
+    builtin_function_info{ // operator-(int)
+                           builtin_function_kind::int_operator_minus,
+                           int_type,
+                           token_provider.operator_minus(),
+                           { int_type } },
+    builtin_function_info{ // operator-()
+                           builtin_function_kind::int_operator_unary_minus,
+                           int_type, token_provider.operator_unary_minus() },
     builtin_function_info{
       // operator--()
-      int_reference_type,
-      function_signature{ token_provider.operator_unary_minusminus(), {} },
-      builtin_function_kind::int_operator_unary_minusminus },
-    builtin_function_info{
-      // operator*(int)
-      int_type,
-      function_signature{
-        token_provider.operator_star(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_star },
-    builtin_function_info{
-      // operator/(int)
-      int_type,
-      function_signature{
-        token_provider.operator_slash(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_slash },
-    builtin_function_info{
-      // operator=(int)
-      int_type,
-      function_signature{
-        token_provider.operator_equal(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_equal },
-    builtin_function_info{
-      // int& operator+=(int)
-      int_reference_type,
-      function_signature{
-        token_provider.operator_plus_equal(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_plus_equal },
-    builtin_function_info{
-      // int& operator-=(int)
-      int_reference_type,
-      function_signature{
-        token_provider.operator_minus_equal(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_minus_equal },
-    builtin_function_info{
-      // int& operator*=(int)
-      int_reference_type,
-      function_signature{
-        token_provider.operator_star_equal(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_star_equal },
-    builtin_function_info{
-      // int& operator/=(int)
-      int_reference_type,
-      function_signature{
-        token_provider.operator_slash_equal(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_slash_equal },
-    builtin_function_info{
-      // operator<(int)
-      bool_type,
-      function_signature{
-        token_provider.operator_less(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_less },
-    builtin_function_info{
-      // operator<=(int)
-      bool_type,
-      function_signature{
-        token_provider.operator_less_equal(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_less_equal },
-    builtin_function_info{
-      // operator>(int)
-      bool_type,
-      function_signature{
-        token_provider.operator_greater(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_greater },
-    builtin_function_info{
-      // operator>=(int)
-      bool_type,
-      function_signature{
-        token_provider.operator_greater_equal(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_greater_equal },
-    builtin_function_info{
-      // operator==(int)
-      bool_type,
-      function_signature{
-        token_provider.operator_equal_equal(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::int_operator_equal_equal }
+      builtin_function_kind::int_operator_unary_minusminus, int_reference_type,
+      token_provider.operator_unary_minusminus() },
+    builtin_function_info{ // operator*(int)
+                           builtin_function_kind::int_operator_star,
+                           int_type,
+                           token_provider.operator_star(),
+                           { int_type } },
+    builtin_function_info{ // operator/(int)
+                           builtin_function_kind::int_operator_slash,
+                           int_type,
+                           token_provider.operator_slash(),
+                           { int_type } },
+    builtin_function_info{ // operator=(int)
+                           builtin_function_kind::int_operator_equal,
+                           int_type,
+                           token_provider.operator_equal(),
+                           { int_type } },
+    builtin_function_info{ // int& operator+=(int)
+                           builtin_function_kind::int_operator_plus_equal,
+                           int_reference_type,
+                           token_provider.operator_plus_equal(),
+                           { int_type } },
+    builtin_function_info{ // int& operator-=(int)
+                           builtin_function_kind::int_operator_minus_equal,
+                           int_reference_type,
+                           token_provider.operator_minus_equal(),
+                           { int_type } },
+    builtin_function_info{ // int& operator*=(int)
+                           builtin_function_kind::int_operator_star_equal,
+                           int_reference_type,
+                           token_provider.operator_star_equal(),
+                           { int_type } },
+    builtin_function_info{ // int& operator/=(int)
+                           builtin_function_kind::int_operator_slash_equal,
+                           int_reference_type,
+                           token_provider.operator_slash_equal(),
+                           { int_type } },
+    builtin_function_info{ // operator<(int)
+                           builtin_function_kind::int_operator_less,
+                           bool_type,
+                           token_provider.operator_less(),
+                           { int_type } },
+    builtin_function_info{ // operator<=(int)
+                           builtin_function_kind::int_operator_less_equal,
+                           bool_type,
+                           token_provider.operator_less_equal(),
+                           { int_type } },
+    builtin_function_info{ // operator>(int)
+                           builtin_function_kind::int_operator_greater,
+                           bool_type,
+                           token_provider.operator_greater(),
+                           { int_type } },
+    builtin_function_info{ // operator>=(int)
+                           builtin_function_kind::int_operator_greater_equal,
+                           bool_type,
+                           token_provider.operator_greater_equal(),
+                           { int_type } },
+    builtin_function_info{ // operator==(int)
+                           builtin_function_kind::int_operator_equal_equal,
+                           bool_type,
+                           token_provider.operator_equal_equal(),
+                           { int_type } }
   };
 
   add_type_member_functions(int_manipulator, functions);
@@ -344,7 +260,7 @@ void builtin_sema_context::add_int_member_functions(
 
 type_builder builtin_sema_context::add_double_type()
 {
-  static const auto token = m_builtin_token_provider.double_().name();
+  static const auto token = m_builtin_tokens.double_().name();
   return add_type(token);
 }
 
@@ -357,136 +273,104 @@ void builtin_sema_context::add_double_member_functions(
   const auto& double_reference_type = m_builtin_types->double_ref;
   const auto& string_type = m_builtin_types->string;
 
-  const auto token_provider = m_builtin_token_provider.double_();
+  const auto token_provider = m_builtin_tokens.double_();
 
-  const auto functions = {
-    builtin_function_info{
-      // double()
-      double_type, function_signature{ token_provider.default_constructor() },
-      builtin_function_kind::double_ctor },
-    builtin_function_info{
-      // double(double)
-      double_type,
-      function_signature{
-        token_provider.copy_constructor(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_ctor_double },
-    builtin_function_info{
-      // double(int)
-      double_type,
-      function_signature{
-        token_provider.conversion_from_int_constructor(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::double_ctor_int },
-    builtin_function_info{
-      // operator+(double)
-      double_type,
-      function_signature{
-        token_provider.operator_plus(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_plus },
+  const builtin_functions_t functions = {
+    builtin_function_info{ // double()
+                           builtin_function_kind::double_ctor, double_type,
+                           token_provider.default_constructor() },
+    builtin_function_info{ // double(double)
+                           builtin_function_kind::double_ctor_double,
+                           double_type,
+                           token_provider.copy_constructor(),
+                           { double_type } },
+    builtin_function_info{ // double(int)
+                           builtin_function_kind::double_ctor_int,
+                           double_type,
+                           token_provider.conversion_from_int_constructor(),
+                           { int_type } },
+    builtin_function_info{ // operator+(double)
+                           builtin_function_kind::double_operator_plus,
+                           double_type,
+                           token_provider.operator_plus(),
+                           { double_type } },
     builtin_function_info{
       // operator++()
+      builtin_function_kind::double_operator_unary_plusplus,
       double_reference_type,
-      function_signature{ token_provider.operator_unary_plusplus(), {} },
-      builtin_function_kind::double_operator_unary_plusplus },
-    builtin_function_info{
-      // operator-(double)
-      double_type,
-      function_signature{
-        token_provider.operator_minus(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_minus },
-    builtin_function_info{
-      // operator-()
-      double_type,
-      function_signature{ token_provider.operator_unary_minus(), {} },
-      builtin_function_kind::double_operator_unary_minus },
+      token_provider.operator_unary_plusplus(),
+    },
+    builtin_function_info{ // operator-(double)
+                           builtin_function_kind::double_operator_minus,
+                           double_type,
+                           token_provider.operator_minus(),
+                           { double_type } },
+    builtin_function_info{ // operator-()
+                           builtin_function_kind::double_operator_unary_minus,
+                           double_type,
+                           token_provider.operator_unary_minus() },
     builtin_function_info{
       // operator--()
-      double_reference_type,
-      function_signature{ token_provider.operator_unary_minusminus(), {} },
-      builtin_function_kind::double_operator_unary_minusminus },
-    builtin_function_info{
-      // operator*(double)
-      double_type,
-      function_signature{
-        token_provider.operator_start(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_star },
-    builtin_function_info{
-      // operator/(double)
-      double_type,
-      function_signature{
-        token_provider.operator_slash(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_slash },
-    builtin_function_info{
-      // double& operator=(double)
-      double_reference_type,
-      function_signature{
-        token_provider.operator_equal(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_equal },
-    builtin_function_info{
-      // double&operator+=(double)
-      double_reference_type,
-      function_signature{
-        token_provider.operator_plus_equal(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_plus_equal },
-    builtin_function_info{
-      // double&operator-=(double)
-      double_reference_type,
-      function_signature{
-        token_provider.operator_minus_equal(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_minus_equal },
-    builtin_function_info{
-      // double& operator*=(double)
-      double_reference_type,
-      function_signature{
-        token_provider.operator_start_equal(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_star_equal },
-    builtin_function_info{
-      // double& operator/=(double)
-      double_reference_type,
-      function_signature{
-        token_provider.operator_slash_equal(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_slash_equal },
-    builtin_function_info{
-      // operator<(double)
-      bool_type,
-      function_signature{
-        token_provider.operator_less(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_less },
-    builtin_function_info{
-      // operator<=(double)
-      bool_type,
-      function_signature{
-        token_provider.operator_less_equal(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_less_equal },
-    builtin_function_info{
-      // operator>(double)
-      bool_type,
-      function_signature{
-        token_provider.operator_greater(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_greater },
+      builtin_function_kind::double_operator_unary_minusminus,
+      double_reference_type, token_provider.operator_unary_minusminus() },
+    builtin_function_info{ // operator*(double)
+                           builtin_function_kind::double_operator_star,
+                           double_type,
+                           token_provider.operator_start(),
+                           { double_type } },
+    builtin_function_info{ // operator/(double)
+                           builtin_function_kind::double_operator_slash,
+                           double_type,
+                           token_provider.operator_slash(),
+                           { double_type } },
+    builtin_function_info{ // double& operator=(double)
+                           builtin_function_kind::double_operator_equal,
+                           double_reference_type,
+                           token_provider.operator_equal(),
+                           { double_type } },
+    builtin_function_info{ // double&operator+=(double)
+                           builtin_function_kind::double_operator_plus_equal,
+                           double_reference_type,
+                           token_provider.operator_plus_equal(),
+                           { double_type } },
+    builtin_function_info{ // double&operator-=(double)
+                           builtin_function_kind::double_operator_minus_equal,
+                           double_reference_type,
+                           token_provider.operator_minus_equal(),
+                           { double_type } },
+    builtin_function_info{ // double& operator*=(double)
+                           builtin_function_kind::double_operator_star_equal,
+                           double_reference_type,
+                           token_provider.operator_start_equal(),
+                           { double_type } },
+    builtin_function_info{ // double& operator/=(double)
+                           builtin_function_kind::double_operator_slash_equal,
+                           double_reference_type,
+                           token_provider.operator_slash_equal(),
+                           { double_type } },
+    builtin_function_info{ // operator<(double)
+                           builtin_function_kind::double_operator_less,
+                           bool_type,
+                           token_provider.operator_less(),
+                           { double_type } },
+    builtin_function_info{ // operator<=(double)
+                           builtin_function_kind::double_operator_less_equal,
+                           bool_type,
+                           token_provider.operator_less_equal(),
+                           { double_type } },
+    builtin_function_info{ // operator>(double)
+                           builtin_function_kind::double_operator_greater,
+                           bool_type,
+                           token_provider.operator_greater(),
+                           { double_type } },
     builtin_function_info{
       // operator>=(double)
+      builtin_function_kind::double_operator_greater_equal,
       bool_type,
-      function_signature{
-        token_provider.operator_greater_equal(),
-        { parameter_declaration{ double_type, make_id_token("") } } },
-      builtin_function_kind::double_operator_greater_equal },
-    builtin_function_info{ string_type,
-                           function_signature{ token_provider.to_string() },
-                           builtin_function_kind::double_to_string }
+      token_provider.operator_greater_equal(),
+      { double_type } },
+    builtin_function_info{ builtin_function_kind::double_to_string,
+                           string_type, token_provider.to_string() }
   };
 
   add_type_member_functions(double_manipulator, functions);
@@ -494,7 +378,7 @@ void builtin_sema_context::add_double_member_functions(
 
 type_builder builtin_sema_context::add_string_type()
 {
-  static const auto token = m_builtin_token_provider.string().name();
+  static const auto token = m_builtin_tokens.string().name();
   return add_type(token);
 }
 
@@ -507,245 +391,191 @@ void builtin_sema_context::add_string_member_functions(
   const auto& string_reference_type = m_builtin_types->string_ref;
   const auto& void_type = m_builtin_types->string;
 
-  const auto token_provider = m_builtin_token_provider.string();
+  const auto token_provider = m_builtin_tokens.string();
 
-  const auto functions = {
-    builtin_function_info{
-      // string()
-      string_type, function_signature{ token_provider.default_constructor() },
-      builtin_function_kind::string_ctor },
-    builtin_function_info{
-      // string(string)
-      string_type,
-      function_signature{
-        token_provider.copy_constructor(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_ctor_string },
-    builtin_function_info{
-      // string(string str, int count)
-      string_type,
-      function_signature{
-        token_provider.value_initialization_constructor(),
-        { parameter_declaration{ string_type, make_id_token("") },
-          parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::string_ctor_string_count },
+  const builtin_functions_t functions = {
+    builtin_function_info{ // string()
+                           builtin_function_kind::string_ctor, string_type,
+                           token_provider.default_constructor() },
+    builtin_function_info{ // string(string)
+                           builtin_function_kind::string_ctor_string,
+                           string_type,
+                           token_provider.copy_constructor(),
+                           { string_type } },
+    builtin_function_info{ // string(string str, int count)
+                           builtin_function_kind::string_ctor_string_count,
+                           string_type,
+                           token_provider.value_initialization_constructor(),
+                           { string_type, int_type } },
     builtin_function_info{ // bool empty()
-                           bool_type,
-                           function_signature{ token_provider.empty() },
-                           builtin_function_kind::string_empty },
+                           builtin_function_kind::string_empty, bool_type,
+                           token_provider.empty() },
     builtin_function_info{ // int size()
-                           int_type,
-                           function_signature{ token_provider.size() },
-                           builtin_function_kind::string_size },
-    builtin_function_info{
-      // bool operator==(string)
-      bool_type,
-      function_signature{
-        token_provider.operator_equal_equal(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_operator_equal_equal },
-    builtin_function_info{
-      // bool operator!=(string)
-      bool_type,
-      function_signature{
-        token_provider.operator_not_equal(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_operator_not_equal },
-    builtin_function_info{
-      // bool operator<(string)
-      bool_type,
-      function_signature{
-        token_provider.operator_less(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_operator_less },
-    builtin_function_info{
-      // bool operator<=(string)
-      bool_type,
-      function_signature{
-        token_provider.operator_less_equal(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_operator_less_equal },
-    builtin_function_info{
-      // bool operator>(string)
-      bool_type,
-      function_signature{
-        token_provider.operator_greater(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_operator_greater },
+                           builtin_function_kind::string_size, int_type,
+                           token_provider.size() },
+    builtin_function_info{ // bool operator==(string)
+                           builtin_function_kind::string_operator_equal_equal,
+                           bool_type,
+                           token_provider.operator_equal_equal(),
+                           { string_type } },
+    builtin_function_info{ // bool operator!=(string)
+                           builtin_function_kind::string_operator_not_equal,
+                           bool_type,
+                           token_provider.operator_not_equal(),
+                           { string_type } },
+    builtin_function_info{ // bool operator<(string)
+                           builtin_function_kind::string_operator_less,
+                           bool_type,
+                           token_provider.operator_less(),
+                           { string_type } },
+    builtin_function_info{ // bool operator<=(string)
+                           builtin_function_kind::string_operator_less_equal,
+                           bool_type,
+                           token_provider.operator_less_equal(),
+                           { string_type } },
+    builtin_function_info{ // bool operator>(string)
+                           builtin_function_kind::string_operator_greater,
+                           bool_type,
+                           token_provider.operator_greater(),
+                           { string_type } },
     builtin_function_info{
       // bool operator>=(string)
+      builtin_function_kind::string_operator_greater_equal,
       bool_type,
-      function_signature{
-        token_provider.operator_greater_equal(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_operator_greater_equal },
-    builtin_function_info{
-      // string operator+(string)
-      string_type,
-      function_signature{
-        token_provider.operator_plus(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_operator_plus },
-    builtin_function_info{
-      // string& operator+=(string)
-      string_reference_type,
-      function_signature{
-        token_provider.operator_plus_equal(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_operator_plus_equal },
+      token_provider.operator_greater_equal(),
+      { string_type } },
+    builtin_function_info{ // string operator+(string)
+                           builtin_function_kind::string_operator_plus,
+                           string_type,
+                           token_provider.operator_plus(),
+                           { string_type } },
+    builtin_function_info{ // string& operator+=(string)
+                           builtin_function_kind::string_operator_plus_equal,
+                           string_reference_type,
+                           token_provider.operator_plus_equal(),
+                           { string_type } },
     // Todo: clear could return a reference
     builtin_function_info{ // void clear()
-                           void_type,
-                           function_signature{ token_provider.clear() },
-                           builtin_function_kind::string_clear },
+                           builtin_function_kind::string_clear, void_type,
+                           token_provider.clear() },
     builtin_function_info{
       // string& insert(int position, string str)
+      builtin_function_kind::string_insert_pos_str,
       string_reference_type,
-      function_signature{
-        token_provider.insert(),
-        { parameter_declaration{ int_type, make_id_token("") },
-          parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_insert_pos_str },
-    builtin_function_info{
-      // string& erase(int position)
-      string_reference_type,
-      function_signature{
-        token_provider.erase_pos(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::string_erase_pos },
+      token_provider.insert(),
+      { int_type, string_type },
+
+    },
+    builtin_function_info{ // string& erase(int position)
+                           builtin_function_kind::string_erase_pos,
+                           string_reference_type,
+                           token_provider.erase_pos(),
+                           { int_type } },
     builtin_function_info{
       // string& erase(int position, int count)
+      builtin_function_kind::string_erase_pos_count,
       string_reference_type,
-      function_signature{
-        token_provider.erase_pos_count(),
-        { parameter_declaration{ int_type, make_id_token("") },
-          parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::string_erase_pos_count },
-    builtin_function_info{
-      // bool starts_with(string str)
-      bool_type,
-      function_signature{
-        token_provider.starts_with(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_starts_with },
-    builtin_function_info{
-      // bool ends_with(string str)
-      bool_type,
-      function_signature{
-        token_provider.ends_with(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_ends_with },
+      token_provider.erase_pos_count(),
+      { int_type, int_type },
+
+    },
+    builtin_function_info{ // bool starts_with(string str)
+                           builtin_function_kind::string_starts_with,
+                           bool_type,
+                           token_provider.starts_with(),
+                           { string_type } },
+    builtin_function_info{ // bool ends_with(string str)
+                           builtin_function_kind::string_ends_with,
+                           bool_type,
+                           token_provider.ends_with(),
+                           { string_type } },
     builtin_function_info{
       // string& replace(int pos, int count, string str)
+      builtin_function_kind::string_replace_pos_count_str,
       string_reference_type,
-      function_signature{
-        token_provider.replace(),
-        { parameter_declaration{ int_type, make_id_token("") },
-          parameter_declaration{ int_type, make_id_token("") },
-          parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_replace_pos_count_str },
-    builtin_function_info{
-      // string substr(int pos)
-      string_type,
-      function_signature{
-        token_provider.substr_pos(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::string_substr_pos },
+      token_provider.replace(),
+      { int_type, int_type, string_type },
+    },
+    builtin_function_info{ // string substr(int pos)
+                           builtin_function_kind::string_substr_pos,
+                           string_type,
+                           token_provider.substr_pos(),
+                           { int_type } },
     builtin_function_info{
       // string substr(int pos, int count)
+      builtin_function_kind::string_substr_pos_count,
       string_type,
-      function_signature{
-        token_provider.substr_pos_count(),
-        { parameter_declaration{ int_type, make_id_token("") },
-          parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::string_substr_pos_count },
+      token_provider.substr_pos_count(),
+      { int_type, int_type },
+    },
     // Todo: resize could return a reference
-    builtin_function_info{
-      // void resize(int new_size)
-      void_type,
-      function_signature{
-        token_provider.resize_size(),
-        { parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::string_resize_newsize },
+    builtin_function_info{ // void resize(int new_size)
+                           builtin_function_kind::string_resize_newsize,
+                           void_type,
+                           token_provider.resize_size(),
+                           { int_type } },
     // Todo: resize could return a reference
     builtin_function_info{
       // void resize(int new_size, string fill)
+      builtin_function_kind::string_resize_newsize_fill,
       void_type,
-      function_signature{
-        token_provider.resize_size_fill(),
-        { parameter_declaration{ int_type, make_id_token("") },
-          parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_resize_newsize_fill },
-    builtin_function_info{
-      // int find(string str)
-      int_type,
-      function_signature{
-        token_provider.find_str(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_find_str },
+      token_provider.resize_size_fill(),
+      { int_type, string_type },
+    },
+    builtin_function_info{ // int find(string str)
+                           builtin_function_kind::string_find_str,
+                           int_type,
+                           token_provider.find_str(),
+                           { string_type } },
     builtin_function_info{
       // int find(string str, int pos)
+      builtin_function_kind::string_find_str_pos,
       int_type,
-      function_signature{
-        token_provider.find_str_pos(),
-        { parameter_declaration{ string_type, make_id_token("") },
-          parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::string_find_str_pos },
-    builtin_function_info{
-      // int find_not_of(string str)
-      int_type,
-      function_signature{
-        token_provider.find_not_of_str(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_find_not_of_str },
+      token_provider.find_str_pos(),
+      { string_type, int_type },
+    },
+    builtin_function_info{ // int find_not_of(string str)
+                           builtin_function_kind::string_find_not_of_str,
+                           int_type,
+                           token_provider.find_not_of_str(),
+                           { string_type } },
     builtin_function_info{
       // int find_not_of(string str, int pos)
+      builtin_function_kind::string_find_not_of_str_pos,
       int_type,
-      function_signature{
-        token_provider.find_not_of_str_pos(),
-        { parameter_declaration{ string_type, make_id_token("") },
-          parameter_declaration{ int_type, make_id_token("") } } },
-      builtin_function_kind::string_find_not_of_str_pos },
-    builtin_function_info{
-      // int find_last(string str)
-      int_type,
-      function_signature{
-        token_provider.find_last(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_find_last_str },
-    builtin_function_info{
-      // int find_last_not_of(string str)
-      int_type,
-      function_signature{
-        token_provider.find_last_not_of(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_find_last_not_of_str },
-    builtin_function_info{
-      // bool contains(string str)
-      bool_type,
-      function_signature{
-        token_provider.contains(),
-        { parameter_declaration{ string_type, make_id_token("") } } },
-      builtin_function_kind::string_contains },
+      token_provider.find_not_of_str_pos(),
+      { string_type, int_type },
+
+    },
+    builtin_function_info{ // int find_last(string str)
+                           builtin_function_kind::string_find_last_str,
+                           int_type,
+                           token_provider.find_last(),
+                           { string_type } },
+    builtin_function_info{ // int find_last_not_of(string str)
+                           builtin_function_kind::string_find_last_not_of_str,
+                           int_type,
+                           token_provider.find_last_not_of(),
+                           { string_type } },
+    builtin_function_info{ // bool contains(string str)
+                           builtin_function_kind::string_contains,
+                           bool_type,
+                           token_provider.contains(),
+                           { string_type } },
     // Todo: lower should return reference
     builtin_function_info{ // void lower()
-                           void_type,
-                           function_signature{ token_provider.lower() },
-                           builtin_function_kind::string_lower },
+                           builtin_function_kind::string_lower, void_type,
+                           token_provider.lower() },
     builtin_function_info{ // string make_lower()
-                           string_type,
-                           function_signature{ token_provider.make_lower() },
-                           builtin_function_kind::string_make_lower },
+                           builtin_function_kind::string_make_lower,
+                           string_type, token_provider.make_lower() },
     // Todo: upper should return reference
     builtin_function_info{ // void upper()
-                           void_type,
-                           function_signature{ token_provider.upper() },
-                           builtin_function_kind::string_upper },
+                           builtin_function_kind::string_upper, void_type,
+                           token_provider.upper() },
     builtin_function_info{ // string make_upper()
-                           string_type,
-                           function_signature{ token_provider.make_upper() },
-                           builtin_function_kind::string_make_upper }
-
+                           builtin_function_kind::string_make_upper,
+                           string_type, token_provider.make_upper() }
   };
 
   add_type_member_functions(string_manipulator, functions);
@@ -753,7 +583,7 @@ void builtin_sema_context::add_string_member_functions(
 
 type_builder builtin_sema_context::add_void_type()
 {
-  static const auto token = m_builtin_token_provider.void_().name();
+  static const auto token = m_builtin_tokens.void_().name();
   return add_type(token);
 }
 
@@ -777,8 +607,8 @@ void builtin_sema_context::add_cmake_namespace_context()
 {
   m_cmake_namespace_context =
     std::make_unique<builtin_cmake_namespace_context>(
-      *this, m_qualified_ctxs, m_factories, m_builtin_token_provider,
-      *m_builtin_types, *m_generics_creation_utils);
+      *this, m_qualified_ctxs, m_factories, m_builtin_tokens, *m_builtin_types,
+      *m_generics_creation_utils);
 
   m_builtin_types->cmake = &(m_cmake_namespace_context->types_accessor());
 }
