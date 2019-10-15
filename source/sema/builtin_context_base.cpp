@@ -48,9 +48,7 @@ function_signature builtin_context_base::make_function_signature(
 }
 
 void builtin_context_base::add_type_member_functions(
-  type_builder& manipulator,
-  const std::initializer_list<builtin_context_base::builtin_function_info>&
-    functions)
+  type_builder& manipulator, const builtin_functions_t& functions)
 {
   for (const auto& function : functions) {
     auto signature = make_function_signature(function);

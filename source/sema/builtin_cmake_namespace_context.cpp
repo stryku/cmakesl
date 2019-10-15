@@ -58,7 +58,7 @@ void builtin_cmake_namespace_context::add_functions()
 
   const auto& token_provider = m_builtin_tokens.cmake();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{
       // void message(string)
       builtin_function_kind::cmake_minimum_required,
@@ -356,7 +356,7 @@ void builtin_cmake_namespace_context::add_version_member_functions(
 
   const auto token_provider = m_builtin_tokens.version();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{ // version(int major)
                            builtin_function_kind::version_ctor_major,
                            version_type,
@@ -448,7 +448,7 @@ void builtin_cmake_namespace_context::add_library_member_functions(
 
   const auto token_provider = m_builtin_tokens.library();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{ // string name()
                            builtin_function_kind::library_name, string_type,
                            token_provider.method_name() },
@@ -509,7 +509,7 @@ void builtin_cmake_namespace_context::add_executable_member_functions(
 
   const auto token_provider = m_builtin_tokens.executable();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{ // string name()
                            builtin_function_kind::executable_name, string_type,
                            token_provider.method_name() },
@@ -570,7 +570,7 @@ void builtin_cmake_namespace_context::add_project_member_functions(
   const auto token_provider = m_builtin_tokens.project();
   const auto& sources_type = m_generics_creation_utils.list_of_strings();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{ // project(string name)
                            builtin_function_kind::project_ctor_name,
                            project_type,
@@ -616,7 +616,7 @@ void builtin_cmake_namespace_context::add_option_member_functions(
 
   const auto token_provider = m_builtin_tokens.option();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{ // option(string name, string description)
                            builtin_function_kind::option_ctor_description,
                            option_type,

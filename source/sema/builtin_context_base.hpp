@@ -49,14 +49,15 @@ protected:
     std::string cmake_variable_name;
   };
 
+  using builtin_functions_t = std::vector<builtin_function_info>;
+
   type_builder add_type(const lexer::token& name);
 
   function_signature make_function_signature(
     const builtin_function_info& info) const;
 
-  void add_type_member_functions(
-    type_builder& manipulator,
-    const std::initializer_list<builtin_function_info>& functions);
+  void add_type_member_functions(type_builder& manipulator,
+                                 const builtin_functions_t& functions);
 
   const sema_type& add_enum_type(const lexer::token& name,
                                  const std::vector<lexer::token>& enumerators,

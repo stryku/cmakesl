@@ -87,7 +87,7 @@ void builtin_sema_context::add_bool_member_functions(
 
   const auto token_provider = m_builtin_tokens.bool_();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{ // bool()
                            builtin_function_kind::bool_ctor, bool_type,
                            token_provider.default_constructor() },
@@ -150,7 +150,7 @@ void builtin_sema_context::add_int_member_functions(
 
   const auto token_provider = m_builtin_tokens.int_();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{ // int()
                            builtin_function_kind::int_ctor, int_type,
                            token_provider.default_constructor() },
@@ -275,7 +275,7 @@ void builtin_sema_context::add_double_member_functions(
 
   const auto token_provider = m_builtin_tokens.double_();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{ // double()
                            builtin_function_kind::double_ctor, double_type,
                            token_provider.default_constructor() },
@@ -393,7 +393,7 @@ void builtin_sema_context::add_string_member_functions(
 
   const auto token_provider = m_builtin_tokens.string();
 
-  const auto functions = {
+  const builtin_functions_t functions = {
     builtin_function_info{ // string()
                            builtin_function_kind::string_ctor, string_type,
                            token_provider.default_constructor() },
