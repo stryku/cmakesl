@@ -315,6 +315,7 @@ GENERATION_INFO = {
 
             'root_source_dir': ['string root_source_dir();', 'string ', 'root_source_dir'],
             'current_binary_dir': ['string current_binary_dir();', 'string ', 'current_binary_dir'],
+            'current_source_dir': ['string current_source_dir();', 'string ', 'current_source_dir'],
 
             'add_custom_command': ['void add_custom_command(list<string> command, string output);', 'void ', 'add_custom_command'],
             'make_directory': ['void make_directory(string dir);', 'void ', 'make_directory'],

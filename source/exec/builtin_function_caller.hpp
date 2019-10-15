@@ -389,6 +389,7 @@ private:
   inst::instance* cmake_root_source_dir(const params_t& params);
   inst::instance* cmake_add_custom_command(const params_t& params);
   inst::instance* cmake_current_binary_dir(const params_t& params);
+  inst::instance* cmake_current_source_dir(const params_t& params);
   inst::instance* cmake_make_directory(const params_t& params);
   inst::instance* cmake_set_old_style_variable(const params_t& params);
   inst::instance* cmake_get_old_style_variable(const params_t& params);

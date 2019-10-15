@@ -284,11 +284,25 @@ TEST_F(CmakeNamespaceSmokeTest, CurrentBinaryDir_CallsFacadeMethod)
 {
   const auto source = "int main()"
                       "{"
-                      "    cmake::current_binary_dir();"
+                      "    string foo = cmake::current_binary_dir();"
                       "    return 42;"
                       "}";
 
   EXPECT_CALL(m_facade, get_current_binary_dir());
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(CmakeNamespaceSmokeTest, CurrentSourceDir_CallsFacadeMethod)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    string foo = cmake::current_source_dir();"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, get_current_source_dir());
 
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));

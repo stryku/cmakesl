@@ -136,6 +136,12 @@ void builtin_cmake_namespace_context::add_functions()
       token_provider.current_binary_dir(),
     },
     builtin_function_info{
+      // string current_source_dir()
+      builtin_function_kind::cmake_current_source_dir,
+      string_type,
+      token_provider.current_source_dir(),
+    },
+    builtin_function_info{
       // void add_custom_command(list<string> command, string output)
       builtin_function_kind::cmake_add_custom_command,
       void_type,
