@@ -1,0 +1,12 @@
+import "cmake/cmsl_directories.cmsl";
+import "cmake/test_utils.cmsl";
+
+void main(cmake::project p)
+{
+  cmsl::test::add_test(
+    p,
+    { .name = "source_location_manipulator",
+      .sources = { "source_location_test.cpp" },
+      .include_dirs = { cmsl::source_dir, cmsl::facade_dir },
+      .libraries = { "lexer" } });
+}

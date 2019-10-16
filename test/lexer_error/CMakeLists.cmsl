@@ -1,0 +1,12 @@
+import "cmake/cmsl_directories.cmsl";
+import "cmake/test_utils.cmsl";
+
+void main(cmake::project p)
+{
+  cmsl::test::add_test(
+    p,
+    { .name = "lexer_error",
+      .sources = { "lexer_error_test.cpp" },
+      .include_dirs = { cmsl::source_dir, cmsl::facade_dir, cmsl::test_dir },
+      .libraries = { "lexer", "errors_observer_mock" } });
+}

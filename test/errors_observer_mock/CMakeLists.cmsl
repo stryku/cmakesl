@@ -1,0 +1,11 @@
+import "cmake/cmsl_directories.cmsl";
+import "cmake/test_utils.cmsl";
+
+void main(cmake::project p)
+{
+  cmsl::test::add_library(
+    p,
+    { .name = "errors_observer_mock",
+      .sources = { "errors_observer_mock.cpp" },
+      .include_dirs = { cmsl::source_dir, cmsl::test_dir } });
+}

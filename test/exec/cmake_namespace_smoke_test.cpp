@@ -366,11 +366,12 @@ TEST_F(CmakeNamespaceSmokeTest, SetOldStyleVariable_CallsFacadeMethod)
 
 TEST_F(CmakeNamespaceSmokeTest, GetOldStyleVariable_CallsFacadeMethod)
 {
-  const auto source = "int main()"
-                      "{"
-                      "    cmake::get_old_style_variable(\"foo\");"
-                      "    return 42;"
-                      "}";
+  const auto source =
+    "int main()"
+    "{"
+    "    string foo = cmake::get_old_style_variable(\"foo\");"
+    "    return 42;"
+    "}";
 
   EXPECT_CALL(m_facade, get_old_style_variable("foo"));
 
