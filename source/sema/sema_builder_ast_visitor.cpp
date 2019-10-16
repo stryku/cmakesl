@@ -454,7 +454,7 @@ void sema_builder_ast_visitor::visit(const ast::string_value_node& node)
 
   // At this point node contains string value including "". We need to get rid
   // of them.
-  const auto node_string = node.token().str();
+  const auto node_string = node.view();
   const auto string_without_quotation_marks =
     cmsl::string_view{ std::next(node_string.data()),
                        node_string.size() - 2u };

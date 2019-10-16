@@ -13,6 +13,7 @@ set(AST_SOURCES
     designated_initializers_node.hpp
     enum_node.cpp
     enum_node.hpp
+    escaped_string_builder.hpp
     for_node.cpp
     for_node.hpp
     if_else_node.cpp

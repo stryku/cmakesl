@@ -8,6 +8,8 @@
 #include <memory>
 
 namespace cmsl {
+class strings_container;
+
 namespace errors {
 class errors_observer;
 }
@@ -26,11 +28,13 @@ class ternary_operator_node;
 class designated_initializers_node;
 class enum_node;
 class import_node;
+class string_value_node;
 
 class parser : public parser_utils
 {
 public:
-  parser(errors::errors_observer& err_observer, cmsl::source_view source,
+  parser(errors::errors_observer& err_observer,
+         strings_container& strings_container, cmsl::source_view source,
          const token_container_t& tokens);
 
   std::unique_ptr<ast_node> parse_translation_unit();
@@ -68,6 +72,8 @@ public:
   std::unique_ptr<ast_node> parse_unary_operator();
   std::unique_ptr<enum_node> parse_enum(std::optional<token_t> export_kw);
   std::unique_ptr<import_node> parse_import();
+
+  std::unique_ptr<string_value_node> parse_string(const token_t& token);
 
 private:
   struct function_call_values
@@ -145,8 +151,11 @@ private:
 
   std::vector<name_with_coloncolon> parse_namespace_declaration_names();
 
+  std::string build_string_value(const std::vector<token_t>& tokens) const;
+
 private:
   parse_errors_reporter m_errors_reporter;
+  strings_container& m_strings_container;
 };
 }
 }

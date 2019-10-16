@@ -331,8 +331,9 @@ TEST_F(SemaBuilderAstVisitorTest, Visit_StringValue_GetCorrectStringValue)
   auto [visitor_members, visitor] = create_types_factory_and_visitor(
     errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
-  const auto token = token_string("\"42\"");
-  ast::string_value_node node(token);
+  cmsl::string_view view = "\"42\"";
+  const auto token = token_string(view);
+  ast::string_value_node node({ token }, view);
 
   visitor.visit(node);
 
@@ -883,15 +884,16 @@ TEST_F(SemaBuilderAstVisitorTest,
     errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   const auto fun_name_token = token_identifier("add_subdirectory");
-  const auto name_param_token = token_string("\"subdir\"");
+  cmsl::string_view name_param_view = "\"subdir\"";
+  const auto name_param_token = token_string(name_param_view);
 
   function_signature signature;
   signature.name = fun_name_token;
   signature.params.emplace_back(
     parameter_declaration{ valid_type_data.ty, name_param_token });
 
-  auto param1_ast_node =
-    std::make_unique<ast::string_value_node>(name_param_token);
+  auto param1_ast_node = std::make_unique<ast::string_value_node>(
+    std::vector<token_t>{ name_param_token }, name_param_view);
 
   ast::function_call_node::params_t ast_params;
   ast_params.emplace_back(std::move(param1_ast_node));
@@ -2303,8 +2305,12 @@ TEST_F(SemaBuilderAstVisitorTest,
     errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
 
   auto condition = std::make_unique<ast::bool_value_node>(token_kw_false());
-  auto true_ =
-    std::make_unique<ast::string_value_node>(token_string("some_str"));
+
+  cmsl::string_view true_value_view = "some_str";
+  const auto true_value_token = token_string(true_value_view);
+  auto true_ = std::make_unique<ast::string_value_node>(
+    std::vector<token_t>{ true_value_token }, true_value_view);
+
   auto false_ = std::make_unique<ast::int_value_node>(token_integer("42"));
 
   auto ternary = std::make_unique<ast::ternary_operator_node>(

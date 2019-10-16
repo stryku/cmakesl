@@ -238,14 +238,19 @@ std::string global_executor::build_full_import_path(
 {
   return m_root_path + '/' + std::string{ import_path };
 }
+
 source_compiler global_executor::create_compiler(
   sema::qualified_contextes& ctxs)
 {
   auto refs = sema::qualified_contextes_refs{ ctxs };
-  return source_compiler{
-    m_errors_observer,  m_factories,      *this, *this, refs,
-    *m_builtin_context, *m_builtin_tokens
-  };
+  return source_compiler{ m_errors_observer,
+                          m_factories,
+                          *this,
+                          *this,
+                          refs,
+                          *m_builtin_context,
+                          *m_builtin_tokens,
+                          m_strings_container };
 }
 
 cmsl::string_view global_executor::store_path(std::string path)

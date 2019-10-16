@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/strings_container_impl.hpp"
 #include "errors/errors_observer.hpp"
 #include "exec/builtin_identifiers_observer.hpp"
 #include "exec/cross_translation_unit_static_variables.hpp"
@@ -81,6 +82,7 @@ private:
   std::string m_root_path;
   facade::cmake_facade& m_cmake_facade;
   errors::errors_observer m_errors_observer;
+  strings_container_impl m_strings_container;
   // Contextes are going to be initialized with builtin stuff at builtin
   // context creation.
   sema::qualified_contextes m_builtin_qualified_contexts;

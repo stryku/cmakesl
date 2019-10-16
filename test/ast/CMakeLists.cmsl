@@ -7,7 +7,7 @@ void main()
 
   cmsl::add_test(
     { .name = "ast",
-      .sources = { "parser_test.cpp" },
+      .sources = { "parser_test.cpp", "escaped_string_builder_test.cpp" },
       .include_dirs = include_dirs,
       .libraries = { "ast", "lexer", "errors", "tests_common" } });
 

@@ -3,6 +3,7 @@
 
 #include "ast/ast_node.hpp"
 #include "ast/parser.hpp"
+#include "common/strings_container_impl.hpp"
 #include "lexer/lexer.hpp"
 #include "sema/add_subdirectory_handler.hpp"
 #include "sema/builtin_sema_context.hpp"
@@ -37,6 +38,8 @@ cmsl_parsed_source* cmsl_parse_source(
   parsed_source->source = source;
   parsed_source->add_subdirectory_handler =
     std::make_unique<cmsl::sema::details::add_subdir_handler>();
+  parsed_source->strings_container =
+    std::make_unique<cmsl::strings_container_impl>();
 
   auto builtin_documentation_path = builtin_types_documentation_path != nullptr
     ? std::string{ builtin_types_documentation_path }
@@ -51,7 +54,8 @@ cmsl_parsed_source* cmsl_parse_source(
                           source_view };
   const auto tokens = lex.lex();
   cmsl::ast::parser parser{ parsed_source->context.errors_observer,
-                            source_view, tokens };
+                            *parsed_source->strings_container, source_view,
+                            tokens };
   auto ast_tree = parser.parse_translation_unit();
 
   cmsl::sema::identifiers_context_impl ids_ctx;

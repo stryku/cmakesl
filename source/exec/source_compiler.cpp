@@ -23,7 +23,8 @@ source_compiler::source_compiler(
   sema::import_handler& imports_handler,
   sema::qualified_contextes_refs qualified_contextes,
   sema::builtin_sema_context& builtin_context,
-  sema::builtin_token_provider& builtin_tokens)
+  sema::builtin_token_provider& builtin_tokens,
+  strings_container& strings_container)
   : m_errors_observer{ errors_observer }
   , m_factories_provider{ factories_provider }
   , m_add_subdirectory_handler{ add_subdirectory_handler }
@@ -31,6 +32,7 @@ source_compiler::source_compiler(
   , m_qualified_contextes{ qualified_contextes }
   , m_builtin_context{ builtin_context }
   , m_builtin_tokens{ builtin_tokens }
+  , m_strings_container{ strings_container }
 {
 }
 
@@ -38,7 +40,7 @@ std::unique_ptr<compiled_source> source_compiler::compile(source_view source)
 {
   lexer::lexer lex{ m_errors_observer, source };
   const auto tokens = lex.lex();
-  ast::parser parser{ m_errors_observer, source, tokens };
+  ast::parser parser{ m_errors_observer, m_strings_container, source, tokens };
   auto ast_tree = parser.parse_translation_unit();
   if (!ast_tree) {
     return nullptr;
