@@ -5,6 +5,7 @@ cmsl_add_test(
         ast
     SOURCES
         parser_test.cpp
+        escaped_string_builder_test.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
         ${CMAKESL_FACADE_SOURCES_DIR}

@@ -5,6 +5,7 @@
 #include "ast/class_node.hpp"
 #include "ast/conditional_node.hpp"
 #include "ast/designated_initializers_node.hpp"
+#include "ast/escaped_string_builder.hpp"
 #include "ast/for_node.hpp"
 #include "ast/if_else_node.hpp"
 #include "ast/import_node.hpp"
@@ -20,6 +21,7 @@
 #include "ast/while_node.hpp"
 #include "common/algorithm.hpp"
 #include "common/assert.hpp"
+#include "common/strings_container.hpp"
 #include "enum_node.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
@@ -27,10 +29,12 @@
 #include <map>
 
 namespace cmsl::ast {
-parser::parser(errors::errors_observer& err_observer, cmsl::source_view source,
+parser::parser(errors::errors_observer& err_observer,
+               strings_container& strings_container, cmsl::source_view source,
                const token_container_t& tokens)
   : parser_utils{ m_errors_reporter, tokens.cbegin(), tokens.cend() }
   , m_errors_reporter{ err_observer, source }
+  , m_strings_container{ strings_container }
 {
 }
 
@@ -670,7 +674,7 @@ std::unique_ptr<ast_node> parser::fundamental_value()
       return std::make_unique<double_value_node>(*token);
 
     case lexer::token_type::string:
-      return std::make_unique<string_value_node>(*token);
+      return parse_string(*token);
 
     case lexer::token_type::kw_true:
     case lexer::token_type::kw_false:
@@ -1290,5 +1294,31 @@ std::unique_ptr<import_node> parser::parse_import()
   }
 
   return std::make_unique<import_node>(*include, *file, *semicolon);
+}
+
+std::unique_ptr<string_value_node> parser::parse_string(const token_t& token)
+{
+  std::vector<token_t> tokens{ token };
+
+  while (const auto tok = try_eat(token_type_t::string)) {
+    tokens.emplace_back(*tok);
+  }
+
+  auto value = build_string_value(tokens);
+  const auto view = m_strings_container.store(std::move(value));
+  return std::make_unique<string_value_node>(std::move(tokens), view);
+}
+
+std::string parser::build_string_value(
+  const std::vector<parser_utils::token_t>& tokens) const
+{
+  std::string result;
+
+  for (const auto& token : tokens) {
+    const auto prepared_value = escaped_string_builder::escape(token.str());
+    result += prepared_value;
+  }
+
+  return result;
 }
 }

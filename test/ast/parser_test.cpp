@@ -18,6 +18,7 @@
 #include "ast/variable_declaration_node.hpp"
 #include "ast/while_node.hpp"
 #include "errors/errors_observer.hpp"
+#include "test/mock/strings_container_mock.hpp"
 
 #include "test/common/tokens.hpp"
 
@@ -37,6 +38,9 @@ const auto tmp_token = token_identifier("");
 using ::testing::NotNull;
 using ::testing::Ref;
 using ::testing::Eq;
+using ::testing::StrictMock;
+using ::testing::_;
+using ::testing::Return;
 
 class ast_tree_representation_visitor : public ast_node_visitor
 {
@@ -153,7 +157,7 @@ public:
 
   void visit(const string_value_node& node) override
   {
-    m_result += "string_value{" + std::string{ node.token().str() } + "}";
+    m_result += "string_value{" + std::string{ node.view() } + "}";
   }
 
   void visit(const id_node& node) override
@@ -389,13 +393,15 @@ protected:
 
 TEST_F(ParserTest, Factor_TrueKeywordToken_GetBoolFundamentalValue)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   const auto token = token_kw_true();
 
   auto expected_ast = std::make_unique<bool_value_node>(token);
 
   const auto tokens = tokens_container_t{ token };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_factor();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -404,13 +410,15 @@ TEST_F(ParserTest, Factor_TrueKeywordToken_GetBoolFundamentalValue)
 
 TEST_F(ParserTest, Factor_FalseKeywordToken_GetBoolFundamentalValue)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   const auto token = token_kw_false();
 
   auto expected_ast = std::make_unique<bool_value_node>(token);
 
   const auto tokens = tokens_container_t{ token };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_factor();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -419,13 +427,15 @@ TEST_F(ParserTest, Factor_FalseKeywordToken_GetBoolFundamentalValue)
 
 TEST_F(ParserTest, Factor_IntegerToken_GetIntFundamentalValue)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   const auto token = token_integer("1");
 
   auto expected_ast = std::make_unique<int_value_node>(token);
 
   const auto tokens = tokens_container_t{ token };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_factor();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -434,13 +444,15 @@ TEST_F(ParserTest, Factor_IntegerToken_GetIntFundamentalValue)
 
 TEST_F(ParserTest, Factor_DoubleToken_GetDoubleFundamentalValue)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   const auto token = token_double("1.6");
 
   auto expected_ast = std::make_unique<double_value_node>(token);
 
   const auto tokens = tokens_container_t{ token };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_factor();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -449,13 +461,76 @@ TEST_F(ParserTest, Factor_DoubleToken_GetDoubleFundamentalValue)
 
 TEST_F(ParserTest, Factor_StringToken_GetStringFundamentalValue)
 {
-  const auto token = token_string("some string");
+  StrictMock<cmsl::test::strings_container_mock> strings;
 
-  auto expected_ast = std::make_unique<string_value_node>(token);
+  cmsl::string_view view = "some string";
+
+  const auto token = token_string(view);
+
+  auto expected_ast =
+    std::make_unique<string_value_node>(std::vector<token_t>{ token }, view);
 
   const auto tokens = tokens_container_t{ token };
+
+  EXPECT_CALL(strings, store(_)).WillOnce(Return(view));
+
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_factor();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest,
+       Factor_MultipleStringTokens_GetCombinedStringFundamentalValue)
+{
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
+  cmsl::string_view view = "foo";
+  cmsl::string_view view2 = "bar";
+  cmsl::string_view view3 = "baz";
+  cmsl::string_view combined_view = "foobarbaz";
+
+  const auto token = token_string(view);
+  const auto token2 = token_string(view2);
+  const auto token3 = token_string(view3);
+
+  auto expected_ast = std::make_unique<string_value_node>(
+    std::vector<token_t>{ token, token2, token3 }, combined_view);
+
+  const auto tokens = tokens_container_t{ token, token2, token3 };
+
+  EXPECT_CALL(strings, store(_)).WillOnce(Return(combined_view));
+
+  auto parser =
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_factor();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(
+  ParserTest,
+  Factor_StringTokenWithEscapedCharacters_GetStringWithoutEscaptionFundamentalValue)
+{
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
+  cmsl::string_view view = "\\\"foo\\tbar\\nbaz";
+  cmsl::string_view result_view = "\"foo\tbar\nbaz";
+
+  const auto token = token_string(view);
+
+  auto expected_ast = std::make_unique<string_value_node>(
+    std::vector<token_t>{ token }, result_view);
+
+  const auto tokens = tokens_container_t{ token };
+
+  EXPECT_CALL(strings, store(_)).WillOnce(Return(result_view));
+
+  auto parser =
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_factor();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -464,13 +539,15 @@ TEST_F(ParserTest, Factor_StringToken_GetStringFundamentalValue)
 
 TEST_F(ParserTest, Factor_IdentifierToken_GetId)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   const auto token = token_identifier("some_name");
 
   auto expected_ast = std::make_unique<id_node>(create_qualified_name(token));
 
   const auto tokens = tokens_container_t{ token };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_factor();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -479,6 +556,8 @@ TEST_F(ParserTest, Factor_IdentifierToken_GetId)
 
 TEST_F(ParserTest, Factor_ParenthesizedToken_GetInnerNode)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   const auto lparen = token_open_paren();
   const auto id = token_identifier("some_name");
   const auto rparen = token_close_paren();
@@ -488,7 +567,7 @@ TEST_F(ParserTest, Factor_ParenthesizedToken_GetInnerNode)
 
   const auto tokens = tokens_container_t{ lparen, id, rparen };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_factor();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -497,6 +576,8 @@ TEST_F(ParserTest, Factor_ParenthesizedToken_GetInnerNode)
 
 TEST_F(ParserTest, Expr_TokenBinaryOpToken_GetBinaryOperator)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // 1 + 2
   const auto lhs_token = token_integer("1");
   const auto op_token = token_plus();
@@ -509,7 +590,7 @@ TEST_F(ParserTest, Expr_TokenBinaryOpToken_GetBinaryOperator)
 
   const auto tokens = tokens_container_t{ lhs_token, op_token, rhs_token };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -518,17 +599,19 @@ TEST_F(ParserTest, Expr_TokenBinaryOpToken_GetBinaryOperator)
 
 TEST_F(ParserTest, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // "foo" - bar - 4.2
-  const auto lhs_lhs_token = token_string("foo");
+  const auto lhs_lhs_token = token_identifier("foo");
   const auto lhs_op_token = token_minus();
   const auto lhs_rhs_token = token_identifier("bar");
   const auto op_token = token_minus();
   const auto rhs_token = token_double("4.2");
 
-  auto lhs_lhs_node = std::make_unique<string_value_node>(lhs_lhs_token);
-  // Todo: Introduce fixture with utils
-  auto names = id_node::names_t{ { lhs_rhs_token } };
-  auto lhs_rhs_node = std::make_unique<id_node>(names);
+  auto lhs_lhs_node =
+    std::make_unique<id_node>(create_qualified_name(lhs_lhs_token));
+  auto lhs_rhs_node =
+    std::make_unique<id_node>(create_qualified_name(lhs_rhs_token));
   auto lhs_node = std::make_unique<binary_operator_node>(
     std::move(lhs_lhs_node), lhs_op_token, std::move(lhs_rhs_node));
 
@@ -547,7 +630,7 @@ TEST_F(ParserTest, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -556,14 +639,16 @@ TEST_F(ParserTest, Expr_TokenBinaryOpTokenBinaryOpToken_GetTree)
 
 TEST_F(ParserTest, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
 {
-  // "foo" - bar * 4.2
-  const auto lhs_token = token_string("foo");
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
+  // foo - bar * 4.2
+  const auto lhs_token = token_identifier("foo");
   const auto op_token = token_minus();
   const auto rhs_lhs_token = token_identifier("bar");
   const auto rhs_op_token = token_star();
   const auto rhs_rhs_token = token_double("4.2");
 
-  auto lhs_node = std::make_unique<string_value_node>(lhs_token);
+  auto lhs_node = std::make_unique<id_node>(create_qualified_name(lhs_token));
 
   auto rhs_lhs_node =
     std::make_unique<id_node>(create_qualified_name(rhs_lhs_token));
@@ -584,7 +669,7 @@ TEST_F(ParserTest, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -593,6 +678,8 @@ TEST_F(ParserTest, Expr_TokenLowPrecedenceOpTokenHighPrecedenceOpToken_GetTree)
 
 TEST_F(ParserTest, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // foo()
   const auto fun_name_token = token_identifier("foo");
   std::vector<name_with_coloncolon> names{ { fun_name_token } };
@@ -603,7 +690,7 @@ TEST_F(ParserTest, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
   const auto tokens = tokens_container_t{ fun_name_token, token_open_paren(),
                                           token_close_paren() };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -613,18 +700,21 @@ TEST_F(ParserTest, Expr_IdOpenParenCloseParen_GetFunctionCallWithoutParameters)
 TEST_F(ParserTest,
        Expr_IdOpenParenParametersCloseParen_GetFunctionCallWithParameters)
 {
-  // foo(bar, "baz", 42)
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
+  // foo(bar, baz, 42)
   const auto fun_name_token = token_identifier("foo");
   std::vector<name_with_coloncolon> names{ { fun_name_token } };
   const auto param1 = token_identifier("bar");
-  const auto param2 = token_string("baz");
+  const auto param2 = token_identifier("baz");
   const auto param3 = token_integer("42");
   const auto comma = token_comma();
 
   function_call_node::params_t params;
   params.emplace_back(
     std::make_unique<id_node>(create_qualified_name(param1)));
-  params.emplace_back(std::make_unique<string_value_node>(param2));
+  params.emplace_back(
+    std::make_unique<id_node>(create_qualified_name(param2)));
   params.emplace_back(std::make_unique<int_value_node>(param3));
 
   auto expected_ast = std::make_unique<function_call_node>(
@@ -643,7 +733,7 @@ TEST_F(ParserTest,
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -653,6 +743,8 @@ TEST_F(ParserTest,
 TEST_F(ParserTest,
        Expr_IdDotIdOpenParenCloseParen_GetMemberFunctionCallWithoutParameters)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // foo.bar()
   const auto class_name_token = token_identifier("foo");
   const auto fun_name_token = token_identifier("bar");
@@ -674,7 +766,7 @@ TEST_F(ParserTest,
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -685,11 +777,13 @@ TEST_F(
   ParserTest,
   Expr_IdDotIdOpenParenParametersCloseParen_GetMemberFunctionCallWithParameters)
 {
-  // foo.bar(baz, "qux", 42)
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
+  // foo.bar(baz, qux, 42)
   const auto class_name_token = token_identifier("foo");
   const auto fun_name_token = token_identifier("bar");
   const auto param1 = token_identifier("baz");
-  const auto param2 = token_string("qux");
+  const auto param2 = token_identifier("qux");
   const auto param3 = token_integer("42");
   const auto comma = token_comma();
 
@@ -699,7 +793,8 @@ TEST_F(
   function_call_node::params_t params;
   params.emplace_back(
     std::make_unique<id_node>(create_qualified_name(param1)));
-  params.emplace_back(std::make_unique<string_value_node>(param2));
+  params.emplace_back(
+    std::make_unique<id_node>(create_qualified_name(param2)));
   params.emplace_back(std::make_unique<int_value_node>(param3));
 
   auto expected_ast = std::make_unique<member_function_call_node>(
@@ -721,7 +816,7 @@ TEST_F(
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -732,6 +827,8 @@ TEST_F(
   ParserTest,
   Expr_ParenthesizedExpressionDotIdOpenParenCloseParen_GetMemberFunctionCallWithoutParameters)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // (foo+bar).baz()
   const auto lhs_lhs_token = token_identifier("foo");
   const auto lhs_op_token = token_plus();
@@ -763,7 +860,7 @@ TEST_F(
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -774,13 +871,15 @@ TEST_F(
   ParserTest,
   Expr_ParenthesizedExpressionDotIdOpenParenParamsCloseParen_GetMemberFunctionCallWithParameters)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // (foo+bar).baz(baz, "qux", 42)
   const auto lhs_lhs_token = token_identifier("foo");
   const auto lhs_op_token = token_plus();
   const auto lhs_rhs_token = token_identifier("bar");
   const auto fun_name_token = token_identifier("baz");
   const auto param1 = token_identifier("baz");
-  const auto param2 = token_string("qux");
+  const auto param2 = token_identifier("qux");
   const auto param3 = token_integer("42");
   const auto comma = token_comma();
 
@@ -793,7 +892,8 @@ TEST_F(
   function_call_node::params_t params;
   params.emplace_back(
     std::make_unique<id_node>(create_qualified_name(param1)));
-  params.emplace_back(std::make_unique<string_value_node>(param2));
+  params.emplace_back(
+    std::make_unique<id_node>(create_qualified_name(param2)));
   params.emplace_back(std::make_unique<int_value_node>(param3));
 
   auto expected_ast = std::make_unique<member_function_call_node>(
@@ -819,7 +919,7 @@ TEST_F(
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -828,6 +928,8 @@ TEST_F(
 
 TEST_F(ParserTest, Expr_IdDotId_GetClassMemberAccess)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // foo.bar
   const auto class_name_token = token_identifier("foo");
   const auto member_name_token = token_identifier("bar");
@@ -841,7 +943,7 @@ TEST_F(ParserTest, Expr_IdDotId_GetClassMemberAccess)
   const auto tokens =
     tokens_container_t{ class_name_token, token_dot(), member_name_token };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -850,6 +952,8 @@ TEST_F(ParserTest, Expr_IdDotId_GetClassMemberAccess)
 
 TEST_F(ParserTest, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // (foo + bar).baz
   const auto lhs_lhs_token = token_identifier("foo");
   const auto lhs_op_token = token_plus();
@@ -878,7 +982,7 @@ TEST_F(ParserTest, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -887,6 +991,8 @@ TEST_F(ParserTest, Expr_ParenthesizedExpressionDotId_GetClassMemberAccess)
 
 TEST_F(ParserTest, If_IfConditionBlock_GetIfElse)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // if(foo) {}
   const auto condition_token = token_identifier("foo");
 
@@ -915,7 +1021,7 @@ TEST_F(ParserTest, If_IfConditionBlock_GetIfElse)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_if_else_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -924,6 +1030,8 @@ TEST_F(ParserTest, If_IfConditionBlock_GetIfElse)
 
 TEST_F(ParserTest, If_IfConditionParenBlockElseBlock_GetIfElse)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // if(foo) {} else {}
   const auto condition_token = token_identifier("foo");
 
@@ -960,7 +1068,7 @@ TEST_F(ParserTest, If_IfConditionParenBlockElseBlock_GetIfElse)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_if_else_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -969,6 +1077,8 @@ TEST_F(ParserTest, If_IfConditionParenBlockElseBlock_GetIfElse)
 
 TEST_F(ParserTest, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // if(foo) {} else if(bar) else {}
   const auto if_condition_token = token_identifier("foo");
   const auto elseif_condition_token = token_identifier("bar");
@@ -1026,7 +1136,7 @@ TEST_F(ParserTest, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_if_else_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1035,6 +1145,8 @@ TEST_F(ParserTest, If_IfConditionBlockElseIfConditionBlockElseBlock_GetIfElse)
 
 TEST_F(ParserTest, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // if(foo) {} else if(bar)
   const auto if_condition_token = token_identifier("foo");
   const auto elseif_condition_token = token_identifier("bar");
@@ -1085,7 +1197,7 @@ TEST_F(ParserTest, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_if_else_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1094,6 +1206,8 @@ TEST_F(ParserTest, If_IfConditionBlockElseIfConditionBlock_GetIfElse)
 
 TEST_F(ParserTest, While_WhileConditionBlock_GetWhile)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // while(foo) {}
   const auto condition_token = token_identifier("foo");
 
@@ -1118,7 +1232,7 @@ TEST_F(ParserTest, While_WhileConditionBlock_GetWhile)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_while_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1127,6 +1241,8 @@ TEST_F(ParserTest, While_WhileConditionBlock_GetWhile)
 
 TEST_F(ParserTest, Return_ReturnExpression_GetReturn)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // return foo;
   const auto expression_token = token_identifier("foo");
 
@@ -1138,7 +1254,7 @@ TEST_F(ParserTest, Return_ReturnExpression_GetReturn)
   const auto tokens = tokens_container_t{ token_kw_return(), expression_token,
                                           token_semicolon() };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_return_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1150,6 +1266,8 @@ using Type_SingleToken = ::testing::TestWithParam<token_t>;
 
 TEST_P(Type_SingleToken, GetTypeReference)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // int
   const auto token = token_kw_int();
 
@@ -1158,7 +1276,7 @@ TEST_P(Type_SingleToken, GetTypeReference)
 
   const auto tokens = tokens_container_t{ token };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_type_reference = parser.parse_type();
 
   ASSERT_TRUE(result_type_reference);
@@ -1175,6 +1293,8 @@ INSTANTIATE_TEST_CASE_P(ParserTest, Type_SingleToken, values);
 
 TEST_F(ParserTest, Type_GenericType_GetTypeReference)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // list<int>
   cmsl::string_view source = "list<int>";
   const auto list_token =
@@ -1196,7 +1316,7 @@ TEST_F(ParserTest, Type_GenericType_GetTypeReference)
   const auto expected_reference =
     type_representation{ std::move(generic_name) };
 
-  auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" },
+  auto parser = parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" },
                           expected_type_tokens };
   auto result_type_reference = parser.parse_type();
 
@@ -1206,6 +1326,8 @@ TEST_F(ParserTest, Type_GenericType_GetTypeReference)
 
 TEST_F(ParserTest, Type_NestedGenericType_GetTypeReference)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // list<list<foo>>
   cmsl::string_view source = "list<list<foo>>";
   const auto list_token =
@@ -1253,7 +1375,7 @@ TEST_F(ParserTest, Type_NestedGenericType_GetTypeReference)
   const auto expected_representation =
     type_representation{ std::move(list_list_foo_generic_name) };
 
-  auto parser = parser_t{ dummy_err_observer, cmsl::source_view{ "" },
+  auto parser = parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" },
                           expected_type_tokens };
   auto result_type_reference = parser.parse_type();
 
@@ -1263,6 +1385,8 @@ TEST_F(ParserTest, Type_NestedGenericType_GetTypeReference)
 
 TEST_F(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // int foo;
   const auto type_token = token_kw_int();
   const auto name_token = token_identifier("foo");
@@ -1278,7 +1402,7 @@ TEST_F(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
   const auto tokens =
     tokens_container_t{ type_token, name_token, token_semicolon() };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast =
     parser.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
@@ -1289,6 +1413,8 @@ TEST_F(ParserTest, VariableDeclaration_TypeId_GetVariableDeclaration)
 
 TEST_F(ParserTest, ExportedVariableDeclaration_TypeId_GetVariableDeclaration)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // export int foo;
   const auto type_token = token_kw_int();
   const auto name_token = token_identifier("foo");
@@ -1310,7 +1436,7 @@ TEST_F(ParserTest, ExportedVariableDeclaration_TypeId_GetVariableDeclaration)
 
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer,strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_standalone_variable_declaration(token_kw_export());
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1320,7 +1446,9 @@ TEST_F(ParserTest, ExportedVariableDeclaration_TypeId_GetVariableDeclaration)
 
 TEST_F(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
 {
-  // list<int> foo;
+    StrictMock<cmsl::test::strings_container_mock> strings;
+
+    // list<int> foo;
   cmsl::string_view source = "list<int>";
   const auto list_token =
     token_from_larger_source(source, token_type_t::kw_list, 0u, 4u);
@@ -1357,7 +1485,7 @@ TEST_F(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast =
     parser.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
@@ -1368,6 +1496,8 @@ TEST_F(ParserTest, VariableDeclaration_GenericTypeId_GetVariableDeclaration)
 TEST_F(ParserTest,
        VariableDeclaration_TypeIdEqualExpression_GetVariableDeclaration)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // int foo = 42;
   const auto type_token = token_kw_int();
   const auto name_token = token_identifier("foo");
@@ -1397,7 +1527,7 @@ TEST_F(ParserTest,
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast =
     parser.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
@@ -1408,6 +1538,8 @@ TEST_F(ParserTest,
 TEST_F(ParserTest,
        VariableDeclaration_GenericTypeIdEqualExpression_GetVariableDeclaration)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // list<int> foo = 42;
   cmsl::string_view source = "list<int>";
   const auto list_token =
@@ -1454,7 +1586,7 @@ TEST_F(ParserTest,
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast =
     parser.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
@@ -1464,6 +1596,8 @@ TEST_F(ParserTest,
 
 TEST_F(ParserTest, Block_OpenBraceCloseBrace_GetBlock)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // {}
   auto expected_ast =
     std::make_unique<block_node>(tmp_token, block_node::nodes_t{}, tmp_token);
@@ -1471,7 +1605,7 @@ TEST_F(ParserTest, Block_OpenBraceCloseBrace_GetBlock)
   const auto tokens =
     tokens_container_t{ token_open_brace(), token_close_brace() };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1480,6 +1614,8 @@ TEST_F(ParserTest, Block_OpenBraceCloseBrace_GetBlock)
 
 TEST_F(ParserTest, Block_VariableDeclaration_GetBlock)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // { foo bar; }
   const auto variable_type_token = token_identifier("foo");
   const auto variable_name_token = token_identifier("bar");
@@ -1510,7 +1646,7 @@ TEST_F(ParserTest, Block_VariableDeclaration_GetBlock)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1519,6 +1655,8 @@ TEST_F(ParserTest, Block_VariableDeclaration_GetBlock)
 
 TEST_F(ParserTest, Block_IfElse_GetBlock)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // { if(foo) {} else if(bar) else {} }
   const auto if_condition_token = token_identifier("foo");
   const auto elseif_condition_token = token_identifier("bar");
@@ -1586,7 +1724,7 @@ TEST_F(ParserTest, Block_IfElse_GetBlock)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1595,6 +1733,8 @@ TEST_F(ParserTest, Block_IfElse_GetBlock)
 
 TEST_F(ParserTest, Block_Expression_GetBlock)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // { foo + bar; }
   const auto lhs_token = token_integer("1");
   const auto op_token = token_plus();
@@ -1624,7 +1764,7 @@ TEST_F(ParserTest, Block_Expression_GetBlock)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1633,6 +1773,8 @@ TEST_F(ParserTest, Block_Expression_GetBlock)
 
 TEST_F(ParserTest, Block_While_GetBlock)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // { while(foo) {} }
   const auto condition_token = token_identifier("foo");
 
@@ -1667,7 +1809,7 @@ TEST_F(ParserTest, Block_While_GetBlock)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1676,6 +1818,8 @@ TEST_F(ParserTest, Block_While_GetBlock)
 
 TEST_F(ParserTest, Block_Return_GetBlock)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // { return foo; }
   const auto expression_token = token_identifier("foo");
 
@@ -1700,7 +1844,7 @@ TEST_F(ParserTest, Block_Return_GetBlock)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1709,6 +1853,8 @@ TEST_F(ParserTest, Block_Return_GetBlock)
 
 TEST_F(ParserTest, Block_NestedBlock_GetBlock)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // { {} }
 
   auto nested_block_node =
@@ -1728,7 +1874,7 @@ TEST_F(ParserTest, Block_NestedBlock_GetBlock)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_block();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1737,6 +1883,8 @@ TEST_F(ParserTest, Block_NestedBlock_GetBlock)
 
 TEST_F(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // double foo() {}
   const auto function_type_token = token_kw_double();
   const auto function_name_token = token_identifier("foo");
@@ -1759,7 +1907,7 @@ TEST_F(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_function();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1770,6 +1918,8 @@ TEST_F(ParserTest, Function_TypeIdOpenParenCloseParen_GetFunction)
 TEST_F(ParserTest,
        Function_ExportTypeIdOpenParenCloseParen_GetExportedFunction)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // export double foo() {}
   const auto function_type_token = token_kw_double();
   const auto function_name_token = token_identifier("foo");
@@ -1792,7 +1942,7 @@ TEST_F(ParserTest,
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_function(token_kw_export());
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1802,6 +1952,8 @@ TEST_F(ParserTest,
 
 TEST_F(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // double foo(bar baz) {}
   const auto function_type_token = token_kw_double();
   const auto function_name_token = token_identifier("foo");
@@ -1837,7 +1989,7 @@ TEST_F(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_function();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1846,6 +1998,8 @@ TEST_F(ParserTest, Function_TypeIdOpenParenParameterCloseParen_GetFunction)
 
 TEST_F(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // double foo(bar baz, qux out_of_fancy_identifiers) {}
   const auto function_type_token = token_kw_double();
   const auto function_name_token = token_identifier("foo");
@@ -1892,7 +2046,7 @@ TEST_F(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_function();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1901,6 +2055,8 @@ TEST_F(ParserTest, Function_TypeIdOpenParenParametersCloseParen_GetFunction)
 
 TEST_F(ParserTest, Class_ClassIdEmptyBlock_GetClass)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // class foo {};
   const auto name_token = token_identifier("foo");
 
@@ -1918,7 +2074,7 @@ TEST_F(ParserTest, Class_ClassIdEmptyBlock_GetClass)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_class(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1928,6 +2084,8 @@ TEST_F(ParserTest, Class_ClassIdEmptyBlock_GetClass)
 
 TEST_F(ParserTest, Class_ExportClassIdEmptyBlock_GetExportedClass)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // export class foo {};
   const auto name_token = token_identifier("foo");
 
@@ -1945,7 +2103,7 @@ TEST_F(ParserTest, Class_ExportClassIdEmptyBlock_GetExportedClass)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_class(token_kw_export());
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1955,6 +2113,8 @@ TEST_F(ParserTest, Class_ExportClassIdEmptyBlock_GetExportedClass)
 
 TEST_F(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // class foo { int bar; };
   const auto name_token = token_identifier("foo");
   const auto variable_type_token = token_kw_int();
@@ -1990,7 +2150,7 @@ TEST_F(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_class(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
@@ -1999,6 +2159,8 @@ TEST_F(ParserTest, Class_ClassIdVariableDeclaration_GetClass)
 
 TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // class foo { double bar() {} baz qux; };
   const auto name_token = token_identifier("foo");
 
@@ -2053,7 +2215,7 @@ TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_class(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2062,6 +2224,8 @@ TEST_F(ParserTest, Class_ClassIdFunctionVariableDeclaration_GetClass)
 
 TEST_F(ParserTest, Factor_InitializerList_GetInitializerList)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // { foo, bar(baz, qux), { nest_foo, nest_bar } }
   const auto foo_token = token_identifier("foo");
   const auto bar_token = token_identifier("bar");
@@ -2125,7 +2289,7 @@ TEST_F(ParserTest, Factor_InitializerList_GetInitializerList)
     // clang-format on
   };
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_initializer_list();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2134,6 +2298,8 @@ TEST_F(ParserTest, Factor_InitializerList_GetInitializerList)
 
 TEST_F(ParserTest, For_EmptyInitEmptyConditionEmptyIterationEmptyBody_GetFor)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // for(;;) {}
   auto body = std::make_unique<block_node>(
     token_open_brace(), block_node::nodes_t{}, token_close_brace());
@@ -2159,7 +2325,7 @@ TEST_F(ParserTest, For_EmptyInitEmptyConditionEmptyIterationEmptyBody_GetFor)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_for_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2169,6 +2335,8 @@ TEST_F(ParserTest, For_EmptyInitEmptyConditionEmptyIterationEmptyBody_GetFor)
 TEST_F(ParserTest,
        For_VariableDeclarationInitEmptyConditionEmptyIterationEmptyBody_GetFor)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // for(int foo;;) {}
   const auto int_token = token_kw_int();
   const auto int_representation =
@@ -2207,7 +2375,7 @@ TEST_F(ParserTest,
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_for_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2218,6 +2386,8 @@ TEST_F(
   ParserTest,
   For_VariableDeclarationWithInitializationInitEmptyConditionEmptyIterationEmptyBody_GetFor)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // for(int foo = 42;;) {}
   const auto int_token = token_kw_int();
   const auto int_representation =
@@ -2264,7 +2434,7 @@ TEST_F(
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_for_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2273,6 +2443,8 @@ TEST_F(
 
 TEST_F(ParserTest, For_EmptyInitWithConditionEmptyIterationEmptyBody_GetFor)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // for(;true;) {}
   const auto true_token = token_kw_true();
 
@@ -2306,7 +2478,7 @@ TEST_F(ParserTest, For_EmptyInitWithConditionEmptyIterationEmptyBody_GetFor)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_for_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2315,6 +2487,8 @@ TEST_F(ParserTest, For_EmptyInitWithConditionEmptyIterationEmptyBody_GetFor)
 
 TEST_F(ParserTest, For_EmptyInitEmptyConditionWithIterationEmptyBody_GetFor)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // for(;; foo()) {}
   const auto foo_token = token_identifier("foo");
   std::vector<ast::name_with_coloncolon> names{ { foo_token } };
@@ -2353,7 +2527,7 @@ TEST_F(ParserTest, For_EmptyInitEmptyConditionWithIterationEmptyBody_GetFor)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_for_node();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2362,6 +2536,8 @@ TEST_F(ParserTest, For_EmptyInitEmptyConditionWithIterationEmptyBody_GetFor)
 
 TEST_F(ParserTest, Break_BreakSemicolon_GetBreak)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // break;
   auto expected_ast =
     std::make_unique<break_node>(token_kw_break(), token_semicolon());
@@ -2374,7 +2550,7 @@ TEST_F(ParserTest, Break_BreakSemicolon_GetBreak)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_break();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2383,6 +2559,8 @@ TEST_F(ParserTest, Break_BreakSemicolon_GetBreak)
 
 TEST_F(ParserTest, Namespace_EmptyNamespace_GetNamespace)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // namespace foo {}
   const auto foo_token = token_identifier("foo");
   auto names = namespace_node::names_t{ { foo_token, std::nullopt } };
@@ -2401,7 +2579,7 @@ TEST_F(ParserTest, Namespace_EmptyNamespace_GetNamespace)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_namespace();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2410,6 +2588,8 @@ TEST_F(ParserTest, Namespace_EmptyNamespace_GetNamespace)
 
 TEST_F(ParserTest, Namespace_NestedNamespace_GetNamespaceWithNestedNamespace)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // namespace foo { namespace bar {} }
   const auto foo_token = token_identifier("foo");
   auto foo_names = namespace_node::names_t{ { foo_token, std::nullopt } };
@@ -2443,7 +2623,7 @@ TEST_F(ParserTest, Namespace_NestedNamespace_GetNamespaceWithNestedNamespace)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_namespace();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2453,6 +2633,8 @@ TEST_F(ParserTest, Namespace_NestedNamespace_GetNamespaceWithNestedNamespace)
 TEST_F(ParserTest,
        Namespace_InlineNestedNamespace_GetNamespaceWithMultipleNames)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // namespace foo::bar {}
   const auto foo_token = token_identifier("foo");
   const auto bar_token = token_identifier("bar");
@@ -2475,7 +2657,7 @@ TEST_F(ParserTest,
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_namespace();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2484,6 +2666,8 @@ TEST_F(ParserTest,
 
 TEST_F(ParserTest, Expr_TernaryOperator_GetTernaryOperator)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // foo ? bar : baz
   const auto foo_token = token_identifier("foo");
   const auto bar_token = token_identifier("bar");
@@ -2508,7 +2692,7 @@ TEST_F(ParserTest, Expr_TernaryOperator_GetTernaryOperator)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2517,6 +2701,8 @@ TEST_F(ParserTest, Expr_TernaryOperator_GetTernaryOperator)
 
 TEST_F(ParserTest, Expr_NestedTernaryOperator_GetTernaryOperator)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // foo ? bar ? baz : qux : kek
   const auto foo_token = token_identifier("foo");
   const auto bar_token = token_identifier("bar");
@@ -2553,7 +2739,7 @@ TEST_F(ParserTest, Expr_NestedTernaryOperator_GetTernaryOperator)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2562,6 +2748,8 @@ TEST_F(ParserTest, Expr_NestedTernaryOperator_GetTernaryOperator)
 
 TEST_F(ParserTest, DesignatedInitializers_GetDesignatedInitializers)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // { .foo = bar, .baz = qux }
   const auto foo_token = token_identifier("foo");
   const auto bar_token = token_identifier("bar");
@@ -2601,7 +2789,7 @@ TEST_F(ParserTest, DesignatedInitializers_GetDesignatedInitializers)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2610,6 +2798,8 @@ TEST_F(ParserTest, DesignatedInitializers_GetDesignatedInitializers)
 
 TEST_F(ParserTest, UnaryOperator_GetUnaryOperator)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // -foo
   const auto foo_token = token_identifier("foo");
 
@@ -2626,7 +2816,7 @@ TEST_F(ParserTest, UnaryOperator_GetUnaryOperator)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_expr();
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2635,6 +2825,8 @@ TEST_F(ParserTest, UnaryOperator_GetUnaryOperator)
 
 TEST_F(ParserTest, EmptyEnum_GetEnum)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // enum foo{}
   const auto foo_token = token_identifier("foo");
 
@@ -2653,7 +2845,7 @@ TEST_F(ParserTest, EmptyEnum_GetEnum)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_enum(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2663,6 +2855,8 @@ TEST_F(ParserTest, EmptyEnum_GetEnum)
 
 TEST_F(ParserTest, EmptyExportedEnum_GetExportedEnum)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // export enum foo{}
   const auto foo_token = token_identifier("foo");
 
@@ -2681,7 +2875,7 @@ TEST_F(ParserTest, EmptyExportedEnum_GetExportedEnum)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_enum(token_kw_export());
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2691,6 +2885,8 @@ TEST_F(ParserTest, EmptyExportedEnum_GetExportedEnum)
 
 TEST_F(ParserTest, EnumWithEnumerators_GetEnum)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // enum foo{ bar, baz, qux }
   const auto foo_token = token_identifier("foo");
   const auto bar_token = token_identifier("bar");
@@ -2721,7 +2917,7 @@ TEST_F(ParserTest, EnumWithEnumerators_GetEnum)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_enum(/*export_kw=*/std::nullopt);
 
   ASSERT_THAT(result_ast, NotNull());
@@ -2730,6 +2926,8 @@ TEST_F(ParserTest, EnumWithEnumerators_GetEnum)
 
 TEST_F(ParserTest, Import_GetImportNode)
 {
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   // import "foo/bar";
   const auto file_token = token_string("\"foo/bar\"");
 
@@ -2745,7 +2943,7 @@ TEST_F(ParserTest, Import_GetImportNode)
   };
 
   auto parser =
-    parser_t{ dummy_err_observer, cmsl::source_view{ "" }, tokens };
+    parser_t{ dummy_err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_import();
 
   ASSERT_THAT(result_ast, NotNull());

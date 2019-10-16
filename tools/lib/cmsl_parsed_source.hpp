@@ -8,9 +8,13 @@
 #include <memory>
 #include <string>
 
-namespace cmsl::sema {
+namespace cmsl {
+class strings_container;
+
+namespace sema {
 class add_subdirectory_handler;
 class builtin_token_provider;
+}
 }
 
 struct cmsl_parsed_source
@@ -26,4 +30,5 @@ struct cmsl_parsed_source
   std::unique_ptr<cmsl::ast::ast_node> ast_tree;
   std::unique_ptr<cmsl::sema::sema_node> sema_tree;
   std::unique_ptr<cmsl::sema::sema_context> builtin_context;
+  std::unique_ptr<cmsl::strings_container> strings_container;
 };

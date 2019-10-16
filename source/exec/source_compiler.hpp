@@ -6,6 +6,7 @@
 
 namespace cmsl {
 class source_view;
+class strings_container;
 
 namespace errors {
 class errors_observer;
@@ -33,7 +34,8 @@ public:
     sema::import_handler& imports_handler,
     sema::qualified_contextes_refs qualified_contextes,
     sema::builtin_sema_context& builtin_context,
-    sema::builtin_token_provider& builtin_tokens);
+    sema::builtin_token_provider& builtin_tokens,
+    strings_container& strings_container);
 
   std::unique_ptr<compiled_source> compile(source_view source);
 
@@ -45,6 +47,7 @@ private:
   sema::qualified_contextes_refs m_qualified_contextes;
   sema::builtin_sema_context& m_builtin_context;
   sema::builtin_token_provider& m_builtin_tokens;
+  strings_container& m_strings_container;
 };
 }
 }

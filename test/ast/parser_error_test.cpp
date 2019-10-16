@@ -7,6 +7,7 @@
 #include "errors/errors_observer.hpp"
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
+#include "test/mock/strings_container_mock.hpp"
 
 #include <gmock/gmock.h>
 
@@ -20,6 +21,7 @@ using ::testing::_;
 using ::testing::IsNull;
 using ::testing::Values;
 using ::testing::TestWithParam;
+using ::testing::StrictMock;
 
 using namespace cmsl::test::common;
 
@@ -37,10 +39,12 @@ using Factor = TestWithParam<token_t>;
 TEST_P(Factor, UnexpectedToken_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = tokens_container_t{ GetParam() };
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_factor();
 
   EXPECT_THAT(result, IsNull());
@@ -73,10 +77,11 @@ using BinaryOperator = TestWithParam<tokens_container_t>;
 TEST_P(BinaryOperator, MissingOperand_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_expr();
 
   EXPECT_THAT(result, IsNull());
@@ -100,10 +105,11 @@ using FunctionCall = TestWithParam<tokens_container_t>;
 TEST_P(FunctionCall, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_expr();
 
   EXPECT_THAT(result, IsNull());
@@ -134,10 +140,11 @@ using VariableDeclaration = TestWithParam<tokens_container_t>;
 TEST_P(VariableDeclaration, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result =
     p.parse_standalone_variable_declaration(/*export_kw=*/std::nullopt);
 
@@ -173,10 +180,11 @@ using While = TestWithParam<tokens_container_t>;
 TEST_P(While, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_while_node();
 
   EXPECT_THAT(result, IsNull());
@@ -214,10 +222,11 @@ using IfElse = TestWithParam<tokens_container_t>;
 TEST_P(IfElse, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_if_else_node();
 
   EXPECT_THAT(result, IsNull());
@@ -292,10 +301,11 @@ using Block = TestWithParam<tokens_container_t>;
 TEST_P(Block, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_block();
 
   EXPECT_THAT(result, IsNull());
@@ -327,10 +337,11 @@ using Function = TestWithParam<tokens_container_t>;
 TEST_P(Function, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_function();
 
   EXPECT_THAT(result, IsNull());
@@ -391,10 +402,11 @@ using Class = TestWithParam<tokens_container_t>;
 TEST_P(Class, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_class(/*export_kw=*/std::nullopt);
 
   EXPECT_THAT(result, IsNull());
@@ -450,10 +462,11 @@ using InitializerList = TestWithParam<tokens_container_t>;
 TEST_P(InitializerList, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_initializer_list();
 
   EXPECT_THAT(result, IsNull());
@@ -486,10 +499,11 @@ using Break = TestWithParam<tokens_container_t>;
 TEST_P(Break, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_initializer_list();
 
   EXPECT_THAT(result, IsNull());
@@ -506,10 +520,11 @@ using Namespace = TestWithParam<tokens_container_t>;
 TEST_P(Namespace, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_initializer_list();
 
   EXPECT_THAT(result, IsNull());
@@ -543,10 +558,11 @@ using DesignatedInitializers = TestWithParam<tokens_container_t>;
 TEST_P(DesignatedInitializers, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_designated_initializers();
 
   EXPECT_THAT(result, IsNull());
@@ -581,10 +597,11 @@ using Enum = TestWithParam<tokens_container_t>;
 TEST_P(Enum, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_enum(/*export_kw=*/std::nullopt);
 
   EXPECT_THAT(result, IsNull());
@@ -630,10 +647,11 @@ using Import = TestWithParam<tokens_container_t>;
 TEST_P(Import, Malformed_ReportError)
 {
   errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
   EXPECT_CALL(errs.mock, notify_error(_));
 
   const auto tokens = GetParam();
-  parser p{ errs.err_observer, cmsl::source_view{ "" }, tokens };
+  parser p{ errs.err_observer, strings, cmsl::source_view{ "" }, tokens };
   auto result = p.parse_enum(/*export_kw=*/std::nullopt);
 
   EXPECT_THAT(result, IsNull());

@@ -1,6 +1,7 @@
 #include "cmsl_parsed_source.hpp"
 
 #include "ast/ast_node.hpp"
+#include "common/strings_container.hpp"
 #include "sema/add_subdirectory_handler.hpp"
 #include "sema/builtin_token_provider.hpp"
 #include "sema/import_handler.hpp"

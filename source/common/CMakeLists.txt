@@ -8,6 +8,9 @@ set(COMMON_SOURCES
     source_view.cpp
     source_view.hpp
     string.hpp
+    strings_container.hpp
+    strings_container_impl.cpp
+    strings_container_impl.hpp
 )
 
 add_library(common "${COMMON_SOURCES}")

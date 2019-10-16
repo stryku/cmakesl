@@ -274,18 +274,36 @@ public:
   }
 };
 
-class string_value_node : public fundamental_value_node
+class string_value_node : public ast_node
 {
 public:
-  explicit string_value_node(token_t token)
-    : fundamental_value_node{ token }
+  explicit string_value_node(std::vector<token_t> tokens,
+                             cmsl::string_view view)
+    : m_tokens{ std::move(tokens) }
+    , m_view{ view }
   {
   }
+
+  cmsl::string_view view() const { return m_view; }
 
   void visit(ast_node_visitor& visitor) const override
   {
     visitor.visit(*this);
   }
+
+  source_location begin_location() const override
+  {
+    return m_tokens.front().src_range().begin;
+  }
+
+  source_location end_location() const override
+  {
+    return m_tokens.back().src_range().end;
+  }
+
+private:
+  std::vector<token_t> m_tokens;
+  cmsl::string_view m_view;
 };
 
 class id_node : public ast_node
