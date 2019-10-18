@@ -5,7 +5,7 @@
 #include "ast/parser.hpp"
 #include "common/strings_container_impl.hpp"
 #include "lexer/lexer.hpp"
-#include "sema/add_subdirectory_handler.hpp"
+#include "sema/add_subdirectory_semantic_handler.hpp"
 #include "sema/builtin_sema_context.hpp"
 #include "sema/builtin_token_provider.hpp"
 #include "sema/enum_values_context.hpp"
@@ -19,7 +19,7 @@
 #include "sema/types_context.hpp"
 
 namespace cmsl::sema::details {
-class add_subdir_handler : public add_subdirectory_handler
+class add_subdir_handler : public add_subdirectory_semantic_handler
 {
 public:
   add_subdirectory_result_t handle_add_subdirectory(

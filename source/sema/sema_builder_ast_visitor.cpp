@@ -22,7 +22,7 @@
 #include "common/overloaded.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
-#include "sema/add_subdirectory_handler.hpp"
+#include "sema/add_subdirectory_semantic_handler.hpp"
 #include "sema/block_node_manipulator.hpp"
 #include "sema/builtin_sema_function.hpp"
 #include "sema/enum_creator.hpp"
@@ -364,13 +364,13 @@ sema_builder_ast_visitor::build_add_subdirectory_call(
     m_.add_subdir_handler.handle_add_subdirectory(name, params_but_name);
 
   const auto visitor = overloaded{
-    [&](const add_subdirectory_handler::contains_cmakesl_script& val)
+    [&](const add_subdirectory_semantic_handler::contains_cmakesl_script& val)
       -> std::unique_ptr<expression_node> {
       return std::make_unique<add_subdirectory_node>(
         node, std::move(name_string_node), *val.main_function,
         std::move(params_but_name));
     },
-    [&](const add_subdirectory_handler::contains_old_cmake_script& val)
+    [&](const add_subdirectory_semantic_handler::contains_old_cmake_script& val)
       -> std::unique_ptr<expression_node> {
       return std::make_unique<add_subdirectory_with_old_script_node>(
         node, std::move(name_string_node), m_.builtin_types.void_);

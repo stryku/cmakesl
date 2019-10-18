@@ -1,5 +1,6 @@
 #include "cmake_facade.hpp"
 #include "exec/global_executor.hpp"
+#include "exec/instance/instance.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -95,6 +96,12 @@ public:
 
   void add_subdirectory_with_old_script(const std::string& dir) override {}
 
+  void prepare_for_add_subdirectory_with_cmakesl_script(
+    const std::string& dir) override
+  {
+  }
+  void finalize_after_add_subdirectory_with_cmakesl_script() override {}
+
   void go_into_subdirectory(const std::string& dir) override
   {
     m_directory_stack.push(dir);
@@ -148,6 +155,7 @@ public:
 
 private:
   std::stack<std::string> m_directory_stack;
+  std::unique_ptr<cmsl::exec::inst::instance> m_add_subdirectory_result;
   bool m_fatal_error_occured{ false };
 };
 

@@ -2,7 +2,13 @@
 
 #include "cmake_facade.hpp"
 
+#include "exec/instance/instance.hpp"
+
 #include <gmock/gmock.h>
+
+class cmMakefile
+{
+};
 
 namespace cmsl::exec::test {
 class cmake_facade_mock : public facade::cmake_facade
@@ -47,9 +53,20 @@ public:
                     const std::vector<std::string>&));
 
   MOCK_CONST_METHOD0(current_directory, std::string());
+  MOCK_METHOD0(setup_adding_subdirectory_wiith_cmakesl_script, void());
   MOCK_METHOD1(go_into_subdirectory, void(const std::string&));
+  MOCK_METHOD1(go_into_subdirectory, void(cmMakefile&));
+  MOCK_METHOD1(add_subdirectory_with_cmakesl_script, void(const std::string&));
+  MOCK_METHOD1(set_add_subdirectory_with_cmakesl_script_result,
+               void(std::unique_ptr<exec::inst::instance>));
+  MOCK_METHOD0(gather_add_subdirectory_with_cmakesl_script_result,
+               std::unique_ptr<exec::inst::instance>());
   MOCK_METHOD1(add_subdirectory_with_old_script, void(const std::string&));
   MOCK_METHOD0(go_directory_up, void());
+
+  MOCK_METHOD1(prepare_for_add_subdirectory_with_cmakesl_script,
+               void(const std::string&));
+  MOCK_METHOD0(finalize_after_add_subdirectory_with_cmakesl_script, void());
 
   MOCK_CONST_METHOD0(enable_ctest, void());
   MOCK_METHOD1(add_test, void(const std::string&));

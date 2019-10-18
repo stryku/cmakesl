@@ -10,10 +10,10 @@ namespace cmsl::sema {
 class expression_node;
 class sema_function;
 
-class add_subdirectory_handler
+class add_subdirectory_semantic_handler
 {
 public:
-  virtual ~add_subdirectory_handler() = default;
+  virtual ~add_subdirectory_semantic_handler() = default;
 
   struct no_script_found
   {

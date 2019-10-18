@@ -103,15 +103,18 @@ public:
 
   void visit(const sema::add_subdirectory_node& node) override
   {
-    m_ctx.cmake_facade.go_into_subdirectory(
-      std::string{ node.dir_name().value() });
 
     auto evaluated_params =
       evaluate_call_parameters(node.function(), node.param_expressions());
     if (m_ctx.cmake_facade.did_fatal_error_occure()) {
-      m_ctx.cmake_facade.go_directory_up();
       return;
     }
+
+    const auto dir = std::string{ node.dir_name().value() };
+
+    //    m_ctx.cmake_facade.go_into_subdirectory(dir);
+
+    m_ctx.cmake_facade.prepare_for_add_subdirectory_with_cmakesl_script(dir);
 
     const auto& function = node.function();
     auto result_instance =
@@ -124,7 +127,9 @@ public:
     result = result_instance.get();
     m_ctx.instances.store(std::move(result_instance));
 
-    m_ctx.cmake_facade.go_directory_up();
+    m_ctx.cmake_facade.finalize_after_add_subdirectory_with_cmakesl_script();
+
+    //    m_ctx.cmake_facade.go_directory_up();
   }
 
   void visit(const sema::implicit_member_function_call_node& node) override

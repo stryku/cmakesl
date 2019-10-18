@@ -19,7 +19,7 @@ namespace cmsl::exec {
 source_compiler::source_compiler(
   errors::errors_observer& errors_observer,
   sema::factories_provider& factories_provider,
-  sema::add_subdirectory_handler& add_subdirectory_handler,
+  sema::add_subdirectory_semantic_handler& add_subdirectory_handler,
   sema::import_handler& imports_handler,
   sema::qualified_contextes_refs qualified_contextes,
   sema::builtin_sema_context& builtin_context,

@@ -2,12 +2,21 @@
 
 #include "visibility.hpp"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
 
-namespace cmsl::facade {
+class cmMakefile;
+
+namespace cmsl {
+
+namespace exec::inst {
+class instance;
+}
+
+namespace facade {
 class cmake_facade
 {
 public:
@@ -96,6 +105,10 @@ public:
   virtual void go_into_subdirectory(const std::string& dir) = 0;
   virtual void go_directory_up() = 0;
 
+  virtual void prepare_for_add_subdirectory_with_cmakesl_script(
+    const std::string& dir) = 0;
+  virtual void finalize_after_add_subdirectory_with_cmakesl_script() = 0;
+
   virtual void enable_ctest() const = 0;
 
   virtual void add_test(const std::string& test_executable_name) = 0;
@@ -145,4 +158,5 @@ public:
 
   virtual std::string ctest_command() const = 0;
 };
+}
 }
