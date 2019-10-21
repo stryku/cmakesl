@@ -15,7 +15,7 @@ class errors_observer;
 }
 
 namespace sema {
-class add_subdirectory_handler;
+class add_subdirectory_semantic_handler;
 class builtin_token_provider;
 class factories_provider;
 class import_handler;
@@ -29,7 +29,7 @@ public:
   explicit sema_builder(sema_context& ctx, errors::errors_observer& errs,
                         qualified_contextes_refs& qualified_ctxs,
                         factories_provider& factories,
-                        add_subdirectory_handler& add_subdirectory_handler,
+                        add_subdirectory_semantic_handler& add_subdirectory_handler,
                         import_handler& imports_handler,
                         const builtin_token_provider& builtin_token_provider,
                         builtin_types_accessor builtin_types);
@@ -41,7 +41,7 @@ private:
   errors::errors_observer& m_errs;
   qualified_contextes_refs& m_qualified_ctxs;
   factories_provider& m_factories;
-  add_subdirectory_handler& m_add_subdirectory_handler;
+  add_subdirectory_semantic_handler& m_add_subdirectory_handler;
   import_handler& m_imports_handler;
   const builtin_token_provider& m_builtin_token_provider;
   builtin_types_accessor m_builtin_types;

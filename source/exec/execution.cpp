@@ -17,6 +17,12 @@ std::unique_ptr<inst::instance> execution::call(
   const sema::sema_function& fun, const std::vector<inst::instance*>& params,
   inst::instances_holder_interface& instances)
 {
+  //  if (is_call_of_add_subdirectory_with_cmakesl_script()) {
+  //    execute_add_subdirectory_with_cmakesl_script(fun);
+  //     Result instance will be collected later.
+  //    return nullptr;
+  //  }
+
   std::unique_ptr<inst::instance> result;
   if (auto user_function =
         dynamic_cast<const sema::user_sema_function*>(&fun)) {
@@ -313,4 +319,32 @@ void execution::execute_add_subdirectory_with_old_script(
   m_cmake_facade.add_subdirectory_with_old_script(
     std::string{ node.dir_name().value() });
 }
+
+// std::unique_ptr<inst::instance>
+// execution::call_add_subdirectory_with_cmakesl_script(
+//  const std::string& dir, const std::vector<inst::instance*>& params)
+//{
+//  m_params_of_add_subdirectory_with_cmakesl_script_call = params;
+//  m_cmake_facade.add_subdirectory_with_cmakesl_script(dir);
+//  return m_cmake_facade.gather_add_subdirectory_with_cmakesl_script_result();
+//}
+
+bool execution::is_call_of_add_subdirectory_with_cmakesl_script() const
+{
+  return m_params_of_add_subdirectory_with_cmakesl_script_call.has_value();
+}
+
+// void execution::execute_add_subdirectory_with_cmakesl_script(
+//  const sema::sema_function& fun)
+//{
+//  auto params =
+//    std::move(*m_params_of_add_subdirectory_with_cmakesl_script_call);
+//  m_params_of_add_subdirectory_with_cmakesl_script_call.reset();
+//  enter_function_scope(fun, params);
+//  auto user_function = dynamic_cast<const sema::user_sema_function*>(&fun);
+//  execute_block(user_function->body());
+//  leave_function_scope();
+//  m_cmake_facade.set_add_subdirectory_with_cmakesl_script_result(
+//    std::move(m_function_return_value));
+//}
 }

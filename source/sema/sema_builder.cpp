@@ -7,7 +7,7 @@ namespace cmsl::sema {
 sema_builder::sema_builder(
   sema_context& ctx, errors::errors_observer& errs,
   qualified_contextes_refs& qualified_ctxs, factories_provider& factories,
-  add_subdirectory_handler& add_subdirectory_handler,
+  add_subdirectory_semantic_handler& add_subdirectory_handler,
   import_handler& imports_handler,
   const builtin_token_provider& builtin_token_provider,
   builtin_types_accessor builtin_types)

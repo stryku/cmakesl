@@ -5,7 +5,7 @@
 #include "exec/builtin_identifiers_observer.hpp"
 #include "exec/cross_translation_unit_static_variables.hpp"
 #include "exec/module_sema_tree_provider.hpp"
-#include "sema/add_subdirectory_handler.hpp"
+#include "sema/add_subdirectory_semantic_handler.hpp"
 #include "sema/factories.hpp"
 #include "sema/factories_provider.hpp"
 #include "sema/import_handler.hpp"
@@ -26,9 +26,10 @@ class builtin_sema_context;
 namespace exec {
 class compiled_source;
 class source_compiler;
+class execution;
 
 class global_executor
-  : public sema::add_subdirectory_handler
+  : public sema::add_subdirectory_semantic_handler
   , public sema::import_handler
   , public module_sema_tree_provider
 {
@@ -67,6 +68,14 @@ private:
 
   bool file_exists(const std::string& path) const;
 
+  const compiled_source* compile_file(std::string path);
+  const compiled_source* compile_source(std::string source, std::string path);
+
+  std::unique_ptr<inst::instance> execute(const compiled_source& compiled);
+
+  void initialize_execution_if_need(
+    const sema::builtin_types_accessor& builtin_types);
+
 private:
   class directory_guard
   {
@@ -97,13 +106,17 @@ private:
 
   std::vector<std::string> m_sources;
   std::vector<std::string> m_paths;
-  std::vector<std::unique_ptr<compiled_source>> m_compiled_sources;
+  std::unordered_map<cmsl::string_view, std::unique_ptr<compiled_source>>
+    m_compiled_sources;
   std::unordered_map<cmsl::string_view,
                      std::reference_wrapper<const sema::sema_node>>
     m_sema_trees;
 
   std::unordered_map<cmsl::string_view, sema::qualified_contextes>
     m_exported_qualified_contextes;
+
+  std::unique_ptr<execution> m_execution;
+  std::vector<std::string> m_directories;
 };
 }
 }

@@ -51,34 +51,11 @@ global_executor::~global_executor() = default;
 
 int global_executor::execute(std::string source)
 {
-  auto contexts = m_builtin_qualified_contexts.clone();
-  auto compiler = create_compiler(contexts);
-
-  const auto source_path_view = store_path(m_root_path + "/CMakeLists.cmsl");
-  const auto src_view = source_view{ source_path_view, source };
-
-  m_sources.emplace_back(std::move(source));
-  auto compiled = compiler.compile(src_view);
+  const auto compiled =
+    compile_source(std::move(source), m_root_path + "/CMakeLists.cmsl");
   if (!compiled) {
-    raise_unsuccessful_compilation_error(source_path_view);
     return -1;
   }
-
-  const auto& sema_tree = compiled->sema_tree();
-  m_sema_trees.emplace(source_path_view, sema_tree);
-
-  const auto builtin_types = compiled->builtin_types();
-
-  const auto main_function = compiled->get_main();
-  if (!main_function) {
-    raise_no_main_function_error(m_root_path);
-    return -2;
-  }
-
-  const auto& global_context = compiled->get_global_context();
-
-  const auto casted =
-    dynamic_cast<const sema::user_sema_function*>(main_function);
 
   const auto builtin_identifiers_info =
     m_builtin_context->builtin_identifiers_info();
@@ -86,62 +63,57 @@ int global_executor::execute(std::string source)
   m_static_variables.initialize_builtin_variables(
     builtin_identifiers_info, m_builtin_identifiers_observer);
 
-  execution e{ m_cmake_facade, compiled->builtin_types(), m_static_variables };
+  auto result = execute(*compiled);
 
-  const auto translation_unit =
-    dynamic_cast<const sema::translation_unit_node*>(&compiled->sema_tree());
-  e.initialize_static_variables(*translation_unit, m_static_variables);
-
-  m_compiled_sources.emplace_back(std::move(compiled));
-
-  inst::instances_holder instances{ builtin_types };
-  auto main_result = e.call(*casted, {}, instances);
-
-  if (m_cmake_facade.did_fatal_error_occure()) {
+  if (result == nullptr) {
     return -1;
   }
 
-  return main_result->value_cref().get_int();
+  return result->value_cref().get_int();
 }
 
-sema::add_subdirectory_handler::add_subdirectory_result_t
+sema::add_subdirectory_semantic_handler::add_subdirectory_result_t
 global_executor::handle_add_subdirectory(
   cmsl::string_view name,
   const std::vector<std::unique_ptr<sema::expression_node>>&)
 {
-  directory_guard dg{ m_cmake_facade, std::string{ name } };
+  m_directories.push_back(std::string{ name });
 
-  auto cmakesl_script_path =
-    m_cmake_facade.current_directory() + "/CMakeLists.cmsl";
+  const auto script_path_creator = [this] {
+    std::string result = m_cmake_facade.current_directory();
+
+    std::string separator;
+
+    for (const auto& dir : m_directories) {
+      result += '/' + dir;
+    }
+
+    return result;
+  };
+
+  auto cmakesl_script_path = script_path_creator() + "/CMakeLists.cmsl";
   if (!file_exists(cmakesl_script_path)) {
-    if (file_exists(m_cmake_facade.current_directory() + "/CMakeLists.txt")) {
+    if (file_exists(script_path_creator() + "/CMakeLists.txt")) {
+      m_directories.pop_back();
       return contains_old_cmake_script{};
     }
 
     return no_script_found{};
   }
 
-  const auto src_view = load_source(std::move(cmakesl_script_path));
-  CMSL_ASSERT(src_view);
-
-  auto contexts = m_builtin_qualified_contexts.clone();
-  auto compiler = create_compiler(contexts);
-  auto compiled = compiler.compile(*src_view);
+  const auto compiled = compile_file(std::move(cmakesl_script_path));
   if (!compiled) {
-    raise_unsuccessful_compilation_error(src_view->path());
+    raise_unsuccessful_compilation_error(script_path_creator());
     return compilation_failed{};
   }
-  const auto& sema_tree = compiled->sema_tree();
-  m_sema_trees.emplace(src_view->path(), sema_tree);
 
   const auto main_function = compiled->get_main();
   if (!main_function) {
-    raise_no_main_function_error(src_view->path());
+    raise_no_main_function_error(script_path_creator());
     return contains_cmakesl_script{ nullptr };
   }
 
-  m_compiled_sources.emplace_back(std::move(compiled));
-
+  m_directories.pop_back();
   // Todo: handle not matching params.
   return contains_cmakesl_script{ main_function };
 }
@@ -180,7 +152,7 @@ std::unique_ptr<sema::qualified_contextes> global_executor::handle_import(
   m_exported_qualified_contextes.emplace(src_view->path(),
                                          exported_stuff.clone());
   m_sema_trees.emplace(src_view->path(), sema_tree);
-  m_compiled_sources.emplace_back(std::move(compiled));
+  m_compiled_sources.emplace(src_view->path(), std::move(compiled));
 
   return std::make_unique<sema::qualified_contextes>(
     std::move(exported_stuff));
@@ -284,5 +256,105 @@ std::optional<source_view> global_executor::load_source(std::string path)
 bool global_executor::file_exists(const std::string& path) const
 {
   return std::ifstream{ path }.good();
+}
+
+const compiled_source* global_executor::compile_file(std::string path)
+{
+  const auto found = m_compiled_sources.find(path);
+  if (found != std::cend(m_compiled_sources)) {
+    return found->second.get();
+  }
+
+  const auto src_view = load_source(std::move(path));
+  CMSL_ASSERT(src_view);
+
+  auto contexts = m_builtin_qualified_contexts.clone();
+  auto compiler = create_compiler(contexts);
+  auto compiled = compiler.compile(*src_view);
+  if (!compiled) {
+    raise_unsuccessful_compilation_error(src_view->path());
+    return nullptr;
+  }
+  const auto& sema_tree = compiled->sema_tree();
+  m_sema_trees.emplace(src_view->path(), sema_tree);
+
+  const auto main_function = compiled->get_main();
+  if (!main_function) {
+    raise_no_main_function_error(src_view->path());
+    return nullptr;
+  }
+
+  const auto compiled_ptr = compiled.get();
+  m_compiled_sources.emplace(src_view->path(), std::move(compiled));
+
+  return compiled_ptr;
+}
+
+const compiled_source* global_executor::compile_source(std::string source,
+                                                       std::string path)
+{
+  auto contexts = m_builtin_qualified_contexts.clone();
+  auto compiler = create_compiler(contexts);
+
+  const auto source_path_view = store_path(std::move(path));
+  const auto src_view = source_view{ source_path_view, source };
+
+  m_sources.emplace_back(std::move(source));
+  auto compiled = compiler.compile(src_view);
+  if (!compiled) {
+    raise_unsuccessful_compilation_error(source_path_view);
+    return nullptr;
+  }
+
+  const auto& sema_tree = compiled->sema_tree();
+  m_sema_trees.emplace(source_path_view, sema_tree);
+
+  const auto main_function = compiled->get_main();
+  if (!main_function) {
+    raise_no_main_function_error(src_view.path());
+    return nullptr;
+  }
+
+  const auto compiled_ptr = compiled.get();
+  m_compiled_sources.emplace(source_path_view, std::move(compiled));
+
+  return compiled_ptr;
+}
+
+std::unique_ptr<inst::instance> global_executor::execute(
+  const compiled_source& compiled)
+{
+  const auto& builtin_types = compiled.builtin_types();
+
+  initialize_execution_if_need(builtin_types);
+
+  const auto translation_unit =
+    dynamic_cast<const sema::translation_unit_node*>(&compiled.sema_tree());
+  m_execution->initialize_static_variables(*translation_unit,
+                                           m_static_variables);
+
+  inst::instances_holder instances{ builtin_types };
+
+  const auto main_function = compiled.get_main();
+  const auto casted =
+    dynamic_cast<const sema::user_sema_function*>(main_function);
+  auto main_result = m_execution->call(*casted, {}, instances);
+
+  if (m_cmake_facade.did_fatal_error_occure()) {
+    return nullptr;
+  }
+
+  return main_result;
+}
+
+void global_executor::initialize_execution_if_need(
+  const sema::builtin_types_accessor& builtin_types)
+{
+  if (m_execution) {
+    return;
+  }
+
+  m_execution = std::make_unique<execution>(m_cmake_facade, builtin_types,
+                                            m_static_variables);
 }
 }
