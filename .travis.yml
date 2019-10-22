@@ -45,5 +45,5 @@ script:
   # Build the CMakeSL
   - mkdir build && cd build
   - cmake .. -DCMAKESL_WITH_TESTS=ON -DCMAKESL_WITH_TOOLS=ON -DCMAKESL_WITH_EXAMPLES=ON
-  - make
+  - make -j
   - ctest -T memcheck
