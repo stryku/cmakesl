@@ -18,7 +18,7 @@ export class add_target_params
 
 export cmake::executable add_test(cmake::project p, add_target_params params)
 {
-  auto test_name = params.name + "_test";
+  auto test_name = params.name + "_cmakesl_test";
   auto exe = p.add_executable(test_name, params.sources);
 
   auto gmock_main = p.find_library("gmock_main");

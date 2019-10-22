@@ -57,7 +57,7 @@ cmsl_add_test(
         tests_common
 )
 
-target_compile_definitions(exec_test
+target_compile_definitions(exec_cmakesl_test
     PRIVATE
         -DCMAKESL_EXEC_SMOKE_TEST_ROOT_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
 )
