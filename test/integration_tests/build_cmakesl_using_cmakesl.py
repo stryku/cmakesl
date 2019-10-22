@@ -45,7 +45,7 @@ def build_cmakesl():
     subprocess.check_output(command, cwd=cmakesl_build_path)
 
     print('ctest...')
-    command = ['ctest', '-R', 'ast_test|ast_error_test|errors_observer_test|exec_test|lexer_test|lexer_error_test|sema_test|source_location_manipulator_test']
+    command = ['ctest', '-R', '.*_cmakesl_test']
     subprocess.check_output(command, cwd=cmakesl_build_path)
 
     print('make install...')

@@ -5,7 +5,7 @@ function(cmsl_add_test)
     cmake_parse_arguments(CMSL_ADD_TEST "${options}" "${oneValueArgs}"
             "${multiValueArgs}" ${ARGN} )
 
-    set(test_name ${CMSL_ADD_TEST_NAME}_test)
+    set(test_name ${CMSL_ADD_TEST_NAME}_cmakesl_test)
 
     add_executable(${test_name} ${CMSL_ADD_TEST_SOURCES})
 
