@@ -1,5 +1,6 @@
 #include "errors/errors_observer.hpp"
 #include "cmake_facade.hpp"
+#include "common/assert.hpp"
 #include "errors/error.hpp"
 
 #include <iostream>
@@ -9,14 +10,19 @@ namespace {
 cmsl::string_view to_string(cmsl::errors::error_type type)
 {
   switch (type) {
-    case cmsl::errors::error_type::error:
+    case cmsl::errors::error_type::error: {
       return "error";
-    case cmsl::errors::error_type::warning:
+    }
+    case cmsl::errors::error_type::warning: {
       return "warning";
-    case cmsl::errors::error_type::note:
+    }
+    case cmsl::errors::error_type::note: {
       return "note";
-    default:
+    }
+    default: {
+      CMSL_UNREACHABLE("Unknown error type");
       return "<unknown>";
+    }
   }
 }
 }
