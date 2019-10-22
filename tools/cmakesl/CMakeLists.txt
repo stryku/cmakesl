@@ -17,4 +17,9 @@ target_link_libraries(cmakesl
         errors
 )
 
+target_compile_options(cmakesl
+    PRIVATE
+        ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
+)
+
 install(TARGETS cmakesl DESTINATION bin)

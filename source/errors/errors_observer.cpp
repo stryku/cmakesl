@@ -15,6 +15,8 @@ cmsl::string_view to_string(cmsl::errors::error_type type)
       return "warning";
     case cmsl::errors::error_type::note:
       return "note";
+    default:
+      return "<unknown>";
   }
 }
 }

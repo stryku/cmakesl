@@ -10,3 +10,8 @@ target_include_directories(errors_observer_mock
         "${gtest_SOURCE_DIR}/include"
         "${gmock_SOURCE_DIR}/include"
 )
+
+target_compile_options(errors_observer_mock
+    PRIVATE
+        ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
+)

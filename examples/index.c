@@ -18,9 +18,9 @@ const char* entry_type_to_string(enum cmsl_index_entry_type entry_type)
       return "operator function";
     case function_call_name:
       return "function call name";
+    default:
+      return "unknown";
   }
-
-  return "unknown";
 }
 
 int main(int argc, const char* argv[])

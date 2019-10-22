@@ -112,7 +112,6 @@ overload_resolution::match_result_variant_t overload_resolution::params_match(
 
   for (auto i = 0u; i < call_parameters.size(); ++i) {
     const auto& declared_param_type = signature.params[i].ty;
-    const auto& param_expression_type = call_parameters[i].get().type();
 
     variable_initialization_checker checker;
     const auto init_issues =

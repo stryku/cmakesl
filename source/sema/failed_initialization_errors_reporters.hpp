@@ -74,8 +74,7 @@ class function_return_value_failed_initialization_errors_reporter
 {
 public:
   function_return_value_failed_initialization_errors_reporter(
-    errors::errors_observer& errs, const sema_type& function_return_type,
-    const lexer::token& return_kw);
+    errors::errors_observer& errs, const lexer::token& return_kw);
 
   using designated_initializer_failed_initialization_errors_reporter::
   operator();
@@ -89,7 +88,6 @@ private:
   errors::error create_note_basics() const override;
 
 private:
-  const sema_type& m_function_return_type;
   const lexer::token& m_return_kw;
 };
 

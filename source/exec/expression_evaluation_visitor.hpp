@@ -51,7 +51,6 @@ public:
 
   void visit(const sema::id_node& node) override
   {
-    const auto str = node.names().back().name.str();
     result = m_ctx.ids_context.lookup_identifier(node.index());
   }
 
@@ -318,7 +317,7 @@ private:
   {
     std::vector<inst::instance*> evaluated_params;
 
-    for (auto i = 0; i < params.size(); ++i) {
+    for (auto i = 0u; i < params.size(); ++i) {
       const auto& expected_type = function.signature().params[i].ty;
       auto guard = set_expected_type(expected_type);
       auto param = evaluate_child(*params[i]);

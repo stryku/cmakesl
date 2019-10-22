@@ -21,10 +21,11 @@ builtin_context_base::builtin_context_base(
 {
 }
 
-type_builder builtin_context_base::add_type(const lexer::token& name_token)
+type_builder builtin_context_base::add_type_and_get_builder(
+  const lexer::token& name)
 {
   const auto name_representation =
-    ast::type_representation{ ast::qualified_name{ name_token } };
+    ast::type_representation{ ast::qualified_name{ name } };
   type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
                         name_representation };
   builder.build_builtin_and_register_in_context();

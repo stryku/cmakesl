@@ -22,8 +22,8 @@ public:
     facade::cmake_facade& cmake_facade,
     module_static_variables_initializer& module_variables_initializer)
     : m_function_caller{ caller }
-    , m_builtin_types{ builtin_types }
     , m_cmake_facade{ cmake_facade }
+    , m_builtin_types{ builtin_types }
     , m_module_variables_initializer{ module_variables_initializer }
   {
   }

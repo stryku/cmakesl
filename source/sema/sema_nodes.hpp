@@ -251,10 +251,10 @@ public:
     const ast::ast_node& ast_node, const sema_type& type, lexer::token name,
     std::unique_ptr<expression_node> initialization, unsigned index)
     : sema_node{ ast_node }
+    , m_index{ index }
     , m_type{ type }
     , m_name{ name }
     , m_initialization{ std::move(initialization) }
-    , m_index{ index }
   {
     if (initialization) {
       initialization->set_parent(*this, passkey{});
@@ -817,8 +817,8 @@ public:
   explicit namespace_node(const ast::ast_node& ast_node, names_t names,
                           nodes_t nodes)
     : sema_node{ ast_node }
-    , m_names{ std::move(names) }
     , m_nodes{ std::move(nodes) }
+    , m_names{ std::move(names) }
   {
     for (auto& node : m_nodes) {
       node->set_parent(*this, passkey{});

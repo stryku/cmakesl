@@ -505,7 +505,7 @@ void dumper::visit(const designated_initializers_node& node)
   auto ig = ident();
 
   const auto& inits = node.initializers();
-  for (auto i = 0; i < inits.size(); ++i) {
+  for (auto i = 0u; i < inits.size(); ++i) {
     const auto& init = inits[i];
     out() << "-initializer " << i;
     auto guard = ident();

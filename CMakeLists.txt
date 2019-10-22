@@ -10,6 +10,10 @@ set(CMAKESL_DOC_DIR ${CMAKESL_DIR}/doc)
 set(CMAKESL_SCRIPTS_DIR ${CMAKESL_DIR}/scripts)
 set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 
+if(NOT WIN32)
+    set(CMAKESL_ADDITIONAL_COMPILER_FLAGS -Wall -Werror)
+endif()
+
 include_directories(facade)
 add_subdirectory(source)
 

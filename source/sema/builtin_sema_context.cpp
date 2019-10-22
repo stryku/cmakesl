@@ -39,6 +39,7 @@ void builtin_sema_context::add_types()
   auto void_manipulator = add_void_type();
 
   const auto& [void_, _] = void_manipulator.built_type();
+  (void)_;
   const auto& [bool_, bool_ref] = bool_manipulator.built_type();
   const auto& [int_, int_ref] = int_manipulator.built_type();
   const auto& [double_, double_ref] = double_manipulator.built_type();
@@ -74,7 +75,7 @@ void builtin_sema_context::add_functions()
 type_builder builtin_sema_context::add_bool_type()
 {
   static const auto token = m_builtin_tokens.bool_().name();
-  return add_type(token);
+  return add_type_and_get_builder(token);
 }
 
 void builtin_sema_context::add_bool_member_functions(
@@ -136,7 +137,7 @@ void builtin_sema_context::add_bool_member_functions(
 type_builder builtin_sema_context::add_int_type()
 {
   static const auto token = m_builtin_tokens.int_().name();
-  return add_type(token);
+  return add_type_and_get_builder(token);
 }
 
 void builtin_sema_context::add_int_member_functions(
@@ -261,7 +262,7 @@ void builtin_sema_context::add_int_member_functions(
 type_builder builtin_sema_context::add_double_type()
 {
   static const auto token = m_builtin_tokens.double_().name();
-  return add_type(token);
+  return add_type_and_get_builder(token);
 }
 
 void builtin_sema_context::add_double_member_functions(
@@ -379,7 +380,7 @@ void builtin_sema_context::add_double_member_functions(
 type_builder builtin_sema_context::add_string_type()
 {
   static const auto token = m_builtin_tokens.string().name();
-  return add_type(token);
+  return add_type_and_get_builder(token);
 }
 
 void builtin_sema_context::add_string_member_functions(
@@ -584,18 +585,7 @@ void builtin_sema_context::add_string_member_functions(
 type_builder builtin_sema_context::add_void_type()
 {
   static const auto token = m_builtin_tokens.void_().name();
-  return add_type(token);
-}
-
-type_builder builtin_sema_context::add_type(lexer::token name_token)
-{
-  const auto name_representation =
-    ast::type_representation{ ast::qualified_name{ name_token } };
-
-  type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
-                        name_representation };
-  builder.build_builtin_and_register_in_context();
-  return builder;
+  return add_type_and_get_builder(token);
 }
 
 builtin_types_accessor builtin_sema_context::builtin_types() const

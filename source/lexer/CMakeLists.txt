@@ -20,3 +20,8 @@ target_link_libraries(lexer
         common
 )
 
+target_compile_options(lexer
+    PRIVATE
+        ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
+)
+

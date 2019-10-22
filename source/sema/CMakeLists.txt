@@ -104,3 +104,8 @@ target_link_libraries(sema
     PRIVATE
         ast
 )
+
+target_compile_options(sema
+    PRIVATE
+        ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
+)

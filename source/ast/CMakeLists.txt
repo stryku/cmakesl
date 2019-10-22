@@ -51,8 +51,18 @@ set(AST_SOURCES
 )
 
 add_library(ast "${AST_SOURCES}")
-target_include_directories(ast PRIVATE ${CMAKESL_SOURCES_DIR})
+
+target_include_directories(ast
+    PRIVATE
+        ${CMAKESL_SOURCES_DIR}
+)
+
 target_link_libraries(ast
     PUBLIC
         lexer
+)
+
+target_compile_options(ast
+    PRIVATE
+        ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
 )

@@ -59,11 +59,8 @@ std::optional<type_representation> type_parser::generic_type()
   type_representation::generic_type_name name{ std::move(tokens),
                                                { std::move(*value_type) } };
 
-  const auto is_reference = next_is(token_type_t::amp);
+  const auto is_reference = (try_eat(token_type_t::amp) != std::nullopt);
   if (is_reference) {
-    const auto ref_token = eat(token_type_t::amp);
-    type_representation::generic_type_name name{ std::move(tokens),
-                                                 { std::move(*value_type) } };
 
     return type_representation{ std::move(name),
                                 type_representation::is_reference_tag{} };
@@ -102,10 +99,8 @@ std::optional<type_representation> type_parser::simple_type()
     return {};
   }
 
-  const auto is_reference = current_is(token_type_t::amp);
+  const auto is_reference = (try_eat(token_type_t::amp) != std::nullopt);
   if (is_reference) {
-    const auto ref_token = eat(token_type_t::amp);
-    //    return type_representation{ *type_token, *ref_token };
     return type_representation{ *qualified_name,
                                 type_representation::is_reference_tag{} };
   }

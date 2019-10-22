@@ -12,7 +12,7 @@ class errors_observer;
 namespace sema {
 
 class builtin_token_provider;
-class builtin_types_accessor;
+struct builtin_types_accessor;
 class sema_generic_type_factory;
 class sema_context;
 class factories_provider;

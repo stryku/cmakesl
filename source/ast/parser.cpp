@@ -752,9 +752,7 @@ parser::get_member_function_call_values()
   std::move(*params);
 
   return member_function_call_values{
-    params->open_paren,
-    std::move(params->params),
-    params->close_paren,
+    { params->open_paren, std::move(params->params), params->close_paren },
     name,
   };
 }
@@ -774,10 +772,10 @@ parser::get_standalone_function_call_values()
     return std::nullopt;
   }
 
-  return standalone_function_call_values{ params->open_paren,
-                                          std::move(params->params),
-                                          params->close_paren,
-                                          std::move(*names) };
+  return standalone_function_call_values{
+    { params->open_paren, std::move(params->params), params->close_paren },
+    std::move(*names)
+  };
 }
 
 std::optional<std::vector<std::unique_ptr<ast_node>>>

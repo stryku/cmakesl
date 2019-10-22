@@ -32,3 +32,8 @@ target_link_libraries(cmsl_tools
     sema
     errors
 )
+
+target_compile_options(cmsl_tools
+    PRIVATE
+        ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
+)

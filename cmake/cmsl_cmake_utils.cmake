@@ -20,5 +20,10 @@ function(cmsl_add_test)
             ${CMSL_ADD_TEST_INCLUDE_DIRS}
     )
 
+    target_compile_options(${test_name}
+        PRIVATE
+            ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
+    )
+
     add_test(NAME ${test_name} COMMAND ${test_name})
 endfunction()
