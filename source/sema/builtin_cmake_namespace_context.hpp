@@ -9,7 +9,7 @@
 namespace cmsl::sema {
 class builtin_token_provider;
 class factories_provider;
-class qualified_contextes_refs;
+struct qualified_contextes_refs;
 class generic_type_creation_utils;
 struct cmake_namespace_types_accessor;
 class type_builder;

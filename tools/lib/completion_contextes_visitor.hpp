@@ -6,8 +6,8 @@ struct cmsl_parsed_source;
 struct cmsl_complete_results;
 
 namespace cmsl::tools {
-class standalone_expression_context;
-class could_not_find_context;
+struct standalone_expression_context;
+struct could_not_find_context;
 
 class completion_contextes_visitor
 {

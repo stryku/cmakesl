@@ -20,7 +20,7 @@ class builtin_token_provider;
 class factories_provider;
 enum class builtin_function_kind;
 class type_builder;
-class qualified_contextes_refs;
+struct qualified_contextes_refs;
 class generic_type_creation_utils;
 class builtin_cmake_namespace_context;
 
@@ -51,8 +51,6 @@ private:
   void add_functions();
 
   void add_cmake_namespace_context();
-
-  type_builder add_type(lexer::token name_token);
 
   type_builder add_bool_type();
   void add_bool_member_functions(type_builder& bool_manipulator);

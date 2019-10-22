@@ -112,10 +112,10 @@ void execution::execute_node(const sema::sema_node& node)
 {
   // Todo: consider introducing a visitor for such execution, instead of
   // dynamic casts.
-  if (auto ret_node = dynamic_cast<const sema::return_node*>(&node)) {
+  if (dynamic_cast<const sema::return_node*>(&node) != nullptr) {
     m_function_return_value = execute_infix_expression(node);
-  } else if (auto ret_node =
-               dynamic_cast<const sema::implicit_return_node*>(&node)) {
+  } else if (dynamic_cast<const sema::implicit_return_node*>(&node) !=
+             nullptr) {
 
     inst::instances_holder instances{ m_builtin_types };
     auto void_val = instances.create_void();

@@ -16,11 +16,11 @@ namespace sema {
 
 class type_builder;
 class sema_type;
-class qualified_contextes_refs;
+struct qualified_contextes_refs;
 class builtin_token_provider;
 class factories_provider;
-class function_signature;
-class builtin_types_accessor;
+struct function_signature;
+struct builtin_types_accessor;
 enum class builtin_function_kind;
 
 class builtin_context_base : public sema_context_impl
@@ -51,7 +51,7 @@ protected:
 
   using builtin_functions_t = std::vector<builtin_function_info>;
 
-  type_builder add_type(const lexer::token& name);
+  type_builder add_type_and_get_builder(const lexer::token& name);
 
   function_signature make_function_signature(
     const builtin_function_info& info) const;

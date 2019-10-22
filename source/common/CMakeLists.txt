@@ -14,7 +14,13 @@ set(COMMON_SOURCES
 )
 
 add_library(common "${COMMON_SOURCES}")
+
 target_include_directories(common
     PRIVATE
         ${CMAKESL_SOURCES_DIR}
+)
+
+target_compile_options(common
+    PRIVATE
+        ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
 )

@@ -77,3 +77,8 @@ target_link_libraries(exec
     PUBLIC
         sema
 )
+
+target_compile_options(exec
+    PRIVATE
+        ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
+)

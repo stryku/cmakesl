@@ -172,6 +172,7 @@ private:
               std::inserter(curr_entries, std::end(curr_entries)));
 
     for (const auto& [token, id] : imported_node.nodes) {
+      (void)token;
       const auto& node = imported_nodes_container[id];
       enter_global_node(node.name, exported);
       const auto node_merging_result =

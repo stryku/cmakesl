@@ -8,16 +8,12 @@
 
 namespace cmsl {
 namespace ast {
-class ast_context;
-
 class type;
 }
 
 namespace sema {
-class builtin_types_accessor;
-
+struct builtin_types_accessor;
 class sema_context;
-
 class sema_type;
 }
 

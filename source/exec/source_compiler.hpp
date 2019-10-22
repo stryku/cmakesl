@@ -18,7 +18,7 @@ class builtin_sema_context;
 class builtin_token_provider;
 class factories_provider;
 class import_handler;
-class qualified_contextes_refs;
+struct qualified_contextes_refs;
 }
 
 namespace exec {

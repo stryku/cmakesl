@@ -14,7 +14,7 @@ namespace sema {
 class factories_provider;
 class types_context;
 class sema_context;
-class builtin_types_accessor;
+struct builtin_types_accessor;
 
 class enum_creator
 {

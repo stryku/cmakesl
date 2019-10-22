@@ -136,10 +136,8 @@ errors::error function_call_parameters_failed_initializations_errors_reporter::
 
 function_return_value_failed_initialization_errors_reporter::
   function_return_value_failed_initialization_errors_reporter(
-    errors::errors_observer& errs, const sema_type& function_return_type,
-    const lexer::token& return_kw)
+    errors::errors_observer& errs, const lexer::token& return_kw)
   : designated_initializer_failed_initialization_errors_reporter{ errs }
-  , m_function_return_type{ function_return_type }
   , m_return_kw{ return_kw }
 {
 }

@@ -349,7 +349,7 @@ builtin_cmake_namespace_context::types_accessor() const
 type_builder builtin_cmake_namespace_context::add_version_type()
 {
   static const auto token = m_builtin_tokens.version().name();
-  return add_type(token);
+  return add_type_and_get_builder(token);
 }
 
 void builtin_cmake_namespace_context::add_version_member_functions(
@@ -439,7 +439,7 @@ void builtin_cmake_namespace_context::add_version_member_functions(
 type_builder builtin_cmake_namespace_context::add_library_type()
 {
   static const auto token = m_builtin_tokens.library().name();
-  return add_type(token);
+  return add_type_and_get_builder(token);
 }
 
 void builtin_cmake_namespace_context::add_library_member_functions(
@@ -500,7 +500,7 @@ type_builder builtin_cmake_namespace_context::add_executable_type()
 {
 
   static const auto token = m_builtin_tokens.executable().name();
-  return add_type(token);
+  return add_type_and_get_builder(token);
 }
 
 void builtin_cmake_namespace_context::add_executable_member_functions(
@@ -562,7 +562,7 @@ void builtin_cmake_namespace_context::add_executable_member_functions(
 type_builder builtin_cmake_namespace_context::add_project_type()
 {
   static const auto token = m_builtin_tokens.project().name();
-  return add_type(token);
+  return add_type_and_get_builder(token);
 }
 
 void builtin_cmake_namespace_context::add_project_member_functions(
@@ -610,7 +610,7 @@ void builtin_cmake_namespace_context::add_project_member_functions(
 type_builder builtin_cmake_namespace_context::add_option_type()
 {
   static const auto token = m_builtin_tokens.option().name();
-  return add_type(token);
+  return add_type_and_get_builder(token);
 }
 
 void builtin_cmake_namespace_context::add_option_member_functions(

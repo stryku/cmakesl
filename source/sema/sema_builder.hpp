@@ -19,20 +19,20 @@ class add_subdirectory_semantic_handler;
 class builtin_token_provider;
 class factories_provider;
 class import_handler;
-class qualified_contextes_refs;
+struct qualified_contextes_refs;
 class sema_context;
 class sema_node;
 
 class sema_builder
 {
 public:
-  explicit sema_builder(sema_context& ctx, errors::errors_observer& errs,
-                        qualified_contextes_refs& qualified_ctxs,
-                        factories_provider& factories,
-                        add_subdirectory_semantic_handler& add_subdirectory_handler,
-                        import_handler& imports_handler,
-                        const builtin_token_provider& builtin_token_provider,
-                        builtin_types_accessor builtin_types);
+  explicit sema_builder(
+    sema_context& ctx, errors::errors_observer& errs,
+    qualified_contextes_refs& qualified_ctxs, factories_provider& factories,
+    add_subdirectory_semantic_handler& add_subdirectory_handler,
+    import_handler& imports_handler,
+    const builtin_token_provider& builtin_token_provider,
+    builtin_types_accessor builtin_types);
 
   std::unique_ptr<sema_node> build(const ast::ast_node& ast_tree);
 

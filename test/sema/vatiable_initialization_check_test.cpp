@@ -254,6 +254,7 @@ TEST_F(VariableInitializationCheck,
        NonReferenceFromDesignatedInitializers_NoMember_ReturnsMemberNotFound)
 {
   auto [initializer, _] = member_initializer(token_identifier("member_foo"));
+  std::ignore = _;
 
   designated_initializers_node::initializers_t inits;
   inits.emplace_back(std::move(initializer));
@@ -300,6 +301,7 @@ TEST_F(
   auto [first_member_init, first_member_init_initialization_ptr] =
     member_initializer(member_name);
   auto [second_member_init, _] = member_initializer(member_name);
+  std::ignore = _;
 
   inits.emplace_back(std::move(first_member_init));
   inits.emplace_back(std::move(second_member_init));

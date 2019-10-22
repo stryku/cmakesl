@@ -6,19 +6,19 @@
 #include <unordered_map>
 
 namespace cmsl::sema {
-struct bool_tokens_provider;
-struct double_tokens_provider;
-struct executable_tokens_provider;
-struct library_tokens_provider;
-struct extern_tokens_provider;
-struct list_tokens_provider;
-struct project_tokens_provider;
-struct int_tokens_provider;
-struct string_tokens_provider;
-struct version_tokens_provider;
-struct void_tokens_provider;
-struct option_tokens_provider;
-struct cmake_tokens_provider;
+class bool_tokens_provider;
+class double_tokens_provider;
+class executable_tokens_provider;
+class library_tokens_provider;
+class extern_tokens_provider;
+class list_tokens_provider;
+class project_tokens_provider;
+class int_tokens_provider;
+class string_tokens_provider;
+class version_tokens_provider;
+class void_tokens_provider;
+class option_tokens_provider;
+class cmake_tokens_provider;
 
 // An instance of this class has to live for the whole program execution.
 // String views to paths are used later by sema and execution.

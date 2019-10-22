@@ -5,7 +5,7 @@
 #include <memory>
 
 namespace cmsl::sema {
-class qualified_contextes;
+struct qualified_contextes;
 
 class import_handler
 {
