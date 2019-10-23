@@ -54,7 +54,7 @@ int main()
 
 # Tools
 CMakeSL is written with tooling in mind. While you can use doxygen, clang-format and possibly other tools out-of-the-box,
-tools that require language semantic (e.g. clang's code completion) will not work (because e.g. CMakeSL's fundamental types are in fact classes, with methods).
+other tools that require language semantic (e.g. clang's code completion) will not work (because e.g. CMakeSL's fundamental types are in fact classes, with methods).
 That's why, CMakeSL provides its own tools for indexing and code completion.
 Indexer and completer are parts of [cmsl_tools](https://github.com/stryku/cmakesl/tree/master/tools/lib) library. The library has C language interface, so it can be used pretty much everywhere.
 
