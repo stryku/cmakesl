@@ -253,7 +253,7 @@ void sema_builder_ast_visitor::visit(const ast::class_member_access_node& node)
   }
 
   m_result_node = std::make_unique<class_member_access_node>(
-    node, std::move(lhs), *member_info);
+    node, std::move(lhs), member_name, *member_info);
 }
 
 std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
@@ -303,8 +303,8 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
 
   switch (chosen_function->context().type()) {
     case sema_context::context_type::namespace_: {
-      return std::make_unique<function_call_node>(node, *chosen_function,
-                                                  std::move(*params));
+      return std::make_unique<function_call_node>(
+        node, *chosen_function, std::move(*params), node.name());
     } break;
     case sema_context::context_type::class_: {
       const auto& name = chosen_function->return_type().name();
@@ -316,10 +316,10 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
       if (is_constructor) {
         return std::make_unique<constructor_call_node>(
           node, chosen_function->return_type(), *chosen_function,
-          std::move(*params));
+          std::move(*params), node.name());
       } else {
         return std::make_unique<implicit_member_function_call_node>(
-          node, *chosen_function, std::move(*params));
+          node, *chosen_function, std::move(*params), node.name());
       }
     } break;
 
@@ -368,7 +368,7 @@ sema_builder_ast_visitor::build_add_subdirectory_call(
       -> std::unique_ptr<expression_node> {
       return std::make_unique<add_subdirectory_node>(
         node, std::move(name_string_node), *val.main_function,
-        std::move(params_but_name));
+        std::move(params_but_name), node.name());
     },
     [&](
       const add_subdirectory_semantic_handler::contains_old_cmake_script& val)
@@ -419,7 +419,7 @@ void sema_builder_ast_visitor::visit(
                                                 std::move(*params));
 
   m_result_node = std::make_unique<member_function_call_node>(
-    node, std::move(lhs), *chosen_function, std::move(*params));
+    node, std::move(lhs), *chosen_function, std::move(*params), node.name());
 }
 
 void sema_builder_ast_visitor::visit(const ast::bool_value_node& node)

@@ -2,14 +2,19 @@ include(${CMAKESL_DIR}/cmake/cmsl_cmake_utils.cmake)
 
 cmsl_add_test(
     NAME
-        lexer
+        indexer_smoke
     SOURCES
-        lexer_test.cpp
+        indexer_test.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
         ${CMAKESL_FACADE_SOURCES_DIR}
+        ${CMAKESL_TESTS_DIR}
+        ${CMAKESL_DIR}
     LIBRARIES
         lexer
-        errors
+        ast
+        sema
+        errors_observer_mock
+        cmsl_tools
+        tests_common
 )
-

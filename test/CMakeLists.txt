@@ -12,6 +12,10 @@ add_subdirectory(lexer_error)
 add_subdirectory(sema)
 add_subdirectory(source_location_manipulator)
 
+if(CMAKESL_WITH_TOOLS)
+    add_subdirectory(tools)
+endif()
+
 if(NOT WIN32)
     add_custom_target(RUN_ALL_TEST COMMAND ${CMAKE_CTEST_COMMAND})
 endif()

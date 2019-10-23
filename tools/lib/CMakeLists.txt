@@ -15,6 +15,8 @@ set(CMSL_TOOLS_SOURCES
     completion_contextes_visitor.hpp
     identifier_names_collector.cpp
     identifier_names_collector.hpp
+    indexing_visitor.cpp
+    indexing_visitor.hpp
     type_names_collector.cpp
     type_names_collector.hpp
 )
@@ -29,8 +31,8 @@ target_include_directories(cmsl_tools
 
 target_link_libraries(cmsl_tools 
     PRIVATE
-    sema
-    errors
+        sema
+        errors
 )
 
 target_compile_options(cmsl_tools

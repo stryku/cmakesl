@@ -258,7 +258,8 @@ TEST_F(ExpressionEvaluationVisitorTest,
   param_expressions.emplace_back(std::move(param_expression_0));
   param_expressions.emplace_back(std::move(param_expression_1));
   sema::function_call_node node{ ast_node, function,
-                                 std::move(param_expressions) };
+                                 std::move(param_expressions),
+                                 fun_name_token };
 
   EXPECT_CALL(m_ids_ctx, lookup_identifier(_))
     .WillOnce(Return(&param_instance_0))
@@ -319,8 +320,8 @@ TEST_F(
   param_expressions.emplace_back(std::move(param_expression_1));
 
   sema::member_function_call_node node{ ast_node, std::move(lhs_expression),
-                                        function,
-                                        std::move(param_expressions) };
+                                        function, std::move(param_expressions),
+                                        fun_name_token };
 
   sema::function_signature signature;
   signature.name = fun_name_token;
@@ -384,8 +385,8 @@ TEST_F(
   param_expressions.emplace_back(std::move(param_expression_1));
 
   sema::member_function_call_node node{ ast_node, std::move(lhs_expression),
-                                        function,
-                                        std::move(param_expressions) };
+                                        function, std::move(param_expressions),
+                                        fun_name_token };
 
   sema::function_signature signature;
   signature.name = fun_name_token;
@@ -434,7 +435,7 @@ TEST_F(ExpressionEvaluationVisitorTest,
   sema::member_info member{ member_name_token, valid_type };
 
   sema::class_member_access_node node{ ast_node, std::move(lhs_expression),
-                                       std::move(member) };
+                                       member_name_token, std::move(member) };
 
   EXPECT_CALL(m_ids_ctx, lookup_identifier(_)).WillOnce(Return(&lhs_instance));
 
