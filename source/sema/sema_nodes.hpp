@@ -768,6 +768,15 @@ public:
   const sema_type& type() const override { return m_type; }
   virtual bool produces_temporary_value() const override { return true; }
 
+  source_location begin_location() const override
+  {
+    return ast_node().end_location();
+  }
+  source_location end_location() const override
+  {
+    return ast_node().end_location();
+  }
+
   VISIT_METHOD
 
 private:

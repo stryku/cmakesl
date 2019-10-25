@@ -23,8 +23,8 @@ public:
   virtual ~sema_node() = default;
 
   virtual void visit(sema_node_visitor& visitor) const = 0;
-  source_location begin_location() const;
-  source_location end_location() const;
+  virtual source_location begin_location() const;
+  virtual source_location end_location() const;
   const ast::ast_node& ast_node() const;
   const sema_node* parent() const;
   void set_parent(const sema_node& node, passkey);

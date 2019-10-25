@@ -24,6 +24,7 @@ private:
   bool is_before(const sema::sema_node& node) const;
   bool is_pos_before_node_begin(const sema::sema_node& node) const;
 
+private:
   const source_location m_pos;
   completion_context_t m_result;
 };

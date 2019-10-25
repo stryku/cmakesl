@@ -83,11 +83,6 @@ private:
   std::unique_ptr<inst::instance> execute_infix_expression(
     const sema::sema_type& expected_type, const sema::sema_node& node);
 
-  bool is_call_of_add_subdirectory_with_cmakesl_script() const;
-
-  void execute_add_subdirectory_with_cmakesl_script(
-    const sema::sema_function& fun);
-
 private:
   struct callstack_frame
   {
