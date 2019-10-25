@@ -1,0 +1,9 @@
+DOXYFILE_ENCODING      = UTF-8
+PROJECT_NAME           = "CMakeSL builtin types documentation"
+EXTENSION_MAPPING      = .cmsl=C++
+CASE_SENSE_NAMES       = YES
+FILE_PATTERNS          = *.cmsl
+GENERATE_LATEX         = NO
+
+OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/builtin/
