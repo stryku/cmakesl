@@ -4,6 +4,7 @@ EXTENSION_MAPPING      = .cmsl=C++
 CASE_SENSE_NAMES       = YES
 FILE_PATTERNS          = *.cmsl
 GENERATE_LATEX         = NO
+WARN_AS_ERROR          = YES
 
 OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/
 INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/builtin/

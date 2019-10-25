@@ -57,7 +57,6 @@ public:
 
   /** \brief An and operator.
    *
-   * \param rhs The second value to be checked.
    * \return true if lhs and rhs hold true value, false, otherwise.
    */
   bool operator!();

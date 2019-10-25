@@ -182,7 +182,7 @@ enum system_id
  */
 struct system_info
 {
-  system_id id;
+  system_id id; ///< The id of the system.
 };
 
 /** \brief A system information getter.
