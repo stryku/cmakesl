@@ -22,18 +22,28 @@ int complete_and_print_results(struct cmsl_parsed_source* parsed_source,
 
 int main()
 {
-  const char* source =
-    "class hello_complete_world {}; int foo() {} int bar;  int main(int "
-    "param_1, list<string> param_2) {  } int baz() {} class last_class {  };";
+  const char* source = "class hello_complete_world"
+                       "{};"
+                       ""
+                       "int foo() {}"
+                       ""
+                       "int bar;"
+                       ""
+                       "int main(int param_1, list<string> param_2) {}"
+                       ""
+                       "int baz() {}"
+                       ""
+                       "class last_class"
+                       "{};";
 
   struct cmsl_parsed_source* parsed_source = cmsl_parse_source(source, NULL);
   if (!parsed_source) {
     return 1;
   }
 
-  const unsigned before_main_declaration_pos = 54u;
-  const unsigned main_body_pos = 100u;
-  const unsigned last_class_body_pos = 135u;
+  const unsigned before_main_declaration_pos = 49u;
+  const unsigned main_body_pos = 94u;
+  const unsigned last_class_body_pos = 124u;
 
   printf("Completion just before the main function: \n");
   if (complete_and_print_results(parsed_source, before_main_declaration_pos) !=
