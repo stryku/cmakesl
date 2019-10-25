@@ -40,3 +40,8 @@ if (CMAKESL_WITH_TESTS)
     add_subdirectory(external/googletest EXCLUDE_FROM_ALL)
     add_subdirectory(test)
 endif ()
+
+option(CMAKESL_WITH_DOCS "When ON, documentation will be built" OFF)
+if (CMAKESL_WITH_DOCS)
+    add_subdirectory(doc)
+endif ()
