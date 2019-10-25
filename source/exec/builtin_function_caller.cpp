@@ -124,6 +124,8 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_greater_equal);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_plus);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_plus_equal);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_slash);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_operator_slash_equal);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_clear);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_insert_pos_str);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_erase_pos);
@@ -789,6 +791,25 @@ inst::instance* builtin_function_caller::string_operator_plus_equal(
   auto& lhs = instance.value_accessor().access().get_string_ref();
   const auto& [rhs] = get_params<alternative_t::string>(params);
 
+  lhs += rhs;
+  return m_instances.create_reference(instance);
+}
+
+inst::instance* builtin_function_caller::string_operator_slash(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& lhs = instance.value_cref().get_string_cref();
+  const auto& [rhs] = get_params<alternative_t::string>(params);
+  return m_instances.create(lhs + "/" + rhs);
+}
+
+inst::instance* builtin_function_caller::string_operator_slash_equal(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  auto& lhs = instance.value_accessor().access().get_string_ref();
+  const auto& [rhs] = get_params<alternative_t::string>(params);
+
+  lhs += "/";
   lhs += rhs;
   return m_instances.create_reference(instance);
 }

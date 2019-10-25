@@ -166,6 +166,10 @@ private:
                                        const params_t& params);
   inst::instance* string_operator_plus_equal(inst::instance& instance,
                                              const params_t& params);
+  inst::instance* string_operator_slash(inst::instance& instance,
+                                       const params_t& params);
+  inst::instance* string_operator_slash_equal(inst::instance& instance,
+                                             const params_t& params);
   inst::instance* string_ctor_string_count(inst::instance& instance,
                                            const params_t& params);
   inst::instance* string_clear(inst::instance& instance,

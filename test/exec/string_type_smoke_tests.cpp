@@ -173,6 +173,31 @@ TEST_F(StringTypeSmokeTest, OperatorPlusEqual)
   EXPECT_THAT(result, Eq(1));
 }
 
+TEST_F(StringTypeSmokeTest, OperatorSlash)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo\";"
+                      "    string s2 = \"bar\";"
+                      "    string s3 = \"foo/bar\";"
+                      "    return int(s3 == \"foo\" / \"bar\");"
+                      "}";
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(1));
+}
+
+TEST_F(StringTypeSmokeTest, OperatorSlashEqual)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    string s = \"foo\";"
+                      "    s /= \"bar\";"
+                      "    return int(s == \"foo/bar\");"
+                      "}";
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(1));
+}
+
 TEST_F(StringTypeSmokeTest, Clear)
 {
   const auto source = "int main()"

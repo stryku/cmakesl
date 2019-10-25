@@ -96,6 +96,8 @@ enum class builtin_function_kind
   string_operator_greater_equal,
   string_operator_plus,
   string_operator_plus_equal,
+  string_operator_slash,
+  string_operator_slash_equal,
   string_clear,
   string_insert_pos_str,
   string_erase_pos,

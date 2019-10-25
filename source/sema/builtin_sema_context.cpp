@@ -455,6 +455,18 @@ void builtin_sema_context::add_string_member_functions(
                            string_reference_type,
                            token_provider.operator_plus_equal(),
                            { string_type } },
+
+    builtin_function_info{ // string operator/(string)
+                           builtin_function_kind::string_operator_slash,
+                           string_type,
+                           token_provider.operator_slash(),
+                           { string_type } },
+    builtin_function_info{ // string& operator/=(string)
+                           builtin_function_kind::string_operator_slash_equal,
+                           string_reference_type,
+                           token_provider.operator_slash_equal(),
+                           { string_type } },
+
     // Todo: clear could return a reference
     builtin_function_info{ // void clear()
                            builtin_function_kind::string_clear, void_type,

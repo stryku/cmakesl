@@ -136,6 +136,8 @@ GENERATION_INFO = {
             'operator_greater_equal': ['bool operator>=(string rhs);', 'bool operator', '>='],
             'operator_plus': ['string operator+(string rhs);', 'string operator', '+'],
             'operator_plus_equal': ['string& operator+=(string rhs);', 'string& operator', '+='],
+            'operator_slash': ['string operator/(string rhs);', 'string operator', '/'],
+            'operator_slash_equal': ['string& operator/=(string rhs);', 'string& operator', '/='],
             'clear': ['void clear();', 'void ', 'clear'],
             'insert': ['string& insert(int position, string str);', 'string& ', 'insert'],
             'erase_pos': ['string& erase(int position);', 'string& ', 'erase'],

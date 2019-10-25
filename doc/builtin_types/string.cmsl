@@ -82,6 +82,19 @@ public:
    */
   string& operator+=(string rhs);
 
+
+  /** @brief Concatenates the lhs string with a slash symbol and the rhs string
+   *
+   * @return A string containing combined paths
+   */
+  string operator/(string rhs);
+
+  /** @brief Appends the lhs string with a slash symbol and the rhs string
+   *
+   * @return A reference to the lhs instance
+   */
+  string& operator/=(string rhs);
+
   /** @brief Clears currently held value.
    */
   void clear();

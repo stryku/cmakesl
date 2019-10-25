@@ -1,4 +1,5 @@
 build/*
+b/*
 cmake-build-*
 .idea/*
 *.user
