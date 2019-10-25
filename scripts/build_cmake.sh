@@ -2,26 +2,24 @@
 
 COMPILER=$1
 
-# Clone CMake codebase
-git clone https://gitlab.kitware.com/cmake/cmake.git
+# Clone CMake codebase.
+git clone https://github.com/stryku/cmake_for_cmakesl cmake
 cd cmake
+# CMakeSL bases on this particular branch.
+git checkout cmakesl
 
-# CMakeSL bases on this particular release
-git checkout v3.14.3
-
-# Clone CMakeSL in the `Source` directory
+# Clone CMakeSL in the `Source` directory.
 cd Source
 git clone https://github.com/stryku/cmakesl
+cd cmakesl
+# Checkout to a specific version if need. If not checked out, trunk will be built.
+# git checkout v0.0
 
-# Apply needed changes to CMake code
+# Build CMake. C++17 compiler is required.
 cd ..
-git apply Source/cmakesl/cmake_integration/cmake_changes.patch
-
-# Build CMake. C++17 compiler is required
-cd ..
-mkdir build
-mkdir install
+mkdir build install
 cd build
 cmake ../cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_INSTALL_PREFIX=../install
 make install -j
 cd ..
+# Now, in install/bin you have the `cmake` binary that supports CMakeSL.
