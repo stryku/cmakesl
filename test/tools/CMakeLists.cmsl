@@ -1,0 +1,4 @@
+void main(cmake::project& p)
+{
+  add_subdirectory("smoke", p);
+}

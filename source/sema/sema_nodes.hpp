@@ -283,10 +283,12 @@ public:
   using param_expressions_t = std::vector<std::unique_ptr<expression_node>>;
 
   explicit call_node(const ast::ast_node& ast_node,
-                     const sema_function& function, param_expressions_t params)
+                     const sema_function& function, param_expressions_t params,
+                     const token_t& call_name)
     : expression_node{ ast_node }
     , m_function{ function }
     , m_params{ std::move(params) }
+    , m_call_name{ call_name }
   {
     for (auto& param : m_params) {
       param->set_parent(*this, passkey{});
@@ -297,7 +299,9 @@ public:
 
   const param_expressions_t& param_expressions() const { return m_params; }
 
-  lexer::token name() const { return m_function.signature().name; }
+  const lexer::token& name() const { return m_function.signature().name; }
+
+  const lexer::token& call_name() const { return m_call_name; }
 
   const sema_function& function() const { return m_function; }
 
@@ -309,6 +313,7 @@ public:
 private:
   const sema_function& m_function;
   param_expressions_t m_params;
+  token_t m_call_name;
 };
 
 class function_call_node : public call_node
@@ -316,8 +321,9 @@ class function_call_node : public call_node
 public:
   explicit function_call_node(const ast::ast_node& ast_node,
                               const sema_function& function,
-                              param_expressions_t params)
-    : call_node{ ast_node, function, std::move(params) }
+                              param_expressions_t params,
+                              const token_t& call_name)
+    : call_node{ ast_node, function, std::move(params), call_name }
   {
   }
 
@@ -330,8 +336,9 @@ public:
   explicit member_function_call_node(const ast::ast_node& ast_node,
                                      std::unique_ptr<expression_node> lhs,
                                      const sema_function& function,
-                                     param_expressions_t params)
-    : call_node{ ast_node, function, std::move(params) }
+                                     param_expressions_t params,
+                                     const token_t& call_name)
+    : call_node{ ast_node, function, std::move(params), call_name }
     , m_lhs{ std::move(lhs) }
   {
     m_lhs->set_parent(*this, passkey{});
@@ -350,8 +357,9 @@ class implicit_member_function_call_node : public call_node
 public:
   explicit implicit_member_function_call_node(const ast::ast_node& ast_node,
                                               const sema_function& function,
-                                              param_expressions_t params)
-    : call_node{ ast_node, function, std::move(params) }
+                                              param_expressions_t params,
+                                              const token_t& call_name)
+    : call_node{ ast_node, function, std::move(params), call_name }
   {
   }
 
@@ -364,8 +372,9 @@ public:
   explicit constructor_call_node(const ast::ast_node& ast_node,
                                  const sema_type& class_type,
                                  const sema_function& function,
-                                 param_expressions_t params)
-    : call_node{ ast_node, function, std::move(params) }
+                                 param_expressions_t params,
+                                 const token_t& call_name)
+    : call_node{ ast_node, function, std::move(params), call_name }
     , m_class_type{ class_type }
   {
   }
@@ -384,8 +393,9 @@ public:
   explicit add_subdirectory_node(
     const ast::ast_node& ast_node,
     std::unique_ptr<string_value_node> directory_name,
-    const sema_function& function, param_expressions_t params)
-    : call_node{ ast_node, function, std::move(params) }
+    const sema_function& function, param_expressions_t params,
+    const token_t& call_name)
+    : call_node{ ast_node, function, std::move(params), call_name }
     , m_directory_name{ std::move(directory_name) }
   {
     m_directory_name->set_parent(*this, passkey{});
@@ -604,9 +614,11 @@ class class_member_access_node : public expression_node
 public:
   explicit class_member_access_node(const ast::ast_node& ast_node,
                                     std::unique_ptr<expression_node> lhs,
+                                    const token_t& member_access_name,
                                     member_info member_info)
     : expression_node{ ast_node }
     , m_lhs{ std::move(lhs) }
+    , m_member_access_name{ member_access_name }
     , m_member_info{ member_info }
   {
     m_lhs->set_parent(*this, passkey{});
@@ -618,13 +630,18 @@ public:
 
   bool produces_temporary_value() const override { return false; }
 
-  lexer::token member_name() const { return m_member_info.name; }
+  const lexer::token& member_name() const { return m_member_info.name; }
+  const lexer::token& member_access_name() const
+  {
+    return m_member_access_name;
+  }
   unsigned member_index() const { return m_member_info.index; }
 
   VISIT_METHOD
 
 private:
   std::unique_ptr<expression_node> m_lhs;
+  token_t m_member_access_name;
   member_info m_member_info;
 };
 

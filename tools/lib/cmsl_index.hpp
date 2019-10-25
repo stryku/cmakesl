@@ -14,7 +14,8 @@ enum cmsl_index_entry_type
   class_member_identifier,
   operator_function,
   function_call_name,
-  namespace_
+  namespace_,
+  enum_value
 };
 
 struct cmsl_index_entry
