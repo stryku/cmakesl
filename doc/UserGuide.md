@@ -285,11 +285,16 @@ export class baz
 };
 ```
 
+# Mixing CMakeSL with 'old' CMake
+CMakeSL can be mixed with CMake at directories level. In short, in a `CMakeLists.cmsl` you can call `add_subdirectory()` with a subdirectory that contains 'old' `CMakeLists.txt`. It works (well, not exactly, it'll fully work soon) also the other way - in 'old' `CMakeLists.txt` you can call `add_subdirectory()` with a `CMakeLists.cmsl` script.
+
+Please see [the root CMakeLists.cmsl](https://github.com/stryku/cmakesl/tree/master/CMakeLists.cmsl). There is a call `add_subdirectory("external/googletest")` which add the whole googletest library, that is later on used in the CMakeSL tests.
+
 
 # Examples
 
 ## Hello world
-That's the simplest CMakeSL script.
+A simple CMakeSL script:
 ```cpp
 int main()
 {
@@ -298,7 +303,7 @@ int main()
 }
 ```
 
-Here's one that actually does something useful.
+Here's one that actually does something useful:
 ```cpp
 int main()
 {
