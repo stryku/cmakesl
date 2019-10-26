@@ -1,16 +1,14 @@
 int main()
 {
-    cmake_minimum_required(version(3, 14, 3));
-    
-    project hello_world = project("Hello World");
-    
-    library lib = add_subdirectory("lib", hello_world);
+  cmake::minimum_required(cmake::version(3, 14, 3));
 
-    list<string> sources = {
-        "main.cpp"
-    };
-    executable exec = hello_world.add_executable("hw_exec", sources);
-    exec.link_to(lib);
-    
-    return 0;
+  auto hello_world = cmake::project("Hello World");
+
+  auto lib = add_subdirectory("lib", hello_world);
+
+  auto sources = { "main.cpp" };
+  auto exec = hello_world.add_executable("hw_exec", sources);
+  exec.link_to(lib);
+
+  return 0;
 }

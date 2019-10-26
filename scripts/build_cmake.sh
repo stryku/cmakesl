@@ -13,7 +13,7 @@ cd Source
 git clone https://github.com/stryku/cmakesl
 
 # Build CMake. C++17 compiler is required.
-cd ..
+cd ../..
 mkdir build install
 cd build
 cmake ../cmake -DCMAKE_CXX_COMPILER=$COMPILER -DCMAKE_INSTALL_PREFIX=../install

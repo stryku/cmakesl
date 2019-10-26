@@ -1,8 +1,5 @@
-
-library main(project& hw_project)
+auto main(cmake::project& hw_project)
 {
-    list<string> sources = {
-        "lib.cpp"
-    };
-    return hw_project.add_library("lib", sources);
+  auto sources = { "lib.cpp" };
+  return hw_project.add_library("lib", sources);
 }
