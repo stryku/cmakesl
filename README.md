@@ -255,6 +255,16 @@ chmod +x build_cmake.sh
 ./build_cmake.sh clang++-7
 ```
 
+With the `cmake` binary that supports CMakeSL execution, the [cmsl_example](https://github.com/stryku/cmakesl/tree/master/examples/cmsl_example) can be built.
+```sh
+cd install/bin
+cp -r ../../cmake/Source/cmakesl/examples/cmsl_example .
+mkdir build && cd build
+./../cmake ../cmsl_example
+make -j
+./hw_exec
+```
+
 
 # Dependencies
 The only dependencies that CMakeSL needs is C++17 and python3. No external C++ libraries are used.
