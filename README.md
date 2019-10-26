@@ -240,7 +240,7 @@ cd ../..
 mkdir build install
 cd build
 cmake ../cmake -DCMAKE_CXX_COMPILER=<compiler supporting C++17> -DCMAKE_INSTALL_PREFIX=../install
-make install -j
+make install -j$(nproc)
 cd ..
 # Now, in install/bin you have the `cmake` binary that supports CMakeSL.
 
@@ -249,7 +249,7 @@ cd install/bin
 cp -r ../../cmake/Source/cmakesl/examples/cmsl_example .
 mkdir build && cd build
 ./../cmake ../cmsl_example
-make -j
+make -j$(nproc)
 ./hw_exec
 ```
 
@@ -266,7 +266,7 @@ cd install/bin
 cp -r ../../cmake/Source/cmakesl/examples/cmsl_example .
 mkdir build && cd build
 ./../cmake ../cmsl_example
-make -j
+make -j$(nproc)
 ./hw_exec
 ```
 
