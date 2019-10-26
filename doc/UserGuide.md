@@ -288,7 +288,7 @@ export class baz
 # Mixing CMakeSL with 'old' CMake
 CMakeSL can be mixed with CMake at directories level. In short, in a `CMakeLists.cmsl` you can call `add_subdirectory()` with a subdirectory that contains 'old' `CMakeLists.txt`. It works (well, not exactly, it'll fully work soon) also the other way - in 'old' `CMakeLists.txt` you can call `add_subdirectory()` with a `CMakeLists.cmsl` script.
 
-Please see [the root CMakeLists.cmsl](https://github.com/stryku/cmakesl/tree/master/CMakeLists.cmsl). There is a call `add_subdirectory("external/googletest")` which add the whole googletest library, that is later on used in the CMakeSL tests.
+Please see [the root CMakeLists.cmsl](https://github.com/stryku/cmakesl/blob/master/CMakeLists.cmsl#L41). There is a call `add_subdirectory("external/googletest")` which adds the whole googletest library that is later on used in the CMakeSL tests.
 
 
 # Examples
@@ -307,7 +307,7 @@ Here's one that actually does something useful:
 ```cpp
 int main()
 {
-    cmake::minimum_required(version(3,14,3))
+    cmake::minimum_required(cmake::version(3, 14, 3))
 
     cmake::project hello_world = cmake::project("Hello world");
 
@@ -343,16 +343,15 @@ Files structure:
 ```cpp
 int main()
 {
-    cmake::minimum_required(version(3, 0, 0, 0));
+    cmake::minimum_required(cmake::version(3, 14));
 
-    cmake::project hello_world = cmake::project("Hello world");
+    auto hello_world = cmake::project("Hello world");
 
     auto lib = add_subdirectory("lib", hello_world);
 
-    list<string> sources = {
-        "main.cpp"
-    };
+    auto sources = { "main.cpp" };
     auto exec = hello_world.add_executable("hw_exec", sources);
+
     exec.link_to(lib);
 
     return 0;
@@ -363,9 +362,7 @@ int main()
 ```cpp
 cmake::library main(cmake::project& top_lvl_project)
 {
-    list<string> sources = {
-        "lib.cpp"
-    };
+    auto sources = { "lib.cpp" };
     return top_lvl_project.add_library("hw_lib", sources);
 }
 

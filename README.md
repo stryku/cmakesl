@@ -147,7 +147,7 @@ entry type: function call name, source begin: 228, source end: 238, destination 
               ^^^^^^^^^^
 ```
 
-As you can see, entries give all information that are needed to jump to the entry declaration: begin and end of the entry in the source, destination position and file of where you'd need to jump. For builtin stuff, it gives the path to the builtin type documentation file, so implementing in-editor documentation support is very straightforward.
+As you can see, entries carry all information that are needed to jump to the entry declaration: begin and end of the entry in the source, destination position and file of where you'd need to jump. For builtin stuff, it gives the path to the builtin type documentation file, so implementing in-editor documentation support is very straightforward.
 
 See [the index.c example implementation](examples/index.c) for details.
 
@@ -240,7 +240,7 @@ chmod +x build_cmake.sh
 
 
 ## Dependencies
-The only dependencies that CMakeSL needs is C++17 and python3. No external libraries are used.
+The only dependencies that CMakeSL needs is C++17 and python3. No external C++ libraries are used.
 
 
 ## Contribution
