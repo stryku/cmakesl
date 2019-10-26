@@ -234,18 +234,23 @@ git checkout cmakesl
 # Clone CMakeSL in the `Source` directory.
 cd Source
 git clone https://github.com/stryku/cmakesl
-cd cmakesl
-# Checkout to a specific version if need. If not checked out, trunk will be built.
-# git checkout v0.0
 
 # Build CMake. C++17 compiler is required.
-cd ..
+cd ../..
 mkdir build install
 cd build
 cmake ../cmake -DCMAKE_CXX_COMPILER=<compiler supporting C++17> -DCMAKE_INSTALL_PREFIX=../install
 make install -j
 cd ..
 # Now, in install/bin you have the `cmake` binary that supports CMakeSL.
+
+# Build the cmsl_example
+cd install/bin
+cp -r ../../cmake/Source/cmakesl/examples/cmsl_example .
+mkdir build && cd build
+./../cmake ../cmsl_example
+make -j
+./hw_exec
 ```
 
 An alternative way to build CMake is to use a ready-made script from the [scripts/](https://github.com/stryku/cmakesl/tree/master/scripts) directory:
