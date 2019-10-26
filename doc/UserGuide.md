@@ -1,5 +1,33 @@
 # CMakeSL User guide
 
+Table of Contents
+=================
+
+   * [CMakeSL User guide](#cmakesl-user-guide)
+      * [CMakeLists.txt vs CMakeLists.cmsl](#cmakeliststxt-vs-cmakelistscmsl)
+      * [Entry point of scripts execution](#entry-point-of-scripts-execution)
+   * [Builtin types](#builtin-types)
+      * [void](#void)
+      * [bool](#bool)
+      * [int](#int)
+      * [double](#double)
+      * [string](#string)
+      * [extern](#extern)
+      * [list](#list)
+      * [cmake::option](#cmakeoption)
+      * [cmake::version](#cmakeversion)
+      * [project](#project)
+      * [library](#library)
+      * [executable](#executable)
+   * [User types](#user-types)
+   * [Type deduction](#type-deduction)
+   * [Designated initializers](#designated-initializers)
+   * [Import/export](#importexport)
+   * [Mixing CMakeSL with 'old' CMake](#mixing-cmakesl-with-old-cmake)
+   * [Examples](#examples)
+      * [Hello world](#hello-world)
+      * [More complex example](#more-complex-example)
+
 ## CMakeLists.txt vs CMakeLists.cmsl
 CMake binary expects that CMakeSL scripts are named `CMakeLists.cmsl`. Based on extension (`cmsl` not `txt`) it knows that the scripts are written in CMakeSL, not the 'old' CMake language.
 

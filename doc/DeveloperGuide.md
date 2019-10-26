@@ -1,9 +1,18 @@
 # CMakeSL Developer Guide
 
-## C++
+Table of Contents
+=================
+
+   * [CMakeSL Developer Guide](#cmakesl-developer-guide)
+   * [C++](#c)
+   * [Libraries](#libraries)
+   * [Testing](#testing)
+   * [Contribution](#contribution)
+
+# C++
 C++17 is used. No particular compilator is required.
 
-## Libraries
+# Libraries
 A set of libraries are created in the project:
 * common - common stuff like algorithms etc.
 * errors - this one was introduced to be able to shadow mock the `errors_observer` class. Now, it's considered to remove this library, or at least, remove shadow mocking and just create an interface for `errors_observer` (that's still a TODO).
@@ -16,7 +25,7 @@ A set of libraries are created in the project:
 Additionally, executables are created:
 * cmakesl - It's a simple exec that takes path to sources and executes CMakeSL script outside the CMake world. It's used to quickly execute some scripts and see what happens.
 
-## Testing
+# Testing
 To enable tests, set option `CMAKESL_WITH_TESTS=ON`.
 
 While debugging, `sema::dumper` class can be useful. It prints a built semantic tree to the given output stream. It can help analyzing weird behaviour.
@@ -29,5 +38,5 @@ I the `global_executor::execute` (or other method that deals with semantic tree)
 }
 ```
 
-## Contribution
+# Contribution
 Just grab sources, make changes and create a pull request to `master` branch.

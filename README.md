@@ -3,6 +3,23 @@
 
 A set of C++17 libraries that implement a new scripting language for CMake.
 
+Table of Contents
+=================
+
+   * [CMakeSL - The CMake scripting language](#cmakesl---the-cmake-scripting-language)
+   * [Beware](#beware)
+   * [Motivation and goals](#motivation-and-goals)
+   * [Useful links](#useful-links)
+   * [Language design](#language-design)
+   * [CMakeSL Hello World](#cmakesl-hello-world)
+   * [Useful Hello World](#useful-hello-world)
+   * [Tools](#tools)
+      * [Indexer](#indexer)
+      * [Syntax completion](#syntax-completion)
+   * [Building and CMake integration](#building-and-cmake-integration)
+   * [Dependencies](#dependencies)
+   * [Contribution](#contribution)
+
 
 # Beware
 CMakeSL is not supported by the CMake project. It's not an official part of the CMake.
@@ -239,9 +256,9 @@ chmod +x build_cmake.sh
 ```
 
 
-## Dependencies
+# Dependencies
 The only dependencies that CMakeSL needs is C++17 and python3. No external C++ libraries are used.
 
 
-## Contribution
+# Contribution
 Just clone the repo, make changes and create a pull request to the master branch.
