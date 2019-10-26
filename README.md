@@ -26,7 +26,7 @@ CMakeSL is not supported by the CMake project. It's not an official part of the 
 
 
 # Motivation and goals
-To possibly make CMake environment intuitive and developer-friendly.
+To make CMake environment intuitive and developer-friendly.
 
 The CMakeSL's purpose is to introduce a new scripting language and the scripting language only.
 All well known CMake's concepts like targets, exporting, importing etc. are going to be preserved.
@@ -36,7 +36,7 @@ Users with C/C++ (or similar) background can start scripting right away.
 C++ish style of the language allows to use tools like clang-format, doxygen and any other
 (that does not require semantic information) out-of-the-box.
 
-For tasks that require semantic info, CMakeSL provides ready-made tools (a library with C interface): indexer and syntax completer.
+For tasks that require semantic info, CMakeSL provides ready-made tools (a library with C interface): indexer and syntax completer. See the [tools section](#tools)
 
 
 # Useful links
