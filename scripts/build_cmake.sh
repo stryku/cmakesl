@@ -11,9 +11,6 @@ git checkout cmakesl
 # Clone CMakeSL in the `Source` directory.
 cd Source
 git clone https://github.com/stryku/cmakesl
-cd cmakesl
-# Checkout to a specific version if need. If not checked out, trunk will be built.
-# git checkout v0.0
 
 # Build CMake. C++17 compiler is required.
 cd ..
