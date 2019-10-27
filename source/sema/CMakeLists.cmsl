@@ -8,7 +8,7 @@ string add_builtin_tokens_generation_command()
     builtin_tokens_providers_dir + "/builtin_token_providers.hpp";
   auto builtin_tokens_generator_command = {
     "python3", cmsl::scripts_dir + "/builtin_token_providers_generator.py",
-    cmsl::doc_dir + "/builtin_types", result_file_path
+    cmsl::doc_dir + "/builtin", result_file_path
   };
 
   cmake::make_directory(builtin_tokens_providers_dir);

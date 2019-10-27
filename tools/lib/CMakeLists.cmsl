@@ -18,6 +18,8 @@ void main(cmake::project& p)
                    "completion_contextes_visitor.hpp",
                    "identifier_names_collector.cpp",
                    "identifier_names_collector.hpp",
+                   "indexing_visitor.cpp",
+                   "indexing_visitor.hpp",
                    "type_names_collector.cpp",
                    "type_names_collector.hpp" };
   auto exe = p.add_library("cmsl_tools", sources);
