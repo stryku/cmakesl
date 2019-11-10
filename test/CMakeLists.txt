@@ -3,6 +3,7 @@ set(CMAKESL_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKESL_FACADE_DIR})
 
 add_subdirectory(ast)
+add_subdirectory(decl_ast)
 add_subdirectory(common)
 add_subdirectory(errors_observer)
 add_subdirectory(errors_observer_mock)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lexer/token.hpp"
+
 namespace cmsl::parse {
 class parse_errors_observer
 {
