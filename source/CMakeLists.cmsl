@@ -3,6 +3,7 @@ void main(cmake::project& p)
   add_subdirectory("common", p);
   add_subdirectory("errors", p);
   add_subdirectory("lexer", p);
+  add_subdirectory("parse", p);
   add_subdirectory("ast", p);
   add_subdirectory("sema", p);
   add_subdirectory("exec", p);

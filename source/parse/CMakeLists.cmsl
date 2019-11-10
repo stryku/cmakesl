@@ -1,0 +1,13 @@
+import "cmake/cmsl_directories.cmsl";
+
+void main(cmake::project& p)
+{
+  auto sources = { "parse_errors_observer.hpp", "parser_utils.cpp",
+                   "parser_utils.hpp" };
+
+  auto lib = p.add_library("parse", sources);
+  lib.include_directories({ cmsl::source_dir });
+
+  auto lexer = p.find_library("lexer");
+  lib.link_to(lexer, cmake::visibility::public);
+}
