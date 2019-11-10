@@ -59,7 +59,7 @@ target_include_directories(ast
 
 target_link_libraries(ast
     PUBLIC
-        lexer
+        parse
 )
 
 target_compile_options(ast
