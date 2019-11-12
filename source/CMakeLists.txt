@@ -3,6 +3,7 @@ add_subdirectory(errors)
 add_subdirectory(lexer)
 add_subdirectory(parse)
 add_subdirectory(ast)
+add_subdirectory(decl_ast)
 add_subdirectory(sema)
 add_subdirectory(exec)
 

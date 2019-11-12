@@ -69,6 +69,7 @@ struct errors_observer_and_mock
   StrictMock<errors::test::errors_observer_mock> mock;
   errors::errors_observer observer;
 };
+
 using errs_t = errors_observer_and_mock;
 
 const sema_context_impl builtin_context_fake{ "" };
