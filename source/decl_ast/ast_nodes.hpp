@@ -3,6 +3,8 @@
 #include "decl_ast/ast_node.hpp"
 #include "decl_ast/ast_node_visitor.hpp"
 
+#include <memory>
+
 #define VISIT_MEHTOD                                                          \
   void visit(ast_node_visitor& visitor) const override                        \
   {                                                                           \
