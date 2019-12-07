@@ -1,6 +1,6 @@
 #pragma once
 
-#include "decl_ast/parse_errors_observer.hpp"
+#include "decl_ast/parse_errors_reporter.hpp"
 #include "lexer/token.hpp"
 #include "parse/parser_utils.hpp"
 

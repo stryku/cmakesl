@@ -1,7 +1,8 @@
 set(DECL_AST_SOURCES
     ast_node.hpp
     ast_nodes.hpp
-    parse_errors_observer.hpp
+    parse_errors_reporter.cpp
+    parse_errors_reporter.hpp
     parser.cpp
     parser.hpp
 )
