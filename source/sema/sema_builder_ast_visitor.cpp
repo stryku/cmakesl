@@ -382,10 +382,20 @@ sema_builder_ast_visitor::build_add_subdirectory_call(
   return std::visit(visitor, result);
 }
 
+std::unique_ptr<expression_node>
+sema_builder_ast_visitor::build_add_declarative_file_call(
+  const ast::function_call_node& node)
+{
+  // Todo: implement.
+  return nullptr;
+}
+
 void sema_builder_ast_visitor::visit(const ast::function_call_node& node)
 {
   if (node.name().str() == "add_subdirectory") {
     m_result_node = build_add_subdirectory_call(node);
+  } else if (node.name().str() == "add_declarative_file") {
+    m_result_node = build_add_declarative_file_call(node);
   } else {
     m_result_node = build_function_call(node);
   }

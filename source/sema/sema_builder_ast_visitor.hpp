@@ -131,6 +131,8 @@ private:
     const ast::function_call_node& node);
   std::unique_ptr<expression_node> build_add_subdirectory_call(
     const ast::function_call_node& node);
+  std::unique_ptr<expression_node> build_add_declarative_file_call(
+    const ast::function_call_node& node);
 
   template <typename T>
   std::unique_ptr<T> to_node(std::unique_ptr<sema_node> node) const;
