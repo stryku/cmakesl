@@ -333,6 +333,8 @@ GENERATION_INFO = {
 
             'add_custom_target': ['void add_custom_target(string name, list<string> command);', 'void ', 'add_custom_target'],
             'ctest_command': ['string ctest_command();', 'string ', 'ctest_command'],
+
+            'add_declarative_file': ['unspecified_type add_declarative_file(string file_path);', 'unspecified_type ', 'add_declarative_file'],
         }
     }
 }
