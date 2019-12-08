@@ -17,6 +17,7 @@ add_custom_command(
 
 set(SEMA_SOURCES
     add_subdirectory_semantic_handler.hpp
+    add_declarative_file_semantic_handler.hpp
     block_node_manipulator.cpp
     block_node_manipulator.hpp
     builtin_cmake_namespace_context.cpp

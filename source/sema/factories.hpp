@@ -30,6 +30,14 @@ class types_context;
 template <typename StoredType>
 class factory
 {
+public:
+  const StoredType& store(std::unique_ptr<StoredType> entity)
+  {
+    const auto& ref = *entity;
+    m_storage.emplace_back(std::move(entity));
+    return ref;
+  }
+
 protected:
   using storage_t = std::vector<std::unique_ptr<StoredType>>;
 

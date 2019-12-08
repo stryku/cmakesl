@@ -10,14 +10,13 @@ class errors_observer;
 }
 
 namespace sema {
-
 class builtin_token_provider;
-struct builtin_types_accessor;
-class sema_generic_type_factory;
-class sema_context;
 class factories_provider;
+class sema_context;
+class sema_generic_type_factory;
 class sema_type;
 class types_context;
+struct builtin_types_accessor;
 
 class generic_type_creation_utils
 {

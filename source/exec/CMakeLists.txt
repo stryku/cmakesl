@@ -8,6 +8,10 @@ set(EXEC_SOURCES
     cross_translation_unit_static_variables.cpp
     cross_translation_unit_static_variables.hpp
     cross_translation_unit_static_variables_accessor.hpp
+    declarative_component_instance_creator.cpp
+    declarative_component_instance_creator.hpp
+    declarative_source_compiler.cpp
+    declarative_source_compiler.hpp
     execution.cpp
     execution.hpp
     execution_context.cpp
@@ -20,14 +24,6 @@ set(EXEC_SOURCES
     global_executor.cpp
     global_executor.hpp
     identifiers_context.hpp
-    module_sema_tree_provider.hpp
-    module_static_variables_initializer.hpp
-    parameter_alternatives_getter.hpp
-    scope_context.cpp
-    scope_context.hpp
-    source_compiler.cpp
-    source_compiler.hpp
-    static_variables_initializer.hpp
     instance/complex_unnamed_instance.cpp
     instance/complex_unnamed_instance.hpp
     instance/enum_constant_value.hpp
@@ -63,6 +59,14 @@ set(EXEC_SOURCES
     instance/target_value.hpp
     instance/version_value.cpp
     instance/version_value.hpp
+    module_sema_tree_provider.hpp
+    module_static_variables_initializer.hpp
+    parameter_alternatives_getter.hpp
+    scope_context.cpp
+    scope_context.hpp
+    source_compiler.cpp
+    source_compiler.hpp
+    static_variables_initializer.hpp
 )
 
 add_library(exec "${EXEC_SOURCES}")
@@ -76,6 +80,7 @@ target_include_directories(exec
 target_link_libraries(exec
     PUBLIC
         sema
+        decl_sema
 )
 
 target_compile_options(exec

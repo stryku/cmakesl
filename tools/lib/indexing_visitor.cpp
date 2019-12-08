@@ -409,4 +409,9 @@ void indexer::visit(const sema::add_subdirectory_with_old_script_node& node)
 {
   // Do nothing.
 }
+
+void indexer::visit(const sema::add_declarative_file_node& node)
+{
+  // Todo: implement
+}
 }

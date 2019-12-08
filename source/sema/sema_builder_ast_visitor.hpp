@@ -28,6 +28,7 @@ class token;
 }
 
 namespace sema {
+class add_declarative_file_semantic_handler;
 class add_subdirectory_semantic_handler;
 class block_node;
 class builtin_token_provider;
@@ -76,6 +77,7 @@ struct sema_builder_ast_visitor_members
   parsing_context& parsing_ctx;
   builtin_types_accessor builtin_types;
   add_subdirectory_semantic_handler& add_subdir_handler;
+  add_declarative_file_semantic_handler& add_declarative_file_handler;
   import_handler& imports_handler;
 };
 

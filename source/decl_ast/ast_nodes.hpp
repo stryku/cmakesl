@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#undef VISIT_MEHTOD
 #define VISIT_MEHTOD                                                          \
   void visit(ast_node_visitor& visitor) const override                        \
   {                                                                           \
