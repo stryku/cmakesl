@@ -67,6 +67,14 @@ public:
                                       include_dirs);
     }
 
+    if (const auto found = properties.find("compile_options");
+        found != std::cend(properties)) {
+      const auto& instance = found->second;
+      const auto& compile_options = instance->value_cref().get_list_cref();
+      library_val.compile_definitions(m_facade, compile_options,
+                                      facade::visibility::private_);
+    }
+
     auto library_instance = m_instances.create(std::move(library_val));
     m_result = m_instances.gather_ownership(library_instance);
   }
