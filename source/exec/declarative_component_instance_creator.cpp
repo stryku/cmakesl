@@ -57,8 +57,17 @@ public:
 
     m_facade.add_library(library_name, string_sources);
 
-    auto library_instance =
-      m_instances.create(inst::library_value{ library_name });
+    auto library_val = inst::library_value{ library_name };
+
+    if (const auto found = properties.find("include_dirs");
+        found != std::cend(properties)) {
+      const auto& instance = found->second;
+      const auto& include_dirs = instance->value_cref().get_list_cref();
+      library_val.include_directories(m_facade, facade::visibility::private_,
+                                      include_dirs);
+    }
+
+    auto library_instance = m_instances.create(std::move(library_val));
     m_result = m_instances.gather_ownership(library_instance);
   }
 
