@@ -19,11 +19,14 @@ public:
 
   std::string name() const;
 
-  void link_to(facade::cmake_facade& cmake_facade, facade::visibility,
+  void link_to(facade::cmake_facade& cmake_facade, facade::visibility v,
                const target_value& target) const;
 
+  void link_to(facade::cmake_facade& cmake_facade, facade::visibility v,
+               const std::string& target_name) const;
+
   void include_directories(facade::cmake_facade& cmake_facade,
-                           facade::visibility, const list_value& dirs) const;
+                           facade::visibility v, const list_value& dirs) const;
 
   void compile_definitions(facade::cmake_facade& cmake_facade,
                            const list_value& definitions,

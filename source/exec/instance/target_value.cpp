@@ -18,7 +18,7 @@ void target_value::link_to(facade::cmake_facade& cmake_facade,
                            facade::visibility v,
                            const target_value& target) const
 {
-  cmake_facade.target_link_library(m_name, v, target.name());
+  link_to(cmake_facade, v, target.name());
 }
 
 void target_value::include_directories(facade::cmake_facade& cmake_facade,
@@ -35,5 +35,12 @@ void target_value::compile_definitions(facade::cmake_facade& cmake_facade,
 {
   const auto definitions = list_value_utils{ definitions_list }.strings();
   cmake_facade.target_compile_definitions(m_name, v, definitions);
+}
+
+void target_value::link_to(facade::cmake_facade& cmake_facade,
+                           facade::visibility v,
+                           const std::string& target_name) const
+{
+  cmake_facade.target_link_library(m_name, v, target_name);
 }
 }
