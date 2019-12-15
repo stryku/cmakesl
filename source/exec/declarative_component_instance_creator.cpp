@@ -75,6 +75,16 @@ public:
                                       facade::visibility::private_);
     }
 
+    if (const auto found = properties.find("dependencies");
+        found != std::cend(properties)) {
+      const auto& instance = found->second;
+      const auto& deps = instance->value_cref().get_list_cref();
+      const auto string_deps = inst::list_value_utils{ deps }.strings();
+      for (const auto& dep_name : string_deps) {
+        library_val.link_to(m_facade, facade::visibility::private_, dep_name);
+      }
+    }
+
     auto library_instance = m_instances.create(std::move(library_val));
     m_result = m_instances.gather_ownership(library_instance);
   }

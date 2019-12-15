@@ -11,4 +11,9 @@ StaticLibrary {
     compile_options: [
         "-DANSWER=42"
     ]
+
+    dependencies: [
+        "dependency",
+        "another_dependency"
+    ]
 }

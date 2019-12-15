@@ -23,8 +23,10 @@ TEST_F(DeclarativeFormatSmokeTest, AddDeclarativeFileWithStaticLibrary)
     .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
                            std::string{ "/declarative" }));
 
+  constexpr auto library_name = "library_name";
+
   const std::vector<std::string> expected_sources = { "library.cpp" };
-  EXPECT_CALL(m_facade, add_library("library_name", expected_sources));
+  EXPECT_CALL(m_facade, add_library(library_name, expected_sources));
 
   const std::vector<std::string> expected_include_dirs = { "include" };
   EXPECT_CALL(m_facade,
@@ -33,6 +35,14 @@ TEST_F(DeclarativeFormatSmokeTest, AddDeclarativeFileWithStaticLibrary)
   const std::vector<std::string> expected_compile_options = { "-DANSWER=42" };
   EXPECT_CALL(m_facade,
               target_compile_definitions(_, _, expected_compile_options));
+
+  const std::string expected_dependency = "dependency";
+  const std::string expected_another_dependency = "another_dependency";
+  EXPECT_CALL(m_facade,
+              target_link_library(library_name, _, expected_dependency));
+  EXPECT_CALL(
+    m_facade,
+    target_link_library(library_name, _, expected_another_dependency));
 
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
