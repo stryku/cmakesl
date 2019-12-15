@@ -7,7 +7,7 @@ cmsl_add_test(
         auto_type_smoke_test.cpp
         bool_type_smoke_test.cpp
         break_smoke_test.cpp
-        builtin_function_caller2_test.cpp
+        builtin_function_caller_test.cpp
         class_smoke_test.cpp
         cmake_namespace_smoke_test.cpp
         comments_smoke_test.cpp
