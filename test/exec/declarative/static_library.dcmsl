@@ -1,0 +1,14 @@
+StaticLibrary {
+    name: "library_name"
+    files: [
+        "library.cpp"
+    ]
+
+    include_dirs: [
+        "include"
+    ]
+
+    compile_options: [
+        "-DANSWER=42"
+    ]
+}

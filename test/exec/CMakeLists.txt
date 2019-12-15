@@ -4,13 +4,15 @@ cmsl_add_test(
     NAME
         exec
     SOURCES
+        add_subdirectory_test/add_subdirectory_smoke_test.cpp
         auto_type_smoke_test.cpp
         bool_type_smoke_test.cpp
         break_smoke_test.cpp
-        builtin_function_caller2_test.cpp
+        builtin_function_caller_test.cpp
         class_smoke_test.cpp
         cmake_namespace_smoke_test.cpp
         comments_smoke_test.cpp
+        declarative/declarative_format_smoke_test.cpp
         designated_initializers_smoke_test.cpp
         double_type_smoke_test.cpp
         enum_smoke_test.cpp
@@ -21,10 +23,15 @@ cmsl_add_test(
         for_loop_smoke_test.cpp
         function_smoke_test.cpp
         if_else_smoke_test.cpp
+        import_test/import_smoke_test.cpp
         instance_value_variant_test.cpp
         int_type_smoke_test.cpp
         library_smoke_test.cpp
         list_type_smoke_test.cpp
+        mock/function_caller_mock.hpp
+        mock/identifiers_context_mock.hpp
+        mock/instance_mock.hpp
+        mock/instances_holder_mock.hpp
         namespaces_smoke_test.cpp
         option_smoke_test.cpp
         project_smoke_test.cpp
@@ -38,12 +45,6 @@ cmsl_add_test(
         version_type_smoke_tests.cpp
         void_type_smoke_test.cpp
         while_loop_smoke_test.cpp
-        add_subdirectory_test/add_subdirectory_smoke_test.cpp
-        import_test/import_smoke_test.cpp
-        mock/function_caller_mock.hpp
-        mock/identifiers_context_mock.hpp
-        mock/instance_mock.hpp
-        mock/instances_holder_mock.hpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
         ${CMAKESL_FACADE_SOURCES_DIR}
