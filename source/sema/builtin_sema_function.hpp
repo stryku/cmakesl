@@ -2,8 +2,7 @@
 
 #include "sema/sema_function.hpp"
 
-namespace cmsl {
-namespace sema {
+namespace cmsl::sema {
 enum class builtin_function_kind;
 class sema_context;
 
@@ -36,5 +35,4 @@ private:
   function_signature m_signature;
   builtin_function_kind m_kind;
 };
-}
 }

@@ -4,6 +4,8 @@ cmsl_add_test(
     NAME
         sema
     SOURCES
+        identifiers_context_test.cpp
+        mock/add_declarative_file_semantic_handler_mock.hpp
         mock/add_subdirectory_semantic_handler_mock.hpp
         mock/enum_values_context_mock.hpp
         mock/expression_node_mock.hpp
@@ -11,7 +13,6 @@ cmsl_add_test(
         mock/import_handler_mock.hpp
         mock/sema_context_mock.hpp
         mock/sema_function_mock.hpp
-        identifiers_context_test.cpp
         overload_resolution_test.cpp
         sema_builder_ast_visitor_test.cpp
         sema_dumper_smoke_test.cpp

@@ -15,13 +15,14 @@ class errors_observer;
 }
 
 namespace sema {
+class add_declarative_file_semantic_handler;
 class add_subdirectory_semantic_handler;
 class builtin_token_provider;
 class factories_provider;
 class import_handler;
-struct qualified_contextes_refs;
 class sema_context;
 class sema_node;
+struct qualified_contextes_refs;
 
 class sema_builder
 {
@@ -30,6 +31,7 @@ public:
     sema_context& ctx, errors::errors_observer& errs,
     qualified_contextes_refs& qualified_ctxs, factories_provider& factories,
     add_subdirectory_semantic_handler& add_subdirectory_handler,
+    add_declarative_file_semantic_handler& add_declarative_file_handler,
     import_handler& imports_handler,
     const builtin_token_provider& builtin_token_provider,
     builtin_types_accessor builtin_types);
@@ -42,6 +44,7 @@ private:
   qualified_contextes_refs& m_qualified_ctxs;
   factories_provider& m_factories;
   add_subdirectory_semantic_handler& m_add_subdirectory_handler;
+  add_declarative_file_semantic_handler& m_add_declarative_file_handler;
   import_handler& m_imports_handler;
   const builtin_token_provider& m_builtin_token_provider;
   builtin_types_accessor m_builtin_types;

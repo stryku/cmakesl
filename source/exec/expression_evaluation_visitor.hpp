@@ -299,6 +299,18 @@ public:
     m_ctx.instances.store(std::move(result_instance));
   }
 
+  void visit(const sema::add_declarative_file_node& node) override
+  {
+    const auto& function = node.function();
+    auto result_instance = m_ctx.caller.call(function, {}, m_ctx.instances);
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      return;
+    }
+
+    result = result_instance.get();
+    m_ctx.instances.store(std::move(result_instance));
+  }
+
 public:
   inst::instance* result;
 

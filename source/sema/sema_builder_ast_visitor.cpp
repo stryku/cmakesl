@@ -22,6 +22,7 @@
 #include "common/overloaded.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
+#include "sema/add_declarative_file_semantic_handler.hpp"
 #include "sema/add_subdirectory_semantic_handler.hpp"
 #include "sema/block_node_manipulator.hpp"
 #include "sema/builtin_sema_function.hpp"
@@ -386,8 +387,45 @@ std::unique_ptr<expression_node>
 sema_builder_ast_visitor::build_add_declarative_file_call(
   const ast::function_call_node& node)
 {
-  // Todo: implement.
-  return nullptr;
+  auto params_opt = get_function_call_params(node.param_nodes());
+  if (!params_opt) {
+    return nullptr;
+  }
+
+  auto& params = *params_opt;
+  if (params.empty()) {
+    raise_error(node.name(), "expected declarative file name");
+    return nullptr;
+  }
+
+  auto casted = dynamic_cast<string_value_node*>(params[0].get());
+  if (!casted) {
+    raise_error(node.name(),
+                "expected string literal as a declarative file name");
+    return nullptr;
+  }
+
+  (void)params[0].release();
+  auto file_path_string_node = std::unique_ptr<string_value_node>(casted);
+  const auto name = file_path_string_node->value();
+
+  const auto result =
+    m_.add_declarative_file_handler.handle_add_declarative_file(name);
+  (void)result;
+
+  const auto visitor =
+    overloaded{ [&](const add_declarative_file_semantic_handler::
+                      contains_declarative_cmakesl_script& val)
+                  -> std::unique_ptr<expression_node> {
+                 return std::make_unique<add_declarative_file_node>(
+                   node, std::move(file_path_string_node),
+                   *val.target_creation_function, node.name());
+               },
+                [](auto) -> std::unique_ptr<expression_node> {
+                  return nullptr;
+                } };
+
+  return std::visit(visitor, result);
 }
 
 void sema_builder_ast_visitor::visit(const ast::function_call_node& node)
@@ -736,12 +774,18 @@ sema_builder_ast_visitor sema_builder_ast_visitor::clone() const
 sema_builder_ast_visitor sema_builder_ast_visitor::clone(
   sema_context& ctx_to_visit) const
 {
-  auto members = sema_builder_ast_visitor_members{
-    m_.generic_types_context, ctx_to_visit,     m_.errors_observer,
-    m_.qualified_ctxs,        m_.factories,     m_.builtin_tokens,
-    m_.parsing_ctx,           m_.builtin_types, m_.add_subdir_handler,
-    m_.imports_handler
-  };
+  auto members =
+    sema_builder_ast_visitor_members{ m_.generic_types_context,
+                                      ctx_to_visit,
+                                      m_.errors_observer,
+                                      m_.qualified_ctxs,
+                                      m_.factories,
+                                      m_.builtin_tokens,
+                                      m_.parsing_ctx,
+                                      m_.builtin_types,
+                                      m_.add_subdir_handler,
+                                      m_.add_declarative_file_handler,
+                                      m_.imports_handler };
 
   return sema_builder_ast_visitor{ members };
 }
@@ -777,12 +821,18 @@ std::unique_ptr<sema_node> sema_builder_ast_visitor::visit_child(
 std::unique_ptr<sema_node> sema_builder_ast_visitor::visit_child(
   const ast::ast_node& node, sema_context& ctx_to_visit)
 {
-  auto members = sema_builder_ast_visitor_members{
-    m_.generic_types_context, ctx_to_visit,     m_.errors_observer,
-    m_.qualified_ctxs,        m_.factories,     m_.builtin_tokens,
-    m_.parsing_ctx,           m_.builtin_types, m_.add_subdir_handler,
-    m_.imports_handler
-  };
+  auto members =
+    sema_builder_ast_visitor_members{ m_.generic_types_context,
+                                      ctx_to_visit,
+                                      m_.errors_observer,
+                                      m_.qualified_ctxs,
+                                      m_.factories,
+                                      m_.builtin_tokens,
+                                      m_.parsing_ctx,
+                                      m_.builtin_types,
+                                      m_.add_subdir_handler,
+                                      m_.add_declarative_file_handler,
+                                      m_.imports_handler };
   auto v = sema_builder_ast_visitor{ members };
   node.visit(v);
   return std::move(v.m_result_node);

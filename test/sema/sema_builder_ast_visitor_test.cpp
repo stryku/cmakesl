@@ -22,6 +22,7 @@
 #include "sema/types_context.hpp"
 #include "test/common/tokens.hpp"
 #include "test/errors_observer_mock/errors_observer_mock.hpp"
+#include "test/sema/mock/add_declarative_file_semantic_handler_mock.hpp"
 #include "test/sema/mock/add_subdirectory_semantic_handler_mock.hpp"
 #include "test/sema/mock/enum_values_context_mock.hpp"
 #include "test/sema/mock/expression_node_mock.hpp"
@@ -49,17 +50,17 @@ inline void PrintTo(const qualified_name_t& names, ::std::ostream* out)
 }
 
 namespace cmsl::sema::test {
-using ::testing::StrictMock;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::ByMove;
+using ::testing::Eq;
+using ::testing::IsNull;
 using ::testing::NiceMock;
+using ::testing::NotNull;
+using ::testing::Ref;
 using ::testing::Return;
 using ::testing::ReturnRef;
-using ::testing::ByMove;
-using ::testing::Ref;
-using ::testing::IsNull;
-using ::testing::NotNull;
-using ::testing::AnyNumber;
-using ::testing::Eq;
-using ::testing::_;
+using ::testing::StrictMock;
 
 using namespace cmsl::test::common;
 
@@ -103,6 +104,7 @@ class SemaBuilderAstVisitorTest : public ::testing::Test
 protected:
   factories_provider m_factories;
   add_subdirectory_semantic_handler_mock m_add_subdirectory_mock;
+  add_declarative_file_semantic_handler_mock m_add_declarative_file_mock;
   import_handler_mock m_import_handler_mock;
   builtin_token_provider m_token_provider{ "" };
   parsing_context m_parsing_ctx;
@@ -148,6 +150,7 @@ protected:
                                         parsing_ctx,
                                         builtin_types,
                                         m_add_subdirectory_mock,
+                                        m_add_declarative_file_mock,
                                         m_import_handler_mock };
 
     auto members = std::make_unique<sema_builder_ast_visitor_members>(
@@ -956,6 +959,74 @@ TEST_F(SemaBuilderAstVisitorTest,
   EXPECT_THAT(casted_node->type(), IsValidType());
   // No parameters, because sema builder removes the directory name parameter.
   EXPECT_THAT(casted_node->param_expressions().size(), Eq(0u));
+}
+
+TEST_F(
+  SemaBuilderAstVisitorTest,
+  Visit_FunctionCallWithAddDeclarativeFileName_CallsAddDeclarativeFileHandler)
+{
+  errs_t errs;
+  StrictMock<sema_context_mock> ctx;
+  StrictMock<identifiers_context_mock> ids_ctx;
+  StrictMock<sema_function_mock> function_mock;
+  StrictMock<types_context_mock> types_ctx;
+  StrictMock<functions_context_mock> functions_ctx;
+  enum_values_context_mock enums_ctx;
+  auto [visitor_members, visitor] = create_types_factory_and_visitor(
+    errs, ctx, enums_ctx, ids_ctx, types_ctx, functions_ctx);
+  std::ignore = visitor_members;
+
+  const auto fun_name_token = token_identifier("add_declarative_file");
+  cmsl::string_view name_param_view = "\"some/target.dcmsl\"";
+  const auto name_param_token = token_string(name_param_view);
+
+  function_signature signature;
+  signature.name = fun_name_token;
+  signature.params.emplace_back(
+    parameter_declaration{ valid_type_data.ty, name_param_token });
+
+  auto param1_ast_node = std::make_unique<ast::string_value_node>(
+    std::vector<token_t>{ name_param_token }, name_param_view);
+
+  ast::function_call_node::params_t ast_params;
+  ast_params.emplace_back(std::move(param1_ast_node));
+  auto node = create_function_call(fun_name_token, std::move(ast_params));
+
+  const auto lookup_result = function_lookup_result_t{ { &function_mock } };
+
+  EXPECT_CALL(function_mock, context()).WillRepeatedly(ReturnRef(ctx));
+
+  EXPECT_CALL(function_mock, signature()).WillRepeatedly(ReturnRef(signature));
+
+  EXPECT_CALL(function_mock, return_type())
+    .WillRepeatedly(ReturnRef(valid_type_data.ty));
+  EXPECT_CALL(function_mock, try_return_type())
+    .WillRepeatedly(Return(&valid_type_data.ty));
+
+  EXPECT_CALL(ctx, type())
+    .WillRepeatedly(Return(sema_context::context_type::namespace_));
+
+  EXPECT_CALL(ctx, find_type(_)).WillRepeatedly(Return(&valid_type_data.ty));
+
+  EXPECT_CALL(
+    m_add_declarative_file_mock,
+    handle_add_declarative_file(cmsl::string_view{ "some/target.dcmsl" }))
+    .WillRepeatedly(
+      Return(add_declarative_file_semantic_handler::
+               contains_declarative_cmakesl_script{ &function_mock }));
+
+  visitor.visit(node);
+
+  ASSERT_THAT(visitor.m_result_node, NotNull());
+
+  const auto casted_node =
+    dynamic_cast<add_declarative_file_node*>(visitor.m_result_node.get());
+  ASSERT_THAT(casted_node, NotNull());
+
+  EXPECT_THAT(casted_node->type(), IsValidType());
+  EXPECT_THAT(&casted_node->function(), Eq(&function_mock));
+  // No parameters, because sema builder removes the directory name parameter.
+  EXPECT_THAT(casted_node->file_path().value(), Eq("some/target.dcmsl"));
 }
 
 TEST_F(

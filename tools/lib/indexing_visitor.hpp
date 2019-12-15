@@ -18,6 +18,7 @@ namespace cmsl::tools {
 class indexer : public sema::sema_node_visitor
 {
 public:
+  void visit(const sema::add_declarative_file_node& node) override;
   void visit(const sema::add_subdirectory_node& node) override;
   void visit(const sema::add_subdirectory_with_old_script_node& node) override;
   void visit(const sema::binary_operator_node& node) override;

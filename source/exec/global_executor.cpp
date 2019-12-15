@@ -2,6 +2,7 @@
 
 #include "common/assert.hpp"
 #include "exec/compiled_source.hpp"
+#include "exec/declarative_source_compiler.hpp"
 #include "exec/execution.hpp"
 #include "exec/source_compiler.hpp"
 #include "sema/builtin_sema_context.hpp"
@@ -18,6 +19,9 @@
 #include <errors/error.hpp>
 #include <fstream>
 #include <iterator>
+
+#include "sema/dumper.hpp"
+#include <iostream>
 
 namespace cmsl::exec {
 global_executor::directory_guard::directory_guard(
@@ -57,6 +61,11 @@ int global_executor::execute(std::string source)
     return -1;
   }
 
+  {
+    sema::dumper d{ std::cout };
+    compiled->sema_tree().visit(d);
+  }
+
   const auto builtin_identifiers_info =
     m_builtin_context->builtin_identifiers_info();
 
@@ -77,7 +86,7 @@ global_executor::handle_add_subdirectory(
   cmsl::string_view name,
   const std::vector<std::unique_ptr<sema::expression_node>>&)
 {
-  m_directories.push_back(std::string{ name });
+  m_directories.emplace_back(std::string{ name });
 
   const auto script_path_creator = [this] {
     std::string result = m_cmake_facade.current_directory();
@@ -98,13 +107,13 @@ global_executor::handle_add_subdirectory(
       return contains_old_cmake_script{};
     }
 
-    return no_script_found{};
+    return add_subdirectory_semantic_handler::no_script_found{};
   }
 
   const auto compiled = compile_file(std::move(cmakesl_script_path));
   if (!compiled) {
     raise_unsuccessful_compilation_error(script_path_creator());
-    return compilation_failed{};
+    return add_subdirectory_semantic_handler::compilation_failed{};
   }
 
   const auto main_function = compiled->get_main();
@@ -219,10 +228,20 @@ source_compiler global_executor::create_compiler(
                           m_factories,
                           *this,
                           *this,
+                          *this,
                           refs,
                           *m_builtin_context,
                           *m_builtin_tokens,
                           m_strings_container };
+}
+
+declarative_source_compiler global_executor::create_declarative_compiler(
+  sema::qualified_contextes& ctxs)
+{
+  auto refs = sema::qualified_contextes_refs{ ctxs };
+  return declarative_source_compiler{ m_errors_observer,  m_strings_container,
+                                      m_factories,        refs,
+                                      *m_builtin_context, *m_builtin_tokens };
 }
 
 cmsl::string_view global_executor::store_path(std::string path)
@@ -321,6 +340,32 @@ const compiled_source* global_executor::compile_source(std::string source,
   return compiled_ptr;
 }
 
+const compiled_declarative_source* global_executor::compile_declarative_file(
+  std::string path)
+{
+  const auto found = m_compiled_declarative_sources.find(path);
+  if (found != std::cend(m_compiled_declarative_sources)) {
+    return found->second.get();
+  }
+
+  const auto src_view = load_source(std::move(path));
+  CMSL_ASSERT(src_view);
+
+  auto contexts = m_builtin_qualified_contexts.clone();
+  auto compiler = create_declarative_compiler(contexts);
+  auto compiled = compiler.compile(*src_view);
+  if (!compiled) {
+    raise_unsuccessful_compilation_error(src_view->path());
+    return nullptr;
+  }
+
+  const auto compiled_ptr = compiled.get();
+  m_compiled_declarative_sources.emplace(src_view->path(),
+                                         std::move(compiled));
+
+  return compiled_ptr;
+}
+
 std::unique_ptr<inst::instance> global_executor::execute(
   const compiled_source& compiled)
 {
@@ -356,5 +401,37 @@ void global_executor::initialize_execution_if_need(
 
   m_execution = std::make_unique<execution>(m_cmake_facade, builtin_types,
                                             m_static_variables);
+}
+
+sema::add_declarative_file_semantic_handler::add_declarative_file_result_t
+global_executor::handle_add_declarative_file(cmsl::string_view name)
+{
+  const auto script_path_creator = [this] {
+    std::string result = m_cmake_facade.current_directory();
+
+    std::string separator;
+
+    for (const auto& dir : m_directories) {
+      result += '/' + dir;
+    }
+
+    return result;
+  };
+
+  auto full_path = script_path_creator() + "/" + std::string{ name };
+  if (!file_exists(full_path)) {
+
+    return add_declarative_file_semantic_handler::no_script_found{};
+  }
+
+  const auto compiled = compile_declarative_file(std::move(full_path));
+  if (!compiled) {
+    raise_unsuccessful_compilation_error(script_path_creator());
+    return add_declarative_file_semantic_handler::compilation_failed{};
+  }
+
+  const auto& creation_function = compiled->get_target_creation_function();
+  return add_declarative_file_semantic_handler::
+    contains_declarative_cmakesl_script{ &creation_function };
 }
 }

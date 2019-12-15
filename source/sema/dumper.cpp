@@ -565,4 +565,11 @@ void dumper::visit(const add_subdirectory_with_old_script_node& node)
   auto ig = ident();
   out() << "-name: " << node.dir_name().value();
 }
+
+void dumper::visit(const add_declarative_file_node& node)
+{
+  out() << "-add_declarative_file";
+  auto ig = ident();
+  out() << "-file path: " << node.file_path().value();
+}
 }

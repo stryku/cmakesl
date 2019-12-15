@@ -1,5 +1,7 @@
 #include "exec/compiled_source.hpp"
 #include "ast/ast_node.hpp"
+#include "decl_ast/ast_node.hpp"
+#include "decl_sema/sema_nodes.hpp"
 #include "sema/builtin_sema_context.hpp"
 #include "sema/builtin_token_provider.hpp"
 #include "sema/enum_values_context.hpp"
@@ -44,5 +46,25 @@ const sema::sema_node& compiled_source::sema_tree() const
 sema::builtin_types_accessor compiled_source::builtin_types() const
 {
   return m_builtin_types;
+}
+compiled_declarative_source::compiled_declarative_source(
+  std::unique_ptr<decl_ast::ast_node> ast_tree,
+  std::unique_ptr<decl_sema::sema_node> sema_tree, source_view source,
+  sema::builtin_types_accessor builtin_types,
+  const sema::sema_function& creation_function)
+  : m_ast_tree{ std::move(ast_tree) }
+  , m_sema_tree{ std::move(sema_tree) }
+  , m_source{ source }
+  , m_builtin_types{ builtin_types }
+  , m_creation_function{ creation_function }
+{
+}
+
+compiled_declarative_source::~compiled_declarative_source() = default;
+
+const sema::sema_function&
+compiled_declarative_source::get_target_creation_function() const
+{
+  return m_creation_function;
 }
 }

@@ -16,10 +16,16 @@
 
 #include "cmake_facade.hpp"
 
-namespace cmsl::exec {
+namespace cmsl {
+
+namespace decl_sema {
+class component_creation_sema_function;
+}
+
+namespace exec {
+class cross_translation_unit_static_variables_accessor;
 class module_sema_tree_provider;
 class module_static_variables_initializer;
-class cross_translation_unit_static_variables_accessor;
 
 class execution
   : public identifiers_context
@@ -83,6 +89,9 @@ private:
   std::unique_ptr<inst::instance> execute_infix_expression(
     const sema::sema_type& expected_type, const sema::sema_node& node);
 
+  std::unique_ptr<inst::instance> handle_component_creation_function(
+    const decl_sema::component_creation_sema_function& function);
+
 private:
   struct callstack_frame
   {
@@ -103,4 +112,5 @@ private:
   std::optional<std::vector<inst::instance*>>
     m_params_of_add_subdirectory_with_cmakesl_script_call;
 };
+}
 }

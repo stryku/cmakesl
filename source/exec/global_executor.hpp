@@ -5,6 +5,7 @@
 #include "exec/builtin_identifiers_observer.hpp"
 #include "exec/cross_translation_unit_static_variables.hpp"
 #include "exec/module_sema_tree_provider.hpp"
+#include "sema/add_declarative_file_semantic_handler.hpp"
 #include "sema/add_subdirectory_semantic_handler.hpp"
 #include "sema/factories.hpp"
 #include "sema/factories_provider.hpp"
@@ -24,12 +25,15 @@ class builtin_sema_context;
 }
 
 namespace exec {
+class compiled_declarative_source;
 class compiled_source;
-class source_compiler;
+class declarative_source_compiler;
 class execution;
+class source_compiler;
 
 class global_executor
   : public sema::add_subdirectory_semantic_handler
+  , public sema::add_declarative_file_semantic_handler
   , public sema::import_handler
   , public module_sema_tree_provider
 {
@@ -44,6 +48,9 @@ public:
     cmsl::string_view name,
     const std::vector<std::unique_ptr<sema::expression_node>>& params)
     override;
+
+  add_declarative_file_result_t handle_add_declarative_file(
+    cmsl::string_view name) override;
 
   std::unique_ptr<sema::qualified_contextes> handle_import(
     cmsl::string_view path) override;
@@ -61,6 +68,8 @@ private:
   std::string build_full_import_path(cmsl::string_view import_path) const;
 
   source_compiler create_compiler(sema::qualified_contextes& ctxs);
+  declarative_source_compiler create_declarative_compiler(
+    sema::qualified_contextes& ctxs);
 
   std::optional<source_view> load_source(std::string path);
   cmsl::string_view store_source(std::string path);
@@ -69,6 +78,8 @@ private:
   bool file_exists(const std::string& path) const;
 
   const compiled_source* compile_file(std::string path);
+  const compiled_declarative_source* compile_declarative_file(
+    std::string path);
   const compiled_source* compile_source(std::string source, std::string path);
 
   std::unique_ptr<inst::instance> execute(const compiled_source& compiled);
@@ -108,6 +119,9 @@ private:
   std::vector<std::string> m_paths;
   std::unordered_map<cmsl::string_view, std::unique_ptr<compiled_source>>
     m_compiled_sources;
+  std::unordered_map<cmsl::string_view,
+                     std::unique_ptr<compiled_declarative_source>>
+    m_compiled_declarative_sources;
   std::unordered_map<cmsl::string_view,
                      std::reference_wrapper<const sema::sema_node>>
     m_sema_trees;

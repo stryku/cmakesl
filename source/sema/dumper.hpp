@@ -16,7 +16,9 @@ public:
   explicit dumper(std::ostream& os);
   ~dumper();
 
+  void visit(const add_declarative_file_node&) override;
   void visit(const add_subdirectory_node&) override;
+  void visit(const add_subdirectory_with_old_script_node&) override;
   void visit(const binary_operator_node&) override;
   void visit(const block_node&) override;
   void visit(const bool_value_node&) override;
@@ -48,9 +50,8 @@ public:
   void visit(const ternary_operator_node& node) override;
   void visit(const translation_unit_node&) override;
   void visit(const unary_operator_node& node) override;
-  void visit(const while_node&) override;
   void visit(const variable_declaration_node&) override;
-  void visit(const add_subdirectory_with_old_script_node&) override;
+  void visit(const while_node&) override;
 
 private:
   class ident_guard

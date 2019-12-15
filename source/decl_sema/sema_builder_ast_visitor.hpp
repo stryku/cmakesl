@@ -1,6 +1,8 @@
 #pragma once
 
 #include "decl_ast/ast_node_visitor.hpp"
+#include "sema/builtin_types_accessor.hpp"
+#include "sema/qualified_contextes_refs.hpp"
 
 #include <memory>
 
@@ -12,15 +14,38 @@ namespace decl_ast {
 class ast_node;
 }
 
+namespace errors {
+class errors_observer;
+}
+
+namespace sema {
+class builtin_token_provider;
+class factories_provider;
+class sema_context;
+class types_context;
+}
+
 namespace decl_sema {
 class sema_node;
 class expression_node;
 
+struct sema_builder_ast_visitor_members
+{
+  errors::errors_observer& errs;
+  sema::sema_context& generic_types_context;
+  sema::sema_context& ctx;
+  sema::factories_provider& factories;
+  sema::builtin_token_provider& builtin_tokens;
+  sema::builtin_types_accessor builtin_types;
+  sema::qualified_contextes_refs qualified_ctxs;
+  strings_container& strings;
+};
+
 class sema_builder_ast_visitor : public decl_ast::ast_node_visitor
 {
 public:
-  explicit sema_builder_ast_visitor(strings_container& strings);
-  ~sema_builder_ast_visitor();
+  explicit sema_builder_ast_visitor(sema_builder_ast_visitor_members members);
+  ~sema_builder_ast_visitor() override;
 
   void visit(const decl_ast::component_node& node) override;
   void visit(const decl_ast::property_node& node) override;
@@ -42,11 +67,13 @@ private:
   std::unique_ptr<expression_node> to_expression(
     std::unique_ptr<sema_node> node) const;
 
+  const sema::sema_type& list_of_strings_type();
+
 public:
   std::unique_ptr<sema_node> m_result_node;
 
 private:
-  strings_container& m_strings_container;
+  sema_builder_ast_visitor_members m_;
 };
 }
 }

@@ -436,6 +436,27 @@ private:
   const sema_type& m_void_type;
 };
 
+class add_declarative_file_node : public call_node
+{
+public:
+  explicit add_declarative_file_node(
+    const ast::ast_node& ast_node,
+    std::unique_ptr<string_value_node> file_path,
+    const sema_function& function, const token_t& call_name)
+    : call_node{ ast_node, function, {}, call_name }
+    , m_file_path{ std::move(file_path) }
+  {
+    m_file_path->set_parent(*this, passkey{});
+  }
+
+  const string_value_node& file_path() const { return *m_file_path; }
+
+  VISIT_METHOD
+
+private:
+  std::unique_ptr<string_value_node> m_file_path;
+};
+
 class block_node_manipulator;
 
 class block_node : public sema_node

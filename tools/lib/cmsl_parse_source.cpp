@@ -5,6 +5,7 @@
 #include "ast/parser.hpp"
 #include "common/strings_container_impl.hpp"
 #include "lexer/lexer.hpp"
+#include "sema/add_declarative_file_semantic_handler.hpp"
 #include "sema/add_subdirectory_semantic_handler.hpp"
 #include "sema/builtin_sema_context.hpp"
 #include "sema/builtin_token_provider.hpp"
@@ -29,6 +30,16 @@ public:
     return no_script_found{};
   }
 };
+class add_declaratife_file_handler
+  : public add_declarative_file_semantic_handler
+{
+public:
+  add_declarative_file_result_t handle_add_declarative_file(
+    cmsl::string_view name) override
+  {
+    return no_script_found{};
+  }
+};
 }
 
 cmsl_parsed_source* cmsl_parse_source(
@@ -38,6 +49,8 @@ cmsl_parsed_source* cmsl_parse_source(
   parsed_source->source = source;
   parsed_source->add_subdirectory_handler =
     std::make_unique<cmsl::sema::details::add_subdir_handler>();
+  parsed_source->add_declarative_file_handler =
+    std::make_unique<cmsl::sema::details::add_declaratife_file_handler>();
   parsed_source->strings_container =
     std::make_unique<cmsl::strings_container_impl>();
 
@@ -82,6 +95,7 @@ cmsl_parsed_source* cmsl_parse_source(
     qualified_ctxs,
     parsed_source->context.factories,
     *parsed_source->add_subdirectory_handler,
+    *parsed_source->add_declarative_file_handler,
     *parsed_source->imports_handler,
     *(parsed_source->builtin_token_provider),
     builtin_types

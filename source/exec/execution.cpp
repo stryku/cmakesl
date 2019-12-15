@@ -1,6 +1,10 @@
 #include "exec/execution.hpp"
+#include "decl_sema/component_creation_sema_function.hpp"
 #include "exec/cross_translation_unit_static_variables_accessor.hpp"
+#include "exec/declarative_component_instance_creator.hpp"
+#include "exec/instance/target_value.hpp"
 #include "exec/static_variables_initializer.hpp"
+#include "sema/cmake_namespace_types_accessor.hpp"
 
 namespace cmsl::exec {
 execution::execution(
@@ -17,12 +21,6 @@ std::unique_ptr<inst::instance> execution::call(
   const sema::sema_function& fun, const std::vector<inst::instance*>& params,
   inst::instances_holder_interface& instances)
 {
-  //  if (is_call_of_add_subdirectory_with_cmakesl_script()) {
-  //    execute_add_subdirectory_with_cmakesl_script(fun);
-  //     Result instance will be collected later.
-  //    return nullptr;
-  //  }
-
   std::unique_ptr<inst::instance> result;
   if (auto user_function =
         dynamic_cast<const sema::user_sema_function*>(&fun)) {
@@ -30,6 +28,9 @@ std::unique_ptr<inst::instance> execution::call(
     execute_block(user_function->body());
     result = std::move(m_function_return_value);
     leave_function_scope();
+  } else if (auto component_creation = dynamic_cast<
+               const decl_sema::component_creation_sema_function*>(&fun)) {
+    result = handle_component_creation_function(*component_creation);
   } else {
     auto builtin_function =
       dynamic_cast<const sema::builtin_sema_function*>(&fun);
@@ -318,5 +319,15 @@ void execution::execute_add_subdirectory_with_old_script(
 {
   m_cmake_facade.add_subdirectory_with_old_script(
     std::string{ node.dir_name().value() });
+}
+
+std::unique_ptr<inst::instance> execution::handle_component_creation_function(
+  const decl_sema::component_creation_sema_function& function)
+{
+  inst::instances_holder instances{ m_builtin_types };
+  auto creator =
+    declarative_component_instance_creator{ m_cmake_facade, m_builtin_types,
+                                            instances };
+  return creator.create(function);
 }
 }
