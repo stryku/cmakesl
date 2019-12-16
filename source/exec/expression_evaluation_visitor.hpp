@@ -15,12 +15,87 @@
 #include <algorithm>
 
 namespace cmsl::exec {
-class expression_evaluation_visitor : public sema::empty_sema_node_visitor
+class expression_evaluation_visitor : public sema::sema_node_visitor
 {
 public:
   explicit expression_evaluation_visitor(expression_evaluation_context& ctx)
     : m_ctx{ ctx }
   {
+  }
+
+  void visit(const sema::add_subdirectory_with_old_script_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::block_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::break_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::class_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::conditional_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::enum_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::for_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::function_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::if_else_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::implicit_return_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::import_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::namespace_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::translation_unit_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::variable_declaration_node& node) override
+  {
+    // Do nothing.
+  }
+
+  void visit(const sema::while_node& node) override
+  {
+    // Do nothing.
   }
 
   void visit(const sema::bool_value_node& node) override
@@ -127,8 +202,25 @@ public:
     m_ctx.instances.store(std::move(result_instance));
 
     m_ctx.cmake_facade.finalize_after_add_subdirectory_with_cmakesl_script();
+  }
 
-    //    m_ctx.cmake_facade.go_directory_up();
+  void visit(
+    const sema::add_subdirectory_with_declarative_script_node& node) override
+  {
+    const auto dir = std::string{ node.dir_name().value() };
+    m_ctx.cmake_facade.prepare_for_add_subdirectory_with_cmakesl_script(dir);
+
+    const auto& function = node.component_creation_function();
+    auto result_instance = m_ctx.caller.call(function, {}, m_ctx.instances);
+    if (m_ctx.cmake_facade.did_fatal_error_occure()) {
+      m_ctx.cmake_facade.go_directory_up();
+      return;
+    }
+
+    result = result_instance.get();
+    m_ctx.instances.store(std::move(result_instance));
+
+    m_ctx.cmake_facade.finalize_after_add_subdirectory_with_cmakesl_script();
   }
 
   void visit(const sema::implicit_member_function_call_node& node) override

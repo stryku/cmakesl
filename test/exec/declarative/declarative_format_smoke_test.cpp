@@ -84,4 +84,26 @@ TEST_F(DeclarativeFormatSmokeTest, AddDeclarativeFileWithExecutable)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(DeclarativeFormatSmokeTest,
+       AddSubdirectoryWithDeclarativeFileWithExecutable)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    add_subdirectory(\"foo\");"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, current_directory())
+    .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
+                           std::string{ "/declarative" }));
+
+  constexpr auto library_name = "foo";
+
+  const std::vector<std::string> expected_sources = { "foo.cpp" };
+  EXPECT_CALL(m_facade, add_library(library_name, expected_sources));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }
