@@ -414,4 +414,10 @@ void indexer::visit(const sema::add_declarative_file_node& node)
 {
   // Todo: implement
 }
+
+void indexer::visit(
+  const sema::add_subdirectory_with_declarative_script_node& node)
+{
+  // Todo: Implement
+}
 }

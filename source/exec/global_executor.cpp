@@ -92,6 +92,21 @@ global_executor::handle_add_subdirectory(
     return result;
   };
 
+  auto dcmakesl_script_path = script_path_creator() + "/CMakeLists.dcmsl";
+  if (file_exists(dcmakesl_script_path)) {
+    const auto compiled =
+      compile_declarative_file(std::move(dcmakesl_script_path));
+    if (!compiled) {
+      raise_unsuccessful_compilation_error(script_path_creator());
+      return add_subdirectory_semantic_handler::compilation_failed{};
+    }
+
+    const auto& creation_function = compiled->get_target_creation_function();
+    m_directories.pop_back();
+    return add_subdirectory_semantic_handler::
+      contains_declarative_cmakesl_script{ &creation_function };
+  }
+
   auto cmakesl_script_path = script_path_creator() + "/CMakeLists.cmsl";
   if (!file_exists(cmakesl_script_path)) {
     if (file_exists(script_path_creator() + "/CMakeLists.txt")) {

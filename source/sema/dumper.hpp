@@ -18,6 +18,7 @@ public:
 
   void visit(const add_declarative_file_node&) override;
   void visit(const add_subdirectory_node&) override;
+  void visit(const add_subdirectory_with_declarative_script_node&) override;
   void visit(const add_subdirectory_with_old_script_node&) override;
   void visit(const binary_operator_node&) override;
   void visit(const block_node&) override;

@@ -371,6 +371,12 @@ sema_builder_ast_visitor::build_add_subdirectory_call(
         node, std::move(name_string_node), *val.main_function,
         std::move(params_but_name), node.name());
     },
+    [&](const add_subdirectory_semantic_handler::
+          contains_declarative_cmakesl_script& val)
+      -> std::unique_ptr<expression_node> {
+      return std::make_unique<add_subdirectory_with_declarative_script_node>(
+        node, std::move(name_string_node), *val.component_creation_function);
+    },
     [&](
       const add_subdirectory_semantic_handler::contains_old_cmake_script& val)
       -> std::unique_ptr<expression_node> {

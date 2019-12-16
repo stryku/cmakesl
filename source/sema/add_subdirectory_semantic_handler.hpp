@@ -25,13 +25,18 @@ public:
   {
     const sema_function* main_function;
   };
+  struct contains_declarative_cmakesl_script
+  {
+    const sema_function* component_creation_function;
+  };
   struct compilation_failed
   {
   };
 
   using add_subdirectory_result_t =
     std::variant<no_script_found, contains_old_cmake_script,
-                 contains_cmakesl_script, compilation_failed>;
+                 contains_cmakesl_script, contains_declarative_cmakesl_script,
+                 compilation_failed>;
 
   virtual add_subdirectory_result_t handle_add_subdirectory(
     cmsl::string_view name,

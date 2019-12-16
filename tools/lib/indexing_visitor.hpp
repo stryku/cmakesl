@@ -21,6 +21,8 @@ public:
   void visit(const sema::add_declarative_file_node& node) override;
   void visit(const sema::add_subdirectory_node& node) override;
   void visit(const sema::add_subdirectory_with_old_script_node& node) override;
+  void visit(
+    const sema::add_subdirectory_with_declarative_script_node& node) override;
   void visit(const sema::binary_operator_node& node) override;
   void visit(const sema::block_node& node) override;
   void visit(const sema::bool_value_node& node) override;

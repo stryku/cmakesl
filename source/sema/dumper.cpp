@@ -572,4 +572,12 @@ void dumper::visit(const add_declarative_file_node& node)
   auto ig = ident();
   out() << "-file path: " << node.file_path().value();
 }
+
+void dumper::visit(const add_subdirectory_with_declarative_script_node& node)
+{
+  out() << "-add_subdirectory with declarative cmakesl script";
+  auto ig = ident();
+  out() << "-name: " << node.dir_name().value();
+  dump_type(node.component_creation_function().return_type());
+}
 }

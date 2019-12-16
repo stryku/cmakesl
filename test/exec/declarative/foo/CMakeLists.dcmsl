@@ -1,0 +1,6 @@
+StaticLibrary {
+    name: "foo"
+    files: [
+        "foo.cpp"
+    ]
+}
