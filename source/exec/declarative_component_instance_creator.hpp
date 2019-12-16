@@ -31,7 +31,13 @@ public:
     inst::instances_holder_interface& instances);
 
   std::unique_ptr<inst::instance> create(
-    const decl_sema::component_creation_sema_function& node);
+    const decl_sema::component_creation_sema_function& function);
+
+private:
+  std::unique_ptr<inst::instance> create_library(
+    const decl_sema::component_creation_sema_function& function);
+  std::unique_ptr<inst::instance> create_executable(
+    const decl_sema::component_creation_sema_function& function);
 
 private:
   facade::cmake_facade& m_facade;
