@@ -10,6 +10,7 @@ set(EXEC_SOURCES
     cross_translation_unit_static_variables_accessor.hpp
     declarative_component_instance_creator.cpp
     declarative_component_instance_creator.hpp
+    declarative_component_property_instances_collecting_visitor.hpp
     declarative_source_compiler.cpp
     declarative_source_compiler.hpp
     execution.cpp

@@ -95,6 +95,9 @@ const sema::sema_type& declarative_source_compiler::component_type(
   if (node.name().str() == "StaticLibrary") {
     return m_builtin_context.builtin_types().cmake->library;
   }
+  if (node.name().str() == "Executable") {
+    return m_builtin_context.builtin_types().cmake->executable;
+  }
 
   CMSL_UNREACHABLE("Unknown component type");
 }

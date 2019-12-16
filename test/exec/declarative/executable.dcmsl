@@ -1,0 +1,19 @@
+Executable {
+    name: "executable_name"
+    files: [
+        "exec.cpp"
+    ]
+
+    include_dirs: [
+        "include"
+    ]
+
+    compile_options: [
+        "-DANSWER=42"
+    ]
+
+    dependencies: [
+        "dependency",
+        "another_dependency"
+    ]
+}
