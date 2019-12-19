@@ -1,4 +1,6 @@
 set(DECL_SEMA_SOURCES
+    builtin_decl_namespace_context.cpp
+    builtin_decl_namespace_context.hpp
     component_creation_sema_function.hpp
     sema_builder_ast_visitor.cpp
     sema_builder_ast_visitor.hpp
