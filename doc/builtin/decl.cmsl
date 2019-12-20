@@ -14,4 +14,17 @@ class forwarding_lists
   list<string> private;
 };
 
+/**
+ * \brief Represents a product built by the buildsystem (e.g. library,
+ * executable).
+ */
+class product
+{
+  string name;
+  forwarding_lists files;
+  forwarding_lists include_dirs;
+  forwarding_lists compile_options;
+  forwarding_lists dependencies;
+};
+
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sema/builtin_context_base.hpp"
+#include "sema/builtin_types_accessor.hpp"
 
 namespace cmsl {
 
@@ -33,10 +34,12 @@ private:
   void add_types();
   void add_functions();
 
-  const sema::sema_type& add_forwarding_lists_type();
+  sema::type_builder add_forwarding_lists_type();
+  sema::type_builder add_product_type(
+    const sema::sema_type& forwarding_lists_type);
 
 private:
-  //    sema::builtin_types_accessor m_builtin_types;
+  sema::builtin_types_accessor m_builtin_types;
   sema::generic_type_creation_utils& m_generics_creation_utils;
 
   std::unique_ptr<decl_namespace_types_accessor> m_types_accessor;
