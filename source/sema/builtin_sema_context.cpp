@@ -620,4 +620,8 @@ builtin_sema_context::builtin_identifiers_info() const
 {
   return m_cmake_namespace_context->builtin_identifiers_info();
 }
+generic_type_creation_utils& builtin_sema_context::generic_creation_utils()
+{
+  return *m_generics_creation_utils;
+}
 }

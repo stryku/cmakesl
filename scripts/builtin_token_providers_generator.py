@@ -336,6 +336,15 @@ GENERATION_INFO = {
 
             'add_declarative_file': ['unspecified_type add_declarative_file(string file_path);', 'unspecified_type ', 'add_declarative_file'],
         }
+    },
+    'decl': {
+        'tokens': {
+            'name': ['namespace decl {', 'namespace ', 'decl'],
+            'forwarding_lists_name': ['class forwarding_lists', 'class ', 'forwarding_lists'],
+            'forwarding_lists_interface': ['list<string> interface;', 'list<string> ', 'interface'],
+            'forwarding_lists_public': ['list<string> public;', 'list<string> ', 'public'],
+            'forwarding_lists_private': ['list<string> private;', 'list<string> ', 'private'],
+        }
     }
 }
 

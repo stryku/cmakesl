@@ -1,6 +1,6 @@
 #include "exec/global_executor.hpp"
-
 #include "common/assert.hpp"
+#include "decl_sema/builtin_decl_namespace_context.hpp"
 #include "exec/compiled_source.hpp"
 #include "exec/declarative_source_compiler.hpp"
 #include "exec/execution.hpp"
@@ -42,6 +42,7 @@ global_executor::global_executor(const std::string& root_path,
   , m_builtin_identifiers_observer{ m_cmake_facade }
   , m_builtin_tokens{ std::make_unique<sema::builtin_token_provider>("") }
   , m_builtin_context{ create_builtin_context() }
+  , m_decl_namespace_context{ create_decl_namespace_context() }
   , m_static_variables{ m_cmake_facade, m_builtin_context->builtin_types(),
                         *this }
 {
@@ -212,6 +213,16 @@ global_executor::create_builtin_context()
   auto refs = sema::qualified_contextes_refs{ m_builtin_qualified_contexts };
   return std::make_unique<sema::builtin_sema_context>(
     m_factories, m_errors_observer, *m_builtin_tokens, refs);
+}
+
+std::unique_ptr<decl_sema::builtin_decl_namespace_context>
+global_executor::create_decl_namespace_context()
+{
+  auto refs = sema::qualified_contextes_refs{ m_builtin_qualified_contexts };
+  return std::make_unique<decl_sema::builtin_decl_namespace_context>(
+    *m_builtin_context, refs, m_factories, *m_builtin_tokens,
+    m_builtin_context->builtin_types(),
+    m_builtin_context->generic_creation_utils());
 }
 
 const sema::sema_node& global_executor::get_sema_tree(

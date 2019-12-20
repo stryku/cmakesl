@@ -50,6 +50,7 @@ protected:
   };
 
   using builtin_functions_t = std::vector<builtin_function_info>;
+  using token_type_t = lexer::token_type;
 
   type_builder add_type_and_get_builder(const lexer::token& name);
 

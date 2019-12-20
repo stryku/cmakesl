@@ -21,6 +21,7 @@ cmsl_add_test(
         extern_type_smoke_test.cpp
         fatal_error_smoke_test.cpp
         for_loop_smoke_test.cpp
+        forwarding_lists_type_smoke_test.cpp
         function_smoke_test.cpp
         if_else_smoke_test.cpp
         import_test/import_smoke_test.cpp

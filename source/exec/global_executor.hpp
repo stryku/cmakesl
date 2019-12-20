@@ -16,6 +16,10 @@
 #include <vector>
 
 namespace cmsl {
+namespace decl_sema {
+class builtin_decl_namespace_context;
+}
+
 namespace facade {
 class cmake_facade;
 }
@@ -64,6 +68,8 @@ private:
 
   sema::qualified_contextes create_qualified_contextes() const;
   std::unique_ptr<sema::builtin_sema_context> create_builtin_context();
+  std::unique_ptr<decl_sema::builtin_decl_namespace_context>
+  create_decl_namespace_context();
 
   std::string build_full_import_path(cmsl::string_view import_path) const;
 
@@ -112,6 +118,8 @@ private:
 
   std::unique_ptr<sema::builtin_token_provider> m_builtin_tokens;
   std::unique_ptr<sema::builtin_sema_context> m_builtin_context;
+  std::unique_ptr<decl_sema::builtin_decl_namespace_context>
+    m_decl_namespace_context;
 
   cross_translation_unit_static_variables m_static_variables;
 

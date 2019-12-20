@@ -1,0 +1,17 @@
+/** \brief The builtin decl namespace.
+ * Declares types of objects created by declarative part of CMakeSL.
+ *
+ */
+namespace decl {
+
+/**
+ * \brief Represents a generic lists of values, divided by forwarding strategy.
+ */
+class forwarding_lists
+{
+  list<string> interface;
+  list<string> public;
+  list<string> private;
+};
+
+}

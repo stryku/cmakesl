@@ -14,6 +14,8 @@ struct qualified_contextes_refs;
 }
 
 namespace decl_sema {
+struct decl_namespace_types_accessor;
+
 class builtin_decl_namespace_context : sema::builtin_context_base
 {
 public:
@@ -23,10 +25,21 @@ public:
     const sema::builtin_token_provider& builtin_token_provider,
     const sema::builtin_types_accessor& builtin_types,
     sema::generic_type_creation_utils& generics_creation_utils);
+  ~builtin_decl_namespace_context() override;
 
 private:
-  const sema::builtin_types_accessor& m_builtin_types;
-  sema::generic_type_creation_utils& m_generics_creation_utils
+  using token_type_t = lexer::token_type;
+
+  void add_types();
+  void add_functions();
+
+  const sema::sema_type& add_forwarding_lists_type();
+
+private:
+  //    sema::builtin_types_accessor m_builtin_types;
+  sema::generic_type_creation_utils& m_generics_creation_utils;
+
+  std::unique_ptr<decl_namespace_types_accessor> m_types_accessor;
 };
 }
 }

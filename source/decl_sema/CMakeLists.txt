@@ -13,6 +13,7 @@ add_library(decl_sema "${DECL_SEMA_SOURCES}")
 target_include_directories(decl_sema
     PRIVATE
         ${CMAKESL_SOURCES_DIR}
+        ${CMAKESL_GENERATED_PARENT_DIR}
 )
 
 target_link_libraries(decl_sema

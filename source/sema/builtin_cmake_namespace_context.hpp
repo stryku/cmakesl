@@ -29,8 +29,6 @@ public:
   const cmake_namespace_types_accessor& types_accessor() const;
 
 private:
-  using token_type_t = lexer::token_type;
-
   void add_types();
   void add_functions();
   void add_identifiers();

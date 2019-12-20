@@ -16,13 +16,13 @@ class instance;
 }
 
 namespace sema {
+class builtin_cmake_namespace_context;
 class builtin_token_provider;
 class factories_provider;
-enum class builtin_function_kind;
-class type_builder;
-struct qualified_contextes_refs;
 class generic_type_creation_utils;
-class builtin_cmake_namespace_context;
+class type_builder;
+enum class builtin_function_kind;
+struct qualified_contextes_refs;
 
 class builtin_sema_context : public builtin_context_base
 {
@@ -37,6 +37,8 @@ public:
   builtin_types_accessor builtin_types() const;
 
   std::vector<builtin_identifier_info> builtin_identifiers_info() const;
+
+  generic_type_creation_utils& generic_creation_utils();
 
 private:
   using token_type_t = lexer::token_type;
