@@ -21,7 +21,7 @@ builtin_decl_namespace_context::builtin_decl_namespace_context(
   sema::generic_type_creation_utils& generics_creation_utils)
   : builtin_context_base{ qualified_ctxs, factories, builtin_token_provider,
                           "decl", &parent }
-  //  , m_builtin_types{ builtin_types }
+  , m_builtin_types{ builtin_types }
   , m_generics_creation_utils{ generics_creation_utils }
 {
   auto guard = m_qualified_ctxs.all_qualified_ctxs_guard(
@@ -35,15 +35,16 @@ builtin_decl_namespace_context::~builtin_decl_namespace_context() = default;
 
 void builtin_decl_namespace_context::add_types()
 {
-  add_forwarding_lists_type();
+  const auto forwarding_lists_manipulator = add_forwarding_lists_type();
+  const auto product_type_manipulator =
+    add_product_type(forwarding_lists_manipulator.built_type().ty);
 }
 
 void builtin_decl_namespace_context::add_functions()
 {
 }
 
-const sema::sema_type&
-builtin_decl_namespace_context::add_forwarding_lists_type()
+sema::type_builder builtin_decl_namespace_context::add_forwarding_lists_type()
 {
   static const auto token = m_builtin_tokens.decl().forwarding_lists_name();
   const auto name_representation =
@@ -68,7 +69,39 @@ builtin_decl_namespace_context::add_forwarding_lists_type()
   }
 
   builder.build_builtin_and_register_in_context();
-  return builder.built_type().ty;
+  return builder;
+}
+
+sema::type_builder builtin_decl_namespace_context::add_product_type(
+  const sema::sema_type& forwarding_lists_type)
+{
+  static const auto token = m_builtin_tokens.decl().product_name();
+  const auto name_representation =
+    ast::type_representation{ ast::qualified_name{ token } };
+  sema::type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
+                              name_representation };
+
+  const auto members = {
+    builtin_variable_info{ m_builtin_tokens.decl().product_name_member(),
+                           m_builtin_types.string },
+    builtin_variable_info{ m_builtin_tokens.decl().product_files(),
+                           forwarding_lists_type },
+    builtin_variable_info{ m_builtin_tokens.decl().product_include_dirs(),
+                           forwarding_lists_type },
+    builtin_variable_info{ m_builtin_tokens.decl().product_compile_options(),
+                           forwarding_lists_type },
+    builtin_variable_info{ m_builtin_tokens.decl().product_dependencies(),
+                           forwarding_lists_type }
+  };
+
+  for (const auto& member : members) {
+    const auto id_index = sema::identifiers_index_provider::get_next();
+    sema::member_info info{ member.name, member.type, id_index };
+    builder.with_member(info);
+  }
+
+  builder.build_builtin_and_register_in_context();
+  return builder;
 }
 
 }

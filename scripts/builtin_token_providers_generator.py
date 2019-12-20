@@ -344,6 +344,14 @@ GENERATION_INFO = {
             'forwarding_lists_interface': ['list<string> interface;', 'list<string> ', 'interface'],
             'forwarding_lists_public': ['list<string> public;', 'list<string> ', 'public'],
             'forwarding_lists_private': ['list<string> private;', 'list<string> ', 'private'],
+
+            'product_name': ['class product', 'class ', 'product'],
+            'product_name_member': ['string name;', 'string ', 'name'],
+            'product_files': ['forwarding_lists files;', 'forwarding_lists ', 'files'],
+            'product_include_dirs': ['forwarding_lists include_dirs;', 'forwarding_lists ', 'include_dirs'],
+            'product_compile_options': ['forwarding_lists compile_options;', 'forwarding_lists ', 'compile_options'],
+            'product_dependencies': ['forwarding_lists dependencies;', 'forwarding_lists ', 'dependencies'],
+
         }
     }
 }

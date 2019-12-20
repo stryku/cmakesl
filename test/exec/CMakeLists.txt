@@ -35,6 +35,7 @@ cmsl_add_test(
         mock/instances_holder_mock.hpp
         namespaces_smoke_test.cpp
         option_smoke_test.cpp
+        product_type_smoke_test.cpp
         project_smoke_test.cpp
         reference_smoke_tests.cpp
         scopes_smoke_test.cpp
