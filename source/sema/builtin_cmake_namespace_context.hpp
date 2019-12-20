@@ -9,10 +9,10 @@
 namespace cmsl::sema {
 class builtin_token_provider;
 class factories_provider;
-struct qualified_contextes_refs;
 class generic_type_creation_utils;
-struct cmake_namespace_types_accessor;
 class type_builder;
+struct cmake_namespace_types_accessor;
+struct qualified_contextes_refs;
 
 class builtin_cmake_namespace_context : public builtin_context_base
 {
@@ -23,14 +23,12 @@ public:
     const builtin_token_provider& builtin_token_provider,
     const builtin_types_accessor& builtin_types,
     generic_type_creation_utils& generics_creation_utils);
-  virtual ~builtin_cmake_namespace_context();
+  ~builtin_cmake_namespace_context() override;
 
   const std::vector<builtin_identifier_info>& builtin_identifiers_info() const;
   const cmake_namespace_types_accessor& types_accessor() const;
 
 private:
-  using token_type_t = lexer::token_type;
-
   void add_types();
   void add_functions();
   void add_identifiers();

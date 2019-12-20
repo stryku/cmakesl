@@ -37,6 +37,7 @@ void builtin_token_provider::initialize_documentation_paths()
   m_documentation_paths[provider_type::void_] = path_provider("void.cmsl");
   m_documentation_paths[provider_type::option] = path_provider("option.cmsl");
   m_documentation_paths[provider_type::cmake] = path_provider("cmake.cmsl");
+  m_documentation_paths[provider_type::decl] = path_provider("decl.cmsl");
 }
 
 std::optional<cmsl::string_view> builtin_token_provider::get_path(
@@ -114,5 +115,10 @@ cmake_tokens_provider builtin_token_provider::cmake() const
 extern_tokens_provider builtin_token_provider::extern_() const
 {
   return extern_tokens_provider{ get_path(provider_type::extern_) };
+}
+
+decl_tokens_provider builtin_token_provider::decl() const
+{
+  return decl_tokens_provider{ get_path(provider_type::decl) };
 }
 }

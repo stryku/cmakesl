@@ -1,18 +1,16 @@
-
-
-set(BUILTIN_TOKENS_PROVIDERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
+set(BUILTIN_TOKENS_PROVIDERS_DIR ${CMAKESL_GENERATED_PARENT_DIR}/generated)
 set(BUILTIN_TOKENS_PROVIDER_GENERATOR_COMMAND
     python3
     ${CMAKESL_SCRIPTS_DIR}/builtin_token_providers_generator.py
-        ${CMAKESL_DOC_DIR}/builtin
-        ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
+    ${CMAKESL_DOC_DIR}/builtin
+    ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
 )
 
 file(MAKE_DIRECTORY ${BUILTIN_TOKENS_PROVIDERS_DIR})
 
 add_custom_command(
-        OUTPUT  ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
-        COMMAND ${BUILTIN_TOKENS_PROVIDER_GENERATOR_COMMAND}
+    OUTPUT  ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
+    COMMAND ${BUILTIN_TOKENS_PROVIDER_GENERATOR_COMMAND}
 )
 
 set(SEMA_SOURCES
@@ -98,7 +96,7 @@ add_library(sema "${SEMA_SOURCES}")
 target_include_directories(sema
     PRIVATE
         ${CMAKESL_SOURCES_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKESL_GENERATED_PARENT_DIR}
 )
 
 target_link_libraries(sema
