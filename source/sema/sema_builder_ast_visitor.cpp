@@ -981,6 +981,9 @@ sema_builder_ast_visitor::convert_to_cast_node_if_need(
   const sema_type& expected_result_type,
   std::unique_ptr<expression_node> expression)
 {
+  // Inside this function, we're assured that the initialization is
+  // semantically valid.
+
   // Designated initializers never need to be casted. Semantic for them has
   // been already checked by the variable_initialization_checker.
   if (expression->type().is_designated_initializer()) {
@@ -992,6 +995,19 @@ sema_builder_ast_visitor::convert_to_cast_node_if_need(
   }
 
   const auto& ast_node = expression->ast_node();
+
+  const auto cast_to_base_is_needed =
+    (expected_result_type.decayed() != expression->type().decayed());
+  if (cast_to_base_is_needed) {
+    if (expected_result_type.is_reference()) {
+      return std::make_unique<cast_to_reference_to_base_node>(
+        ast_node, expected_result_type, std::move(expression));
+
+    } else {
+      return std::make_unique<cast_to_base_value_node>(
+        ast_node, expected_result_type, std::move(expression));
+    }
+  }
 
   if (expected_result_type.is_reference()) {
     return std::make_unique<cast_to_reference_node>(

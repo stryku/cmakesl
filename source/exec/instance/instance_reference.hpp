@@ -11,7 +11,9 @@ class instance_reference : public instance
 public:
   instance_reference(unsigned index, execution_context& ctx);
 
-  explicit instance_reference(instance& referenced_instance);
+  explicit instance_reference(
+    instance& referenced_instance,
+    const sema::sema_type* referenced_base_type = nullptr);
 
   instance_value_variant value() const override;
   instance_value_accessor value_accessor() override;
@@ -32,6 +34,7 @@ public:
 
 private:
   instance& m_instance;
+  const sema::sema_type* m_referenced_base_type;
 };
 }
 }

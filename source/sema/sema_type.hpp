@@ -38,7 +38,8 @@ public:
 
   explicit sema_type(const sema_type_reference& reference, flags_t f = {});
   explicit sema_type(const sema_context& ctx, ast::type_representation name,
-                     std::vector<member_info> members, flags_t f = {});
+                     std::vector<member_info> members, flags_t f = {},
+                     const sema_type* derived_type = nullptr);
 
   sema_type(const sema_type&) = delete;
   sema_type& operator=(sema_type&&) = delete;
@@ -60,7 +61,11 @@ public:
   bool operator==(const sema_type& rhs) const;
   bool operator!=(const sema_type& rhs) const;
 
+  // For reference types returns the referenced type.
+  const sema_type& decayed() const;
   const sema_type& referenced_type() const;
+  const sema_type* derived_type() const;
+  bool derives_from(const sema_type& base) const;
 
   std::string fully_qualified_name() const;
 
@@ -70,5 +75,6 @@ private:
   std::vector<member_info> m_members;
   const sema_type* m_referenced_type{ nullptr };
   flags_t m_flags;
+  const sema_type* m_derived_type{ nullptr };
 };
 }

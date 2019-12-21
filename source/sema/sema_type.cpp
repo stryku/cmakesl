@@ -17,11 +17,13 @@ sema_type::sema_type(const sema_type_reference& reference, flags_t f)
 }
 
 sema_type::sema_type(const sema_context& ctx, ast::type_representation name,
-                     std::vector<member_info> members, flags_t f)
+                     std::vector<member_info> members, flags_t f,
+                     const sema_type* derived_type)
   : m_ctx{ ctx }
   , m_name{ std::move(name) }
   , m_members{ std::move(members) }
   , m_flags{ f }
+  , m_derived_type{ derived_type }
 {
 }
 
@@ -43,17 +45,24 @@ std::optional<member_info> sema_type::find_member(cmsl::string_view name) const
 
   auto found =
     std::find_if(std::cbegin(m_members), std::cend(m_members), pred);
-  if (found == std::cend(m_members)) {
-    return {};
+  if (found != std::cend(m_members)) {
+    return *found;
   }
 
-  return *found;
+  return m_derived_type ? m_derived_type->find_member(name) : std::nullopt;
 }
 
 single_scope_function_lookup_result_t sema_type::find_member_function(
   token_t name) const
 {
-  return m_ctx.find_function_in_this_scope(name);
+  auto result = m_ctx.find_function_in_this_scope(name);
+  if (m_derived_type) {
+    const auto derived_result = m_derived_type->find_member_function(name);
+    std::copy(std::cbegin(derived_result), std::cend(derived_result),
+              std::back_inserter(result));
+  }
+
+  return result;
 }
 
 bool sema_type::operator==(const sema_type& rhs) const
@@ -69,7 +78,8 @@ bool sema_type::operator!=(const sema_type& rhs) const
 
 bool sema_type::is_complex() const
 {
-  return !m_members.empty();
+  return !m_members.empty() ||
+    (m_derived_type && m_derived_type->is_complex());
 }
 
 const std::vector<member_info>& sema_type::members() const
@@ -110,5 +120,24 @@ std::string sema_type::fully_qualified_name() const
   }
 
   return name;
+}
+const sema_type* sema_type::derived_type() const
+{
+  return m_derived_type;
+}
+
+bool sema_type::derives_from(const sema_type& base) const
+{
+  const auto derived = decayed().derived_type();
+  if (!derived) {
+    return false;
+  }
+
+  return *derived == base.decayed() || m_derived_type->derives_from(base);
+}
+
+const sema_type& sema_type::decayed() const
+{
+  return is_reference() ? referenced_type() : *this;
 }
 }

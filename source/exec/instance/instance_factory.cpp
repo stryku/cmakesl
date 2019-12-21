@@ -54,6 +54,12 @@ std::unique_ptr<instance> instance_factory2::create_reference(
   return std::make_unique<instance_reference>(referenced_instance);
 }
 
+std::unique_ptr<instance> instance_factory2::create_reference_to_base(
+  instance& referenced_instance, const sema::sema_type& base_type) const
+{
+  return std::make_unique<instance_reference>(referenced_instance, &base_type);
+}
+
 std::unique_ptr<instance> instance_factory2::create(
   const sema::sema_type& type) const
 {
@@ -71,8 +77,7 @@ std::unique_ptr<instance> instance_factory2::create(
 }
 
 std::unique_ptr<instance> instance_factory2::create_observable(
-  const sema::sema_type& type,
-  instance_value_observer_t observer) const
+  const sema::sema_type& type, instance_value_observer_t observer) const
 {
   return std::make_unique<observable_instance>(type, std::move(observer));
 }

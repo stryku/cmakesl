@@ -25,9 +25,15 @@ const sema_type valid_type{ valid_context,
                             ast::type_representation{
                               ast::qualified_name{ token_identifier("foo") } },
                             {} };
+const sema_type derived_type{ valid_context,
+                              ast::type_representation{ ast::qualified_name{
+                                token_identifier("bar") } },
+                              {},
+                              {},
+                              &valid_type };
 const sema_type different_type{ valid_context,
                                 ast::type_representation{ ast::qualified_name{
-                                  token_identifier("bar") } },
+                                  token_identifier("baz") } },
                                 {} };
 const sema_type designated_initialization_type{
   valid_context,
@@ -94,11 +100,40 @@ TEST_F(VariableInitializationCheck,
 }
 
 TEST_F(VariableInitializationCheck,
+       NonReferenceInitializedFromDerivedNonReference_ReturnsCanInitialize)
+{
+  auto init_expression = init_expression_mock();
+
+  EXPECT_CALL(init_expression, type()).WillOnce(ReturnRef(derived_type));
+
+  variable_initialization_checker checker;
+  const auto init_issues = checker.check(valid_type, init_expression);
+
+  EXPECT_TRUE(init_issues.empty());
+}
+
+TEST_F(VariableInitializationCheck,
        NonReferenceInitializedFromReference_ReturnsCanInitialize)
 {
   auto init_expression = init_expression_mock();
 
   sema_type expression_type{ sema_type_reference{ valid_type } };
+
+  EXPECT_CALL(init_expression, type())
+    .WillRepeatedly(ReturnRef(expression_type));
+
+  variable_initialization_checker checker;
+  const auto init_issues = checker.check(valid_type, init_expression);
+
+  EXPECT_TRUE(init_issues.empty());
+}
+
+TEST_F(VariableInitializationCheck,
+       NonReferenceInitializedFromDerivedReference_ReturnsCanInitialize)
+{
+  auto init_expression = init_expression_mock();
+
+  sema_type expression_type{ sema_type_reference{ derived_type } };
 
   EXPECT_CALL(init_expression, type())
     .WillRepeatedly(ReturnRef(expression_type));
@@ -126,6 +161,23 @@ TEST_F(VariableInitializationCheck,
   EXPECT_TRUE(init_issues.empty());
 }
 
+TEST_F(VariableInitializationCheck,
+       ReferenceInitializedFromDerivedReference_ReturnsCanInitialize)
+{
+  auto init_expression = init_expression_mock();
+
+  sema_type variable_type{ sema_type_reference{ valid_type } };
+  sema_type expression_type{ sema_type_reference{ derived_type } };
+
+  EXPECT_CALL(init_expression, type())
+    .WillRepeatedly(ReturnRef(expression_type));
+
+  variable_initialization_checker checker;
+  const auto init_issues = checker.check(variable_type, init_expression);
+
+  EXPECT_TRUE(init_issues.empty());
+}
+
 TEST_F(
   VariableInitializationCheck,
   ReferenceInitializedFromNonReferenceNonTemporaryValue_ReturnsCanInitialize)
@@ -143,7 +195,25 @@ TEST_F(
   const auto init_issues = checker.check(variable_type, init_expression);
 
   EXPECT_TRUE(init_issues.empty());
-  ;
+}
+
+TEST_F(
+  VariableInitializationCheck,
+  ReferenceInitializedFromDerivedNonReferenceNonTemporaryValue_ReturnsCanInitialize)
+{
+  auto init_expression = init_expression_mock();
+
+  sema_type variable_type{ sema_type_reference{ valid_type } };
+
+  EXPECT_CALL(init_expression, type()).WillRepeatedly(ReturnRef(derived_type));
+
+  EXPECT_CALL(init_expression, produces_temporary_value())
+    .WillRepeatedly(Return(false));
+
+  variable_initialization_checker checker;
+  const auto init_issues = checker.check(variable_type, init_expression);
+
+  EXPECT_TRUE(init_issues.empty());
 }
 
 TEST_F(

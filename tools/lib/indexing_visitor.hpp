@@ -31,6 +31,8 @@ public:
   void visit(const sema::cast_to_value_node& node) override;
   void visit(const sema::class_member_access_node& node) override;
   void visit(const sema::class_node& node) override;
+  void visit(const sema::cast_to_base_value_node& node) override;
+  void visit(const sema::cast_to_reference_to_base_node& node) override;
   void visit(const sema::conditional_node& node) override;
   void visit(const sema::constructor_call_node& node) override;
   void visit(const sema::designated_initializers_node& node) override;

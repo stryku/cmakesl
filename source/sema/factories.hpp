@@ -114,12 +114,14 @@ public:
   const sema_type& create(const sema_context& ctx,
                           ast::type_representation name,
                           std::vector<member_info> members, bool exported,
-                          sema_type::flags_t flags = {});
+                          sema_type::flags_t flags = {},
+                          const sema_type* derived_type = nullptr);
 
   const sema_type& create_builtin(const sema_context& ctx,
                                   ast::type_representation name,
                                   std::vector<member_info> members,
-                                  bool exported);
+                                  bool exported,
+                                  const sema_type* derived_type = nullptr);
 
   const sema_type& create_reference(const sema_type& referenced_type,
                                     bool exported);

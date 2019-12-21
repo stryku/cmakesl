@@ -49,7 +49,7 @@ const sema_type& type_builder::build_and_register_in_context(
 {
   auto factory = m_factories.type_factory(m_types_ctx);
   const auto& type = factory.create(m_type_ctx, m_name, std::move(m_members),
-                                    m_exported, flags);
+                                    m_exported, flags, m_derived_type);
   const auto& reference_type = factory.create_reference(type, m_exported);
   m_current_ctx.add_type(type);
   m_current_ctx.add_type(reference_type);
@@ -79,8 +79,8 @@ const sema_type& type_builder::build_enum_and_register_in_context(
 const sema_type& type_builder::build_builtin_and_register_in_context()
 {
   auto factory = m_factories.type_factory(m_types_ctx);
-  const auto& type = factory.create_builtin(m_type_ctx, m_name,
-                                            std::move(m_members), m_exported);
+  const auto& type = factory.create_builtin(
+    m_type_ctx, m_name, std::move(m_members), m_exported, m_derived_type);
   const auto& reference_type = factory.create_reference(type, m_exported);
   m_current_ctx.add_type(type);
   m_current_ctx.add_type(reference_type);
@@ -121,6 +121,12 @@ type_builder::built_type_info type_builder::built_type() const
 type_builder& type_builder::with_exported(bool exported)
 {
   m_exported = exported;
+  return *this;
+}
+
+type_builder& type_builder::with_derived_type(const sema_type& ty)
+{
+  m_derived_type = &ty;
   return *this;
 }
 }

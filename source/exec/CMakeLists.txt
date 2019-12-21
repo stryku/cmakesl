@@ -18,6 +18,7 @@ set(EXEC_SOURCES
     execution_context.cpp
     execution_context.hpp
     expression_evaluation_context.hpp
+    expression_evaluation_visitor.cpp
     expression_evaluation_visitor.hpp
     extern_argument_parser.cpp
     extern_argument_parser.hpp

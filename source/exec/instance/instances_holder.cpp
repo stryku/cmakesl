@@ -53,6 +53,16 @@ inst::instance* instances_holder::create_reference(
   return ptr;
 }
 
+inst::instance* instances_holder::create_reference_to_base(
+  inst::instance& referenced_instance, const sema::sema_type& base_type)
+{
+  auto instance = instance_factory2{}.create_reference_to_base(
+    referenced_instance, base_type);
+  auto ptr = instance.get();
+  m_instances.emplace_back(std::move(instance));
+  return ptr;
+}
+
 inst::instance* instances_holder::create(const sema::sema_type& type)
 {
   auto instance = instance_factory2{}.create(type);

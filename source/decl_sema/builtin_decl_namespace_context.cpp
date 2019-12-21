@@ -39,6 +39,12 @@ void builtin_decl_namespace_context::add_types()
   const auto& product_type_type = add_product_type_type();
   const auto product_type_manipulator = add_product_type(
     product_type_type, forwarding_lists_manipulator.built_type().ty);
+  const auto executable_type =
+    add_executable_type(product_type_manipulator.built_type().ty);
+  const auto static_library_type =
+    add_static_library_type(product_type_manipulator.built_type().ty);
+  const auto shared_library_type =
+    add_shared_library_type(product_type_manipulator.built_type().ty);
 }
 
 void builtin_decl_namespace_context::add_functions()
@@ -118,5 +124,50 @@ const sema::sema_type& builtin_decl_namespace_context::add_product_type_type()
 
   return add_enum_type(m_builtin_tokens.decl().product_type_name(),
                        enumerators, m_builtin_types);
+}
+
+sema::type_builder builtin_decl_namespace_context::add_shared_library_type(
+  const sema::sema_type& product_type)
+{
+  static const auto token = m_builtin_tokens.decl().shared_library_name();
+  const auto name_representation =
+    ast::type_representation{ ast::qualified_name{ token } };
+  sema::type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
+                              name_representation };
+
+  builder.with_derived_type(product_type);
+
+  builder.build_builtin_and_register_in_context();
+  return builder;
+}
+
+sema::type_builder builtin_decl_namespace_context::add_static_library_type(
+  const sema::sema_type& product_type)
+{
+  static const auto token = m_builtin_tokens.decl().static_library_name();
+  const auto name_representation =
+    ast::type_representation{ ast::qualified_name{ token } };
+  sema::type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
+                              name_representation };
+
+  builder.with_derived_type(product_type);
+
+  builder.build_builtin_and_register_in_context();
+  return builder;
+}
+
+sema::type_builder builtin_decl_namespace_context::add_executable_type(
+  const sema::sema_type& product_type)
+{
+  static const auto token = m_builtin_tokens.decl().executable_name();
+  const auto name_representation =
+    ast::type_representation{ ast::qualified_name{ token } };
+  sema::type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
+                              name_representation };
+
+  builder.with_derived_type(product_type);
+
+  builder.build_builtin_and_register_in_context();
+  return builder;
 }
 }

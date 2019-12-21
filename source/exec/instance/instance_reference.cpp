@@ -8,8 +8,10 @@ instance_reference::instance_reference(unsigned index, execution_context& ctx)
 {
 }
 
-instance_reference::instance_reference(instance& referenced_instance)
+instance_reference::instance_reference(
+  instance& referenced_instance, const sema::sema_type* referenced_base_type)
   : m_instance{ referenced_instance }
+  , m_referenced_base_type{ referenced_base_type }
 {
 }
 
@@ -62,7 +64,7 @@ sema::single_scope_function_lookup_result_t instance_reference::find_function(
 
 const sema::sema_type& instance_reference::type() const
 {
-  return m_instance.type();
+  return m_referenced_base_type ? *m_referenced_base_type : m_instance.type();
 }
 
 void instance_reference::assign(std::unique_ptr<instance> val)

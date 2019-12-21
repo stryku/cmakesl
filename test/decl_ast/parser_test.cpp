@@ -47,7 +47,10 @@ public:
   void visit(const component_node& node) override
   {
     m_result << "component{"
-             << "name:" << node.name().str() << ";nodes:";
+             << "name:" << node.name().str() << ";derived:"
+             << (node.derived_type_name() ? node.derived_type_name()->str()
+                                          : cmsl::string_view{})
+             << ";nodes:";
     for (const auto& n : node.nodes()) {
       n->visit(*this);
     }
@@ -156,8 +159,8 @@ TEST_F(ParserTest, Component_Empty_GetComponentWithoutNodes)
   const auto name_token = token_identifier("Component");
 
   auto expected_ast = std::make_unique<component_node>(
-    name_token, token_open_brace(), component_node::nodes_t{},
-    token_close_brace());
+    name_token, /*derived_type_name=*/std::nullopt, token_open_brace(),
+    component_node::nodes_t{}, token_close_brace());
 
   const auto tokens =
     tokens_container_t{ name_token, token_open_brace(), token_close_brace() };
@@ -169,8 +172,31 @@ TEST_F(ParserTest, Component_Empty_GetComponentWithoutNodes)
   EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
 }
 
+TEST_F(ParserTest, Component_DerivedEmpty_GetComponentWithoutNodes)
+{
+  StrictMock<cmsl::test::strings_container_mock> strings;
+  errs_t errs;
+
+  const auto name_token = token_identifier("Component");
+  const auto derived_type_name = token_identifier("base_type");
+
+  auto expected_ast = std::make_unique<component_node>(
+    name_token, derived_type_name, token_open_brace(),
+    component_node::nodes_t{}, token_close_brace());
+
+  const auto tokens =
+    tokens_container_t{ name_token, token_colon(), derived_type_name,
+                        token_open_brace(), token_close_brace() };
+  auto parser =
+    parser_t{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_component();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
 TEST_F(ParserTest,
-       Component_WithInnedComponentAndProperty_GetComponentWithComponentNode)
+       Component_WithInnerComponentAndProperty_GetComponentWithComponentNode)
 {
   StrictMock<cmsl::test::strings_container_mock> strings;
   errs_t errs;
@@ -178,8 +204,8 @@ TEST_F(ParserTest,
   const auto inner_component_name_token = token_identifier("InnerComponent");
   const auto name_token = token_identifier("Component");
   auto inner_component = std::make_unique<component_node>(
-    inner_component_name_token, token_open_brace(), component_node::nodes_t{},
-    token_close_brace());
+    inner_component_name_token, /*derived_type_name=*/std::nullopt,
+    token_open_brace(), component_node::nodes_t{}, token_close_brace());
 
   const auto property_value_token = token_kw_true();
   const auto property_name_token = token_identifier("foo");
@@ -192,7 +218,8 @@ TEST_F(ParserTest,
   nodes.emplace_back(std::move(property));
 
   auto expected_ast = std::make_unique<component_node>(
-    name_token, token_open_brace(), std::move(nodes), token_close_brace());
+    name_token, /*derived_type_name=*/std::nullopt, token_open_brace(),
+    std::move(nodes), token_close_brace());
 
   const auto tokens = tokens_container_t{ name_token,
                                           token_open_brace(),

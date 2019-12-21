@@ -71,19 +71,22 @@ const sema_type& sema_type_factory::create(const sema_context& ctx,
                                            ast::type_representation name,
                                            std::vector<member_info> members,
                                            bool exported,
-                                           sema_type::flags_t flags)
+                                           sema_type::flags_t flags,
+                                           const sema_type* derived_type)
 {
   return create_and_add<sema_type>(name.primary_name_token(), exported, ctx,
-                                   name, std::move(members), flags);
+                                   name, std::move(members), flags,
+                                   derived_type);
 }
 
 const sema_type& sema_type_factory::create_builtin(
   const sema_context& ctx, ast::type_representation name,
-  std::vector<member_info> members, bool exported)
+  std::vector<member_info> members, bool exported,
+  const sema_type* derived_type)
 {
   return create_and_add<sema_type>(name.primary_name_token(), exported, ctx,
                                    name, std::move(members),
-                                   sema_type::flags::builtin);
+                                   sema_type::flags::builtin, derived_type);
 }
 
 const sema_type& sema_type_factory::create_homogeneous_generic(
