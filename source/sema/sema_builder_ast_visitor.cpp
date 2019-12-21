@@ -534,7 +534,7 @@ void sema_builder_ast_visitor::visit(const ast::id_node& node)
   }
 
   raise_error(id_token,
-              std::string{ id_token.str() } + " identifier not found");
+              '\'' + std::string{ id_token.str() } + "' identifier not found");
 }
 
 void sema_builder_ast_visitor::visit(const ast::return_node& node)

@@ -46,6 +46,7 @@ private:
 TOKEN_PROVIDER_METHOD_TEMPLATE = """
     lexer::token %token_name%() const
     {
+        // %token_value%
         const auto src_range = source_range{ source_location{ %line%, %column%, %absolute_position% },
                                              source_location{ %line%, %column% + %token_length%, %absolute_position% + %token_length% } };
         return lexer::token{ lexer::token_type::%token_type%, src_range, get_source_view()};
@@ -345,7 +346,13 @@ GENERATION_INFO = {
             'forwarding_lists_public': ['list<string> public;', 'list<string> ', 'public'],
             'forwarding_lists_private': ['list<string> private;', 'list<string> ', 'private'],
 
+            'product_type_name': ['enum product_type', 'enum ', 'product_type'],
+            'product_type_executable': ['executable,     // product_type::executable', '', 'executable'],
+            'product_type_static_library': ['static_library, // product_type::static_library', '', 'static_library'],
+            'product_type_shared_library': ['shared_library  // product_type::shared_library', '', 'shared_library'],
+
             'product_name': ['class product', 'class ', 'product'],
+            'product_type_member': ['product_type type;', 'product_type ', 'type'],
             'product_name_member': ['string name;', 'string ', 'name'],
             'product_files': ['forwarding_lists files;', 'forwarding_lists ', 'files'],
             'product_include_dirs': ['forwarding_lists include_dirs;', 'forwarding_lists ', 'include_dirs'],
@@ -417,6 +424,7 @@ def generate_providers():
             method_source = method_source.replace('%column%', str(token_column))
             method_source = method_source.replace('%token_length%', str(token_length))
             method_source = method_source.replace('%token_type%', str(token_type))
+            method_source = method_source.replace('%token_value%', token_value)
 
             methods_source += method_source
 
