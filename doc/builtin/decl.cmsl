@@ -15,11 +15,22 @@ class forwarding_lists
 };
 
 /**
+ * \brief Possible product types.
+ */
+enum product_type
+{
+  executable,     // product_type::executable
+  static_library, // product_type::static_library
+  shared_library  // product_type::shared_library
+};
+
+/**
  * \brief Represents a product built by the buildsystem (e.g. library,
  * executable).
  */
 class product
 {
+  product_type type;
   string name;
   forwarding_lists files;
   forwarding_lists include_dirs;

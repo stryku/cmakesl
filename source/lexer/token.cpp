@@ -45,7 +45,7 @@ cmsl::string_view token::str() const
 
 bool token::operator==(const token& rhs) const
 {
-  return get_type() == rhs.get_type() && str() == rhs.str();
+  return str() == rhs.str();
 }
 
 bool token::operator!=(const token& rhs) const

@@ -35,7 +35,9 @@ private:
   void add_functions();
 
   sema::type_builder add_forwarding_lists_type();
+  const sema::sema_type& add_product_type_type();
   sema::type_builder add_product_type(
+    const sema::sema_type& product_type_type,
     const sema::sema_type& forwarding_lists_type);
 
 private:

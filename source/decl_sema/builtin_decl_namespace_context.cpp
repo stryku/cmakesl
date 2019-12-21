@@ -36,8 +36,9 @@ builtin_decl_namespace_context::~builtin_decl_namespace_context() = default;
 void builtin_decl_namespace_context::add_types()
 {
   const auto forwarding_lists_manipulator = add_forwarding_lists_type();
-  const auto product_type_manipulator =
-    add_product_type(forwarding_lists_manipulator.built_type().ty);
+  const auto& product_type_type = add_product_type_type();
+  const auto product_type_manipulator = add_product_type(
+    product_type_type, forwarding_lists_manipulator.built_type().ty);
 }
 
 void builtin_decl_namespace_context::add_functions()
@@ -73,6 +74,7 @@ sema::type_builder builtin_decl_namespace_context::add_forwarding_lists_type()
 }
 
 sema::type_builder builtin_decl_namespace_context::add_product_type(
+  const sema::sema_type& product_type_type,
   const sema::sema_type& forwarding_lists_type)
 {
   static const auto token = m_builtin_tokens.decl().product_name();
@@ -82,6 +84,8 @@ sema::type_builder builtin_decl_namespace_context::add_product_type(
                               name_representation };
 
   const auto members = {
+    builtin_variable_info{ m_builtin_tokens.decl().product_type_member(),
+                           product_type_type },
     builtin_variable_info{ m_builtin_tokens.decl().product_name_member(),
                            m_builtin_types.string },
     builtin_variable_info{ m_builtin_tokens.decl().product_files(),
@@ -104,4 +108,15 @@ sema::type_builder builtin_decl_namespace_context::add_product_type(
   return builder;
 }
 
+const sema::sema_type& builtin_decl_namespace_context::add_product_type_type()
+{
+  const std::vector<lexer::token> enumerators{
+    m_builtin_tokens.decl().product_type_executable(),
+    m_builtin_tokens.decl().product_type_static_library(),
+    m_builtin_tokens.decl().product_type_shared_library()
+  };
+
+  return add_enum_type(m_builtin_tokens.decl().product_type_name(),
+                       enumerators, m_builtin_types);
+}
 }
