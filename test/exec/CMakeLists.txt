@@ -12,6 +12,9 @@ cmsl_add_test(
         class_smoke_test.cpp
         cmake_namespace_smoke_test.cpp
         comments_smoke_test.cpp
+        decl_executable_smoke_test.cpp
+        decl_shared_library_smoke_test.cpp
+        decl_static_library_smoke_test.cpp
         declarative/declarative_format_smoke_test.cpp
         designated_initializers_smoke_test.cpp
         double_type_smoke_test.cpp
@@ -34,6 +37,7 @@ cmsl_add_test(
         mock/instance_mock.hpp
         mock/instances_holder_mock.hpp
         namespaces_smoke_test.cpp
+        object_slicing_smoke_test.cpp
         option_smoke_test.cpp
         product_type_smoke_test.cpp
         product_type_type_smoke_test.cpp

@@ -34,6 +34,9 @@ public:
   inst::instance* create(instance_value_variant value) override;
   inst::instance* create_reference(
     inst::instance& referenced_instance) override;
+  inst::instance* create_reference_to_base(
+    inst::instance& referenced_instance,
+    const sema::sema_type& base_type) override;
   inst::instance* create(const sema::sema_type& type) override;
   inst::instance* create_observable(const sema::sema_type& type,
                                     instance_value_observer_t observer);

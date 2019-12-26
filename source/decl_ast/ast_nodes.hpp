@@ -18,8 +18,10 @@ class component_node : public ast_node
 public:
   using nodes_t = std::vector<std::unique_ptr<ast_node>>;
 
-  explicit component_node(const token_t& name, const token_t& open_brace,
-                          nodes_t nodes, const token_t& close_brace)
+  explicit component_node(const token_t& name,
+                          std::optional<token_t> derived_type_name,
+                          const token_t& open_brace, nodes_t nodes,
+                          const token_t& close_brace)
     : m_name{ name }
     , m_open_brace{ open_brace }
     , m_nodes{ std::move(nodes) }
@@ -28,6 +30,12 @@ public:
   }
 
   const token_t& name() const { return m_name; }
+
+  std::optional<token_t> derived_type_name() const
+  {
+    return m_derived_type_name;
+  }
+
   const token_t& open_brace() const { return m_open_brace; }
 
   const nodes_t& nodes() const { return m_nodes; }
@@ -48,6 +56,7 @@ public:
 
 private:
   token_t m_name;
+  std::optional<token_t> m_derived_type_name;
   token_t m_open_brace;
   nodes_t m_nodes;
   token_t m_close_brace;

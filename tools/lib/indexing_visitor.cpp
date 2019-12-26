@@ -420,4 +420,14 @@ void indexer::visit(
 {
   // Todo: Implement
 }
+
+void indexer::visit(const sema::cast_to_base_value_node& node)
+{
+  // Todo: Implement
+}
+
+void indexer::visit(const sema::cast_to_reference_to_base_node& node)
+{
+  // Todo: Implement
+}
 }

@@ -16,7 +16,7 @@ cmsl_add_test(
         overload_resolution_test.cpp
         sema_builder_ast_visitor_test.cpp
         sema_dumper_smoke_test.cpp
-        vatiable_initialization_check_test.cpp
+        variable_initialization_check_test.cpp
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
         ${CMAKESL_FACADE_SOURCES_DIR}

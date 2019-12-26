@@ -19,6 +19,15 @@ std::unique_ptr<component_node> parser::parse_component()
     return nullptr;
   }
 
+  std::optional<token_t> derived_type_name;
+  if (const auto colon = try_eat(token_type_t::colon)) {
+    derived_type_name = eat(token_type_t::identifier);
+    if (!derived_type_name) {
+      // Todo: raise error
+      return nullptr;
+    }
+  }
+
   const auto open_brace = eat(token_type_t::open_brace);
   if (!open_brace) {
     return nullptr;
@@ -34,8 +43,8 @@ std::unique_ptr<component_node> parser::parse_component()
     return nullptr;
   }
 
-  return std::make_unique<component_node>(*name, *open_brace,
-                                          std::move(*nodes), *close_brace);
+  return std::make_unique<component_node>(
+    *name, derived_type_name, *open_brace, std::move(*nodes), *close_brace);
 }
 
 std::optional<std::vector<std::unique_ptr<ast_node>>>

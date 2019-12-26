@@ -754,6 +754,32 @@ private:
   std::unique_ptr<expression_node> m_expr;
 };
 
+class cast_to_reference_to_base_node : public expression_node
+{
+public:
+  explicit cast_to_reference_to_base_node(
+    const ast::ast_node& ast_node, const sema_type& base_reference_type,
+    std::unique_ptr<expression_node> expr)
+    : expression_node{ ast_node }
+    , m_base_reference_type{ base_reference_type }
+    , m_expr{ std::move(expr) }
+  {
+    m_expr->set_parent(*this, passkey{});
+  }
+
+  const sema_type& type() const override { return m_base_reference_type; }
+
+  bool produces_temporary_value() const override { return false; }
+
+  const expression_node& expression() const { return *m_expr; }
+
+  VISIT_METHOD
+
+private:
+  const sema_type& m_base_reference_type;
+  std::unique_ptr<expression_node> m_expr;
+};
+
 class cast_to_value_node : public expression_node
 {
 public:
@@ -777,6 +803,32 @@ public:
 
 private:
   const sema_type& m_type;
+  std::unique_ptr<expression_node> m_expr;
+};
+
+class cast_to_base_value_node : public expression_node
+{
+public:
+  explicit cast_to_base_value_node(const ast::ast_node& ast_node,
+                                   const sema_type& base_type,
+                                   std::unique_ptr<expression_node> expr)
+    : expression_node{ ast_node }
+    , m_base_type{ base_type }
+    , m_expr{ std::move(expr) }
+  {
+    m_expr->set_parent(*this, passkey{});
+  }
+
+  const sema_type& type() const override { return m_base_type; }
+
+  bool produces_temporary_value() const override { return false; }
+
+  const expression_node& expression() const { return *m_expr; }
+
+  VISIT_METHOD
+
+private:
+  const sema_type& m_base_type;
   std::unique_ptr<expression_node> m_expr;
 };
 

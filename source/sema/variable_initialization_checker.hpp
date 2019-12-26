@@ -15,16 +15,13 @@ class variable_initialization_checker
 public:
   using issue_t = variable_initialization_issue_t;
 
-  // Returns a vector of isses. If the vector is empty, variable can be
-  // initialized by a given expression.
+  // Returns a vector of issues. If the vector is empty, variable can be
+  // initialized with the given expression.
   std::vector<issue_t> check(
     const sema_type& variable_type,
     const expression_node& initialization_expression) const;
 
 private:
-  // For reference types returns the referenced type.
-  const sema_type& effective_type(const sema_type& type) const;
-
   std::optional<issue_t> check_initialization_of_reference_type(
     const sema_type& variable_type,
     const expression_node& initialization_expression) const;

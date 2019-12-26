@@ -25,6 +25,8 @@ public:
   void visit(const bool_value_node&) override;
   void visit(const break_node&) override;
   void visit(const cast_to_reference_node&) override;
+  void visit(const cast_to_reference_to_base_node&) override;
+  void visit(const cast_to_base_value_node&) override;
   void visit(const cast_to_value_node&) override;
   void visit(const class_member_access_node&) override;
   void visit(const class_node&) override;

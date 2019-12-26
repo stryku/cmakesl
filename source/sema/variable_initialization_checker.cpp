@@ -18,10 +18,11 @@ variable_initialization_checker::check(
 {
   const auto& expression_type = initialization_expression.type();
 
-  const auto expr_t = expression_type.name().to_string();
-  const auto var_t = variable_type.name().to_string();
-
   if (variable_type == expression_type) {
+    return {};
+  }
+
+  if (expression_type.derives_from(variable_type)) {
     return {};
   }
 
@@ -31,13 +32,10 @@ variable_initialization_checker::check(
     const auto& designated_node =
       dynamic_cast<const designated_initializers_node&>(
         initialization_expression);
-    const auto init_issues =
-      check_designated_initializers(variable_type, designated_node);
-
-    return init_issues;
+    return check_designated_initializers(variable_type, designated_node);
   }
 
-  if (effective_type(variable_type) != effective_type(expression_type)) {
+  if (variable_type.decayed() != expression_type.decayed()) {
     issues.emplace_back(different_types{ variable_type, expression_type });
     return issues;
   }
@@ -96,12 +94,6 @@ variable_initialization_checker::check_initialization(
   }
 
   return std::nullopt;
-}
-
-const sema_type& variable_initialization_checker::effective_type(
-  const sema_type& type) const
-{
-  return type.is_reference() ? type.referenced_type() : type;
 }
 
 std::vector<variable_initialization_checker::issue_t>

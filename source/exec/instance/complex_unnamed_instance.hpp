@@ -48,6 +48,8 @@ private:
 
   instance_members_t create_init_members() const;
 
+  instance_members_t create_members_of_type(const sema::sema_type& ty) const;
+
 private:
   kind m_kind;
   const sema::sema_type& m_sema_type;

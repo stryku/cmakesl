@@ -38,4 +38,15 @@ class product
   forwarding_lists dependencies;
 };
 
+class executable : product
+{
+};
+
+class shared_library : product
+{
+};
+
+class static_library : product
+{
+};
 }

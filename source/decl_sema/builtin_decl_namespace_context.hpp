@@ -39,6 +39,11 @@ private:
   sema::type_builder add_product_type(
     const sema::sema_type& product_type_type,
     const sema::sema_type& forwarding_lists_type);
+  sema::type_builder add_shared_library_type(
+    const sema::sema_type& product_type);
+  sema::type_builder add_static_library_type(
+    const sema::sema_type& product_type);
+  sema::type_builder add_executable_type(const sema::sema_type& product_type);
 
 private:
   sema::builtin_types_accessor m_builtin_types;

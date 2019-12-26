@@ -580,4 +580,22 @@ void dumper::visit(const add_subdirectory_with_declarative_script_node& node)
   out() << "-name: " << node.dir_name().value();
   dump_type(node.component_creation_function().return_type());
 }
+
+void dumper::visit(const cast_to_reference_to_base_node& node)
+{
+  out() << "-cast to reference to base";
+  auto ig = ident();
+  dump_type(node.type());
+  out() << "-expression:";
+  node.expression().visit(*this);
+}
+
+void dumper::visit(const cast_to_base_value_node& node)
+{
+  out() << "-cast to base value";
+  auto ig = ident();
+  dump_type(node.type());
+  out() << "-expression:";
+  node.expression().visit(*this);
+}
 }

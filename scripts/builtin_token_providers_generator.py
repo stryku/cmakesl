@@ -359,6 +359,9 @@ GENERATION_INFO = {
             'product_compile_options': ['forwarding_lists compile_options;', 'forwarding_lists ', 'compile_options'],
             'product_dependencies': ['forwarding_lists dependencies;', 'forwarding_lists ', 'dependencies'],
 
+            'executable_name': ['class executable : product', 'class ', 'executable'],
+            'shared_library_name': ['class shared_library : product', 'class ', 'shared_library'],
+            'static_library_name': ['class static_library : product', 'class ', 'static_library'],
         }
     }
 }

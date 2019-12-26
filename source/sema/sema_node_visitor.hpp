@@ -10,6 +10,8 @@ class block_node;
 class bool_value_node;
 class break_node;
 class cast_to_reference_node;
+class cast_to_reference_to_base_node;
+class cast_to_base_value_node;
 class cast_to_value_node;
 class class_member_access_node;
 class class_node;
@@ -57,6 +59,8 @@ public:
   virtual void visit(const break_node& node) = 0;
   virtual void visit(const cast_to_reference_node& node) = 0;
   virtual void visit(const cast_to_value_node& node) = 0;
+  virtual void visit(const cast_to_reference_to_base_node& node) = 0;
+  virtual void visit(const cast_to_base_value_node& node) = 0;
   virtual void visit(const class_member_access_node& node) = 0;
   virtual void visit(const class_node& node) = 0;
   virtual void visit(const conditional_node& node) = 0;
@@ -101,6 +105,8 @@ public:
   virtual void visit(const block_node&) override {}
   virtual void visit(const bool_value_node&) override {}
   virtual void visit(const break_node&) override {}
+  virtual void visit(const cast_to_reference_to_base_node&) override {}
+  virtual void visit(const cast_to_base_value_node&) override {}
   virtual void visit(const cast_to_reference_node&) override {}
   virtual void visit(const cast_to_value_node&) override {}
   virtual void visit(const class_member_access_node&) override {}

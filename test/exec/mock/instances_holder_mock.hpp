@@ -19,6 +19,8 @@ struct instances_holder_mock : public instances_holder_interface
   MOCK_METHOD1(create, instance*(instance_value_variant));
 
   MOCK_METHOD1(create_reference, instance*(instance&));
+  MOCK_METHOD2(create_reference_to_base,
+               instance*(instance&, const sema::sema_type&));
   MOCK_METHOD1(create, instance*(const sema::sema_type&));
   MOCK_METHOD2(create,
                instance*(const sema::sema_type&, instance_value_variant));

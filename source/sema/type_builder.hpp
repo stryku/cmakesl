@@ -38,6 +38,8 @@ public:
 
   type_builder& with_exported(bool exported = true);
 
+  type_builder& with_derived_type(const sema_type& ty);
+
   template <typename Functions>
   type_builder& with_builtin_functions(Functions&& functions)
   {
@@ -73,6 +75,7 @@ private:
   sema_context& m_type_ctx;
   ast::type_representation m_name;
   std::vector<member_info> m_members;
+  const sema_type* m_derived_type{ nullptr };
   const sema_type* m_built_type;
   const sema_type* m_built_type_ref;
   bool m_exported{ false };

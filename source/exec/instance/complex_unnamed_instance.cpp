@@ -123,9 +123,28 @@ const sema::sema_type& complex_unnamed_instance::type() const
 complex_unnamed_instance::instance_members_t
 complex_unnamed_instance::create_init_members() const
 {
+  return create_members_of_type(m_sema_type);
+}
+
+void complex_unnamed_instance::assign(std::unique_ptr<instance> val)
+{
+  // If we're here, we know that the val is an object of
+  // complex_unnamed_instance type, so the static_cast is safe.
+  auto casted_instance = static_cast<complex_unnamed_instance*>(val.get());
+  m_members = std::move(casted_instance->m_members);
+}
+
+complex_unnamed_instance::instance_members_t
+complex_unnamed_instance::create_members_of_type(
+  const sema::sema_type& ty) const
+{
   instance_members_t members;
 
-  const auto& member_declarations = m_sema_type.members();
+  if (const auto derived_type = ty.derived_type()) {
+    members = create_members_of_type(*derived_type);
+  }
+
+  const auto& member_declarations = ty.members();
 
   std::transform(
     std::cbegin(member_declarations), std::cend(member_declarations),
@@ -135,13 +154,5 @@ complex_unnamed_instance::create_init_members() const
     });
 
   return members;
-}
-
-void complex_unnamed_instance::assign(std::unique_ptr<instance> val)
-{
-  // If we're here, we know that the val is an object of
-  // complex_unnamed_instance type, so the static_cast is safe.
-  auto casted_instance = static_cast<complex_unnamed_instance*>(val.get());
-  m_members = std::move(casted_instance->m_members);
 }
 }
