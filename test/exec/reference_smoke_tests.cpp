@@ -97,4 +97,25 @@ TEST_F(ReferenceTypeSmokeTest, UserType)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(1));
 }
+
+TEST_F(ReferenceTypeSmokeTest, ComplexType_CastReferenceToValue)
+{
+  const auto source = "class user_class"
+                      "{"
+                      "    int v;"
+                      "};"
+                      ""
+                      "int main()"
+                      "{"
+                      "    user_class c;"
+                      "    user_class& c_ref = c;"
+                      "    c_ref.v = 42;"
+                      ""
+                      "    user_class c2 = c_ref;"
+                      ""
+                      "    return c2.v;"
+                      "}";
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }
