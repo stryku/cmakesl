@@ -242,9 +242,20 @@ void expression_evaluation_visitor::visit(const sema::cast_to_value_node& node)
   if (m_ctx.cmake_facade.did_fatal_error_occure()) {
     return;
   }
-  const auto& evaluated_reference_type = evaluated->type();
-  const auto& referenced_type = evaluated_reference_type.referenced_type();
-  result = m_ctx.instances.create(referenced_type, evaluated->value());
+  const auto& value_type = evaluated->type();
+
+  if (!value_type.is_complex() && value_type.is_builtin()) {
+    result = m_ctx.instances.create(value_type, evaluated->value());
+    return;
+  }
+
+  auto created_value = m_ctx.instances.create(value_type);
+  for (const auto& member_info : value_type.members()) {
+    auto copied = evaluated->find_cmember(member_info.index)->copy();
+    created_value->assign_member(member_info.index, std::move(copied));
+  }
+
+  result = created_value;
 }
 
 void expression_evaluation_visitor::visit(
