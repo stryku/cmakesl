@@ -77,7 +77,7 @@ const sema::sema_function&
 declarative_source_compiler::create_component_creation_function(
   const decl_sema::component_node& node)
 {
-  const auto& component_ty = component_type(node);
+  const auto& component_ty = node.type();
   const auto name_token =
     lexer::make_token(lexer::token_type::identifier, "__component_creation");
   auto signature = sema::function_signature{ name_token };
@@ -87,18 +87,5 @@ declarative_source_compiler::create_component_creation_function(
       m_builtin_context, component_ty, std::move(signature), node);
 
   return m_factories_provider.function_factory().store(std::move(function));
-}
-
-const sema::sema_type& declarative_source_compiler::component_type(
-  const decl_sema::component_node& node)
-{
-  if (node.name().str() == "StaticLibrary") {
-    return m_builtin_context.builtin_types().cmake->library;
-  }
-  if (node.name().str() == "Executable") {
-    return m_builtin_context.builtin_types().cmake->executable;
-  }
-
-  CMSL_UNREACHABLE("Unknown component type");
 }
 }

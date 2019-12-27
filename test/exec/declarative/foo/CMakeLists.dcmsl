@@ -1,6 +1,6 @@
-StaticLibrary {
+static_library {
     name: "foo"
-    files: [
+    files.public: [
         "foo.cpp"
     ]
 }

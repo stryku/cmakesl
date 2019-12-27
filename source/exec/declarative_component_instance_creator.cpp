@@ -1,7 +1,9 @@
 #include "exec/declarative_component_instance_creator.hpp"
 #include "cmake_facade.hpp"
 #include "common/assert.hpp"
+#include "decl_sema/component_creation_sema_function.hpp"
 #include "exec/declarative_component_property_instances_collecting_visitor.hpp"
+#include "exec/instance/list_value_utils.hpp"
 
 #include <unordered_map>
 
@@ -9,9 +11,11 @@ namespace cmsl::exec {
 
 declarative_component_instance_creator::declarative_component_instance_creator(
   facade::cmake_facade& facade, sema::builtin_types_accessor builtin_types,
+  decl_sema::decl_namespace_types_accessor decl_types,
   inst::instances_holder_interface& instances)
   : m_facade{ facade }
   , m_builtin_types{ builtin_types }
+  , m_decl_types{ decl_types }
   , m_instances{ instances }
 {
 }
@@ -19,130 +23,126 @@ declarative_component_instance_creator::declarative_component_instance_creator(
 std::unique_ptr<inst::instance> declarative_component_instance_creator::create(
   const decl_sema::component_creation_sema_function& function)
 {
-  if (function.return_type() == m_builtin_types.cmake->library) {
-    return create_library(function);
-  }
-
-  if (function.return_type() == m_builtin_types.cmake->executable) {
-    return create_executable(function);
-  }
-
-  CMSL_UNREACHABLE("Unknown component type");
-}
-
-std::unique_ptr<inst::instance>
-declarative_component_instance_creator::create_library(
-  const decl_sema::component_creation_sema_function& function)
-{
   declarative_component_property_instances_collecting_visitor collector{
     m_facade, m_builtin_types, m_instances
   };
 
   function.component().visit(collector);
 
-  auto& properties = collector.m_collected_properties;
+  auto& property_values = collector.m_collected_properties;
 
-  const auto library_name_it = properties.find("name");
-  if (library_name_it == std::cend(properties)) {
-    // Todo raise error
-    return nullptr;
+  const auto& lib_type = function.return_type();
+  auto lib_instance = m_instances.create(lib_type);
+
+  for (auto& [property_access, property_init_value] : property_values) {
+    auto& property_instance =
+      access_property_instance(*lib_instance, *property_access);
+    property_instance.assign(std::move(property_init_value));
   }
 
-  const auto& library_name =
-    library_name_it->second->value_cref().get_string_cref();
+  register_in_facade(*lib_instance);
 
-  const auto& sources = properties["files"]->value_cref().get_list_cref();
-  const auto string_sources = inst::list_value_utils{ sources }.strings();
-
-  m_facade.add_library(library_name, string_sources);
-
-  auto library_val = inst::library_value{ library_name };
-
-  if (const auto found = properties.find("include_dirs");
-      found != std::cend(properties)) {
-    const auto& instance = found->second;
-    const auto& include_dirs = instance->value_cref().get_list_cref();
-    library_val.include_directories(m_facade, facade::visibility::private_,
-                                    include_dirs);
-  }
-
-  if (const auto found = properties.find("compile_options");
-      found != std::cend(properties)) {
-    const auto& instance = found->second;
-    const auto& compile_options = instance->value_cref().get_list_cref();
-    library_val.compile_definitions(m_facade, compile_options,
-                                    facade::visibility::private_);
-  }
-
-  if (const auto found = properties.find("dependencies");
-      found != std::cend(properties)) {
-    const auto& instance = found->second;
-    const auto& deps = instance->value_cref().get_list_cref();
-    const auto string_deps = inst::list_value_utils{ deps }.strings();
-    for (const auto& dep_name : string_deps) {
-      library_val.link_to(m_facade, facade::visibility::private_, dep_name);
-    }
-  }
-
-  auto library_instance = m_instances.create(std::move(library_val));
-  return m_instances.gather_ownership(library_instance);
+  return m_instances.gather_ownership(lib_instance);
 }
 
-std::unique_ptr<inst::instance>
-declarative_component_instance_creator::create_executable(
-  const decl_sema::component_creation_sema_function& function)
+inst::instance&
+declarative_component_instance_creator::access_property_instance(
+  inst::instance& component_instance,
+  const decl_sema::property_access_node& node)
 {
-  declarative_component_property_instances_collecting_visitor collector{
-    m_facade, m_builtin_types, m_instances
-  };
+  auto current_instance = &component_instance;
+  for (const auto& property_info : node.properties_access()) {
+    const auto found_member =
+      current_instance->find_member(property_info.index);
+    CMSL_ASSERT(found_member);
 
-  function.component().visit(collector);
-
-  auto& properties = collector.m_collected_properties;
-
-  const auto library_name_it = properties.find("name");
-  if (library_name_it == std::cend(properties)) {
-    // Todo raise error
-    return nullptr;
+    current_instance = found_member;
   }
 
-  const auto& executable_name =
-    library_name_it->second->value_cref().get_string_cref();
+  return *current_instance;
+}
 
-  const auto& sources = properties["files"]->value_cref().get_list_cref();
-  const auto string_sources = inst::list_value_utils{ sources }.strings();
+void declarative_component_instance_creator::register_in_facade(
+  const inst::instance& instance)
+{
+  const auto& inst_type = instance.type();
 
-  m_facade.add_executable(executable_name, string_sources);
+  const auto name_info = inst_type.find_member("name");
+  CMSL_ASSERT(name_info.has_value());
+  const auto name_instance = instance.find_cmember(name_info->index);
 
-  auto executable_val = inst::executable_value{ executable_name };
+  const auto files_info = inst_type.find_member("files");
+  CMSL_ASSERT(files_info.has_value());
+  const auto files_instance = instance.find_cmember(files_info->index);
 
-  if (const auto found = properties.find("include_dirs");
-      found != std::cend(properties)) {
-    const auto& instance = found->second;
-    const auto& include_dirs = instance->value_cref().get_list_cref();
-    executable_val.include_directories(m_facade, facade::visibility::private_,
-                                       include_dirs);
-  }
+  const auto public_files_info =
+    m_decl_types.forwarding_lists.find_member("public");
 
-  if (const auto found = properties.find("compile_options");
-      found != std::cend(properties)) {
-    const auto& instance = found->second;
-    const auto& compile_options = instance->value_cref().get_list_cref();
-    executable_val.compile_definitions(m_facade, compile_options,
-                                       facade::visibility::private_);
-  }
+  const auto public_files_instance =
+    files_instance->find_cmember(public_files_info->index);
 
-  if (const auto found = properties.find("dependencies");
-      found != std::cend(properties)) {
-    const auto& instance = found->second;
-    const auto& deps = instance->value_cref().get_list_cref();
-    const auto string_deps = inst::list_value_utils{ deps }.strings();
-    for (const auto& dep_name : string_deps) {
-      executable_val.link_to(m_facade, facade::visibility::private_, dep_name);
+  const auto sources =
+    inst::list_value_utils{
+      public_files_instance->value_cref().get_list_cref()
     }
-  }
+      .strings();
 
-  auto executable_instance = m_instances.create(std::move(executable_val));
-  return m_instances.gather_ownership(executable_instance);
+  const auto name_str = name_instance->value_cref().get_string_cref();
+
+  if (instance.type().name().to_string() == "static_library") {
+    m_facade.add_library(name_str, sources);
+    register_in_facade<inst::library_value>(name_str, instance);
+
+  } else if (instance.type().name().to_string() == "executable") {
+    m_facade.add_executable(name_str, sources);
+    register_in_facade<inst::library_value>(name_str, instance);
+  }
+}
+
+template <typename ValueType>
+void declarative_component_instance_creator::register_in_facade(
+  const std::string& name, const inst::instance& instance)
+{
+  const auto& inst_type = instance.type();
+
+  const auto public_info = m_decl_types.forwarding_lists.find_member("public");
+
+  const auto include_dirs_info = inst_type.find_member("include_dirs");
+  CMSL_ASSERT(include_dirs_info.has_value());
+  const auto include_dirs_instance =
+    instance.find_cmember(include_dirs_info->index);
+  const auto public_include_dirs_instance =
+    include_dirs_instance->find_cmember(public_info->index);
+
+  const auto compile_options_info = inst_type.find_member("compile_options");
+  CMSL_ASSERT(compile_options_info.has_value());
+  const auto compile_options_instance =
+    instance.find_cmember(compile_options_info->index);
+  const auto public_compile_options_instance =
+    compile_options_instance->find_cmember(public_info->index);
+
+  const auto dependencies_info = inst_type.find_member("dependencies");
+  CMSL_ASSERT(dependencies_info.has_value());
+  const auto dependencies_instance =
+    instance.find_cmember(dependencies_info->index);
+  const auto public_dependencies_instance =
+    dependencies_instance->find_cmember(public_info->index);
+  const auto dependencies =
+    inst::list_value_utils{
+      public_dependencies_instance->value_cref().get_list_cref()
+    }
+      .strings();
+
+  ValueType val{ name };
+  val.include_directories(
+    m_facade, facade::visibility::public_,
+    public_include_dirs_instance->value_cref().get_list_cref());
+  val.compile_definitions(
+    m_facade, public_compile_options_instance->value_cref().get_list_cref(),
+    facade::visibility::public_);
+
+  for (const auto& dep : dependencies) {
+    val.link_to(m_facade, facade::visibility::public_, dep);
+  }
 }
 }

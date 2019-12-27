@@ -1,5 +1,5 @@
 #include "decl_ast/parser.hpp"
-
+#include "common/assert.hpp"
 #include "decl_ast/ast_nodes.hpp"
 
 namespace cmsl::decl_ast {
@@ -14,8 +14,11 @@ parser::parser(errors::errors_observer& err_observer,
 
 std::unique_ptr<component_node> parser::parse_component()
 {
-  const auto name = eat(token_type_t::identifier);
-  if (!name) {
+  const auto name = eat();
+  if (name->get_type() != token_type_t::identifier &&
+      name->get_type() != token_type_t::kw_executable) {
+    m_errors_reporter.raise_expected_token(get_token_for_error_report(),
+                                           token_type_t::identifier);
     return nullptr;
   }
 
@@ -86,13 +89,14 @@ bool parser::component_declaration_starts() const
 
 bool parser::property_declaration_starts() const
 {
-  return current_is(token_type_t::identifier) && next_is(token_type_t::colon);
+  // Todo: check for `:` and nested properties
+  return current_is(token_type_t::identifier);
 }
 
 std::unique_ptr<property_node> parser::parse_property()
 {
-  const auto name = eat(token_type_t::identifier);
-  if (!name) {
+  auto property_access = parse_property_access();
+  if (!property_access) {
     return nullptr;
   }
 
@@ -106,7 +110,8 @@ std::unique_ptr<property_node> parser::parse_property()
     return nullptr;
   }
 
-  return std::make_unique<property_node>(*name, *assignment, std::move(value));
+  return std::make_unique<property_node>(std::move(property_access),
+                                         *assignment, std::move(value));
 }
 
 std::unique_ptr<ast_node> parser::parse_value()
@@ -177,5 +182,23 @@ std::unique_ptr<list_node> parser::parse_list()
 
   return std::make_unique<list_node>(*open_square, std::move(values),
                                      *close_square);
+}
+
+std::unique_ptr<property_access_node> parser::parse_property_access()
+{
+  std::vector<parser::token_t> property_names;
+
+  while (const auto name = eat(token_type_t::identifier)) {
+    property_names.emplace_back(*name);
+
+    if (!current_is(token_type_t::dot)) {
+      return std::make_unique<property_access_node>(std::move(property_names));
+    }
+
+    (void)eat(token_type_t::dot); // dot
+  }
+
+  // Todo: raise expected identifier.
+  return nullptr;
 }
 }

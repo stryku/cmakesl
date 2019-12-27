@@ -62,24 +62,57 @@ private:
   token_t m_close_brace;
 };
 
+class property_access_node : public ast_node
+{
+public:
+  explicit property_access_node(std::vector<token_t> property_access)
+    : m_property_access{ std::move(property_access) }
+  {
+  }
+
+  const std::vector<token_t>& property_access() const
+  {
+    return m_property_access;
+  }
+
+  source_location begin_location() const override
+  {
+    return m_property_access.front().src_range().begin;
+  }
+
+  source_location end_location() const override
+  {
+    return m_property_access.back().src_range().end;
+  }
+
+  VISIT_MEHTOD
+
+private:
+  std::vector<token_t> m_property_access;
+};
+
 class property_node : public ast_node
 {
 public:
-  explicit property_node(const token_t& name, const token_t& assignment,
+  explicit property_node(std::unique_ptr<property_access_node> property_access,
+                         const token_t& assignment,
                          std::unique_ptr<ast_node> value)
-    : m_name{ name }
+    : m_property_access{ std::move(property_access) }
     , m_assignment{ assignment }
     , m_value{ std::move(value) }
   {
   }
 
-  const token_t& name() const { return m_name; }
+  const property_access_node& property_access() const
+  {
+    return *m_property_access;
+  }
   const token_t& assignment() const { return m_assignment; }
   const ast_node& value() const { return *m_value; }
 
   source_location begin_location() const override
   {
-    return m_name.src_range().begin;
+    return m_property_access->begin_location();
   }
 
   source_location end_location() const override
@@ -90,7 +123,7 @@ public:
   VISIT_MEHTOD
 
 private:
-  token_t m_name;
+  std::unique_ptr<property_access_node> m_property_access;
   token_t m_assignment;
   std::unique_ptr<ast_node> m_value;
 };

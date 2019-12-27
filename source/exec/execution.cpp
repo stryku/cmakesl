@@ -10,9 +10,11 @@ namespace cmsl::exec {
 execution::execution(
   facade::cmake_facade& cmake_facade,
   sema::builtin_types_accessor builtin_types,
+  decl_sema::decl_namespace_types_accessor decl_types,
   cross_translation_unit_static_variables_accessor& static_variables_accessor)
   : m_cmake_facade{ cmake_facade }
   , m_builtin_types{ builtin_types }
+  , m_decl_types{ decl_types }
   , m_static_variables_accessor{ static_variables_accessor }
 {
 }
@@ -327,7 +329,7 @@ std::unique_ptr<inst::instance> execution::handle_component_creation_function(
   inst::instances_holder instances{ m_builtin_types };
   auto creator =
     declarative_component_instance_creator{ m_cmake_facade, m_builtin_types,
-                                            instances };
+                                            m_decl_types, instances };
   return creator.create(function);
 }
 }

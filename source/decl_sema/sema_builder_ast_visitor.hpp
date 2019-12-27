@@ -28,6 +28,7 @@ class types_context;
 namespace decl_sema {
 class sema_node;
 class expression_node;
+class property_access_node;
 
 struct sema_builder_ast_visitor_members
 {
@@ -47,15 +48,22 @@ public:
   explicit sema_builder_ast_visitor(sema_builder_ast_visitor_members members);
   ~sema_builder_ast_visitor() override;
 
-  void visit(const decl_ast::component_node& node) override;
-  void visit(const decl_ast::property_node& node) override;
   void visit(const decl_ast::bool_value_node& node) override;
-  void visit(const decl_ast::int_value_node& node) override;
+  void visit(const decl_ast::component_node& node) override;
   void visit(const decl_ast::double_value_node& node) override;
-  void visit(const decl_ast::string_value_node& node) override;
+  void visit(const decl_ast::int_value_node& node) override;
   void visit(const decl_ast::list_node& node) override;
+  void visit(const decl_ast::property_access_node& node) override;
+  void visit(const decl_ast::property_node& node) override;
+  void visit(const decl_ast::string_value_node& node) override;
 
 private:
+  explicit sema_builder_ast_visitor(
+    sema_builder_ast_visitor_members members,
+    const sema::sema_type* current_component_type);
+
+  template <typename T>
+  std::unique_ptr<T> visit_child_type(const decl_ast::ast_node& node);
   std::unique_ptr<sema_node> visit_child(const decl_ast::ast_node& node);
   std::unique_ptr<expression_node> visit_child_expr(
     const decl_ast::ast_node& node);
@@ -69,11 +77,18 @@ private:
 
   const sema::sema_type& list_of_strings_type();
 
+  std::unique_ptr<property_access_node> validate_and_create_property_access(
+    const sema::sema_type& component_type,
+    const std::vector<lexer::token>& property_names);
+
 public:
   std::unique_ptr<sema_node> m_result_node;
 
 private:
   sema_builder_ast_visitor_members m_;
+  std::optional<sema::qualified_contextes_refs::all_qualified_contextes_guard>
+    m_decl_namespace_ctx_guard;
+  const sema::sema_type* m_current_component_type{ nullptr };
 };
 }
 }
