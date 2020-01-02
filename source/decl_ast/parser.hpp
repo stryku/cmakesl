@@ -16,8 +16,9 @@ class errors_observer;
 namespace decl_ast {
 class ast_node;
 class component_node;
-class property_node;
 class list_node;
+class property_access_node;
+class property_node;
 
 class parser : public parse::parser_utils
 {
@@ -37,6 +38,8 @@ private:
 
   bool component_declaration_starts() const;
   bool property_declaration_starts() const;
+
+  std::unique_ptr<property_access_node> parse_property_access();
 
 private:
   parse_errors_reporter m_errors_reporter;

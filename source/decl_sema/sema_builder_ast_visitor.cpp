@@ -1,13 +1,29 @@
 #include "decl_sema/sema_builder_ast_visitor.hpp"
 #include "common/strings_container.hpp"
 #include "decl_sema/sema_nodes.hpp"
+#include "lexer/token.hpp"
 #include "sema/generic_type_creation_utils.hpp"
+#include "sema/sema_type.hpp"
+
+namespace {
+const auto decl_namespace_token =
+  cmsl::lexer::make_token(cmsl::lexer::token_type::identifier, "decl");
+}
 
 namespace cmsl::decl_sema {
-
 sema_builder_ast_visitor::sema_builder_ast_visitor(
   sema_builder_ast_visitor_members members)
   : m_{ members }
+  , m_decl_namespace_ctx_guard{ m_.qualified_ctxs.all_qualified_ctxs_guard(
+      decl_namespace_token, /*exported=*/false) }
+{
+}
+
+sema_builder_ast_visitor::sema_builder_ast_visitor(
+  sema_builder_ast_visitor_members members,
+  const sema::sema_type* current_component_type)
+  : m_{ members }
+  , m_current_component_type{ current_component_type }
 {
 }
 
@@ -15,6 +31,16 @@ sema_builder_ast_visitor::~sema_builder_ast_visitor() = default;
 
 void sema_builder_ast_visitor::visit(const decl_ast::component_node& node)
 {
+  const auto type_name = node.name();
+  const auto found_type =
+    m_.qualified_ctxs.types.find_in_current_scope(type_name);
+  if (!found_type) {
+    // Todo: raise type not found error
+    return;
+  }
+
+  m_current_component_type = found_type;
+
   component_node::nodes_t nodes;
 
   for (const auto& ast_node : node.nodes()) {
@@ -26,19 +52,54 @@ void sema_builder_ast_visitor::visit(const decl_ast::component_node& node)
     nodes.emplace_back(std::move(child_node));
   }
 
-  m_result_node =
-    std::make_unique<component_node>(node, node.name(), std::move(nodes));
+  m_result_node = std::make_unique<component_node>(
+    node, *found_type, node.name(), std::move(nodes));
+
+  m_current_component_type = nullptr;
 }
 
 void sema_builder_ast_visitor::visit(const decl_ast::property_node& node)
 {
+  auto property_access =
+    visit_child_type<property_access_node>(node.property_access());
+  if (!property_access) {
+    return;
+  }
+
   auto value = visit_child_expr(node.value());
   if (!value) {
     return;
   }
 
+  if (property_access->type().decayed() != value->type().decayed()) {
+    // Todo: raise different property type and init value
+    return;
+  }
+
+  m_result_node = std::make_unique<property_node>(
+    node, std::move(property_access), std::move(value));
+}
+
+void sema_builder_ast_visitor::visit(
+  const decl_ast::property_access_node& node)
+{
+  std::vector<sema::member_info> property_access;
+
+  const auto* current_type = m_current_component_type;
+
+  for (const auto& name : node.property_access()) {
+    const auto found_property = current_type->find_member(name.str());
+    if (!found_property) {
+      // Todo: raise property not found type
+      return;
+    }
+
+    property_access.emplace_back(*found_property);
+    current_type = &found_property->ty;
+  }
+
   m_result_node =
-    std::make_unique<property_node>(node, node.name(), std::move(value));
+    std::make_unique<property_access_node>(node, std::move(property_access));
 }
 
 void sema_builder_ast_visitor::visit(const decl_ast::bool_value_node& node)
@@ -98,7 +159,7 @@ void sema_builder_ast_visitor::visit(const decl_ast::list_node& node)
 
 sema_builder_ast_visitor sema_builder_ast_visitor::clone()
 {
-  return sema_builder_ast_visitor{ m_ };
+  return sema_builder_ast_visitor{ m_, m_current_component_type };
 }
 
 template <typename T>
@@ -137,5 +198,12 @@ const sema::sema_type& sema_builder_ast_visitor::list_of_strings_type()
   };
 
   return creation_utils.list_of_strings();
+}
+
+template <typename T>
+std::unique_ptr<T> sema_builder_ast_visitor::visit_child_type(
+  const decl_ast::ast_node& node)
+{
+  return to_node<T>(visit_child(node));
 }
 }

@@ -28,6 +28,8 @@ public:
     sema::generic_type_creation_utils& generics_creation_utils);
   ~builtin_decl_namespace_context() override;
 
+  const decl_namespace_types_accessor& types_accessor() const;
+
 private:
   using token_type_t = lexer::token_type;
 

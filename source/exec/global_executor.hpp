@@ -90,8 +90,7 @@ private:
 
   std::unique_ptr<inst::instance> execute(const compiled_source& compiled);
 
-  void initialize_execution_if_need(
-    const sema::builtin_types_accessor& builtin_types);
+  void initialize_execution_if_need();
 
 private:
   class directory_guard

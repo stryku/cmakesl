@@ -1,5 +1,6 @@
 #pragma once
 
+#include "decl_sema/decl_namespace_types_accessor.hpp"
 #include "exec/cross_translation_unit_static_variables_accessor.hpp"
 #include "exec/instance/instance_value_observer.hpp"
 #include "exec/module_static_variables_initializer.hpp"
@@ -37,6 +38,7 @@ public:
   cross_translation_unit_static_variables(
     facade::cmake_facade& cmake_facade,
     sema::builtin_types_accessor builtin_types,
+    decl_sema::decl_namespace_types_accessor decl_types,
     module_sema_tree_provider& sema_tree_provider);
 
   ~cross_translation_unit_static_variables();
@@ -58,6 +60,7 @@ private:
 private:
   facade::cmake_facade& m_cmake_facade;
   sema::builtin_types_accessor m_builtin_types;
+  decl_sema::decl_namespace_types_accessor m_decl_types;
   module_sema_tree_provider& m_sema_tree_provider;
 
   std::unordered_set<std::string> m_already_initialized_modules;

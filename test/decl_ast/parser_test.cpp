@@ -56,12 +56,24 @@ public:
     }
     m_result << "}";
   }
+  void visit(const property_access_node& node) override
+  {
+    m_result << "property_access{";
+
+    for (const auto& name : node.property_access()) {
+      m_result << name.str() << ';';
+    }
+
+    m_result << "}";
+  }
 
   void visit(const property_node& node) override
   {
-    m_result << "property{"
-             << "name:" << node.name().str()
-             << ";assignment:" << node.assignment().str() << ";value:";
+    m_result << "property{access:";
+
+    node.property_access().visit(*this);
+
+    m_result << ";assignment:" << node.assignment().str() << ";value:";
 
     node.value().visit(*this);
 
@@ -141,7 +153,7 @@ TEST_P(Component, Malformed_ReportError)
 
 const auto ob = token_open_brace();
 const auto cb = token_close_brace();
-const auto name = token_identifier();
+const auto name = token_identifier("Foo");
 
 const auto values = Values(tokens_container_t{ ob, cb },   // {}
                            tokens_container_t{ name, ob }, // Foo {
@@ -209,9 +221,11 @@ TEST_F(ParserTest,
 
   const auto property_value_token = token_kw_true();
   const auto property_name_token = token_identifier("foo");
+  auto property_access =
+    std::make_unique<property_access_node>(std::vector{ property_name_token });
   auto value_node = std::make_unique<bool_value_node>(property_value_token);
   auto property = std::make_unique<property_node>(
-    property_name_token, token_colon(), std::move(value_node));
+    std::move(property_access), token_colon(), std::move(value_node));
 
   component_node::nodes_t nodes;
   nodes.emplace_back(std::move(inner_component));
@@ -334,10 +348,12 @@ TEST_F(ParserTest, Property_WithFundamentalValue_GetPropertyNode)
 
   const auto value_token = token_kw_true();
   const auto name_token = token_identifier("foo");
+  auto name_access =
+    std::make_unique<property_access_node>(std::vector{ name_token });
 
   auto value_node = std::make_unique<bool_value_node>(value_token);
   auto expected_ast = std::make_unique<property_node>(
-    name_token, token_colon(), std::move(value_node));
+    std::move(name_access), token_colon(), std::move(value_node));
 
   const auto tokens =
     tokens_container_t{ name_token, token_colon(), value_token };

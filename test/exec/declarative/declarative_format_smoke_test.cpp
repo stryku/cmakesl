@@ -86,7 +86,7 @@ TEST_F(DeclarativeFormatSmokeTest, AddDeclarativeFileWithExecutable)
 }
 
 TEST_F(DeclarativeFormatSmokeTest,
-       AddSubdirectoryWithDeclarativeFileWithExecutable)
+       AddSubdirectoryWithDeclarativeFileWithStaticLibrary)
 {
   const auto source = "int main()"
                       "{"

@@ -42,8 +42,6 @@ private:
   const sema::sema_function& create_component_creation_function(
     const decl_sema::component_node& node);
 
-  const sema::sema_type& component_type(const decl_sema::component_node& node);
-
 private:
   errors::errors_observer& m_errs;
   strings_container& m_strings;

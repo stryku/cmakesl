@@ -39,12 +39,28 @@ void builtin_decl_namespace_context::add_types()
   const auto& product_type_type = add_product_type_type();
   const auto product_type_manipulator = add_product_type(
     product_type_type, forwarding_lists_manipulator.built_type().ty);
-  const auto executable_type =
+  const auto executable_manipulator =
     add_executable_type(product_type_manipulator.built_type().ty);
-  const auto static_library_type =
+  const auto static_library_manipulator =
     add_static_library_type(product_type_manipulator.built_type().ty);
-  const auto shared_library_type =
+  const auto shared_library_manipulator =
     add_shared_library_type(product_type_manipulator.built_type().ty);
+
+  decl_namespace_types_accessor accessor{
+    .forwarding_lists = forwarding_lists_manipulator.built_type().ty,
+    .forwarding_lists_ref =
+      forwarding_lists_manipulator.built_type().reference,
+    .product = product_type_manipulator.built_type().ty,
+    .product_ref = product_type_manipulator.built_type().reference,
+    .executable = executable_manipulator.built_type().ty,
+    .executable_ref = executable_manipulator.built_type().reference,
+    .static_library = static_library_manipulator.built_type().ty,
+    .static_library_ref = static_library_manipulator.built_type().reference,
+    .shared_library = shared_library_manipulator.built_type().ty,
+    .shared_library_ref = shared_library_manipulator.built_type().reference
+  };
+
+  m_types_accessor = std::make_unique<decl_namespace_types_accessor>(accessor);
 }
 
 void builtin_decl_namespace_context::add_functions()
@@ -169,5 +185,11 @@ sema::type_builder builtin_decl_namespace_context::add_executable_type(
 
   builder.build_builtin_and_register_in_context();
   return builder;
+}
+
+const decl_namespace_types_accessor&
+builtin_decl_namespace_context::types_accessor() const
+{
+  return *m_types_accessor;
 }
 }

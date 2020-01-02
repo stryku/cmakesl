@@ -44,7 +44,7 @@ global_executor::global_executor(const std::string& root_path,
   , m_builtin_context{ create_builtin_context() }
   , m_decl_namespace_context{ create_decl_namespace_context() }
   , m_static_variables{ m_cmake_facade, m_builtin_context->builtin_types(),
-                        *this }
+                        m_decl_namespace_context->types_accessor(), *this }
 {
   m_cmake_facade.go_into_subdirectory(m_root_path);
 }
@@ -387,16 +387,14 @@ const compiled_declarative_source* global_executor::compile_declarative_file(
 std::unique_ptr<inst::instance> global_executor::execute(
   const compiled_source& compiled)
 {
-  const auto& builtin_types = compiled.builtin_types();
-
-  initialize_execution_if_need(builtin_types);
+  initialize_execution_if_need();
 
   const auto translation_unit =
     dynamic_cast<const sema::translation_unit_node*>(&compiled.sema_tree());
   m_execution->initialize_static_variables(*translation_unit,
                                            m_static_variables);
 
-  inst::instances_holder instances{ builtin_types };
+  inst::instances_holder instances{ m_builtin_context->builtin_types() };
 
   const auto main_function = compiled.get_main();
   const auto casted =
@@ -410,15 +408,15 @@ std::unique_ptr<inst::instance> global_executor::execute(
   return main_result;
 }
 
-void global_executor::initialize_execution_if_need(
-  const sema::builtin_types_accessor& builtin_types)
+void global_executor::initialize_execution_if_need()
 {
   if (m_execution) {
     return;
   }
 
-  m_execution = std::make_unique<execution>(m_cmake_facade, builtin_types,
-                                            m_static_variables);
+  m_execution = std::make_unique<execution>(
+    m_cmake_facade, m_builtin_context->builtin_types(),
+    m_decl_namespace_context->types_accessor(), m_static_variables);
 }
 
 sema::add_declarative_file_semantic_handler::add_declarative_file_result_t

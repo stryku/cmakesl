@@ -1,18 +1,18 @@
-StaticLibrary {
+static_library {
     name: "library_name"
-    files: [
+    files.public: [
         "library.cpp"
     ]
 
-    include_dirs: [
+    include_dirs.public: [
         "include"
     ]
 
-    compile_options: [
+    compile_options.public: [
         "-DANSWER=42"
     ]
 
-    dependencies: [
+    dependencies.public: [
         "dependency",
         "another_dependency"
     ]

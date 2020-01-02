@@ -1,4 +1,5 @@
 #include "cmake_facade.hpp"
+#include "common/assert.hpp"
 #include "decl_sema/component_creation_sema_function.hpp"
 #include "decl_sema/sema_node_visitor.hpp"
 #include "decl_sema/sema_nodes.hpp"
@@ -42,7 +43,8 @@ public:
       CMSL_ASSERT_MSG(property_node, "Expected property node");
 
       auto value = evaluate_child(property_node->value());
-      m_collected_properties[property_node->name().str()] = std::move(value);
+      m_collected_properties[&property_node->property_access()] =
+        std::move(value);
     }
   }
 
@@ -73,6 +75,7 @@ public:
   }
 
   void visit(const decl_sema::property_node& node) override {}
+  void visit(const decl_sema::property_access_node& node) override {}
 
   void visit(const decl_sema::string_value_node& node) override
   {
@@ -84,7 +87,9 @@ private:
   declarative_component_property_instances_collecting_visitor clone()
   {
     return declarative_component_property_instances_collecting_visitor{
-      m_facade, m_builtin_types, m_instances
+      m_facade,
+      m_builtin_types,
+      m_instances,
     };
   }
 
@@ -97,7 +102,8 @@ private:
   }
 
 public:
-  std::unordered_map<cmsl::string_view, std::unique_ptr<inst::instance>>
+  std::unordered_map<const decl_sema::property_access_node*,
+                     std::unique_ptr<inst::instance>>
     m_collected_properties;
 
 private:

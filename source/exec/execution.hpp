@@ -1,5 +1,6 @@
 #pragma once
 
+#include "decl_sema/decl_namespace_types_accessor.hpp"
 #include "exec/builtin_function_caller.hpp"
 #include "exec/expression_evaluation_context.hpp"
 #include "exec/expression_evaluation_visitor.hpp"
@@ -20,6 +21,7 @@ namespace cmsl {
 
 namespace decl_sema {
 class component_creation_sema_function;
+struct decl_namespace_types_accessor;
 }
 
 namespace exec {
@@ -34,6 +36,7 @@ class execution
 public:
   explicit execution(facade::cmake_facade& cmake_facade,
                      sema::builtin_types_accessor builtin_types,
+                     decl_sema::decl_namespace_types_accessor decl_types,
                      cross_translation_unit_static_variables_accessor&
                        static_variables_accessor);
 
@@ -101,6 +104,7 @@ private:
 
   facade::cmake_facade& m_cmake_facade;
   sema::builtin_types_accessor m_builtin_types;
+  decl_sema::decl_namespace_types_accessor m_decl_types;
   cross_translation_unit_static_variables_accessor&
     m_static_variables_accessor;
   std::unique_ptr<inst::instance> m_function_return_value;
