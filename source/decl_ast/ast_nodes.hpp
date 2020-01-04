@@ -231,4 +231,37 @@ private:
   token_t m_close_square;
 };
 
+class cmake_variable_access_node : public ast_node
+{
+public:
+  explicit cmake_variable_access_node(const token_t& cmake_variables_token,
+                                      const token_t& variable_name_token,
+                                      const token_t& as_type_token)
+    : m_cmake_variables{ cmake_variables_token }
+    , m_variable_name{ variable_name_token }
+    , m_as_type{ as_type_token }
+  {
+  }
+
+  const token_t& variable_name() const { return m_variable_name; }
+  const token_t& as_type() const { return m_as_type; }
+
+  source_location begin_location() const override
+  {
+    return m_cmake_variables.src_range().begin;
+  }
+
+  source_location end_location() const override
+  {
+    return m_as_type.src_range().end;
+  }
+
+  VISIT_MEHTOD
+
+private:
+  token_t m_cmake_variables;
+  token_t m_variable_name;
+  token_t m_as_type;
+};
+
 }

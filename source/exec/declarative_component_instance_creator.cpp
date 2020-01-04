@@ -12,11 +12,13 @@ namespace cmsl::exec {
 declarative_component_instance_creator::declarative_component_instance_creator(
   facade::cmake_facade& facade, sema::builtin_types_accessor builtin_types,
   decl_sema::decl_namespace_types_accessor decl_types,
-  inst::instances_holder_interface& instances)
+  inst::instances_holder_interface& instances,
+  const sema::generic_type_creation_utils& generic_types)
   : m_facade{ facade }
   , m_builtin_types{ builtin_types }
   , m_decl_types{ decl_types }
   , m_instances{ instances }
+  , m_generic_types{ generic_types }
 {
 }
 
@@ -24,7 +26,7 @@ std::unique_ptr<inst::instance> declarative_component_instance_creator::create(
   const decl_sema::component_creation_sema_function& function)
 {
   declarative_component_property_instances_collecting_visitor collector{
-    m_facade, m_builtin_types, m_instances
+    m_facade, m_builtin_types, m_instances, m_generic_types
   };
 
   function.component().visit(collector);

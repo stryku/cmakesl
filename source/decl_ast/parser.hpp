@@ -15,6 +15,7 @@ class errors_observer;
 
 namespace decl_ast {
 class ast_node;
+class cmake_variable_access_node;
 class component_node;
 class list_node;
 class property_access_node;
@@ -31,6 +32,7 @@ public:
   std::unique_ptr<property_node> parse_property();
   std::unique_ptr<ast_node> parse_value();
   std::unique_ptr<list_node> parse_list();
+  std::unique_ptr<cmake_variable_access_node> parse_cmake_variable_access();
 
 private:
   std::optional<std::vector<std::unique_ptr<ast_node>>>

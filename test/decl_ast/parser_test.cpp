@@ -111,6 +111,13 @@ public:
     m_result << "}";
   }
 
+  void visit(const cmake_variable_access_node& node) override
+  {
+    m_result << "cmake_variable_access{variable name:"
+             << node.variable_name().str() << ";as:" << node.as_type().str()
+             << "}";
+  }
+
 private:
   std::ostringstream m_result;
 };
@@ -516,6 +523,79 @@ const auto values =
   );
 
 INSTANTIATE_TEST_CASE_P(ParserErrorTest, List, values);
+}
+
+namespace cmake_variables_correct_as_type {
+using CMakeVariableAccess = TestWithParam<token_t>;
+
+TEST_P(CMakeVariableAccess, CorrectAsTypeUsed)
+{
+  errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
+  const auto cmake_variables_token = token_identifier("cmake_variables");
+  const auto variable_name_token = token_identifier("FOO");
+  const auto as_type_token = GetParam();
+
+  auto expected_ast = std::make_unique<cmake_variable_access_node>(
+    cmake_variables_token, variable_name_token, as_type_token);
+
+  const auto tokens =
+    tokens_container_t{ cmake_variables_token, token_dot(),
+                        variable_name_token, token_dot(), as_type_token };
+  parser p{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result_ast = p.parse_cmake_variable_access();
+
+  EXPECT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+const auto values =
+  Values(token_identifier("as_bool"), token_identifier("as_int"),
+         token_identifier("as_double"), token_identifier("as_string"),
+         token_identifier("as_list"));
+
+INSTANTIATE_TEST_CASE_P(ParserTest, CMakeVariableAccess, values);
+}
+
+namespace cmake_variables_error {
+using CMakeVariableAccessMalformed = TestWithParam<tokens_container_t>;
+
+TEST_P(CMakeVariableAccessMalformed, ReportError)
+{
+  errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
+  EXPECT_CALL(errs.mock, notify_error(_));
+
+  const auto tokens = tokens_container_t{ GetParam() };
+  parser p{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result = p.parse_component();
+
+  EXPECT_THAT(result, IsNull());
+}
+
+const auto cmake_vars = token_identifier("cmake_variables");
+const auto variable_name = token_identifier("FOO");
+const auto correct_as_type = token_identifier("as_bool");
+const auto wrong_as_type = token_identifier("as_WRONG_TYPE");
+const auto dot = token_dot();
+
+const auto values = Values(
+  tokens_container_t{ cmake_vars },                     // cmake_variables
+  tokens_container_t{ cmake_vars, dot },                // cmake_variables.
+  tokens_container_t{ cmake_vars, dot, variable_name }, // cmake_variables.FOO
+  tokens_container_t{ cmake_vars, variable_name },      // cmake_variables FOO
+  tokens_container_t{ cmake_vars, dot, variable_name,
+                      dot },                  // cmake_variables.FOO.
+  tokens_container_t{ cmake_vars, dot, dot }, // cmake_variables..
+  tokens_container_t{ cmake_vars, dot, variable_name,
+                      correct_as_type }, // cmake_variables.FOO.as_bool
+  tokens_container_t{ cmake_vars, dot, variable_name, dot, wrong_as_type }
+  // cmake_variables.FOO.as_WRONG_TYPE
+);
+
+INSTANTIATE_TEST_CASE_P(ParserTest, CMakeVariableAccessMalformed, values);
 }
 
 }

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <sstream>
 #include <unordered_map>
 #include <utility>
 
@@ -68,5 +69,26 @@ void remove_if(std::unordered_multimap<K, T, H, KE, A>& map, Pred&& predicate)
       ++it;
     }
   }
+}
+
+inline std::string to_lower(const std::string& source)
+{
+  std::string result;
+  result.reserve(source.size());
+
+  std::transform(std::cbegin(source), std::cend(source),
+                 std::back_inserter(result), ::tolower);
+  return result;
+}
+
+inline std::vector<std::string> split(const std::string& s, char delimiter)
+{
+  std::vector<std::string> tokens;
+  std::string token;
+  std::istringstream tokenStream(s);
+  while (std::getline(tokenStream, token, delimiter)) {
+    tokens.emplace_back(std::move(token));
+  }
+  return tokens;
 }
 }
