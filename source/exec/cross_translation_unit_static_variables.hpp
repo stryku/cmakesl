@@ -19,6 +19,7 @@ class cmake_facade;
 
 namespace sema {
 class sema_node;
+class generic_type_creation_utils;
 }
 
 namespace exec {
@@ -39,7 +40,8 @@ public:
     facade::cmake_facade& cmake_facade,
     sema::builtin_types_accessor builtin_types,
     decl_sema::decl_namespace_types_accessor decl_types,
-    module_sema_tree_provider& sema_tree_provider);
+    module_sema_tree_provider& sema_tree_provider,
+    const sema::generic_type_creation_utils& generic_types);
 
   ~cross_translation_unit_static_variables();
 
@@ -62,6 +64,7 @@ private:
   sema::builtin_types_accessor m_builtin_types;
   decl_sema::decl_namespace_types_accessor m_decl_types;
   module_sema_tree_provider& m_sema_tree_provider;
+  const sema::generic_type_creation_utils& m_generic_types;
 
   std::unordered_set<std::string> m_already_initialized_modules;
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>> m_variables;

@@ -18,6 +18,7 @@ class cmake_facade;
 
 namespace sema {
 class factories_provider;
+class generic_type_creation_utils;
 }
 
 namespace exec {
@@ -32,7 +33,8 @@ public:
   explicit declarative_component_instance_creator(
     facade::cmake_facade& facade, sema::builtin_types_accessor builtin_types,
     decl_sema::decl_namespace_types_accessor decl_types,
-    inst::instances_holder_interface& instances);
+    inst::instances_holder_interface& instances,
+    const sema::generic_type_creation_utils& generic_types);
 
   std::unique_ptr<inst::instance> create(
     const decl_sema::component_creation_sema_function& function);
@@ -53,6 +55,7 @@ private:
   const sema::builtin_types_accessor m_builtin_types;
   const decl_sema::decl_namespace_types_accessor m_decl_types;
   inst::instances_holder_interface& m_instances;
+  const sema::generic_type_creation_utils& m_generic_types;
 };
 }
 }

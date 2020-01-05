@@ -106,4 +106,35 @@ TEST_F(DeclarativeFormatSmokeTest,
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(DeclarativeFormatSmokeTest,
+       AddDeclarativeFileWithStaticLibraryUsingCmakeVariablesAccessor)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    "
+                      "cmake::add_declarative_file(\"static_library_with_"
+                      "cmake_variables.dcmsl\");"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, current_directory())
+    .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
+                           std::string{ "/declarative" }));
+
+  constexpr auto library_name = "foo";
+  constexpr auto library_public_files = "file1.cpp;file2.cpp";
+
+  EXPECT_CALL(m_facade, get_old_style_variable("LIBRARY_NAME"))
+    .WillOnce(Return(library_name));
+  EXPECT_CALL(m_facade, get_old_style_variable("LIBRARY_PUBLIC_FILES"))
+    .WillOnce(Return(library_public_files));
+
+  const std::vector<std::string> expected_sources = { "file1.cpp",
+                                                      "file2.cpp" };
+  EXPECT_CALL(m_facade, add_library(library_name, expected_sources));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }

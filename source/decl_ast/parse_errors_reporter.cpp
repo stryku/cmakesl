@@ -54,4 +54,10 @@ void parse_errors_reporter::raise(lexer::token token, std::string message)
                             errors::error_type::error, token.src_range() };
   m_errors_observer.notify_error(std::move(err));
 }
+
+void parse_errors_reporter::raise_expected_as_type(lexer::token token)
+{
+  raise(token,
+        "expected 'as_bool', 'as_int', 'as_double', 'as_string' or 'as_list'");
+}
 }

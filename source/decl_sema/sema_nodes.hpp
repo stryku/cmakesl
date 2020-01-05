@@ -234,5 +234,27 @@ private:
   nodes_t m_nodes;
 };
 
+class cmake_variable_access_node : public expression_node
+{
+public:
+  explicit cmake_variable_access_node(const decl_ast::ast_node& ast_node,
+                                      const token_t& variable_name,
+                                      const sema::sema_type& as_type)
+    : expression_node{ ast_node }
+    , m_variable_name{ variable_name }
+    , m_as_type{ as_type }
+  {
+  }
+
+  const token_t& variable_name() const { return m_variable_name; }
+  const sema::sema_type& type() const override { return m_as_type; }
+
+  VISIT_MEHTOD
+
+private:
+  token_t m_variable_name;
+  const sema::sema_type& m_as_type;
+};
+
 }
 }

@@ -49,6 +49,7 @@ public:
   ~sema_builder_ast_visitor() override;
 
   void visit(const decl_ast::bool_value_node& node) override;
+  void visit(const decl_ast::cmake_variable_access_node& node) override;
   void visit(const decl_ast::component_node& node) override;
   void visit(const decl_ast::double_value_node& node) override;
   void visit(const decl_ast::int_value_node& node) override;

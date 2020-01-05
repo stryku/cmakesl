@@ -1,0 +1,4 @@
+static_library {
+    name: cmake_variables.LIBRARY_NAME.as_string
+    files.public: cmake_variables.LIBRARY_PUBLIC_FILES.as_list
+}

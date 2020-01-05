@@ -18,10 +18,13 @@
 #include "cmake_facade.hpp"
 
 namespace cmsl {
-
 namespace decl_sema {
 class component_creation_sema_function;
 struct decl_namespace_types_accessor;
+}
+
+namespace sema {
+class generic_type_creation_utils;
 }
 
 namespace exec {
@@ -38,7 +41,8 @@ public:
                      sema::builtin_types_accessor builtin_types,
                      decl_sema::decl_namespace_types_accessor decl_types,
                      cross_translation_unit_static_variables_accessor&
-                       static_variables_accessor);
+                       static_variables_accessor,
+                     const sema::generic_type_creation_utils& generic_types);
 
   void initialize_static_variables(
     const sema::translation_unit_node& node,
@@ -107,14 +111,12 @@ private:
   decl_sema::decl_namespace_types_accessor m_decl_types;
   cross_translation_unit_static_variables_accessor&
     m_static_variables_accessor;
+  const sema::generic_type_creation_utils& m_generic_types;
   std::unique_ptr<inst::instance> m_function_return_value;
   std::stack<callstack_frame> m_callstack;
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>>
     m_global_variables;
   bool m_breaking_from_loop{ false };
-
-  std::optional<std::vector<inst::instance*>>
-    m_params_of_add_subdirectory_with_cmakesl_script_call;
 };
 }
 }

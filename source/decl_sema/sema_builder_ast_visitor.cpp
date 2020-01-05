@@ -206,4 +206,36 @@ std::unique_ptr<T> sema_builder_ast_visitor::visit_child_type(
 {
   return to_node<T>(visit_child(node));
 }
+
+void sema_builder_ast_visitor::visit(
+  const decl_ast::cmake_variable_access_node& node)
+{
+  const auto& type =
+    [this, as_type = node.as_type().str()]() -> const sema::sema_type& {
+    if (as_type == "as_bool") {
+      return m_.builtin_types.bool_;
+    }
+
+    if (as_type == "as_int") {
+      return m_.builtin_types.int_;
+    }
+
+    if (as_type == "as_double") {
+      return m_.builtin_types.double_;
+    }
+
+    if (as_type == "as_string") {
+      return m_.builtin_types.string;
+    }
+
+    if (as_type == "as_list") {
+      return list_of_strings_type();
+    }
+
+    CMSL_UNREACHABLE("Unknown as type");
+  }();
+
+  m_result_node = std::make_unique<cmake_variable_access_node>(
+    node, node.variable_name(), type);
+}
 }

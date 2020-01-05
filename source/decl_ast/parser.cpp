@@ -1,4 +1,5 @@
 #include "decl_ast/parser.hpp"
+#include "common/algorithm.hpp"
 #include "common/assert.hpp"
 #include "decl_ast/ast_nodes.hpp"
 
@@ -136,6 +137,9 @@ std::unique_ptr<ast_node> parser::parse_value()
   if (current_is(token_type_t::open_square)) {
     return parse_list();
   }
+  if (current().str() == "cmake_variables") {
+    return parse_cmake_variable_access();
+  }
 
   return nullptr;
 }
@@ -200,5 +204,44 @@ std::unique_ptr<property_access_node> parser::parse_property_access()
 
   // Todo: raise expected identifier.
   return nullptr;
+}
+
+std::unique_ptr<cmake_variable_access_node>
+parser::parse_cmake_variable_access()
+{
+  const auto cmake_variables = eat();
+  if (!cmake_variables) {
+    return nullptr;
+  }
+
+  const auto dot = eat(token_type_t::dot);
+  if (!dot) {
+    return nullptr;
+  }
+
+  const auto variable_name = eat(token_type_t::identifier);
+  if (!variable_name) {
+    return nullptr;
+  }
+
+  const auto dot2 = eat(token_type_t::dot);
+  if (!dot2) {
+    return nullptr;
+  }
+
+  const auto as_type = eat(token_type_t::identifier);
+  if (!as_type) {
+    return nullptr;
+  }
+
+  const auto expected = { "as_bool", "as_int", "as_double", "as_string",
+                          "as_list" };
+  if (!contains(expected, as_type->str())) {
+    m_errors_reporter.raise_expected_as_type(*as_type);
+    return nullptr;
+  }
+
+  return std::make_unique<cmake_variable_access_node>(
+    *cmake_variables, *variable_name, *as_type);
 }
 }

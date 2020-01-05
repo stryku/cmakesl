@@ -12,6 +12,7 @@ public:
 
   virtual void raise_expected_component_or_property(lexer::token token) = 0;
   virtual void raise_unexpected_list_in_list(lexer::token token) = 0;
+  virtual void raise_expected_as_type(lexer::token token) = 0;
 };
 
 class parse_errors_reporter : public parse_errors_observer
@@ -29,6 +30,7 @@ public:
   void raise_expected_expression(lexer::token token) override;
   void raise_expected_component_or_property(lexer::token token) override;
   void raise_unexpected_list_in_list(lexer::token token) override;
+  void raise_expected_as_type(lexer::token token) override;
 
 private:
   void raise(lexer::token token, std::string message);
