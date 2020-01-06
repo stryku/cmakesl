@@ -193,6 +193,8 @@ enum class builtin_function_kind
   library_include_directories_visibility,
   library_compile_definitions,
   library_compile_definitions_visibility,
+  library_compile_options,
+  library_compile_options_visibility,
 
   executable_name,
   executable_link_to,
@@ -201,6 +203,8 @@ enum class builtin_function_kind
   executable_include_directories_visibility,
   executable_compile_definitions,
   executable_compile_definitions_visibility,
+  executable_compile_options,
+  executable_compile_options_visibility,
 
   enum_to_string,
   enum_operator_equalequal,

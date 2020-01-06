@@ -167,9 +167,9 @@ private:
   inst::instance* string_operator_plus_equal(inst::instance& instance,
                                              const params_t& params);
   inst::instance* string_operator_slash(inst::instance& instance,
-                                       const params_t& params);
+                                        const params_t& params);
   inst::instance* string_operator_slash_equal(inst::instance& instance,
-                                             const params_t& params);
+                                              const params_t& params);
   inst::instance* string_ctor_string_count(inst::instance& instance,
                                            const params_t& params);
   inst::instance* string_clear(inst::instance& instance,
@@ -343,6 +343,10 @@ private:
                                               const params_t& params);
   inst::instance* library_compile_definitions_visibility(
     inst::instance& instance, const params_t& params);
+  inst::instance* library_compile_options(inst::instance& instance,
+                                          const params_t& params);
+  inst::instance* library_compile_options_visibility(inst::instance& instance,
+                                                     const params_t& params);
 
   inst::instance* executable_name(inst::instance& instance,
                                   const params_t& params);
@@ -357,6 +361,10 @@ private:
   inst::instance* executable_compile_definitions(inst::instance& instance,
                                                  const params_t& params);
   inst::instance* executable_compile_definitions_visibility(
+    inst::instance& instance, const params_t& params);
+  inst::instance* executable_compile_options(inst::instance& instance,
+                                             const params_t& params);
+  inst::instance* executable_compile_options_visibility(
     inst::instance& instance, const params_t& params);
 
   inst::instance* enum_to_string(inst::instance& instance,

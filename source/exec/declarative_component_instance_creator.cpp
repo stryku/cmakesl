@@ -139,7 +139,7 @@ void declarative_component_instance_creator::register_in_facade(
   val.include_directories(
     m_facade, facade::visibility::public_,
     public_include_dirs_instance->value_cref().get_list_cref());
-  val.compile_definitions(
+  val.compile_options(
     m_facade, public_compile_options_instance->value_cref().get_list_cref(),
     facade::visibility::public_);
 

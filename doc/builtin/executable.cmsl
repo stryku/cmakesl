@@ -57,5 +57,20 @@ public:
    * @param v The visibility.
    */
   void compile_definitions(list<string> definitions, visibility v);
+
+  /** @brief Adds compile options of the executable.
+   *
+   * Uses cmake::visibility::private.
+   *
+   * @param options The compile definitions to be added.
+   */
+  void compile_options(list<string> options);
+
+  /** @brief Adds compile options of the executable.
+   *
+   * @param options The compile definitions to be added.
+   * @param v The visibility.
+   */
+  void compile_options(list<string> options, visibility v);
 };
 }

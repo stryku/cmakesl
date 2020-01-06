@@ -54,7 +54,6 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
   inst::instance* result{ nullptr };
 
   switch (function_kind) {
-    // bool
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_ctor);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_ctor_bool);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_ctor_int);
@@ -65,7 +64,6 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_operator_unary_exclaim);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(bool_to_string);
 
-    // int
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_ctor);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_ctor_bool);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_ctor_int);
@@ -89,7 +87,6 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_operator_equal_equal);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(int_to_string);
 
-    // double
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_ctor);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_ctor_double);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_ctor_int);
@@ -110,7 +107,6 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_greater);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(double_operator_greater_equal);
 
-    // string
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_ctor);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_ctor_string);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_ctor_string_count);
@@ -149,7 +145,6 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_upper);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(string_make_upper);
 
-    // version
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_ctor_major);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_ctor_major_minor);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_ctor_major_minor_patch);
@@ -166,12 +161,10 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_tweak);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(version_to_string);
 
-    // extern
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(extern_constructor_name);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(extern_has_value);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(extern_value);
 
-    // list
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_ctor);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_ctor_list);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(list_ctor_value);
@@ -222,6 +215,8 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_include_directories_visibility);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_compile_definitions);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_compile_definitions_visibility);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_compile_options);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_compile_options_visibility);
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_name);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_link_to);
@@ -232,6 +227,8 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_compile_definitions);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(
       executable_compile_definitions_visibility);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_compile_options);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_compile_options_visibility);
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_to_string);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_operator_equal);
@@ -1760,6 +1757,28 @@ builtin_function_caller::library_compile_definitions_visibility(
   return m_instances.create_void();
 }
 
+inst::instance* builtin_function_caller::library_compile_options(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [options] = get_params<alternative_t::list>(params);
+  const auto& lib = instance.value_cref().get_library_cref();
+  const auto default_visibility_value = facade::visibility::private_;
+  lib.compile_options(m_cmake_facade, options, default_visibility_value);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::library_compile_options_visibility(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [options, visibility] =
+    get_params<alternative_t::list, alternative_t::enum_>(params);
+  const auto& lib = instance.value_cref().get_library_cref();
+  const auto facade_visibility_value =
+    static_cast<facade::visibility>(visibility.value);
+  lib.compile_options(m_cmake_facade, options, facade_visibility_value);
+  return m_instances.create_void();
+}
+
 inst::instance* builtin_function_caller::executable_name(
   inst::instance& instance, const builtin_function_caller::params_t&)
 {
@@ -1834,6 +1853,28 @@ builtin_function_caller::executable_compile_definitions_visibility(
   const auto& exe = instance.value_cref().get_executable_cref();
   exe.compile_definitions(m_cmake_facade, definitions,
                           facade_visibility_value);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::executable_compile_options(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [options] = get_params<alternative_t::list>(params);
+  const auto& exe = instance.value_cref().get_executable_cref();
+  const auto default_visibility_value = facade::visibility::private_;
+  exe.compile_options(m_cmake_facade, options, default_visibility_value);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::executable_compile_options_visibility(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [options, visibility] =
+    get_params<alternative_t::list, alternative_t::enum_>(params);
+  const auto& exe = instance.value_cref().get_executable_cref();
+  const auto facade_visibility_value =
+    static_cast<facade::visibility>(visibility.value);
+  exe.compile_options(m_cmake_facade, options, facade_visibility_value);
   return m_instances.create_void();
 }
 
