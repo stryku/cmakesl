@@ -1,0 +1,25 @@
+static_library {
+    name: "decl_sema"
+
+    include_dirs.public: [
+        cmake_variables.CMAKESL_SOURCES_DIR.as_string,
+        cmake_variables.CMAKESL_GENERATED_PARENT_DIR.as_string
+    ]
+
+    dependencies.public: [
+        "decl_ast",
+        "sema"
+    ]
+
+    compile_options.public: cmake_variables.CMAKESL_ADDITIONAL_COMPILER_FLAGS.as_list
+    
+    files.public: [
+        "builtin_decl_namespace_context.cpp",
+        "builtin_decl_namespace_context.hpp",
+        "component_creation_sema_function.hpp",
+        "sema_builder_ast_visitor.cpp",
+        "sema_builder_ast_visitor.hpp",
+        "sema_node_visitor.hpp",
+        "sema_nodes.hpp"
+    ]
+}

@@ -1,0 +1,22 @@
+static_library {
+    name: "decl_ast"
+
+    include_dirs.public: [
+        cmake_variables.CMAKESL_SOURCES_DIR.as_string
+    ]
+
+    dependencies.public: [
+        "parse"
+    ]
+
+    compile_options.public: cmake_variables.CMAKESL_ADDITIONAL_COMPILER_FLAGS.as_list
+    
+    files.public: [
+        "ast_node.hpp",
+        "ast_nodes.hpp",
+        "parse_errors_reporter.cpp",
+        "parse_errors_reporter.hpp",
+        "parser.cpp",
+        "parser.hpp"
+    ]
+}
