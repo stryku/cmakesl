@@ -1,0 +1,88 @@
+static_library {
+    name: "common"
+
+    include_dirs.public: [
+        cmake_variables.CMAKESL_FACADE_DIR.as_string,
+        cmake_variables.CMAKESL_SOURCES_DIR.as_string
+    ]
+
+    dependencies.public: [
+        "sema",
+        "decl_sema"
+    ]
+
+    compile_options.public: cmake_variables.CMAKESL_ADDITIONAL_COMPILER_FLAGS.as_list
+    
+    files.public: [
+        "builtin_function_caller.cpp",
+        "builtin_function_caller.hpp",
+        "builtin_identifiers_observer.cpp",
+        "builtin_identifiers_observer.hpp",
+        "compiled_source.cpp",
+        "compiled_source.hpp",
+        "cross_translation_unit_static_variables.cpp",
+        "cross_translation_unit_static_variables.hpp",
+        "cross_translation_unit_static_variables_accessor.hpp",
+        "declarative_component_instance_creator.cpp",
+        "declarative_component_instance_creator.hpp",
+        "declarative_component_property_instances_collecting_visitor.hpp",
+        "declarative_source_compiler.cpp",
+        "declarative_source_compiler.hpp",
+        "execution.cpp",
+        "execution.hpp",
+        "execution_context.cpp",
+        "execution_context.hpp",
+        "expression_evaluation_context.hpp",
+        "expression_evaluation_visitor.cpp",
+        "expression_evaluation_visitor.hpp",
+        "extern_argument_parser.cpp",
+        "extern_argument_parser.hpp",
+        "function_caller.hpp",
+        "global_executor.cpp",
+        "global_executor.hpp",
+        "identifiers_context.hpp",
+        "instance/complex_unnamed_instance.cpp",
+        "instance/complex_unnamed_instance.hpp",
+        "instance/enum_constant_value.hpp",
+        "instance/extern_value.cpp",
+        "instance/extern_value.hpp",
+        "instance/instance.hpp",
+        "instance/instance_factory.cpp",
+        "instance/instance_factory.hpp",
+        "instance/instance_reference.cpp",
+        "instance/instance_reference.hpp",
+        "instance/instance_value_accessor.cpp",
+        "instance/instance_value_accessor.hpp",
+        "instance/instance_value_alternative.hpp",
+        "instance/instance_value_observer.hpp",
+        "instance/instance_value_variant.cpp",
+        "instance/instance_value_variant.hpp",
+        "instance/instances_holder.cpp",
+        "instance/instances_holder.hpp",
+        "instance/instances_holder_interface.hpp",
+        "instance/list_value.cpp",
+        "instance/list_value.hpp",
+        "instance/list_value_utils.cpp",
+        "instance/list_value_utils.hpp",
+        "instance/observable_instance.cpp",
+        "instance/observable_instance.hpp",
+        "instance/option_value.cpp",
+        "instance/option_value.hpp",
+        "instance/project_value.cpp",
+        "instance/project_value.hpp",
+        "instance/simple_unnamed_instance.cpp",
+        "instance/simple_unnamed_instance.hpp",
+        "instance/target_value.cpp",
+        "instance/target_value.hpp",
+        "instance/version_value.cpp",
+        "instance/version_value.hpp",
+        "module_sema_tree_provider.hpp",
+        "module_static_variables_initializer.hpp",
+        "parameter_alternatives_getter.hpp",
+        "scope_context.cpp",
+        "scope_context.hpp",
+        "source_compiler.cpp",
+        "source_compiler.hpp",
+        "static_variables_initializer.hpp"
+    ]
+}

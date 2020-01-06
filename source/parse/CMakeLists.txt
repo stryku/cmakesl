@@ -5,6 +5,7 @@ set(PARSE_SOURCES
 )
 
 add_library(parse "${PARSE_SOURCES}")
+
 target_include_directories(parse
     PRIVATE
         ${CMAKESL_SOURCES_DIR}

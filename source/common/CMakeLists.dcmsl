@@ -1,0 +1,24 @@
+static_library {
+    name: "common"
+
+    include_dirs.public: [
+        cmake_variables.CMAKESL_SOURCES_DIR.as_string
+    ]
+
+    compile_options.public: cmake_variables.CMAKESL_ADDITIONAL_COMPILER_FLAGS.as_list
+    
+    files.public: [
+        "algorithm.hpp",
+        "assert.hpp",
+        "enum_class_utils.hpp",
+        "int_alias.hpp",
+        "overloaded.hpp",
+        "source_location.hpp",
+        "source_view.cpp",
+        "source_view.hpp",
+        "string.hpp",
+        "strings_container.hpp",
+        "strings_container_impl.cpp",
+        "strings_container_impl.hpp"
+    ]
+}
