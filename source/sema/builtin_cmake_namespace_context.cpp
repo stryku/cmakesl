@@ -490,6 +490,17 @@ void builtin_cmake_namespace_context::add_library_member_functions(
       builtin_function_kind::library_compile_definitions_visibility,
       void_type,
       token_provider.compile_definitions_visibility(),
+      { list_of_strings_type, visibility_type } },
+    builtin_function_info{ // void compile_options(list<string> options)
+                           builtin_function_kind::library_compile_options,
+                           void_type,
+                           token_provider.compile_options(),
+                           { list_of_strings_type } },
+    builtin_function_info{
+      // void compile_options(list<string> options, visibility v)
+      builtin_function_kind::library_compile_options_visibility,
+      void_type,
+      token_provider.compile_options_visibility(),
       { list_of_strings_type, visibility_type } }
   };
 
@@ -553,6 +564,17 @@ void builtin_cmake_namespace_context::add_executable_member_functions(
       builtin_function_kind::executable_compile_definitions_visibility,
       void_type,
       token_provider.compile_definitions_visibility(),
+      { list_of_strings_type, visibility_type } },
+    builtin_function_info{ // void compile_options(list<string> options)
+                           builtin_function_kind::executable_compile_options,
+                           void_type,
+                           token_provider.compile_options(),
+                           { list_of_strings_type } },
+    builtin_function_info{
+      // void compile_options(list<string> options, visibility v)
+      builtin_function_kind::executable_compile_options_visibility,
+      void_type,
+      token_provider.compile_options_visibility(),
       { list_of_strings_type, visibility_type } }
   };
 

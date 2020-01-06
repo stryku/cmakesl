@@ -32,6 +32,10 @@ public:
                            const list_value& definitions,
                            facade::visibility v) const;
 
+  void compile_options(facade::cmake_facade& cmake_facade,
+                       const list_value& options_list,
+                       facade::visibility v) const;
+
 private:
   std::string m_name;
 };

@@ -34,7 +34,7 @@ TEST_F(DeclarativeFormatSmokeTest, AddDeclarativeFileWithStaticLibrary)
 
   const std::vector<std::string> expected_compile_options = { "-DANSWER=42" };
   EXPECT_CALL(m_facade,
-              target_compile_definitions(_, _, expected_compile_options));
+              target_compile_options(_, _, expected_compile_options));
 
   const std::string expected_dependency = "dependency";
   const std::string expected_another_dependency = "another_dependency";
@@ -71,7 +71,7 @@ TEST_F(DeclarativeFormatSmokeTest, AddDeclarativeFileWithExecutable)
 
   const std::vector<std::string> expected_compile_options = { "-DANSWER=42" };
   EXPECT_CALL(m_facade,
-              target_compile_definitions(_, _, expected_compile_options));
+              target_compile_options(_, _, expected_compile_options));
 
   const std::string expected_dependency = "dependency";
   const std::string expected_another_dependency = "another_dependency";

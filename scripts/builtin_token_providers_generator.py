@@ -253,6 +253,8 @@ GENERATION_INFO = {
             'include_directories_dirs_visibility': ['void include_directories(list<string> dirs, visibility v);', 'void ', 'include_directories'],
             'compile_definitions': ['void compile_definitions(list<string> definitions);', 'void ', 'compile_definitions'],
             'compile_definitions_visibility': ['void compile_definitions(list<string> definitions, visibility v);', 'void ', 'compile_definitions'],
+            'compile_options': ['void compile_options(list<string> options);', 'void ', 'compile_options'],
+            'compile_options_visibility': ['void compile_options(list<string> options, visibility v);', 'void ', 'compile_options'],
         }
     },
     'executable': {
@@ -265,6 +267,8 @@ GENERATION_INFO = {
             'include_directories_dirs_visibility': ['void include_directories(list<string> dirs, visibility v);', 'void ', 'include_directories'],
             'compile_definitions': ['void compile_definitions(list<string> definitions);', 'void ', 'compile_definitions'],
             'compile_definitions_visibility': ['void compile_definitions(list<string> definitions, visibility v);', 'void ', 'compile_definitions'],
+            'compile_options': ['void compile_options(list<string> options);', 'void ', 'compile_options'],
+            'compile_options_visibility': ['void compile_options(list<string> options, visibility v);', 'void ', 'compile_options'],
         }
     },
     'void': {

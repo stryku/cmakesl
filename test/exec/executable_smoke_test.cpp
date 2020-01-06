@@ -151,14 +151,60 @@ TEST_F(ExecutableSmokeTest, CompileDefinitionsWithVisibility_CallsFacadeMethod)
     "    cmake::executable exe = p.add_executable(\"exe\", sources);"
     ""
     "    list<string> defs = { \"-DFOO\" };"
-    "    exe.compile_definitions(defs);"
+    "    exe.compile_definitions(defs, cmake::visibility::public);"
     "    return 42;"
     "}";
 
   std::vector<std::string> expected_definitions = { "-DFOO" };
   EXPECT_CALL(m_facade,
-              target_compile_definitions("exe", facade::visibility::private_,
+              target_compile_definitions("exe", facade::visibility::public_,
                                          expected_definitions));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(ExecutableSmokeTest, CompileOptions_CallsFacadeMethod)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::project p = cmake::project(\"foo\");"
+    "    list<string> sources;"
+    "    cmake::executable exe = p.add_executable(\"exe\", sources);"
+    ""
+    "    list<string> options = { \"-Wall\" };"
+    "    exe.compile_options(options);"
+    "    return 42;"
+    "}";
+
+  std::vector<std::string> expected_options = { "-Wall" };
+  EXPECT_CALL(m_facade,
+              target_compile_options("exe", facade::visibility::private_,
+                                     expected_options));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(ExecutableSmokeTest, CompileOptionsWithVisibility_CallsFacadeMethod)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::project p = cmake::project(\"foo\");"
+    "    list<string> sources;"
+    "    cmake::executable exe = p.add_executable(\"exe\", sources);"
+    ""
+    "    list<string> options = { \"-Wall\" };"
+    "    exe.compile_options(options, cmake::visibility::public);"
+    "    return 42;"
+    "}";
+
+  std::vector<std::string> expected_definitions = { "-Wall" };
+  EXPECT_CALL(m_facade,
+              target_compile_options("exe", facade::visibility::public_,
+                                     expected_definitions));
 
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));

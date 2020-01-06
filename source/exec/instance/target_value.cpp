@@ -37,6 +37,14 @@ void target_value::compile_definitions(facade::cmake_facade& cmake_facade,
   cmake_facade.target_compile_definitions(m_name, v, definitions);
 }
 
+void target_value::compile_options(facade::cmake_facade& cmake_facade,
+                                   const list_value& options_list,
+                                   facade::visibility v) const
+{
+  const auto options = list_value_utils{ options_list }.strings();
+  cmake_facade.target_compile_options(m_name, v, options);
+}
+
 void target_value::link_to(facade::cmake_facade& cmake_facade,
                            facade::visibility v,
                            const std::string& target_name) const
