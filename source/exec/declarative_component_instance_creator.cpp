@@ -91,11 +91,13 @@ void declarative_component_instance_creator::register_in_facade(
 
   const auto name_str = name_instance->value_cref().get_string_cref();
 
-  if (instance.type().name().to_string() == "static_library") {
+  if (instance.type() == m_decl_types.static_library ||
+      instance.type().derives_from(m_decl_types.static_library)) {
     m_facade.add_library(name_str, sources);
     register_in_facade<inst::library_value>(name_str, instance);
+  } else if (instance.type() == m_decl_types.executable ||
+             instance.type().derives_from(m_decl_types.executable)) {
 
-  } else if (instance.type().name().to_string() == "executable") {
     m_facade.add_executable(name_str, sources);
     register_in_facade<inst::library_value>(name_str, instance);
   }

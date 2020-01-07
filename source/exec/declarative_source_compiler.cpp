@@ -34,7 +34,7 @@ declarative_source_compiler::compile(source_view source)
   lexer::lexer lex{ m_errs, source };
   const auto tokens = lex.lex();
   decl_ast::parser parser{ m_errs, m_strings, source, tokens };
-  auto ast_tree = parser.parse_component();
+  auto ast_tree = parser.parse_translation_unit();
   if (!ast_tree) {
     return nullptr;
   }
@@ -44,14 +44,20 @@ declarative_source_compiler::compile(source_view source)
   auto& global_context =
     m_factories_provider.context_factory().create("", &m_builtin_context);
 
-  decl_sema::sema_builder_ast_visitor_members members{ m_errs,
-                                                       m_builtin_context,
-                                                       global_context,
-                                                       m_factories_provider,
-                                                       m_builtin_tokens,
-                                                       builtin_types,
-                                                       m_qualified_contextes,
-                                                       m_strings };
+  cmsl::string_view_map<const decl_sema::component_declaration_node*>
+    component_declarations;
+
+  decl_sema::sema_builder_ast_visitor_members members{
+    m_errs,
+    m_builtin_context,
+    global_context,
+    m_factories_provider,
+    m_builtin_tokens,
+    builtin_types,
+    m_qualified_contextes,
+    m_strings,
+    component_declarations
+  };
 
   decl_sema::sema_builder_ast_visitor sema_building_visitor{ members };
   ast_tree->visit(sema_building_visitor);
@@ -61,16 +67,24 @@ declarative_source_compiler::compile(source_view source)
     return nullptr;
   }
 
-  const auto component_node =
-    dynamic_cast<const decl_sema::component_node*>(sema_tree.get());
-  CMSL_ASSERT(component_node);
+  const auto translation_unit =
+    dynamic_cast<const decl_sema::translation_unit_node*>(sema_tree.get());
+  CMSL_ASSERT(translation_unit);
 
-  const auto& creation_function =
-    create_component_creation_function(*component_node);
+  const sema::sema_function* creation_function{ nullptr };
+
+  for (const auto& node : translation_unit->nodes()) {
+    if (const auto component_node =
+          dynamic_cast<const decl_sema::component_node*>(node.get())) {
+      creation_function = &create_component_creation_function(*component_node);
+    }
+  }
+
+  CMSL_ASSERT(creation_function);
 
   return std::make_unique<compiled_declarative_source>(
     std::move(ast_tree), std::move(sema_tree), source, builtin_types,
-    creation_function);
+    *creation_function);
 }
 
 const sema::sema_function&

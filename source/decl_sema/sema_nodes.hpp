@@ -207,22 +207,28 @@ private:
   std::vector<sema::member_info> m_properties_access;
 };
 
-class component_node : public sema_node
+class component_declaration_node : public sema_node
 {
 public:
   using nodes_t = std::vector<std::unique_ptr<sema_node>>;
 
-  explicit component_node(const decl_ast::ast_node& ast_node,
-                          const sema::sema_type& type, const token_t& name,
-                          nodes_t nodes)
+  explicit component_declaration_node(
+    const decl_ast::ast_node& ast_node, const sema::sema_type& type,
+    const component_declaration_node* derived_component_declaration,
+    const token_t& name, nodes_t nodes)
     : sema_node{ ast_node }
     , m_type{ type }
+    , m_derived_component_declaration{ derived_component_declaration }
     , m_name{ name }
     , m_nodes{ std::move(nodes) }
   {
   }
 
   const sema::sema_type& type() const { return m_type; }
+  const component_declaration_node* derived_component_declaration() const
+  {
+    return m_derived_component_declaration;
+  }
   const token_t& name() const { return m_name; }
   const nodes_t& nodes() const { return m_nodes; }
 
@@ -230,6 +236,41 @@ public:
 
 private:
   const sema::sema_type& m_type;
+  const component_declaration_node* m_derived_component_declaration;
+  token_t m_name;
+  nodes_t m_nodes;
+};
+
+class component_node : public sema_node
+{
+public:
+  using nodes_t = std::vector<std::unique_ptr<sema_node>>;
+
+  explicit component_node(
+    const decl_ast::ast_node& ast_node, const sema::sema_type& type,
+    const component_declaration_node* component_declaration,
+    const token_t& name, nodes_t nodes)
+    : sema_node{ ast_node }
+    , m_type{ type }
+    , m_component_declaration{ component_declaration }
+    , m_name{ name }
+    , m_nodes{ std::move(nodes) }
+  {
+  }
+
+  const sema::sema_type& type() const { return m_type; }
+  const component_declaration_node* component_declaration() const
+  {
+    return m_component_declaration;
+  }
+  const token_t& name() const { return m_name; }
+  const nodes_t& nodes() const { return m_nodes; }
+
+  VISIT_MEHTOD
+
+private:
+  const sema::sema_type& m_type;
+  const component_declaration_node* m_component_declaration;
   token_t m_name;
   nodes_t m_nodes;
 };
@@ -254,6 +295,26 @@ public:
 private:
   token_t m_variable_name;
   const sema::sema_type& m_as_type;
+};
+
+class translation_unit_node : public sema_node
+{
+public:
+  using nodes_t = std::vector<std::unique_ptr<sema_node>>;
+
+  explicit translation_unit_node(const decl_ast::ast_node& ast_node,
+                                 nodes_t nodes)
+    : sema_node{ ast_node }
+    , m_nodes{ std::move(nodes) }
+  {
+  }
+
+  const nodes_t& nodes() const { return m_nodes; }
+
+  VISIT_MEHTOD
+
+private:
+  nodes_t m_nodes;
 };
 
 }

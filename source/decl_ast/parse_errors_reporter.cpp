@@ -60,4 +60,10 @@ void parse_errors_reporter::raise_expected_as_type(lexer::token token)
   raise(token,
         "expected 'as_bool', 'as_int', 'as_double', 'as_string' or 'as_list'");
 }
+
+void parse_errors_reporter::raise_expected_identifier_with_value(
+  lexer::token token, cmsl::string_view value)
+{
+  raise(token, "expected '" + std::string{ value } + '\'');
+}
 }

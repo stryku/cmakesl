@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/assert.hpp"
 #include "decl_ast/ast_node.hpp"
 #include "decl_ast/ast_node_visitor.hpp"
 
@@ -13,6 +14,91 @@
   }
 
 namespace cmsl::decl_ast {
+class translation_unit_node : public ast_node
+{
+public:
+  using nodes_t = std::vector<std::unique_ptr<ast_node>>;
+
+  explicit translation_unit_node(nodes_t nodes)
+    : m_nodes{ std::move(nodes) }
+  {
+  }
+
+  const nodes_t& nodes() const { return m_nodes; }
+
+  source_location begin_location() const override
+  {
+    CMSL_ASSERT(!m_nodes.empty());
+    return m_nodes.front()->begin_location();
+  }
+
+  source_location end_location() const override
+  {
+    CMSL_ASSERT(!m_nodes.empty());
+    return m_nodes.back()->end_location();
+  }
+
+  VISIT_MEHTOD
+
+private:
+  nodes_t m_nodes;
+};
+
+class component_declaration_node : public ast_node
+{
+public:
+  using nodes_t = std::vector<std::unique_ptr<ast_node>>;
+
+  explicit component_declaration_node(
+    const token_t& component_token, const token_t& name_token,
+    std::optional<token_t> colon_token,
+    std::optional<token_t> derived_type_name_token,
+    const token_t& open_brace_token, nodes_t nodes,
+    const token_t& close_brace_token)
+    : m_component{ component_token }
+    , m_name{ name_token }
+    , m_colon{ colon_token }
+    , m_derived_type_name{ derived_type_name_token }
+    , m_open_brace{ open_brace_token }
+    , m_nodes{ std::move(nodes) }
+    , m_close_brace{ close_brace_token }
+  {
+  }
+
+  const token_t& component() const { return m_component; }
+  const token_t& name() const { return m_name; }
+  std::optional<token_t> colon() const { return m_colon; }
+  std::optional<token_t> derived_type_name() const
+  {
+    return m_derived_type_name;
+  }
+
+  const token_t& open_brace() const { return m_open_brace; }
+  const nodes_t& nodes() const { return m_nodes; }
+  const token_t& close_brace() const { return m_close_brace; }
+
+  source_location begin_location() const override
+  {
+    return m_open_brace.src_range().begin;
+  }
+
+  source_location end_location() const override
+  {
+    return m_close_brace.src_range().begin;
+  }
+
+  VISIT_MEHTOD
+
+private:
+  token_t m_component;
+  token_t m_name;
+  std::optional<token_t> m_colon;
+  std::optional<token_t> m_derived_type_name;
+  token_t m_open_brace;
+  nodes_t m_nodes;
+  token_t m_close_brace;
+};
+
 class component_node : public ast_node
 {
 public:

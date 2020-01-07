@@ -56,6 +56,29 @@ public:
     }
     m_result << "}";
   }
+
+  void visit(const component_declaration_node& node) override
+  {
+    m_result << "component declaration{"
+             << "name:" << node.name().str() << ";derived:"
+             << (node.derived_type_name() ? node.derived_type_name()->str()
+                                          : cmsl::string_view{})
+             << ";nodes:";
+    for (const auto& n : node.nodes()) {
+      n->visit(*this);
+    }
+    m_result << "}";
+  }
+
+  void visit(const translation_unit_node& node) override
+  {
+    m_result << "translation_unit_node{nodes:";
+    for (const auto& n : node.nodes()) {
+      n->visit(*this);
+    }
+    m_result << "}";
+  }
+
   void visit(const property_access_node& node) override
   {
     m_result << "property_access{";
@@ -170,6 +193,67 @@ const auto values = Values(tokens_container_t{ ob, cb },   // {}
 INSTANTIATE_TEST_CASE_P(ParserErrorTest, Component, values);
 }
 
+TEST_F(ParserTest, ComponentDeclaration_Empty_GetComponentWithoutNodes)
+{
+  StrictMock<cmsl::test::strings_container_mock> strings;
+  errs_t errs;
+
+  const auto component_token = token_identifier("component");
+  const auto name_token = token_identifier("Component");
+
+  auto expected_ast = std::make_unique<component_declaration_node>(
+    component_token, name_token, /*colon=*/std::nullopt,
+    /*derived_type_name=*/std::nullopt, token_open_brace(),
+    component_declaration_node::nodes_t{}, token_close_brace());
+
+  // clang-format off
+  const auto tokens =
+    tokens_container_t{ component_token,
+                        name_token,
+                        token_open_brace(),
+                        token_close_brace() };
+  // clang-format on
+
+  auto parser =
+    parser_t{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_component_declaration();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest, ComponentDeclaration_DerivedEmpty_GetComponentWithoutNodes)
+{
+  StrictMock<cmsl::test::strings_container_mock> strings;
+  errs_t errs;
+
+  const auto component_token = token_identifier("component");
+  const auto name_token = token_identifier("Component");
+  const auto derived_type_name = token_identifier("base_type");
+
+  auto expected_ast = std::make_unique<component_declaration_node>(
+    component_token, name_token, token_colon(), derived_type_name,
+    token_open_brace(), component_declaration_node::nodes_t{},
+    token_close_brace());
+
+  // clang-format off
+  const auto tokens =
+    tokens_container_t{ component_token,
+                        name_token,
+                        token_colon(),
+                        derived_type_name,
+                        token_open_brace(),
+                        token_close_brace() };
+  // clang-format on
+
+  auto parser =
+    parser_t{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_component_declaration();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
 TEST_F(ParserTest, Component_Empty_GetComponentWithoutNodes)
 {
   StrictMock<cmsl::test::strings_container_mock> strings;
@@ -181,8 +265,12 @@ TEST_F(ParserTest, Component_Empty_GetComponentWithoutNodes)
     name_token, /*derived_type_name=*/std::nullopt, token_open_brace(),
     component_node::nodes_t{}, token_close_brace());
 
+  // clang-format off
   const auto tokens =
-    tokens_container_t{ name_token, token_open_brace(), token_close_brace() };
+    tokens_container_t{ name_token,
+                        token_open_brace(),
+                        token_close_brace() };
+  // clang-format on
   auto parser =
     parser_t{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_component();
@@ -203,9 +291,15 @@ TEST_F(ParserTest, Component_DerivedEmpty_GetComponentWithoutNodes)
     name_token, derived_type_name, token_open_brace(),
     component_node::nodes_t{}, token_close_brace());
 
+  // clang-format off
   const auto tokens =
-    tokens_container_t{ name_token, token_colon(), derived_type_name,
-                        token_open_brace(), token_close_brace() };
+    tokens_container_t{ name_token,
+                        token_colon(),
+                        derived_type_name,
+                        token_open_brace(),
+                        token_close_brace() };
+  // clang-format on
+
   auto parser =
     parser_t{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_component();
@@ -242,6 +336,7 @@ TEST_F(ParserTest,
     name_token, /*derived_type_name=*/std::nullopt, token_open_brace(),
     std::move(nodes), token_close_brace());
 
+  // clang-format off
   const auto tokens = tokens_container_t{ name_token,
                                           token_open_brace(),
 
@@ -254,6 +349,8 @@ TEST_F(ParserTest,
                                           property_value_token,
 
                                           token_close_brace() };
+  // clang-format on
+
   auto parser =
     parser_t{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_component();

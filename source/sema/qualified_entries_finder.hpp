@@ -112,7 +112,6 @@ public:
   std::vector<entry_info> find_in_current_node(const lexer::token& name) const
   {
     const auto& entries = current_entries();
-
     const auto found_range = entries.equal_range(name);
     return to_entries_info(found_range);
   }

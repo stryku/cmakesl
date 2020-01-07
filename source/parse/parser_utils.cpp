@@ -165,4 +165,10 @@ bool parser_utils::current_is_unary_operator() const
 {
   return lexer::is_unary_operator(curr_type());
 }
+
+bool parser_utils::current_is_identifier_with_value(
+  cmsl::string_view value) const
+{
+  return current_is(token_type_t::identifier) && current().str() == value;
+}
 }

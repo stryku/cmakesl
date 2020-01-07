@@ -13,6 +13,54 @@ parser::parser(errors::errors_observer& err_observer,
 {
 }
 
+std::unique_ptr<component_declaration_node>
+parser::parse_component_declaration()
+{
+  const auto component = eat(token_type_t::identifier);
+  if (!component) {
+    return nullptr;
+  }
+
+  if (component->str() != "component") {
+    m_errors_reporter.raise_expected_identifier_with_value(
+      get_token_for_error_report(), "component");
+    return nullptr;
+  }
+
+  const auto name = eat(token_type_t::identifier);
+  if (!name) {
+    return nullptr;
+  }
+
+  std::optional<token_t> colon;
+  std::optional<token_t> derived_type_name;
+  if ((colon = try_eat(token_type_t::colon))) {
+    derived_type_name = eat(token_type_t::identifier);
+    if (!derived_type_name) {
+      return nullptr;
+    }
+  }
+
+  const auto open_brace = eat(token_type_t::open_brace);
+  if (!open_brace) {
+    return nullptr;
+  }
+
+  auto nodes = parse_component_nodes();
+  if (!nodes) {
+    return nullptr;
+  }
+
+  const auto close_brace = eat(token_type_t::close_brace);
+  if (!close_brace) {
+    return nullptr;
+  }
+
+  return std::make_unique<component_declaration_node>(
+    *component, *name, colon, derived_type_name, *open_brace,
+    std::move(*nodes), *close_brace);
+}
+
 std::unique_ptr<component_node> parser::parse_component()
 {
   const auto name = eat();
@@ -61,7 +109,7 @@ parser::parse_component_nodes()
 
     if (component_declaration_starts()) {
       node = parse_component();
-    } else if (property_declaration_starts()) {
+    } else if (property_definition_starts()) {
       node = parse_property();
     } else {
       if (!expect_not_at_end()) {
@@ -88,7 +136,7 @@ bool parser::component_declaration_starts() const
     next_is(token_type_t::open_brace);
 }
 
-bool parser::property_declaration_starts() const
+bool parser::property_definition_starts() const
 {
   // Todo: check for `:` and nested properties
   return current_is(token_type_t::identifier);
@@ -243,5 +291,29 @@ parser::parse_cmake_variable_access()
 
   return std::make_unique<cmake_variable_access_node>(
     *cmake_variables, *variable_name, *as_type);
+}
+
+std::unique_ptr<translation_unit_node> parser::parse_translation_unit()
+{
+  translation_unit_node::nodes_t nodes;
+
+  while (!is_at_end()) {
+    std::unique_ptr<ast_node> node;
+    if (current_is_identifier_with_value("component")) {
+      node = parse_component_declaration();
+
+    } else if (current_is(token_type_t::identifier) ||
+               current_is(token_type_t::kw_executable)) {
+      node = parse_component();
+    }
+
+    if (!node) {
+      return nullptr;
+    }
+
+    nodes.emplace_back(std::move(node));
+  }
+
+  return std::make_unique<translation_unit_node>(std::move(nodes));
 }
 }
