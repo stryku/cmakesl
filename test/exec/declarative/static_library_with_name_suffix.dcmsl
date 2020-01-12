@@ -1,0 +1,6 @@
+static_library {
+    name = "library_name"
+    name_suffix = "_suffix"
+
+    files.public = [ "library.cpp" ]
+}

@@ -358,6 +358,8 @@ GENERATION_INFO = {
             'product_name': ['class product', 'class ', 'product'],
             'product_type_member': ['product_type type;', 'product_type ', 'type'],
             'product_name_member': ['string name;', 'string ', 'name'],
+            'product_name_prefix': ['string name_prefix;', 'string ', 'name_prefix'],
+            'product_name_suffix': ['string name_suffix;', 'string ', 'name_suffix'],
             'product_files': ['forwarding_lists files;', 'forwarding_lists ', 'files'],
             'product_include_dirs': ['forwarding_lists include_dirs;', 'forwarding_lists ', 'include_dirs'],
             'product_compile_options': ['forwarding_lists compile_options;', 'forwarding_lists ', 'compile_options'],

@@ -65,6 +65,16 @@ void declarative_component_instance_creator::register_in_facade(
   CMSL_ASSERT(name_info.has_value());
   const auto name_instance = instance.find_cmember(name_info->index);
 
+  const auto name_prefix_info = inst_type.find_member("name_prefix");
+  CMSL_ASSERT(name_prefix_info.has_value());
+  const auto name_prefix_instance =
+    instance.find_cmember(name_prefix_info->index);
+
+  const auto name_suffix_info = inst_type.find_member("name_suffix");
+  CMSL_ASSERT(name_suffix_info.has_value());
+  const auto name_suffix_instance =
+    instance.find_cmember(name_suffix_info->index);
+
   const auto files_info = inst_type.find_member("files");
   CMSL_ASSERT(files_info.has_value());
   const auto files_instance = instance.find_cmember(files_info->index);
@@ -81,7 +91,9 @@ void declarative_component_instance_creator::register_in_facade(
     }
       .strings();
 
-  const auto name_str = name_instance->value_cref().get_string_cref();
+  const auto name_str = name_prefix_instance->value_cref().get_string_cref() +
+    name_instance->value_cref().get_string_cref() +
+    name_suffix_instance->value_cref().get_string_cref();
 
   if (instance.type() == m_decl_types.static_library ||
       instance.type().derives_from(m_decl_types.static_library)) {
