@@ -1,6 +1,7 @@
 #pragma once
 
 #include "decl_ast/ast_node_visitor.hpp"
+#include "decl_namespace_types_accessor.hpp"
 #include "sema/builtin_types_accessor.hpp"
 #include "sema/qualified_contextes_refs.hpp"
 
@@ -59,6 +60,7 @@ public:
   void visit(const decl_ast::int_value_node& node) override;
   void visit(const decl_ast::list_node& node) override;
   void visit(const decl_ast::property_access_node& node) override;
+  void visit(const decl_ast::property_append_node& node) override;
   void visit(const decl_ast::property_node& node) override;
   void visit(const decl_ast::string_value_node& node) override;
   void visit(const decl_ast::translation_unit_node& node) override;

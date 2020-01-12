@@ -1,18 +1,18 @@
 executable {
-    name: "executable_name"
-    files.public: [
+    name = "executable_name"
+    files.public = [
         "exec.cpp"
     ]
 
-    include_dirs.public: [
+    include_dirs.public = [
         "include"
     ]
 
-    compile_options.public: [
+    compile_options.public = [
         "-DANSWER=42"
     ]
 
-    dependencies.public: [
+    dependencies.public = [
         "dependency",
         "another_dependency"
     ]

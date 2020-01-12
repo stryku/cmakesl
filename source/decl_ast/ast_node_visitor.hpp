@@ -9,6 +9,7 @@ class double_value_node;
 class int_value_node;
 class list_node;
 class property_access_node;
+class property_append_node;
 class property_node;
 class string_value_node;
 class translation_unit_node;
@@ -26,6 +27,7 @@ public:
   virtual void visit(const int_value_node& node) = 0;
   virtual void visit(const list_node& node) = 0;
   virtual void visit(const property_access_node& node) = 0;
+  virtual void visit(const property_append_node& node) = 0;
   virtual void visit(const property_node& node) = 0;
   virtual void visit(const string_value_node& node) = 0;
   virtual void visit(const translation_unit_node& node) = 0;

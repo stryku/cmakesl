@@ -177,14 +177,13 @@ private:
   std::vector<token_t> m_property_access;
 };
 
-class property_node : public ast_node
+class base_property_node : public ast_node
 {
 public:
-  explicit property_node(std::unique_ptr<property_access_node> property_access,
-                         const token_t& assignment,
-                         std::unique_ptr<ast_node> value)
+  explicit base_property_node(
+    std::unique_ptr<property_access_node> property_access,
+    std::unique_ptr<ast_node> value)
     : m_property_access{ std::move(property_access) }
-    , m_assignment{ assignment }
     , m_value{ std::move(value) }
   {
   }
@@ -193,7 +192,6 @@ public:
   {
     return *m_property_access;
   }
-  const token_t& assignment() const { return m_assignment; }
   const ast_node& value() const { return *m_value; }
 
   source_location begin_location() const override
@@ -206,12 +204,47 @@ public:
     return m_value->end_location();
   }
 
+private:
+  std::unique_ptr<property_access_node> m_property_access;
+  std::unique_ptr<ast_node> m_value;
+};
+
+class property_node : public base_property_node
+{
+public:
+  explicit property_node(std::unique_ptr<property_access_node> property_access,
+                         const token_t& assignment,
+                         std::unique_ptr<ast_node> value)
+    : base_property_node{ std::move(property_access), std::move(value) }
+    , m_assignment{ assignment }
+  {
+  }
+
+  const token_t& assignment() const { return m_assignment; }
+
   VISIT_MEHTOD
 
 private:
-  std::unique_ptr<property_access_node> m_property_access;
   token_t m_assignment;
-  std::unique_ptr<ast_node> m_value;
+};
+
+class property_append_node : public base_property_node
+{
+public:
+  explicit property_append_node(
+    std::unique_ptr<property_access_node> property_access,
+    const token_t& assignment, std::unique_ptr<ast_node> value)
+    : base_property_node{ std::move(property_access), std::move(value) }
+    , m_assignment{ assignment }
+  {
+  }
+
+  const token_t& assignment() const { return m_assignment; }
+
+  VISIT_MEHTOD
+
+private:
+  token_t m_assignment;
 };
 
 class fundamental_value_node : public ast_node

@@ -163,4 +163,68 @@ TEST_F(DeclarativeFormatSmokeTest, AddDeclarativeFileWithCustomStaticLibrary)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(DeclarativeFormatSmokeTest,
+       AddDeclarativeFileWithCustomStaticLibraryWithListAppending)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::add_declarative_file(\"custom_static_library_"
+    "with_list_appending.dcmsl\");"
+    "    return 42;"
+    "}";
+
+  EXPECT_CALL(m_facade, current_directory())
+    .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
+                           std::string{ "/declarative" }));
+
+  constexpr auto library_name = "library_name";
+
+  const std::vector<std::string> expected_sources = {};
+  EXPECT_CALL(m_facade, add_library(library_name, expected_sources));
+
+  const std::string expected_dependency = "custom_dependency";
+  const std::string expected_another_dependency = "another_custom_dependency";
+  EXPECT_CALL(m_facade,
+              target_link_library(library_name, _, expected_dependency));
+  EXPECT_CALL(
+    m_facade,
+    target_link_library(library_name, _, expected_another_dependency));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(DeclarativeFormatSmokeTest,
+       AddDeclarativeFileWithCustomStaticLibraryWithStringAppending)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::add_declarative_file(\"custom_static_library_"
+    "with_string_appending.dcmsl\");"
+    "    return 42;"
+    "}";
+
+  EXPECT_CALL(m_facade, current_directory())
+    .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
+                           std::string{ "/declarative" }));
+
+  constexpr auto library_name = "library_name";
+
+  const std::vector<std::string> expected_sources = {};
+  EXPECT_CALL(m_facade, add_library(library_name, expected_sources));
+
+  const std::string expected_dependency = "custom_dependency";
+  const std::string expected_another_dependency = "another_custom_dependency";
+  EXPECT_CALL(m_facade,
+              target_link_library(library_name, _, expected_dependency));
+  EXPECT_CALL(
+    m_facade,
+    target_link_library(library_name, _, expected_another_dependency));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }
