@@ -1,6 +1,6 @@
 static_library {
-    name: "foo"
-    files.public: [
+    name = "foo"
+    files.public = [
         "foo.cpp"
     ]
 }

@@ -25,22 +25,14 @@ declarative_component_instance_creator::declarative_component_instance_creator(
 std::unique_ptr<inst::instance> declarative_component_instance_creator::create(
   const decl_sema::component_creation_sema_function& function)
 {
-  declarative_component_property_instances_collecting_visitor collector{
-    m_facade, m_builtin_types, m_instances, m_generic_types
-  };
-
-  function.component().visit(collector);
-
-  auto& property_values = collector.m_collected_properties;
-
   const auto& lib_type = function.return_type();
   auto lib_instance = m_instances.create(lib_type);
 
-  for (auto& [property_access, property_init_value] : property_values) {
-    auto& property_instance =
-      access_property_instance(*lib_instance, *property_access);
-    property_instance.assign(std::move(property_init_value));
-  }
+  declarative_component_property_instances_collecting_visitor collector{
+    m_facade, m_builtin_types, m_instances, m_generic_types, *lib_instance
+  };
+
+  function.component().visit(collector);
 
   register_in_facade(*lib_instance);
 

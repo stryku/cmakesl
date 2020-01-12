@@ -103,6 +103,19 @@ public:
     m_result << "}";
   }
 
+  void visit(const property_append_node& node) override
+  {
+    m_result << "property append{access:";
+
+    node.property_access().visit(*this);
+
+    m_result << ";assignment:" << node.assignment().str() << ";value:";
+
+    node.value().visit(*this);
+
+    m_result << "}";
+  }
+
   void visit(const bool_value_node& node) override
   {
     m_result << "bool value{" << node.token().str() << "}";
@@ -232,7 +245,7 @@ TEST_F(ParserTest, ComponentDeclaration_DerivedEmpty_GetComponentWithoutNodes)
   const auto derived_type_name = token_identifier("base_type");
 
   auto expected_ast = std::make_unique<component_declaration_node>(
-    component_token, name_token, token_colon(), derived_type_name,
+    component_token, name_token, token_equal(), derived_type_name,
     token_open_brace(), component_declaration_node::nodes_t{},
     token_close_brace());
 
@@ -326,7 +339,7 @@ TEST_F(ParserTest,
     std::make_unique<property_access_node>(std::vector{ property_name_token });
   auto value_node = std::make_unique<bool_value_node>(property_value_token);
   auto property = std::make_unique<property_node>(
-    std::move(property_access), token_colon(), std::move(value_node));
+    std::move(property_access), token_equal(), std::move(value_node));
 
   component_node::nodes_t nodes;
   nodes.emplace_back(std::move(inner_component));
@@ -345,7 +358,7 @@ TEST_F(ParserTest,
                                           token_close_brace(),
 
                                           property_name_token,
-                                          token_colon(),
+                                          token_equal(),
                                           property_value_token,
 
                                           token_close_brace() };
@@ -457,10 +470,34 @@ TEST_F(ParserTest, Property_WithFundamentalValue_GetPropertyNode)
 
   auto value_node = std::make_unique<bool_value_node>(value_token);
   auto expected_ast = std::make_unique<property_node>(
-    std::move(name_access), token_colon(), std::move(value_node));
+    std::move(name_access), token_equal(), std::move(value_node));
 
   const auto tokens =
-    tokens_container_t{ name_token, token_colon(), value_token };
+    tokens_container_t{ name_token, token_equal(), value_token };
+  auto parser =
+    parser_t{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_property();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+TEST_F(ParserTest, PropertyAppend_WithFundamentalValue_GetPropertyNode)
+{
+  StrictMock<cmsl::test::strings_container_mock> strings;
+  errs_t errs;
+
+  const auto value_token = token_kw_true();
+  const auto name_token = token_identifier("foo");
+  auto name_access =
+    std::make_unique<property_access_node>(std::vector{ name_token });
+
+  auto value_node = std::make_unique<bool_value_node>(value_token);
+  auto expected_ast = std::make_unique<property_append_node>(
+    std::move(name_access), token_plusequal(), std::move(value_node));
+
+  const auto tokens =
+    tokens_container_t{ name_token, token_plusequal(), value_token };
   auto parser =
     parser_t{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
   auto result_ast = parser.parse_property();
@@ -486,13 +523,17 @@ TEST_P(Property, Malformed_ReportError)
   EXPECT_THAT(result, IsNull());
 }
 
-const auto colon = token_colon();
+const auto eq = token_equal();
+const auto plus_eq = token_plusequal();
 const auto name = token_identifier();
 const auto value = token_kw_true();
 
-const auto values = Values(tokens_container_t{ name, colon },  // foo :
-                           tokens_container_t{ colon, value }, // : true
-                           tokens_container_t{ name, value }   // foo true
+const auto values = Values(tokens_container_t{ name, eq },       // foo =
+                           tokens_container_t{ eq, value },      // = true
+                           tokens_container_t{ name, value },    // foo true
+                           tokens_container_t{ name, plus_eq },  // foo +=
+                           tokens_container_t{ plus_eq, value }, // += true
+                           tokens_container_t{ name, value }     // foo true
 );
 
 INSTANTIATE_TEST_CASE_P(ParserErrorTest, Property, values);

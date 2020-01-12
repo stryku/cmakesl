@@ -151,10 +151,9 @@ private:
   const sema::sema_type& m_type;
 };
 
-class property_node : public sema_node
-{
+class base_property_node : public sema_node{
 public:
-  explicit property_node(const decl_ast::ast_node& ast_node,
+  explicit base_property_node(const decl_ast::ast_node& ast_node,
                          std::unique_ptr<property_access_node> property_access,
                          std::unique_ptr<expression_node> value)
     : sema_node{ ast_node }
@@ -169,11 +168,25 @@ public:
   }
   const expression_node& value() const { return *m_value; }
 
-  VISIT_MEHTOD
-
 private:
   std::unique_ptr<property_access_node> m_property_access;
   std::unique_ptr<expression_node> m_value;
+};
+
+class property_node : public base_property_node
+{
+public:
+  using base_property_node::base_property_node;
+
+  VISIT_MEHTOD
+};
+
+class property_append_node : public base_property_node
+{
+public:
+  using base_property_node::base_property_node;
+
+  VISIT_MEHTOD
 };
 
 class property_access_node : public expression_node

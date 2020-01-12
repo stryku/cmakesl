@@ -142,16 +142,20 @@ bool parser::property_definition_starts() const
   return current_is(token_type_t::identifier);
 }
 
-std::unique_ptr<property_node> parser::parse_property()
+std::unique_ptr<ast_node> parser::parse_property()
 {
   auto property_access = parse_property_access();
   if (!property_access) {
     return nullptr;
   }
 
-  const auto assignment = eat(token_type_t::colon);
-  if (!assignment) {
-    return nullptr;
+  std::optional<token_t> plus_equal;
+  const auto equal = try_eat(token_type_t::equal);
+  if (!equal) {
+    plus_equal = eat(token_type_t::plusequal);
+    if (!plus_equal) {
+      return nullptr;
+    }
   }
 
   auto value = parse_value();
@@ -159,8 +163,14 @@ std::unique_ptr<property_node> parser::parse_property()
     return nullptr;
   }
 
-  return std::make_unique<property_node>(std::move(property_access),
-                                         *assignment, std::move(value));
+  if (equal) {
+    return std::make_unique<property_node>(std::move(property_access), *equal,
+                                           std::move(value));
+  } else {
+    CMSL_ASSERT(plus_equal.has_value());
+    return std::make_unique<property_append_node>(
+      std::move(property_access), *plus_equal, std::move(value));
+  }
 }
 
 std::unique_ptr<ast_node> parser::parse_value()

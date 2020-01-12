@@ -33,7 +33,7 @@ public:
   std::unique_ptr<translation_unit_node> parse_translation_unit();
   std::unique_ptr<component_declaration_node> parse_component_declaration();
   std::unique_ptr<component_node> parse_component();
-  std::unique_ptr<property_node> parse_property();
+  std::unique_ptr<ast_node> parse_property();
   std::unique_ptr<ast_node> parse_value();
   std::unique_ptr<list_node> parse_list();
   std::unique_ptr<cmake_variable_access_node> parse_cmake_variable_access();

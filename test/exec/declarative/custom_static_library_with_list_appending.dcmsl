@@ -6,4 +6,8 @@ component custom_static_library : static_library {
 
 custom_static_library {
     name = "library_name"
+
+    dependencies.public += [
+        "another_custom_dependency"
+    ]
 }

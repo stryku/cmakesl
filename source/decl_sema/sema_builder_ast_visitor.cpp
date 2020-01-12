@@ -335,4 +335,35 @@ void sema_builder_ast_visitor::visit(
   m_result_node =
     std::make_unique<translation_unit_node>(node, std::move(nodes));
 }
+
+void sema_builder_ast_visitor::visit(
+  const decl_ast::property_append_node& node)
+{
+  auto property_access =
+    visit_child_type<property_access_node>(node.property_access());
+  if (!property_access) {
+    return;
+  }
+
+  auto value = visit_child_expr(node.value());
+  if (!value) {
+    return;
+  }
+
+  // Check whether dest type has += method.
+  const auto lookup_result =
+    property_access->type().find_member_function(node.assignment());
+  if (lookup_result.empty()) {
+    // Todo: raise 'type ... doesn't support operator +='
+    return;
+  }
+
+  // Todo: check if there is a += operator method that takes passed value type.
+
+  // Todo: shouldn't we explicitly check whether the property type is
+  // list<string> and value type string or list<stirng>?
+
+  m_result_node = std::make_unique<property_append_node>(
+    node, std::move(property_access), std::move(value));
+}
 }
