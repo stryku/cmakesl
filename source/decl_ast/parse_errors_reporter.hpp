@@ -13,6 +13,8 @@ public:
   virtual void raise_expected_component_or_property(lexer::token token) = 0;
   virtual void raise_unexpected_list_in_list(lexer::token token) = 0;
   virtual void raise_expected_as_type(lexer::token token) = 0;
+  virtual void raise_expected_identifier_with_value(
+    lexer::token token, cmsl::string_view value) = 0;
 };
 
 class parse_errors_reporter : public parse_errors_observer
@@ -31,6 +33,8 @@ public:
   void raise_expected_component_or_property(lexer::token token) override;
   void raise_unexpected_list_in_list(lexer::token token) override;
   void raise_expected_as_type(lexer::token token) override;
+  void raise_expected_identifier_with_value(lexer::token token,
+                                            cmsl::string_view value) override;
 
 private:
   void raise(lexer::token token, std::string message);

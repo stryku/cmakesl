@@ -4,6 +4,7 @@
 #include "sema/builtin_types_accessor.hpp"
 
 #include <memory>
+#include <vector>
 
 namespace cmsl {
 namespace ast {
@@ -58,11 +59,14 @@ private:
 class compiled_declarative_source
 {
 public:
+  using functions_t =
+    std::vector<std::reference_wrapper<const sema::sema_function>>;
+
   explicit compiled_declarative_source(
     std::unique_ptr<decl_ast::ast_node> ast_tree,
     std::unique_ptr<decl_sema::sema_node> sema_tree, source_view source,
     sema::builtin_types_accessor builtin_types,
-    const sema::sema_function& creation_function);
+    const sema::sema_function& creation_functions);
   ~compiled_declarative_source();
 
   const sema::sema_function& get_target_creation_function() const;

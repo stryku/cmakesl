@@ -41,6 +41,10 @@ public:
 
   void visit(const decl_sema::component_node& node) override
   {
+    if (const auto component_declaration = node.component_declaration()) {
+      component_declaration->visit(*this);
+    }
+
     for (const auto& child : node.nodes()) {
       const auto property_node =
         dynamic_cast<const decl_sema::property_node*>(child.get());
@@ -50,6 +54,29 @@ public:
       m_collected_properties[&property_node->property_access()] =
         std::move(value);
     }
+  }
+
+  void visit(const decl_sema::component_declaration_node& node) override
+  {
+    if (const auto derived_component_declaration =
+          node.derived_component_declaration()) {
+      derived_component_declaration->visit(*this);
+    }
+
+    for (const auto& child : node.nodes()) {
+      const auto property_node =
+        dynamic_cast<const decl_sema::property_node*>(child.get());
+      CMSL_ASSERT_MSG(property_node, "Expected property node");
+
+      auto value = evaluate_child(property_node->value());
+      m_collected_properties[&property_node->property_access()] =
+        std::move(value);
+    }
+  }
+
+  void visit(const decl_sema::translation_unit_node& node) override
+  {
+    CMSL_UNREACHABLE("Should not be here");
   }
 
   void visit(const decl_sema::double_value_node& node) override

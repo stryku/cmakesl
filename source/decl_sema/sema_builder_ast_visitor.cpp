@@ -2,8 +2,11 @@
 #include "common/strings_container.hpp"
 #include "decl_sema/sema_nodes.hpp"
 #include "lexer/token.hpp"
+#include "sema/factories.hpp"
+#include "sema/factories_provider.hpp"
 #include "sema/generic_type_creation_utils.hpp"
 #include "sema/sema_type.hpp"
+#include "sema/type_builder.hpp"
 
 namespace {
 const auto decl_namespace_token =
@@ -29,6 +32,75 @@ sema_builder_ast_visitor::sema_builder_ast_visitor(
 
 sema_builder_ast_visitor::~sema_builder_ast_visitor() = default;
 
+void sema_builder_ast_visitor::visit(
+  const decl_ast::component_declaration_node& node)
+{
+  const auto type_name = node.name();
+  const auto found_type =
+    m_.qualified_ctxs.types.find_in_current_scope(type_name);
+  if (found_type) {
+    // Todo: raise type redefinition  error
+    return;
+  }
+
+  const sema::sema_type* derived_type{ nullptr };
+  const component_declaration_node* derived_component_declaration{ nullptr };
+  if (const auto derived_type_name = node.derived_type_name()) {
+    derived_type =
+      m_.qualified_ctxs.types.find_in_current_scope(*derived_type_name);
+    if (!derived_type) {
+      // Todo: raise derived type not found
+      return;
+    }
+
+    const auto found_component_declaration_it =
+      m_.component_declarations.find(node.name().str());
+    derived_component_declaration =
+      (found_component_declaration_it == std::cend(m_.component_declarations))
+      ? nullptr
+      : found_component_declaration_it->second;
+  }
+
+  auto& component_context = m_.factories.context_factory().create_class(
+    std::string{ type_name.str() }, &m_.ctx);
+
+  auto type_factory = m_.factories.type_factory(m_.qualified_ctxs.types);
+  auto& component_type = type_factory.create(
+    component_context, ast::type_representation{ type_name }, {},
+    /*exported=*/true, /*flags=*/{}, derived_type);
+  auto& component_type_ref =
+    type_factory.create_reference(component_type, /*exported=*/true);
+
+  m_.ctx.add_type(component_type);
+  m_.ctx.add_type(component_type_ref);
+
+  auto types_guard =
+    m_.qualified_ctxs.types_ctx_guard(type_name, /*exported=*/true);
+
+  m_current_component_type = &component_type;
+
+  component_node::nodes_t nodes;
+
+  for (const auto& ast_node : node.nodes()) {
+    auto child_node = visit_child(*ast_node);
+    if (!child_node) {
+      return;
+    }
+
+    nodes.emplace_back(std::move(child_node));
+  }
+
+  auto created_node = std::make_unique<component_declaration_node>(
+    node, component_type, derived_component_declaration, node.name(),
+    std::move(nodes));
+
+  m_.component_declarations[node.name().str()] = created_node.get();
+
+  m_result_node = std::move(created_node);
+
+  m_current_component_type = nullptr;
+}
+
 void sema_builder_ast_visitor::visit(const decl_ast::component_node& node)
 {
   const auto type_name = node.name();
@@ -38,6 +110,13 @@ void sema_builder_ast_visitor::visit(const decl_ast::component_node& node)
     // Todo: raise type not found error
     return;
   }
+
+  const auto found_component_declaration_it =
+    m_.component_declarations.find(node.name().str());
+  const auto component_declaration =
+    (found_component_declaration_it == std::cend(m_.component_declarations))
+    ? nullptr
+    : found_component_declaration_it->second;
 
   m_current_component_type = found_type;
 
@@ -53,7 +132,7 @@ void sema_builder_ast_visitor::visit(const decl_ast::component_node& node)
   }
 
   m_result_node = std::make_unique<component_node>(
-    node, *found_type, node.name(), std::move(nodes));
+    node, *found_type, component_declaration, node.name(), std::move(nodes));
 
   m_current_component_type = nullptr;
 }
@@ -237,5 +316,23 @@ void sema_builder_ast_visitor::visit(
 
   m_result_node = std::make_unique<cmake_variable_access_node>(
     node, node.variable_name(), type);
+}
+
+void sema_builder_ast_visitor::visit(
+  const decl_ast::translation_unit_node& node)
+{
+  translation_unit_node::nodes_t nodes;
+
+  for (const auto& ast_node : node.nodes()) {
+    auto child = visit_child(*ast_node);
+    if (!child) {
+      return;
+    }
+
+    nodes.emplace_back(std::move(child));
+  }
+
+  m_result_node =
+    std::make_unique<translation_unit_node>(node, std::move(nodes));
 }
 }

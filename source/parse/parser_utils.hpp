@@ -32,6 +32,7 @@ protected:
   bool next_is(token_type_t token_type) const;
   bool next_to_is(token_it it, token_type_t token_type) const;
   bool current_is(token_type_t token_type) const;
+  bool current_is_identifier_with_value(cmsl::string_view value) const;
   bool current_is_type() const;
   bool current_is_unary_operator() const;
   bool current_is_name_of_function_call() const;

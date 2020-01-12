@@ -26,9 +26,10 @@ class types_context;
 }
 
 namespace decl_sema {
-class sema_node;
+class component_declaration_node;
 class expression_node;
 class property_access_node;
+class sema_node;
 
 struct sema_builder_ast_visitor_members
 {
@@ -40,6 +41,8 @@ struct sema_builder_ast_visitor_members
   sema::builtin_types_accessor builtin_types;
   sema::qualified_contextes_refs qualified_ctxs;
   strings_container& strings;
+  cmsl::string_view_map<const component_declaration_node*>&
+    component_declarations;
 };
 
 class sema_builder_ast_visitor : public decl_ast::ast_node_visitor
@@ -50,6 +53,7 @@ public:
 
   void visit(const decl_ast::bool_value_node& node) override;
   void visit(const decl_ast::cmake_variable_access_node& node) override;
+  void visit(const decl_ast::component_declaration_node& node) override;
   void visit(const decl_ast::component_node& node) override;
   void visit(const decl_ast::double_value_node& node) override;
   void visit(const decl_ast::int_value_node& node) override;
@@ -57,6 +61,7 @@ public:
   void visit(const decl_ast::property_access_node& node) override;
   void visit(const decl_ast::property_node& node) override;
   void visit(const decl_ast::string_value_node& node) override;
+  void visit(const decl_ast::translation_unit_node& node) override;
 
 private:
   explicit sema_builder_ast_visitor(
