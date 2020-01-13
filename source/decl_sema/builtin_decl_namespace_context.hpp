@@ -17,7 +17,7 @@ struct qualified_contextes_refs;
 namespace decl_sema {
 struct decl_namespace_types_accessor;
 
-class builtin_decl_namespace_context : sema::builtin_context_base
+class builtin_decl_namespace_context : public sema::builtin_context_base
 {
 public:
   explicit builtin_decl_namespace_context(

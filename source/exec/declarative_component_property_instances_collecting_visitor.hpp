@@ -142,6 +142,11 @@ public:
     m_result = m_instances.gather_ownership(created);
   }
 
+  void visit(const decl_sema::import_node& node) override
+  {
+    CMSL_UNREACHABLE("Should not be here.");
+  }
+
 private:
   std::unique_ptr<inst::instance> convert_cmake_variable_to_instance_of_type(
     const std::string& cmake_variable, const sema::sema_type& desired_type)

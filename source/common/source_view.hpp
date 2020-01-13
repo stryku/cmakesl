@@ -16,6 +16,11 @@ public:
   explicit source_view(cmsl::string_view source_path,
                        cmsl::string_view source);
 
+  source_view(const source_view&) = default;
+  source_view& operator=(const source_view&) = default;
+  source_view(source_view&&) = default;
+  source_view& operator=(source_view&&) = default;
+
   cmsl::string_view path() const;
   cmsl::string_view source() const;
 

@@ -1,5 +1,6 @@
 #include "decl_sema/sema_builder_ast_visitor.hpp"
 #include "common/strings_container.hpp"
+#include "decl_sema/declarative_import_handler.hpp"
 #include "decl_sema/sema_nodes.hpp"
 #include "lexer/token.hpp"
 #include "sema/factories.hpp"
@@ -365,5 +366,38 @@ void sema_builder_ast_visitor::visit(
 
   m_result_node = std::make_unique<property_append_node>(
     node, std::move(property_access), std::move(value));
+}
+
+void sema_builder_ast_visitor::visit(const decl_ast::import_node& node)
+{
+  const auto import_result =
+    m_.import_handler.handle_declarative_import(node.pretty_file_name());
+  if (!import_result) {
+    // Todo: raise import failed
+    return;
+  }
+
+  const auto enums_succeed = m_.qualified_ctxs.enums.merge_imported_stuff(
+    *import_result->qualified_contexts.enums, m_.errs);
+  const auto functions_succeed =
+    m_.qualified_ctxs.functions.merge_imported_stuff(
+      *import_result->qualified_contexts.functions, m_.errs);
+  const auto ids_succeed = m_.qualified_ctxs.ids.merge_imported_stuff(
+    *import_result->qualified_contexts.ids, m_.errs);
+  const auto types_succeed = m_.qualified_ctxs.types.merge_imported_stuff(
+    *import_result->qualified_contexts.types, m_.errs);
+
+  const auto all_succeed =
+    enums_succeed && functions_succeed && ids_succeed && types_succeed;
+  if (!all_succeed) {
+    // Todo: Raise import failed
+    return;
+  }
+
+  for (const auto& pair : import_result->component_declarations) {
+    m_.component_declarations.insert(pair);
+  }
+
+  m_result_node = std::make_unique<import_node>(node, node.file_name());
 }
 }

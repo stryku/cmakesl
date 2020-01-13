@@ -2,7 +2,9 @@
 #include "common/source_view.hpp"
 #include "decl_ast/ast_nodes.hpp"
 #include "decl_ast/parser.hpp"
+#include "decl_sema/builtin_decl_namespace_context.hpp"
 #include "decl_sema/component_creation_sema_function.hpp"
+#include "decl_sema/declarative_import_handler.hpp"
 #include "decl_sema/sema_builder_ast_visitor.hpp"
 #include "decl_sema/sema_nodes.hpp"
 #include "exec/compiled_source.hpp"
@@ -18,13 +20,17 @@ declarative_source_compiler::declarative_source_compiler(
   sema::factories_provider& factories_provider,
   sema::qualified_contextes_refs qualified_contextes,
   sema::builtin_sema_context& builtin_context,
-  sema::builtin_token_provider& builtin_tokens)
+  decl_sema::builtin_decl_namespace_context& decl_context,
+  sema::builtin_token_provider& builtin_tokens,
+  decl_sema::declarative_import_handler& import_handler)
   : m_errs{ errs }
   , m_strings{ strings }
   , m_factories_provider{ factories_provider }
   , m_qualified_contextes{ qualified_contextes }
   , m_builtin_context{ builtin_context }
+  , m_decl_context{ decl_context }
   , m_builtin_tokens{ builtin_tokens }
+  , m_import_handler{ import_handler }
 {
 }
 
@@ -41,23 +47,19 @@ declarative_source_compiler::compile(source_view source)
 
   const auto builtin_types = m_builtin_context.builtin_types();
 
-  auto& global_context =
-    m_factories_provider.context_factory().create("", &m_builtin_context);
-
   cmsl::string_view_map<const decl_sema::component_declaration_node*>
     component_declarations;
 
-  decl_sema::sema_builder_ast_visitor_members members{
-    m_errs,
-    m_builtin_context,
-    global_context,
-    m_factories_provider,
-    m_builtin_tokens,
-    builtin_types,
-    m_qualified_contextes,
-    m_strings,
-    component_declarations
-  };
+  decl_sema::sema_builder_ast_visitor_members members{ m_errs,
+                                                       m_builtin_context,
+                                                       m_decl_context,
+                                                       m_factories_provider,
+                                                       m_builtin_tokens,
+                                                       builtin_types,
+                                                       m_qualified_contextes,
+                                                       m_strings,
+                                                       component_declarations,
+                                                       m_import_handler };
 
   decl_sema::sema_builder_ast_visitor sema_building_visitor{ members };
   ast_tree->visit(sema_building_visitor);
@@ -80,11 +82,9 @@ declarative_source_compiler::compile(source_view source)
     }
   }
 
-  CMSL_ASSERT(creation_function);
-
   return std::make_unique<compiled_declarative_source>(
     std::move(ast_tree), std::move(sema_tree), source, builtin_types,
-    *creation_function);
+    creation_function, std::move(component_declarations));
 }
 
 const sema::sema_function&

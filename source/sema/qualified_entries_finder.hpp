@@ -139,8 +139,12 @@ public:
   bool merge_imported_stuff(const qualified_entries_finder& imported,
                             errors::errors_observer& errs)
   {
-    return merge_node(imported.m_nodes_container,
-                      imported.m_nodes_container[0], m_nodes_container[0]);
+    auto backup = std::move(m_current_nodes_path);
+    const auto succeed =
+      merge_node(imported.m_nodes_container, imported.m_nodes_container[0],
+                 m_nodes_container[0]);
+    m_current_nodes_path = std::move(backup);
+    return succeed;
   }
 
   template <typename ScopeHandler, typename EntryHandler>

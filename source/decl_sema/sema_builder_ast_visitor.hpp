@@ -22,12 +22,14 @@ class errors_observer;
 namespace sema {
 class builtin_token_provider;
 class factories_provider;
+class import_handler;
 class sema_context;
 class types_context;
 }
 
 namespace decl_sema {
 class component_declaration_node;
+class declarative_import_handler;
 class expression_node;
 class property_access_node;
 class sema_node;
@@ -44,6 +46,7 @@ struct sema_builder_ast_visitor_members
   strings_container& strings;
   cmsl::string_view_map<const component_declaration_node*>&
     component_declarations;
+  declarative_import_handler& import_handler;
 };
 
 class sema_builder_ast_visitor : public decl_ast::ast_node_visitor
@@ -57,6 +60,7 @@ public:
   void visit(const decl_ast::component_declaration_node& node) override;
   void visit(const decl_ast::component_node& node) override;
   void visit(const decl_ast::double_value_node& node) override;
+  void visit(const decl_ast::import_node& node) override;
   void visit(const decl_ast::int_value_node& node) override;
   void visit(const decl_ast::list_node& node) override;
   void visit(const decl_ast::property_access_node& node) override;

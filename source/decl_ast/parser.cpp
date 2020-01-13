@@ -315,6 +315,8 @@ std::unique_ptr<translation_unit_node> parser::parse_translation_unit()
     } else if (current_is(token_type_t::identifier) ||
                current_is(token_type_t::kw_executable)) {
       node = parse_component();
+    } else if (current_is(token_type_t::kw_import)) {
+      node = parse_import();
     }
 
     if (!node) {
@@ -325,5 +327,26 @@ std::unique_ptr<translation_unit_node> parser::parse_translation_unit()
   }
 
   return std::make_unique<translation_unit_node>(std::move(nodes));
+}
+
+std::unique_ptr<import_node> parser::parse_import()
+{
+  const auto import_token = eat(token_type_t::kw_import);
+  if (!import_token) {
+    return nullptr;
+  }
+
+  const auto file_name_token = eat(token_type_t::string);
+  if (!file_name_token) {
+    return nullptr;
+  }
+
+  const auto semicolon_token = eat(token_type_t::semicolon);
+  if (!semicolon_token) {
+    return nullptr;
+  }
+
+  return std::make_unique<import_node>(*import_token, *file_name_token,
+                                       *semicolon_token);
 }
 }

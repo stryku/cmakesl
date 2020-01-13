@@ -13,7 +13,9 @@ class errors_observer;
 }
 
 namespace decl_sema {
+class builtin_decl_namespace_context;
 class component_node;
+class declarative_import_handler;
 }
 
 namespace sema {
@@ -34,7 +36,9 @@ public:
     sema::factories_provider& factories_provider,
     sema::qualified_contextes_refs qualified_contextes,
     sema::builtin_sema_context& builtin_context,
-    sema::builtin_token_provider& builtin_tokens);
+    decl_sema::builtin_decl_namespace_context& decl_context,
+    sema::builtin_token_provider& builtin_tokens,
+    decl_sema::declarative_import_handler& import_handler);
 
   std::unique_ptr<compiled_declarative_source> compile(source_view source);
 
@@ -48,7 +52,9 @@ private:
   sema::factories_provider& m_factories_provider;
   sema::qualified_contextes_refs m_qualified_contextes;
   sema::builtin_sema_context& m_builtin_context;
+  decl_sema::builtin_decl_namespace_context& m_decl_context;
   sema::builtin_token_provider& m_builtin_tokens;
+  decl_sema::declarative_import_handler& m_import_handler;
 };
 
 }

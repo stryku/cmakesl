@@ -1,0 +1,5 @@
+component custom_static_library : static_library {
+    dependencies.public = [
+        "custom_dependency"
+    ]
+}

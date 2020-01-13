@@ -28,6 +28,7 @@ class enum_values_context;
 
 namespace decl_sema {
 class sema_node;
+class component_declaration_node;
 }
 
 namespace exec {
@@ -66,17 +67,23 @@ public:
     std::unique_ptr<decl_ast::ast_node> ast_tree,
     std::unique_ptr<decl_sema::sema_node> sema_tree, source_view source,
     sema::builtin_types_accessor builtin_types,
-    const sema::sema_function& creation_functions);
+    const sema::sema_function* creation_function,
+    string_view_map<const decl_sema::component_declaration_node*>
+      component_declarations);
   ~compiled_declarative_source();
 
-  const sema::sema_function& get_target_creation_function() const;
+  const sema::sema_function* get_target_creation_function() const;
+  const string_view_map<const decl_sema::component_declaration_node*>&
+  component_declarations() const;
 
 private:
   std::unique_ptr<decl_ast::ast_node> m_ast_tree;
   std::unique_ptr<decl_sema::sema_node> m_sema_tree;
   source_view m_source;
   sema::builtin_types_accessor m_builtin_types;
-  const sema::sema_function& m_creation_function;
+  const sema::sema_function* m_creation_function;
+  string_view_map<const decl_sema::component_declaration_node*>
+    m_component_declarations;
 };
 }
 }

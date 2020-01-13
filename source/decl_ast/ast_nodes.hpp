@@ -383,4 +383,43 @@ private:
   token_t m_as_type;
 };
 
+class import_node : public ast_node
+{
+public:
+  explicit import_node(const token_t& import_token,
+                       const token_t& file_name_token,
+                       const token_t& semicolon_token)
+    : m_import{ import_token }
+    , m_file_name{ file_name_token }
+    , m_semicolon{ semicolon_token }
+  {
+  }
+
+  const token_t& import_() const { return m_import; }
+  const token_t& file_name() const { return m_file_name; }
+  cmsl::string_view pretty_file_name() const
+  {
+    return cmsl::string_view{ m_file_name.str().data() + 1u,
+                              m_file_name.str().size() - 2u };
+  }
+  const token_t& semicolon() const { return m_semicolon; }
+
+  source_location begin_location() const override
+  {
+    return m_import.src_range().begin;
+  }
+
+  source_location end_location() const override
+  {
+    return m_semicolon.src_range().end;
+  }
+
+  VISIT_MEHTOD
+
+private:
+  token_t m_import;
+  token_t m_file_name;
+  token_t m_semicolon;
+};
+
 }
