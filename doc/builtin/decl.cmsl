@@ -32,6 +32,8 @@ class product
 {
   product_type type;
   string name;
+  string name_prefix;
+  string name_suffix;
   forwarding_lists files;
   forwarding_lists include_dirs;
   forwarding_lists compile_options;

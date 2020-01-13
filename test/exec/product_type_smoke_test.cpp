@@ -21,6 +21,8 @@ TEST_F(ProductTypeSmokeTest, DefaultConstructor)
                       "    decl::product p;"
                       ""
                       "    auto all_empty = p.name == string()"
+                      "        && p.name_prefix == string()"
+                      "        && p.name_suffix == string()"
                       "        && is_empty(p.files)"
                       "        && is_empty(p.include_dirs)"
                       "        && is_empty(p.compile_options)"
