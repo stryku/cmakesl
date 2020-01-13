@@ -103,7 +103,13 @@ void declarative_component_instance_creator::register_in_facade(
              instance.type().derives_from(m_decl_types.executable)) {
 
     m_facade.add_executable(name_str, sources);
-    register_in_facade<inst::library_value>(name_str, instance);
+    register_in_facade<inst::executable_value>(name_str, instance);
+  } else if (instance.type() == m_decl_types.test_executable ||
+             instance.type().derives_from(m_decl_types.test_executable)) {
+
+    m_facade.add_executable(name_str, sources);
+    m_facade.add_test(name_str);
+    register_in_facade<inst::executable_value>(name_str, instance);
   }
 }
 
