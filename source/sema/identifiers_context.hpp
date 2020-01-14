@@ -16,6 +16,7 @@ class errors_observer;
 }
 
 namespace sema {
+class qualified_contexts_dumper;
 class sema_type;
 
 class identifiers_context
@@ -43,6 +44,8 @@ public:
 
   virtual bool merge_imported_stuff(const identifiers_context& imported,
                                     errors::errors_observer& errs) = 0;
+
+  virtual void dump(qualified_contexts_dumper& dumper) const = 0;
 };
 
 class identifiers_context_impl : public identifiers_context
@@ -69,6 +72,8 @@ public:
 
   bool merge_imported_stuff(const identifiers_context& imported,
                             errors::errors_observer& errs) override;
+
+  void dump(qualified_contexts_dumper& dumper) const override;
 
 private:
   qualified_entries_finder<identifier_info> m_contextes_handler;

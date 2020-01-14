@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sema/identifiers_context.hpp"
+#include "sema/qualified_contexts_dumper.hpp"
 
 #include <gmock/gmock.h>
 
@@ -22,5 +23,7 @@ public:
   MOCK_METHOD2(merge_imported_stuff,
                bool(const identifiers_context& imported,
                     errors::errors_observer& errs));
+
+  MOCK_CONST_METHOD1(dump, void(qualified_contexts_dumper&));
 };
 }

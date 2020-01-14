@@ -1,4 +1,5 @@
 #include "sema/types_context.hpp"
+#include "sema/qualified_contexts_dumper.hpp"
 #include "sema/sema_context.hpp"
 #include "sema/sema_type.hpp"
 
@@ -93,5 +94,10 @@ bool types_context_impl::merge_imported_stuff(const types_context& imported,
 {
   const auto& casted = static_cast<const types_context_impl&>(imported);
   return m_types_finder.merge_imported_stuff(casted.m_types_finder, errs);
+}
+
+void types_context_impl::dump(qualified_contexts_dumper& dumper) const
+{
+  dumper.dump(m_types_finder);
 }
 }

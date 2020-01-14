@@ -143,7 +143,33 @@ public:
                       imported.m_nodes_container[0], m_nodes_container[0]);
   }
 
+  template <typename ScopeHandler, typename EntryHandler>
+  void visit_entries(ScopeHandler& scope_handler,
+                     EntryHandler& entry_handler) const
+  {
+    visit_node(m_nodes_container[0], scope_handler, entry_handler);
+  }
+
 private:
+  template <typename ScopeHandler, typename EntryHandler>
+  void visit_node(const tree_node& node, ScopeHandler& scope_handler,
+                  EntryHandler& entry_handler) const
+  {
+    scope_handler.enter_global_scope(node.name.str());
+
+    for (const auto& [token, entry] : node.entries) {
+      entry_handler(token, entry.exported, entry.e);
+    }
+
+    for (const auto& child_node_pair : node.nodes) {
+      const auto& node_id = child_node_pair.second;
+      const auto& child_node = m_nodes_container[node_id];
+      visit_node(child_node, scope_handler, entry_handler);
+    }
+
+    scope_handler.leave_global_scope();
+  }
+
   bool merge_node(std::vector<tree_node> imported_nodes_container,
                   const tree_node& imported_node, tree_node& into)
   {

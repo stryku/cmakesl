@@ -77,9 +77,7 @@ const sema_type& builtin_context_base::add_enum_type(
       const auto enum_value_index = identifiers_index_provider::get_next();
       const auto enum_value = value++;
       m_qualified_ctxs.enums.register_identifier(
-        enumerator,
-        enum_values_context::enum_value_info{ type, enum_value,
-                                              enum_value_index },
+        enumerator, enum_value_info{ type, enum_value, enum_value_index },
         /*exported=*/false);
     }
   }

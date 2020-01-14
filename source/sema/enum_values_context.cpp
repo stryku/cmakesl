@@ -1,4 +1,5 @@
 #include "sema/enum_values_context.hpp"
+#include "sema/qualified_contexts_dumper.hpp"
 
 namespace cmsl::sema {
 
@@ -8,8 +9,7 @@ void enum_values_context_impl::register_identifier(
   m_finder.register_entry(declaration_token, info, exported);
 }
 
-std::optional<enum_values_context::enum_value_info>
-enum_values_context_impl::info_of(
+std::optional<enum_value_info> enum_values_context_impl::info_of(
   const enum_values_context::qualified_names_t& names) const
 {
   const auto found_entries = m_finder.find(names);
@@ -52,5 +52,10 @@ bool enum_values_context_impl::merge_imported_stuff(
 {
   const auto& casted = static_cast<const enum_values_context_impl&>(imported);
   return m_finder.merge_imported_stuff(casted.m_finder, errs);
+}
+
+void enum_values_context_impl::dump(qualified_contexts_dumper& dumper) const
+{
+  dumper.dump(m_finder);
 }
 }

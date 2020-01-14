@@ -14,8 +14,8 @@ add_custom_command(
 )
 
 set(SEMA_SOURCES
-    add_subdirectory_semantic_handler.hpp
     add_declarative_file_semantic_handler.hpp
+    add_subdirectory_semantic_handler.hpp
     block_node_manipulator.cpp
     block_node_manipulator.hpp
     builtin_cmake_namespace_context.cpp
@@ -62,6 +62,8 @@ set(SEMA_SOURCES
     qualified_contextes.cpp
     qualified_contextes.hpp
     qualified_contextes_refs.hpp
+    qualified_contexts_dumper.cpp
+    qualified_contexts_dumper.hpp
     qualified_entries_finder.hpp
     sema_builder.cpp
     sema_builder.hpp

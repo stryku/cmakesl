@@ -1,5 +1,6 @@
 #include "sema/identifiers_context.hpp"
 #include "ast/qualified_name.hpp"
+#include "sema/qualified_contexts_dumper.hpp"
 
 #include <algorithm>
 
@@ -89,5 +90,10 @@ bool identifiers_context_impl::merge_imported_stuff(
   const auto& casted = static_cast<const identifiers_context_impl&>(imported);
   return m_contextes_handler.merge_imported_stuff(casted.m_contextes_handler,
                                                   errs);
+}
+
+void identifiers_context_impl::dump(qualified_contexts_dumper& dumper) const
+{
+  dumper.dump(m_contextes_handler);
 }
 }

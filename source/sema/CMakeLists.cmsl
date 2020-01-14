@@ -72,6 +72,8 @@ void main(cmake::project& p)
     "qualified_contextes.cpp",
     "qualified_contextes.hpp",
     "qualified_contextes_refs.hpp",
+    "qualified_contexts_dumper.cpp",
+    "qualified_contexts_dumper.hpp",
     "qualified_entries_finder.hpp",
     "sema_builder.cpp",
     "sema_builder.hpp",

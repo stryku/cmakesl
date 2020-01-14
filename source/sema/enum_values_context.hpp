@@ -12,6 +12,14 @@ class errors_observer;
 
 namespace sema {
 class sema_type;
+class qualified_contexts_dumper;
+
+struct enum_value_info
+{
+  std::reference_wrapper<const sema_type> type;
+  unsigned value;
+  unsigned index;
+};
 
 class enum_values_context
 {
@@ -20,13 +28,6 @@ protected:
   using qualified_names_t = std::vector<ast::name_with_coloncolon>;
 
 public:
-  struct enum_value_info
-  {
-    std::reference_wrapper<const sema_type> type;
-    unsigned value;
-    unsigned index;
-  };
-
   virtual ~enum_values_context() = default;
 
   virtual void register_identifier(token_t name, enum_value_info info,
@@ -43,6 +44,8 @@ public:
 
   virtual bool merge_imported_stuff(const enum_values_context& imported,
                                     errors::errors_observer& errs) = 0;
+
+  virtual void dump(qualified_contexts_dumper& dumper) const = 0;
 };
 
 class enum_values_context_impl : public enum_values_context
@@ -62,6 +65,8 @@ public:
 
   bool merge_imported_stuff(const enum_values_context& imported,
                             errors::errors_observer& errs) override;
+
+  void dump(qualified_contexts_dumper& dumper) const override;
 
 private:
   qualified_entries_finder<enum_value_info> m_finder;
