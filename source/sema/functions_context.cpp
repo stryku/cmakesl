@@ -1,5 +1,6 @@
 #include "sema/functions_context.hpp"
 #include "sema/function_signature.hpp"
+#include "sema/qualified_contexts_dumper.hpp"
 #include "sema/sema_function.hpp"
 
 namespace cmsl::sema {
@@ -79,5 +80,10 @@ bool functions_context_impl::merge_imported_stuff(
   const auto& casted = static_cast<const functions_context_impl&>(imported);
   return m_functions_finder.merge_imported_stuff(casted.m_functions_finder,
                                                  errs);
+}
+
+void functions_context_impl::dump(qualified_contexts_dumper& dumper) const
+{
+  dumper.dump(m_functions_finder);
 }
 }

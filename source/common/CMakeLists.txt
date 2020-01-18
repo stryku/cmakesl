@@ -1,6 +1,8 @@
 set(COMMON_SOURCES
     algorithm.hpp
     assert.hpp
+    dumper_utils.cpp
+    dumper_utils.hpp
     enum_class_utils.hpp
     int_alias.hpp
     overloaded.hpp

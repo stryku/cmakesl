@@ -5,59 +5,6 @@
 
 namespace cmsl::sema {
 
-std::string dumper::m_ident;
-
-dumper::ident_guard::ident_guard(std::string& ident)
-  : m_ident{ ident }
-{
-  m_ident.push_back(' ');
-}
-
-dumper::ident_guard::~ident_guard()
-{
-  if (m_valid) {
-    m_ident.pop_back();
-  }
-}
-
-dumper::ident_guard::ident_guard(dumper::ident_guard&& other)
-  : m_ident{ other.m_ident }
-  , m_valid{ other.m_valid }
-{
-  other.m_valid = false;
-}
-
-dumper::ident_guard& dumper::ident_guard::operator=(
-  dumper::ident_guard&& other)
-{
-  m_valid = other.m_valid;
-  other.m_valid = false;
-  return *this;
-}
-
-dumper::dumper(std::ostream& os)
-  : m_out{ os }
-{
-  m_ident.clear();
-  out() << "-sema dumping begin";
-}
-
-dumper::~dumper()
-{
-  m_ident.clear();
-  out() << "-sema dumping end";
-}
-
-dumper::ident_guard dumper::ident()
-{
-  return ident_guard{ m_ident };
-}
-
-dumper::line_out dumper::out()
-{
-  return line_out{ m_out };
-}
-
 void dumper::visit(const variable_declaration_node& node)
 {
   out() << "-variable declaration";

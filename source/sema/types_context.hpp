@@ -11,7 +11,13 @@ class errors_observer;
 }
 
 namespace sema {
+class qualified_contexts_dumper;
 class sema_type;
+
+struct type_data
+{
+  const sema_type& ty;
+};
 
 class types_context
 {
@@ -44,16 +50,12 @@ public:
 
   virtual bool merge_imported_stuff(const types_context& imported,
                                     errors::errors_observer& errs) = 0;
+
+  virtual void dump(qualified_contexts_dumper& dumper) const = 0;
 };
 
 class types_context_impl : public types_context
 {
-private:
-  struct type_data
-  {
-    const sema_type& ty;
-  };
-
 public:
   void register_type(const lexer::token& name, const sema_type& ty,
                      bool exported) override;
@@ -75,6 +77,8 @@ public:
 
   bool merge_imported_stuff(const types_context& imported,
                             errors::errors_observer& errs) override;
+
+  void dump(qualified_contexts_dumper& dumper) const override;
 
 private:
   qualified_entries_finder<type_data> m_types_finder;

@@ -1562,9 +1562,7 @@ void sema_builder_ast_visitor::visit(const ast::enum_node& node)
       const auto enum_value_index = identifiers_index_provider::get_next();
       const auto enum_value = value++;
       m_.qualified_ctxs.enums.register_identifier(
-        enumerator,
-        enum_values_context::enum_value_info{ enum_type, enum_value,
-                                              enum_value_index },
+        enumerator, enum_value_info{ enum_type, enum_value, enum_value_index },
         is_exported);
     }
   }

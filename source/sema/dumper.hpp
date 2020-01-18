@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/dumper_utils.hpp"
 #include "sema/sema_node_visitor.hpp"
 
 #include <ast/namespace_node.hpp>
@@ -10,11 +11,15 @@ namespace cmsl::sema {
 class call_node;
 class sema_type;
 
-class dumper : public sema_node_visitor
+class dumper
+  : public sema_node_visitor
+  , public dumper_utils
 {
 public:
-  explicit dumper(std::ostream& os);
-  ~dumper();
+  explicit dumper(std::ostream& out)
+    : dumper_utils{ out }
+  {
+  }
 
   void visit(const add_declarative_file_node&) override;
   void visit(const add_subdirectory_node&) override;
@@ -57,56 +62,11 @@ public:
   void visit(const while_node&) override;
 
 private:
-  class ident_guard
-  {
-  public:
-    explicit ident_guard(std::string& ident);
-    ~ident_guard();
-
-    ident_guard(const ident_guard&) = delete;
-    ident_guard& operator=(const ident_guard&) = delete;
-
-    ident_guard(ident_guard&& other);
-    ident_guard& operator=(ident_guard&& other);
-
-  private:
-    std::string& m_ident;
-    bool m_valid{ true };
-  };
-
-  ident_guard ident();
-
-  class line_out
-  {
-  public:
-    explicit line_out(std::ostream& os)
-      : m_out{ os }
-    {
-      m_out << m_ident;
-    }
-    ~line_out() { m_out << '\n'; }
-
-    template <typename T>
-    std::ostream& operator<<(T&& value)
-    {
-      return m_out << std::forward<T>(value);
-    }
-
-  private:
-    std::ostream& m_out;
-  };
-
-  line_out out();
-
   void visit_call_node(const call_node& node);
 
   void dump_exported(const sema_node& node);
   void dump_type(const sema_type& type);
   void dump_qualified_name(
     const std::vector<ast::name_with_coloncolon>& names);
-
-private:
-  std::ostream& m_out;
-  static std::string m_ident;
 };
 }

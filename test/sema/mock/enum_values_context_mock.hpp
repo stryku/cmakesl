@@ -19,5 +19,7 @@ public:
   MOCK_METHOD2(merge_imported_stuff,
                bool(const enum_values_context& imported,
                     errors::errors_observer& errs));
+
+  MOCK_CONST_METHOD1(dump, void(qualified_contexts_dumper&));
 };
 }

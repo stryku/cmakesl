@@ -11,9 +11,14 @@ class errors_observer;
 }
 
 namespace sema {
-
+class qualified_contexts_dumper;
 class sema_function;
 struct function_signature;
+
+struct function_data
+{
+  const sema_function& fun;
+};
 
 class functions_context
 {
@@ -38,16 +43,12 @@ public:
 
   virtual bool merge_imported_stuff(const functions_context& imported,
                                     errors::errors_observer& errs) = 0;
+
+  virtual void dump(qualified_contexts_dumper& dumper) const = 0;
 };
 
 class functions_context_impl : public functions_context
 {
-private:
-  struct function_data
-  {
-    const sema_function& fun;
-  };
-
 public:
   void register_function(const lexer::token& name, const sema_function& fun,
                          bool exported) override;
@@ -66,6 +67,8 @@ public:
 
   bool merge_imported_stuff(const functions_context& imported,
                             errors::errors_observer& errs) override;
+
+  void dump(qualified_contexts_dumper& dumper) const override;
 
 private:
   qualified_entries_finder<function_data> m_functions_finder;
