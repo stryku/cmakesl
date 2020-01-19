@@ -41,6 +41,8 @@ void builtin_decl_namespace_context::add_types()
     product_type_type, forwarding_lists_manipulator.built_type().ty);
   const auto executable_manipulator =
     add_executable_type(product_type_manipulator.built_type().ty);
+  const auto test_executable_manipulator =
+    add_test_executable_type(product_type_manipulator.built_type().ty);
   const auto static_library_manipulator =
     add_static_library_type(product_type_manipulator.built_type().ty);
   const auto shared_library_manipulator =
@@ -54,6 +56,8 @@ void builtin_decl_namespace_context::add_types()
     .product_ref = product_type_manipulator.built_type().reference,
     .executable = executable_manipulator.built_type().ty,
     .executable_ref = executable_manipulator.built_type().reference,
+    .test_executable = test_executable_manipulator.built_type().ty,
+    .test_executable_ref = test_executable_manipulator.built_type().reference,
     .static_library = static_library_manipulator.built_type().ty,
     .static_library_ref = static_library_manipulator.built_type().reference,
     .shared_library = shared_library_manipulator.built_type().ty,
@@ -195,5 +199,20 @@ const decl_namespace_types_accessor&
 builtin_decl_namespace_context::types_accessor() const
 {
   return *m_types_accessor;
+}
+
+sema::type_builder builtin_decl_namespace_context::add_test_executable_type(
+  const sema::sema_type& product_type)
+{
+  static const auto token = m_builtin_tokens.decl().test_executable_name();
+  const auto name_representation =
+    ast::type_representation{ ast::qualified_name{ token } };
+  sema::type_builder builder{ m_factories, m_qualified_ctxs.types, *this,
+                              name_representation };
+
+  builder.with_derived_type(product_type);
+
+  builder.build_builtin_and_register_in_context();
+  return builder;
 }
 }

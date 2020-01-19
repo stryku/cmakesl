@@ -1,0 +1,19 @@
+test_executable {
+    name = "test_executable_name"
+    files.public = [
+        "test_exec.cpp"
+    ]
+
+    include_dirs.public = [
+        "include"
+    ]
+
+    compile_options.public = [
+        "-DANSWER=42"
+    ]
+
+    dependencies.public = [
+        "dependency",
+        "another_dependency"
+    ]
+}

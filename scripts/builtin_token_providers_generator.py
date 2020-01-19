@@ -366,6 +366,7 @@ GENERATION_INFO = {
             'product_dependencies': ['forwarding_lists dependencies;', 'forwarding_lists ', 'dependencies'],
 
             'executable_name': ['class executable : product', 'class ', 'executable'],
+            'test_executable_name': ['class test_executable : product', 'class ', 'test_executable'],
             'shared_library_name': ['class shared_library : product', 'class ', 'shared_library'],
             'static_library_name': ['class static_library : product', 'class ', 'static_library'],
         }

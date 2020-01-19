@@ -14,6 +14,8 @@ struct decl_namespace_types_accessor
   const sema::sema_type& product_ref;
   const sema::sema_type& executable;
   const sema::sema_type& executable_ref;
+  const sema::sema_type& test_executable;
+  const sema::sema_type& test_executable_ref;
   const sema::sema_type& static_library;
   const sema::sema_type& static_library_ref;
   const sema::sema_type& shared_library;
