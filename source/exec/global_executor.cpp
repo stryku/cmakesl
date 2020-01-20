@@ -103,10 +103,10 @@ global_executor::handle_add_subdirectory(
       return add_subdirectory_semantic_handler::compilation_failed{};
     }
 
-    const auto& creation_function = compiled->get_target_creation_function();
+    const auto creation_function = compiled->get_target_creation_function();
     m_directories.pop_back();
     return add_subdirectory_semantic_handler::
-      contains_declarative_cmakesl_script{ &creation_function };
+      contains_declarative_cmakesl_script{ creation_function };
   }
 
   auto cmakesl_script_path = script_path_creator() + "/CMakeLists.cmsl";
@@ -165,15 +165,64 @@ std::unique_ptr<sema::qualified_contextes> global_executor::handle_import(
 
   const auto& sema_tree = compiled->sema_tree();
 
+  m_sema_trees.emplace(src_view->path(), sema_tree);
+  m_compiled_sources.emplace(src_view->path(), std::move(compiled));
+
   auto exported_stuff = contexts.collect_exported_stuff();
 
   m_exported_qualified_contextes.emplace(src_view->path(),
                                          exported_stuff.clone());
-  m_sema_trees.emplace(src_view->path(), sema_tree);
-  m_compiled_sources.emplace(src_view->path(), std::move(compiled));
 
   return std::make_unique<sema::qualified_contextes>(
     std::move(exported_stuff));
+}
+
+std::optional<decl_sema::declarative_import_handler::result>
+global_executor::handle_declarative_import(cmsl::string_view path)
+{
+  auto import_path = build_full_import_path(path);
+
+  if (const auto found = m_exported_qualified_contextes.find(import_path);
+      found != std::cend(m_exported_qualified_contextes)) {
+    const auto& ctxs = found->second;
+
+    const auto found_compiled =
+      m_compiled_declarative_sources.find(import_path);
+    CMSL_ASSERT(found_compiled != std::cend(m_compiled_declarative_sources));
+
+    return decl_sema::declarative_import_handler::result{
+      ctxs.clone(), found_compiled->second->component_declarations()
+    };
+  }
+
+  const auto src_view = load_source(std::move(import_path));
+  if (!src_view) {
+    //     Todo: file not found
+    return std::nullopt;
+  }
+
+  auto contexts = m_builtin_qualified_contexts.clone();
+
+  auto compiler = create_declarative_compiler(contexts);
+  auto compiled = compiler.compile(*src_view);
+  if (!compiled) {
+    // Todo: compilation failed
+    return std::nullopt;
+  }
+
+  auto component_declarations_copy = compiled->component_declarations();
+
+  m_compiled_declarative_sources.emplace(src_view->path(),
+                                         std::move(compiled));
+
+  auto exported_stuff = contexts.collect_exported_stuff();
+
+  m_exported_qualified_contextes.emplace(src_view->path(),
+                                         exported_stuff.clone());
+
+  return decl_sema::declarative_import_handler::result{
+    std::move(exported_stuff), std::move(component_declarations_copy)
+  };
 }
 
 void global_executor::raise_no_main_function_error(
@@ -258,9 +307,10 @@ declarative_source_compiler global_executor::create_declarative_compiler(
   sema::qualified_contextes& ctxs)
 {
   auto refs = sema::qualified_contextes_refs{ ctxs };
-  return declarative_source_compiler{ m_errors_observer,  m_strings_container,
-                                      m_factories,        refs,
-                                      *m_builtin_context, *m_builtin_tokens };
+  return declarative_source_compiler{
+    m_errors_observer,  m_strings_container,       m_factories,       refs,
+    *m_builtin_context, *m_decl_namespace_context, *m_builtin_tokens, *this
+  };
 }
 
 cmsl::string_view global_executor::store_path(std::string path)
@@ -448,8 +498,8 @@ global_executor::handle_add_declarative_file(cmsl::string_view name)
     return add_declarative_file_semantic_handler::compilation_failed{};
   }
 
-  const auto& creation_function = compiled->get_target_creation_function();
+  const auto creation_function = compiled->get_target_creation_function();
   return add_declarative_file_semantic_handler::
-    contains_declarative_cmakesl_script{ &creation_function };
+    contains_declarative_cmakesl_script{ creation_function };
 }
 }

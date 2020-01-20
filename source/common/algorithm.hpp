@@ -58,6 +58,13 @@ inline bool starts_with(cmsl::string_view str, cmsl::string_view pattern)
     cmsl::string_view{ str.data(), pattern.size() } == pattern;
 }
 
+inline bool ends_with(cmsl::string_view str, cmsl::string_view pattern)
+{
+  return str.size() >= pattern.size() &&
+    cmsl::string_view{ std::next(str.data(), str.size() - pattern.size()),
+                       pattern.size() } == pattern;
+}
+
 template <typename K, typename T, typename H, typename KE, typename A,
           typename Pred>
 void remove_if(std::unordered_multimap<K, T, H, KE, A>& map, Pred&& predicate)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/strings_container_impl.hpp"
+#include "decl_sema/declarative_import_handler.hpp"
 #include "errors/errors_observer.hpp"
 #include "exec/builtin_identifiers_observer.hpp"
 #include "exec/cross_translation_unit_static_variables.hpp"
@@ -39,6 +40,7 @@ class global_executor
   : public sema::add_subdirectory_semantic_handler
   , public sema::add_declarative_file_semantic_handler
   , public sema::import_handler
+  , public decl_sema::declarative_import_handler
   , public module_sema_tree_provider
 {
 public:
@@ -58,6 +60,9 @@ public:
 
   std::unique_ptr<sema::qualified_contextes> handle_import(
     cmsl::string_view path) override;
+
+  std::optional<decl_sema::declarative_import_handler::result>
+  handle_declarative_import(cmsl::string_view path) override;
 
   const sema::sema_node& get_sema_tree(
     cmsl::string_view import_path) const override;

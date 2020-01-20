@@ -154,6 +154,11 @@ public:
              << "}";
   }
 
+  void visit(const import_node& node) override
+  {
+    m_result << "import{file name:" << node.file_name().str() << "}";
+  }
+
 private:
   std::ostringstream m_result;
 };
@@ -734,6 +739,62 @@ const auto values = Values(
 );
 
 INSTANTIATE_TEST_CASE_P(ParserTest, CMakeVariableAccessMalformed, values);
+}
+
+TEST_F(ParserTest, Import_GetImportNode)
+{
+  StrictMock<cmsl::test::strings_container_mock> strings;
+  errs_t errs;
+
+  const auto file_name_token = token_string("file_name.dcmsl");
+
+  auto expected_ast = std::make_unique<import_node>(
+    token_kw_import(), file_name_token, token_semicolon());
+
+  // clang-format off
+  const auto tokens =
+    tokens_container_t{ token_kw_import(),
+                        file_name_token,
+                        token_semicolon() };
+  // clang-format on
+
+  auto parser =
+    parser_t{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result_ast = parser.parse_import();
+
+  ASSERT_THAT(result_ast, NotNull());
+  EXPECT_THAT(result_ast.get(), AstEq(expected_ast.get()));
+}
+
+namespace import_error {
+using ImportMalformed = TestWithParam<tokens_container_t>;
+
+TEST_P(ImportMalformed, ReportError)
+{
+  errs_t errs;
+  StrictMock<cmsl::test::strings_container_mock> strings;
+
+  EXPECT_CALL(errs.mock, notify_error(_));
+
+  const auto tokens = tokens_container_t{ GetParam() };
+  parser p{ errs.observer, strings, cmsl::source_view{ "" }, tokens };
+  auto result = p.parse_component();
+
+  EXPECT_THAT(result, IsNull());
+}
+
+const auto im = token_kw_import();
+const auto file_name = token_string("file_name.dcmsl");
+const auto semi = token_semicolon();
+
+const auto values =
+  Values(tokens_container_t{ im },             // import
+         tokens_container_t{ im, file_name },  // import "file_name.dcmsl"
+         tokens_container_t{ im, semi },       // import ;
+         tokens_container_t{ file_name, semi } //  "file_name.dcmsl";
+  );
+
+INSTANTIATE_TEST_CASE_P(ParserTest, ImportMalformed, values);
 }
 
 }

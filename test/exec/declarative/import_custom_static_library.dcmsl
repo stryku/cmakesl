@@ -1,0 +1,5 @@
+import "declarative/custom_static_library_for_import.dcmsl";
+
+custom_static_library {
+    name = "library_name"
+}

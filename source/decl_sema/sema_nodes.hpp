@@ -151,11 +151,13 @@ private:
   const sema::sema_type& m_type;
 };
 
-class base_property_node : public sema_node{
+class base_property_node : public sema_node
+{
 public:
-  explicit base_property_node(const decl_ast::ast_node& ast_node,
-                         std::unique_ptr<property_access_node> property_access,
-                         std::unique_ptr<expression_node> value)
+  explicit base_property_node(
+    const decl_ast::ast_node& ast_node,
+    std::unique_ptr<property_access_node> property_access,
+    std::unique_ptr<expression_node> value)
     : sema_node{ ast_node }
     , m_property_access{ std::move(property_access) }
     , m_value{ std::move(value) }
@@ -328,6 +330,29 @@ public:
 
 private:
   nodes_t m_nodes;
+};
+
+class import_node : public sema_node
+{
+public:
+  explicit import_node(const decl_ast::ast_node& ast_node,
+                       const token_t& file_name)
+    : sema_node{ ast_node }
+    , m_file_name{ file_name }
+  {
+  }
+
+  const lexer::token& file_path() const { return m_file_name; }
+  cmsl::string_view pretty_file_path() const
+  {
+    return cmsl::string_view{ m_file_name.str().data() + 1u,
+                              m_file_name.str().size() - 2u };
+  }
+
+  VISIT_MEHTOD
+
+private:
+  token_t m_file_name;
 };
 
 }

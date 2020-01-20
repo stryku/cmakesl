@@ -51,20 +51,29 @@ compiled_declarative_source::compiled_declarative_source(
   std::unique_ptr<decl_ast::ast_node> ast_tree,
   std::unique_ptr<decl_sema::sema_node> sema_tree, source_view source,
   sema::builtin_types_accessor builtin_types,
-  const sema::sema_function& creation_function)
+  const sema::sema_function* creation_function,
+  string_view_map<const decl_sema::component_declaration_node*>
+    component_declarations)
   : m_ast_tree{ std::move(ast_tree) }
   , m_sema_tree{ std::move(sema_tree) }
   , m_source{ source }
   , m_builtin_types{ builtin_types }
   , m_creation_function{ creation_function }
+  , m_component_declarations{ std::move(component_declarations) }
 {
 }
 
 compiled_declarative_source::~compiled_declarative_source() = default;
 
-const sema::sema_function&
+const sema::sema_function*
 compiled_declarative_source::get_target_creation_function() const
 {
   return m_creation_function;
+}
+
+const string_view_map<const decl_sema::component_declaration_node*>&
+compiled_declarative_source::component_declarations() const
+{
+  return m_component_declarations;
 }
 }

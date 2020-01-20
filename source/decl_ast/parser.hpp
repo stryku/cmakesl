@@ -18,6 +18,7 @@ class ast_node;
 class cmake_variable_access_node;
 class component_declaration_node;
 class component_node;
+class import_node;
 class list_node;
 class property_access_node;
 class property_node;
@@ -37,6 +38,7 @@ public:
   std::unique_ptr<ast_node> parse_value();
   std::unique_ptr<list_node> parse_list();
   std::unique_ptr<cmake_variable_access_node> parse_cmake_variable_access();
+  std::unique_ptr<import_node> parse_import();
 
 private:
   std::optional<std::vector<std::unique_ptr<ast_node>>>

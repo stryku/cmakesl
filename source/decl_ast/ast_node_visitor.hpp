@@ -6,6 +6,7 @@ class cmake_variable_access_node;
 class component_declaration_node;
 class component_node;
 class double_value_node;
+class import_node;
 class int_value_node;
 class list_node;
 class property_access_node;
@@ -24,6 +25,7 @@ public:
   virtual void visit(const component_declaration_node& node) = 0;
   virtual void visit(const component_node& node) = 0;
   virtual void visit(const double_value_node& node) = 0;
+  virtual void visit(const import_node& node) = 0;
   virtual void visit(const int_value_node& node) = 0;
   virtual void visit(const list_node& node) = 0;
   virtual void visit(const property_access_node& node) = 0;
