@@ -1,0 +1,36 @@
+import "cmake/test_utils.dcmsl";
+
+cmsl_test_executable {
+    name = "sema"
+
+    include_dirs.public = [
+        cmake_variables.CMAKESL_SOURCES_DIR.as_string,
+        cmake_variables.CMAKESL_FACADE_SOURCES_DIR.as_string,
+        cmake_variables.CMAKESL_TESTS_DIR.as_string,
+        cmake_variables.CMAKESL_DIR.as_string
+    ]
+
+    dependencies.public += [
+        "lexer",
+        "ast",
+        "sema",
+        "errors_observer_mock",
+        "tests_common"
+    ]
+
+    files.public = [
+        "identifiers_context_test.cpp",
+        "mock/add_declarative_file_semantic_handler_mock.hpp",
+        "mock/add_subdirectory_semantic_handler_mock.hpp",
+        "mock/enum_values_context_mock.hpp",
+        "mock/expression_node_mock.hpp",
+        "mock/identifiers_context_mock.hpp",
+        "mock/import_handler_mock.hpp",
+        "mock/sema_context_mock.hpp",
+        "mock/sema_function_mock.hpp",
+        "overload_resolution_test.cpp",
+        "sema_builder_ast_visitor_test.cpp",
+        "sema_dumper_smoke_test.cpp",
+        "variable_initialization_check_test.cpp"
+    ]
+}

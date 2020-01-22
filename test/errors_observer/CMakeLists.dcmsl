@@ -1,0 +1,19 @@
+import "cmake/test_utils.dcmsl";
+
+cmsl_test_executable {
+    name = "errors_observer"
+
+    files.public = [
+        "errors_observer.cpp"
+    ]
+
+    include_dirs.public = [
+        cmake_variables.CMAKESL_SOURCES_DIR.as_string,
+        cmake_variables.CMAKESL_FACADE_SOURCES_DIR.as_string,
+        cmake_variables.CMAKESL_DIR.as_string
+    ]
+
+    dependencies.public += [
+        "errors"
+    ]
+}

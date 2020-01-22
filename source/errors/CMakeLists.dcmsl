@@ -1,14 +1,14 @@
 static_library {
-    name: "errors"
+    name = "errors"
 
-    include_dirs.public: [
+    include_dirs.public = [
         cmake_variables.CMAKESL_SOURCES_DIR.as_string,
         cmake_variables.CMAKESL_FACADE_DIR.as_string
     ]
 
-    compile_options.public: cmake_variables.CMAKESL_ADDITIONAL_COMPILER_FLAGS.as_list
+    compile_options.public = cmake_variables.CMAKESL_ADDITIONAL_COMPILER_FLAGS.as_list
     
-    files.public: [
+    files.public = [
         "error.hpp",
         "errors_observer.hpp",
         "errors_observer.cpp"
