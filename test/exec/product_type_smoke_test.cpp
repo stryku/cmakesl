@@ -26,6 +26,7 @@ TEST_F(ProductTypeSmokeTest, DefaultConstructor)
                       "        && is_empty(p.files)"
                       "        && is_empty(p.include_dirs)"
                       "        && is_empty(p.compile_options)"
+                      "        && is_empty(p.compile_definitions)"
                       "        && is_empty(p.dependencies)"
                       "        && p.type == decl::product_type::executable;"
                       ""

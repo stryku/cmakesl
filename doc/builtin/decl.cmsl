@@ -36,6 +36,7 @@ class product
   string name_suffix;
   forwarding_lists files;
   forwarding_lists include_dirs;
+  forwarding_lists compile_definitions;
   forwarding_lists compile_options;
   forwarding_lists dependencies;
 };

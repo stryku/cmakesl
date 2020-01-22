@@ -124,6 +124,9 @@ sema::type_builder builtin_decl_namespace_context::add_product_type(
                            forwarding_lists_type },
     builtin_variable_info{ m_builtin_tokens.decl().product_compile_options(),
                            forwarding_lists_type },
+    builtin_variable_info{
+      m_builtin_tokens.decl().product_compile_definitions(),
+      forwarding_lists_type },
     builtin_variable_info{ m_builtin_tokens.decl().product_dependencies(),
                            forwarding_lists_type }
   };
