@@ -12,6 +12,10 @@ executable {
         "-DANSWER=42"
     ]
 
+    compile_definitions.public = [
+        "SOME_DEF=42"
+    ]
+
     dependencies.public = [
         "dependency",
         "another_dependency"

@@ -135,6 +135,14 @@ void declarative_component_instance_creator::register_in_facade(
   const auto public_compile_options_instance =
     compile_options_instance->find_cmember(public_info->index);
 
+  const auto compile_definitions_info =
+    inst_type.find_member("compile_definitions");
+  CMSL_ASSERT(compile_definitions_info.has_value());
+  const auto compile_definitions_instance =
+    instance.find_cmember(compile_definitions_info->index);
+  const auto public_compile_definitions_instance =
+    compile_definitions_instance->find_cmember(public_info->index);
+
   const auto dependencies_info = inst_type.find_member("dependencies");
   CMSL_ASSERT(dependencies_info.has_value());
   const auto dependencies_instance =
@@ -153,6 +161,10 @@ void declarative_component_instance_creator::register_in_facade(
     public_include_dirs_instance->value_cref().get_list_cref());
   val.compile_options(
     m_facade, public_compile_options_instance->value_cref().get_list_cref(),
+    facade::visibility::public_);
+  val.compile_definitions(
+    m_facade,
+    public_compile_definitions_instance->value_cref().get_list_cref(),
     facade::visibility::public_);
 
   for (const auto& dep : dependencies) {

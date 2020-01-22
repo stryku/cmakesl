@@ -363,6 +363,7 @@ GENERATION_INFO = {
             'product_files': ['forwarding_lists files;', 'forwarding_lists ', 'files'],
             'product_include_dirs': ['forwarding_lists include_dirs;', 'forwarding_lists ', 'include_dirs'],
             'product_compile_options': ['forwarding_lists compile_options;', 'forwarding_lists ', 'compile_options'],
+            'product_compile_definitions': ['forwarding_lists compile_definitions;', 'forwarding_lists ', 'compile_definitions'],
             'product_dependencies': ['forwarding_lists dependencies;', 'forwarding_lists ', 'dependencies'],
 
             'executable_name': ['class executable : product', 'class ', 'executable'],
