@@ -1,0 +1,13 @@
+static_library {
+    name = "tests_common"
+
+    files.public = [
+        "tokens.cpp",
+        "tokens.hpp"
+    ]
+
+    include_dirs.public = [
+        cmake_variables.CMAKESL_SOURCES_DIR.as_string,
+        cmake_variables.CMAKESL_DIR.as_string
+    ]
+}

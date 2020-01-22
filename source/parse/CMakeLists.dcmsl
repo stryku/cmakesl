@@ -1,17 +1,17 @@
 static_library {
-    name: "parse"
+    name = "parse"
 
-    include_dirs.public: [
+    include_dirs.public = [
         cmake_variables.CMAKESL_SOURCES_DIR.as_string
     ]
 
-    dependencies.public: [
+    dependencies.public = [
         "lexer"
     ]
 
-    compile_options.public: cmake_variables.CMAKESL_ADDITIONAL_COMPILER_FLAGS.as_list
+    compile_options.public = cmake_variables.CMAKESL_ADDITIONAL_COMPILER_FLAGS.as_list
     
-    files.public: [
+    files.public = [
         "parse_errors_observer.hpp",
         "parser_utils.cpp",
         "parser_utils.hpp"

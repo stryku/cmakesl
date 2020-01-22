@@ -1,0 +1,41 @@
+import "cmake/test_utils.dcmsl";
+
+cmsl_test_executable {
+    name = "ast"
+    files.public = [
+        "parser_test.cpp",
+        "escaped_string_builder_test.cpp"
+    ]
+
+    dependencies.public += [
+        "ast",
+        "lexer",
+        "errors",
+        "tests_common"
+    ]
+
+    include_dirs.public = [
+        cmake_variables.CMAKESL_SOURCES_DIR.as_string,
+        cmake_variables.CMAKESL_FACADE_SOURCES_DIR.as_string,
+        cmake_variables.CMAKESL_DIR.as_string
+    ]
+}
+
+void main(cmake::project p)
+{
+  auto include_dirs = { cmsl::source_dir, cmsl::facade_dir, cmsl::root_dir };
+
+  cmsl::test::add_test(
+    p,
+    { .name = "ast",
+      .sources = { "parser_test.cpp", "escaped_string_builder_test.cpp" },
+      .include_dirs = include_dirs,
+      .libraries = { "ast", "lexer", "errors", "tests_common" } });
+
+  cmsl::test::add_test(p,
+                       { .name = "ast_error",
+                         .sources = { "parser_error_test.cpp" },
+                         .include_dirs = include_dirs,
+                         .libraries = { "ast", "lexer", "errors_observer_mock",
+                                        "tests_common" } });
+}

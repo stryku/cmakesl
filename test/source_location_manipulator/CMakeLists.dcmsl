@@ -1,0 +1,18 @@
+import "cmake/test_utils.dcmsl";
+
+cmsl_test_executable {
+    name = "source_location_manipulator"
+
+    include_dirs.public = [
+        cmake_variables.CMAKESL_SOURCES_DIR.as_string,
+        cmake_variables.CMAKESL_FACADE_SOURCES_DIR.as_string
+    ]
+
+    dependencies.public += [
+        "lexer"
+    ]
+
+    files.public = [
+        "source_location_test.cpp"
+    ]
+}
