@@ -3,7 +3,7 @@ import "cmake/cmsl_directories.cmsl";
 string add_builtin_tokens_generation_command()
 {
   auto builtin_tokens_providers_dir =
-    cmake::current_binary_dir() + "/generated";
+    cmake::get_old_style_variable("CMAKESL_GENERATED_PARENT_DIR") + "/generated";
   auto result_file_path =
     builtin_tokens_providers_dir + "/builtin_token_providers.hpp";
   auto builtin_tokens_generator_command = {
@@ -105,7 +105,7 @@ void main(cmake::project& p)
   };
 
   auto lib = p.add_library("sema", sources);
-  lib.include_directories({ cmsl::source_dir, cmake::current_binary_dir() });
+  lib.include_directories({ cmsl::source_dir, cmake::get_old_style_variable("CMAKESL_GENERATED_PARENT_DIR") });
 
   auto ast = p.find_library("ast");
   lib.link_to(ast, cmake::visibility::public);

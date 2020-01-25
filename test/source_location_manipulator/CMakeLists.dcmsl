@@ -5,7 +5,7 @@ cmsl_test_executable {
 
     include_dirs.public = [
         cmake_variables.CMAKESL_SOURCES_DIR.as_string,
-        cmake_variables.CMAKESL_FACADE_SOURCES_DIR.as_string
+        cmake_variables.CMAKESL_FACADE_DIR.as_string
     ]
 
     dependencies.public += [
