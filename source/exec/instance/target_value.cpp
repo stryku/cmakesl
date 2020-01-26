@@ -26,6 +26,10 @@ void target_value::include_directories(facade::cmake_facade& cmake_facade,
                                        const list_value& dirs) const
 {
   const auto dir_values = list_value_utils{ dirs }.strings();
+  if (dir_values.empty()) {
+    return;
+  }
+
   cmake_facade.target_include_directories(m_name, v, dir_values);
 }
 
@@ -34,6 +38,9 @@ void target_value::compile_definitions(facade::cmake_facade& cmake_facade,
                                        facade::visibility v) const
 {
   const auto definitions = list_value_utils{ definitions_list }.strings();
+  if (definitions.empty()) {
+    return;
+  }
   cmake_facade.target_compile_definitions(m_name, v, definitions);
 }
 
@@ -42,6 +49,9 @@ void target_value::compile_options(facade::cmake_facade& cmake_facade,
                                    facade::visibility v) const
 {
   const auto options = list_value_utils{ options_list }.strings();
+  if (options.empty()) {
+    return;
+  }
   cmake_facade.target_compile_options(m_name, v, options);
 }
 
