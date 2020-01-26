@@ -12,6 +12,9 @@ int main()
   cmake::set_old_style_variable("CMAKESL_SOURCES_DIR", cmsl::source_dir);
   cmake::set_old_style_variable("CMAKESL_TESTS_DIR", cmsl::test_dir);
   cmake::set_old_style_variable("CMAKESL_FACADE_DIR", cmsl::facade_dir);
+  cmake::set_old_style_variable(
+    "CMAKESL_GENERATED_PARENT_DIR",
+    cmake::get_old_style_variable("CMAKE_CURRENT_BINARY_DIR"));
 
   if(cmake::get_system_info().id != cmake::system_id::windows) {
     cmake::set_old_style_variable("CMAKESL_ADDITIONAL_COMPILER_FLAGS", "-Wall;-Werror");

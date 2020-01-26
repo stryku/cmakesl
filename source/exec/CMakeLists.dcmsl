@@ -1,5 +1,5 @@
 static_library {
-    name = "common"
+    name = "exec"
 
     include_dirs.public = [
         cmake_variables.CMAKESL_FACADE_DIR.as_string,
@@ -7,7 +7,6 @@ static_library {
     ]
 
     dependencies.public = [
-        "sema",
         "decl_sema"
     ]
 

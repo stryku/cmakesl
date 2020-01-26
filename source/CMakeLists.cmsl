@@ -5,6 +5,8 @@ void main(cmake::project& p)
   add_subdirectory("lexer", p);
   add_subdirectory("parse", p);
   add_subdirectory("ast", p);
+  add_subdirectory("decl_ast");
   add_subdirectory("sema", p);
+  add_subdirectory("decl_sema");
   add_subdirectory("exec", p);
 }
