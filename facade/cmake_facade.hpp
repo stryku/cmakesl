@@ -97,12 +97,17 @@ public:
   virtual void target_compile_definitions(
     const std::string& target_name, visibility v,
     const std::vector<std::string>&
-      definitions) = 0; // Todo: Change dirs to vector of string_views
+      definitions) = 0; // Todo: Change definitions to vector of string_views
 
   virtual void target_compile_options(
     const std::string& target_name, visibility v,
     const std::vector<std::string>&
-      options) = 0; // Todo: Change dirs to vector of string_views
+      options) = 0; // Todo: Change options to vector of string_views
+
+  virtual void target_sources(
+    const std::string& target_name, visibility v,
+    const std::vector<std::string>&
+      sources) = 0; // Todo: Change sources to vector of string_views
 
   virtual std::string current_directory() const = 0;
 

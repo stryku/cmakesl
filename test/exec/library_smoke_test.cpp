@@ -164,7 +164,7 @@ TEST_F(LibrarySmokeTest, CompileDefinitionsWithVisibility_CallsFacadeMethod)
   EXPECT_THAT(result, Eq(42));
 }
 
-TEST_F(LibrarySmokeTest, CompileOptions)
+TEST_F(LibrarySmokeTest, CompileOptions_CallsFacadeMethod)
 {
   const auto source =
     "int main()"
@@ -205,6 +205,52 @@ TEST_F(LibrarySmokeTest, CompileOptionsWithVisibility_CallsFacadeMethod)
   EXPECT_CALL(m_facade,
               target_compile_options("lib", facade::visibility::public_,
                                      expected_options));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(LibrarySmokeTest, AddSources_CallsFacadeMethod)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::project p = cmake::project(\"foo\");"
+    "    list<string> sources;"
+    "    cmake::library lib = p.add_library(\"lib\", sources);"
+    ""
+    "    list<string> sources = { \"foo.cpp\" };"
+    "    lib.add_sources(sources);"
+    "    return 42;"
+    "}";
+
+  std::vector<std::string> expected_options = { "foo.cpp" };
+  EXPECT_CALL(
+    m_facade,
+    target_sources("lib", facade::visibility::private_, expected_options));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(LibrarySmokeTest, AddSourcesWithVisibility_CallsFacadeMethod)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::project p = cmake::project(\"foo\");"
+    "    list<string> sources;"
+    "    cmake::library lib = p.add_library(\"lib\", sources);"
+    ""
+    "    list<string> sources = { \"foo.cpp\" };"
+    "    lib.add_sources(sources, cmake::visibility::public);"
+    "    return 42;"
+    "}";
+
+  std::vector<std::string> expected_options = { "foo.cpp" };
+  EXPECT_CALL(
+    m_facade,
+    target_sources("lib", facade::visibility::public_, expected_options));
 
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));

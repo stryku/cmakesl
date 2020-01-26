@@ -209,4 +209,50 @@ TEST_F(ExecutableSmokeTest, CompileOptionsWithVisibility_CallsFacadeMethod)
   const auto result = m_executor->execute(source);
   EXPECT_THAT(result, Eq(42));
 }
+
+TEST_F(ExecutableSmokeTest, AddSources_CallsFacadeMethod)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::project p = cmake::project(\"foo\");"
+    "    list<string> sources;"
+    "    cmake::executable exe = p.add_executable(\"exe\", sources);"
+    ""
+    "    list<string> sources = { \"foo.cpp\" };"
+    "    exe.add_sources(sources);"
+    "    return 42;"
+    "}";
+
+  std::vector<std::string> expected_options = { "foo.cpp" };
+  EXPECT_CALL(
+    m_facade,
+    target_sources("exe", facade::visibility::private_, expected_options));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(ExecutableSmokeTest, AddSourcesWithVisibility_CallsFacadeMethod)
+{
+  const auto source =
+    "int main()"
+    "{"
+    "    cmake::project p = cmake::project(\"foo\");"
+    "    list<string> sources;"
+    "    cmake::executable exe = p.add_executable(\"exe\", sources);"
+    ""
+    "    list<string> sources = { \"foo.cpp\" };"
+    "    exe.add_sources(sources, cmake::visibility::public);"
+    "    return 42;"
+    "}";
+
+  std::vector<std::string> expected_definitions = { "foo.cpp" };
+  EXPECT_CALL(
+    m_facade,
+    target_sources("exe", facade::visibility::public_, expected_definitions));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
 }

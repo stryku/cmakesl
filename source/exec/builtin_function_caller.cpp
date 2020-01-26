@@ -217,6 +217,8 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_compile_definitions_visibility);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_compile_options);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_compile_options_visibility);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_add_sources);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(library_add_sources_visibility);
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_name);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_link_to);
@@ -229,6 +231,8 @@ std::unique_ptr<inst::instance> builtin_function_caller::call_member(
       executable_compile_definitions_visibility);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_compile_options);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_compile_options_visibility);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_add_sources);
+    CASE_BUILTIN_MEMBER_FUNCTION_CALL(executable_add_sources_visibility);
 
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_to_string);
     CASE_BUILTIN_MEMBER_FUNCTION_CALL(enum_operator_equal);
@@ -1779,6 +1783,29 @@ inst::instance* builtin_function_caller::library_compile_options_visibility(
   return m_instances.create_void();
 }
 
+inst::instance* builtin_function_caller::library_add_sources(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+
+  const auto& [sources] = get_params<alternative_t::list>(params);
+  const auto& lib = instance.value_cref().get_library_cref();
+  const auto default_visibility_value = facade::visibility::private_;
+  lib.add_sources(m_cmake_facade, sources, default_visibility_value);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::library_add_sources_visibility(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [sources, visibility] =
+    get_params<alternative_t::list, alternative_t::enum_>(params);
+  const auto& lib = instance.value_cref().get_library_cref();
+  const auto facade_visibility_value =
+    static_cast<facade::visibility>(visibility.value);
+  lib.add_sources(m_cmake_facade, sources, facade_visibility_value);
+  return m_instances.create_void();
+}
+
 inst::instance* builtin_function_caller::executable_name(
   inst::instance& instance, const builtin_function_caller::params_t&)
 {
@@ -1875,6 +1902,29 @@ inst::instance* builtin_function_caller::executable_compile_options_visibility(
   const auto facade_visibility_value =
     static_cast<facade::visibility>(visibility.value);
   exe.compile_options(m_cmake_facade, options, facade_visibility_value);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::executable_add_sources(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+
+  const auto& [sources] = get_params<alternative_t::list>(params);
+  const auto& exe = instance.value_cref().get_executable_cref();
+  const auto default_visibility_value = facade::visibility::private_;
+  exe.add_sources(m_cmake_facade, sources, default_visibility_value);
+  return m_instances.create_void();
+}
+
+inst::instance* builtin_function_caller::executable_add_sources_visibility(
+  inst::instance& instance, const builtin_function_caller::params_t& params)
+{
+  const auto& [sources, visibility] =
+    get_params<alternative_t::list, alternative_t::enum_>(params);
+  const auto& exe = instance.value_cref().get_executable_cref();
+  const auto facade_visibility_value =
+    static_cast<facade::visibility>(visibility.value);
+  exe.add_sources(m_cmake_facade, sources, facade_visibility_value);
   return m_instances.create_void();
 }
 

@@ -347,6 +347,10 @@ private:
                                           const params_t& params);
   inst::instance* library_compile_options_visibility(inst::instance& instance,
                                                      const params_t& params);
+  inst::instance* library_add_sources(inst::instance& instance,
+                                      const params_t& params);
+  inst::instance* library_add_sources_visibility(inst::instance& instance,
+                                                 const params_t& params);
 
   inst::instance* executable_name(inst::instance& instance,
                                   const params_t& params);
@@ -366,6 +370,10 @@ private:
                                              const params_t& params);
   inst::instance* executable_compile_options_visibility(
     inst::instance& instance, const params_t& params);
+  inst::instance* executable_add_sources(inst::instance& instance,
+                                         const params_t& params);
+  inst::instance* executable_add_sources_visibility(inst::instance& instance,
+                                                    const params_t& params);
 
   inst::instance* enum_to_string(inst::instance& instance,
                                  const params_t& params);
