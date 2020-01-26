@@ -3,7 +3,7 @@ import "cmake/cmsl_directories.cmsl";
 void main(cmake::project& p)
 {
   auto sources = {
-    // clang-format: off
+    // clang-format off
     "ast_node.hpp",
     "ast_node_visitor.hpp",
     "block_node.cpp",
@@ -53,7 +53,7 @@ void main(cmake::project& p)
     "variable_declaration_node.hpp",
     "while_node.cpp",
     "while_node.hpp"
-    // clang-format: on
+    // clang-format on
   };
   auto lib = p.add_library("ast", sources);
   lib.include_directories({ cmsl::source_dir });

@@ -3,7 +3,8 @@ import "cmake/cmsl_directories.cmsl";
 string add_builtin_tokens_generation_command()
 {
   auto builtin_tokens_providers_dir =
-    cmake::get_old_style_variable("CMAKESL_GENERATED_PARENT_DIR") + "/generated";
+    cmake::get_old_style_variable("CMAKESL_GENERATED_PARENT_DIR") +
+    "/generated";
   auto result_file_path =
     builtin_tokens_providers_dir + "/builtin_token_providers.hpp";
   auto builtin_tokens_generator_command = {
@@ -23,7 +24,7 @@ void main(cmake::project& p)
   auto builtin_tokens_providers_file = add_builtin_tokens_generation_command();
 
   auto sources = {
-    // clang-format: off
+    // clang-format off
     "add_subdirectory_semantic_handler.hpp",
     "add_declarative_file_semantic_handler.hpp",
     "block_node_manipulator.cpp",
@@ -101,11 +102,13 @@ void main(cmake::project& p)
     "variable_initialization_issue.hpp",
 
     builtin_tokens_providers_file
-    // clang-format: on
+    // clang-format on
   };
 
   auto lib = p.add_library("sema", sources);
-  lib.include_directories({ cmsl::source_dir, cmake::get_old_style_variable("CMAKESL_GENERATED_PARENT_DIR") });
+  lib.include_directories(
+    { cmsl::source_dir,
+      cmake::get_old_style_variable("CMAKESL_GENERATED_PARENT_DIR") });
 
   auto ast = p.find_library("ast");
   lib.link_to(ast, cmake::visibility::public);

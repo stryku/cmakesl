@@ -3,7 +3,7 @@ import "cmake/cmsl_directories.cmsl";
 void main(cmake::project& p)
 {
   auto sources = {
-    // clang-format: off
+    // clang-format off
     "lexer.cpp",
     "lexer.hpp",
     "source_location_manipulator.cpp",
@@ -12,7 +12,7 @@ void main(cmake::project& p)
     "token.hpp",
     "token_type.cpp",
     "token_type.hpp"
-    // clang-format: on
+    // clang-format on
   };
 
   auto lib = p.add_library("lexer", sources);

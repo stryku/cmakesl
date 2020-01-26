@@ -3,7 +3,7 @@ import "cmake/cmsl_directories.cmsl";
 void main(cmake::project& p)
 {
   auto sources = {
-    // clang-format: off
+    // clang-format off
     "algorithm.hpp",
     "assert.hpp",
     "dumper_utils.cpp",
@@ -18,7 +18,7 @@ void main(cmake::project& p)
     "strings_container.hpp",
     "strings_container_impl.cpp",
     "strings_container_impl.hpp"
-    // clang-format: on
+    // clang-format on
   };
   auto lib = p.add_library("common", sources);
   lib.include_directories({ cmsl::source_dir });

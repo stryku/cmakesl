@@ -3,7 +3,7 @@ import "cmake/cmsl_directories.cmsl";
 void main(cmake::project& p)
 {
   auto sources = {
-    // clang-format: off
+    // clang-format off
     "builtin_function_caller.cpp",
     "builtin_function_caller.hpp",
     "builtin_identifiers_observer.cpp",
@@ -69,7 +69,7 @@ void main(cmake::project& p)
     "instance/target_value.hpp",
     "instance/version_value.cpp",
     "instance/version_value.hpp"
-    // clang-format: on
+    // clang-format on
   };
 
   auto lib = p.add_library("exec", sources);
