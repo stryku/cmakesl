@@ -12,6 +12,10 @@ class property_access_node;
 struct decl_namespace_types_accessor;
 }
 
+namespace errors {
+class errors_observer;
+}
+
 namespace facade {
 class cmake_facade;
 }
@@ -34,7 +38,8 @@ public:
     facade::cmake_facade& facade, sema::builtin_types_accessor builtin_types,
     decl_sema::decl_namespace_types_accessor decl_types,
     inst::instances_holder_interface& instances,
-    const sema::generic_type_creation_utils& generic_types);
+    const sema::generic_type_creation_utils& generic_types,
+    errors::errors_observer& errors_observer);
 
   std::unique_ptr<inst::instance> create(
     const decl_sema::component_creation_sema_function& function);
@@ -56,6 +61,7 @@ private:
   const decl_sema::decl_namespace_types_accessor m_decl_types;
   inst::instances_holder_interface& m_instances;
   const sema::generic_type_creation_utils& m_generic_types;
+  errors::errors_observer& m_errs;
 };
 }
 }

@@ -1,3 +1,4 @@
+#include "test/errors_observer_mock/errors_observer_mock.hpp"
 #include "test/exec/mock/instance_mock.hpp"
 #include "test/exec/smoke_test_fixture.hpp"
 
@@ -231,6 +232,35 @@ TEST_F(DeclarativeFormatSmokeTest,
 
   const std::vector<std::string> expected_sources = { "file1.cpp",
                                                       "file2.cpp" };
+  EXPECT_CALL(m_facade, add_library(library_name, expected_sources));
+
+  const auto result = m_executor->execute(source);
+  EXPECT_THAT(result, Eq(42));
+}
+
+TEST_F(DeclarativeFormatSmokeTest,
+       AddDeclarativeFileWithStaticLibraryGettingNotExistingCmakeVariable)
+{
+  const auto source = "int main()"
+                      "{"
+                      "    "
+                      "cmake::add_declarative_file(\"static_library_with_not_"
+                      "existing_cmake_variable.dcmsl\");"
+                      "    return 42;"
+                      "}";
+
+  EXPECT_CALL(m_facade, current_directory())
+    .WillRepeatedly(Return(CMAKESL_EXEC_SMOKE_TEST_ROOT_DIR +
+                           std::string{ "/declarative" }));
+
+  constexpr auto library_name = "foo";
+
+  EXPECT_CALL(m_facade, get_old_style_variable("NOT_EXISTING_VARIABLE"))
+    .WillOnce(Return(std::nullopt));
+
+  EXPECT_CALL(*m_errors_observer_mock, notify_error(_));
+
+  const std::vector<std::string> expected_sources = {};
   EXPECT_CALL(m_facade, add_library(library_name, expected_sources));
 
   const auto result = m_executor->execute(source);

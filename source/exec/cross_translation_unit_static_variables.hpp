@@ -13,6 +13,10 @@
 #include <unordered_set>
 
 namespace cmsl {
+namespace errors {
+class errors_observer;
+}
+
 namespace facade {
 class cmake_facade;
 }
@@ -41,7 +45,8 @@ public:
     sema::builtin_types_accessor builtin_types,
     decl_sema::decl_namespace_types_accessor decl_types,
     module_sema_tree_provider& sema_tree_provider,
-    const sema::generic_type_creation_utils& generic_types);
+    const sema::generic_type_creation_utils& generic_types,
+    errors::errors_observer& errors_observer);
 
   ~cross_translation_unit_static_variables();
 
@@ -65,6 +70,7 @@ private:
   decl_sema::decl_namespace_types_accessor m_decl_types;
   module_sema_tree_provider& m_sema_tree_provider;
   const sema::generic_type_creation_utils& m_generic_types;
+  errors::errors_observer& m_errs;
 
   std::unordered_set<std::string> m_already_initialized_modules;
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>> m_variables;

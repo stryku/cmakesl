@@ -2115,7 +2115,11 @@ inst::instance* builtin_function_caller::cmake_get_old_style_variable(
 {
   const auto& [name] = get_params<alternative_t ::string>(params);
   auto value = m_cmake_facade.get_old_style_variable(name);
-  return m_instances.create(std::move(value));
+  if (!value) {
+    m_cmake_facade.warning("Getting not existing variable: " + name);
+    return m_instances.create(std::string{});
+  }
+  return m_instances.create(std::move(*value));
 }
 
 inst::instance* builtin_function_caller::cmake_get_system_info(

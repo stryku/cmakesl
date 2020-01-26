@@ -23,6 +23,10 @@ class component_creation_sema_function;
 struct decl_namespace_types_accessor;
 }
 
+namespace errors {
+class errors_observer;
+}
+
 namespace sema {
 class generic_type_creation_utils;
 }
@@ -42,7 +46,8 @@ public:
                      decl_sema::decl_namespace_types_accessor decl_types,
                      cross_translation_unit_static_variables_accessor&
                        static_variables_accessor,
-                     const sema::generic_type_creation_utils& generic_types);
+                     const sema::generic_type_creation_utils& generic_types,
+                     errors::errors_observer& errors_observer);
 
   void initialize_static_variables(
     const sema::translation_unit_node& node,
@@ -112,6 +117,8 @@ private:
   cross_translation_unit_static_variables_accessor&
     m_static_variables_accessor;
   const sema::generic_type_creation_utils& m_generic_types;
+  errors::errors_observer& m_errs;
+
   std::unique_ptr<inst::instance> m_function_return_value;
   std::stack<callstack_frame> m_callstack;
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>>

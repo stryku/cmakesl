@@ -158,7 +158,7 @@ public:
   virtual void set_old_style_variable(const std::string& name,
                                       const std::string& value) const = 0;
 
-  virtual std::string get_old_style_variable(
+  virtual std::optional<std::string> get_old_style_variable(
     const std::string& name) const = 0;
 
   virtual std::string ctest_command() const = 0;

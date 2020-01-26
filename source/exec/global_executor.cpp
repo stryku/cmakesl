@@ -34,18 +34,22 @@ global_executor::directory_guard::~directory_guard()
 }
 
 global_executor::global_executor(const std::string& root_path,
-                                 facade::cmake_facade& cmake_facade)
+                                 facade::cmake_facade& cmake_facade,
+                                 errors::errors_observer& errors_observer)
   : m_root_path{ root_path }
   , m_cmake_facade{ cmake_facade }
-  , m_errors_observer{ &m_cmake_facade }
+  , m_errors_observer{ errors_observer }
   , m_builtin_qualified_contexts{ create_qualified_contextes() }
   , m_builtin_identifiers_observer{ m_cmake_facade }
   , m_builtin_tokens{ std::make_unique<sema::builtin_token_provider>("") }
   , m_builtin_context{ create_builtin_context() }
   , m_decl_namespace_context{ create_decl_namespace_context() }
-  , m_static_variables{ m_cmake_facade, m_builtin_context->builtin_types(),
-                        m_decl_namespace_context->types_accessor(), *this,
-                        m_builtin_context->generic_creation_utils() }
+  , m_static_variables{ m_cmake_facade,
+                        m_builtin_context->builtin_types(),
+                        m_decl_namespace_context->types_accessor(),
+                        *this,
+                        m_builtin_context->generic_creation_utils(),
+                        m_errors_observer }
 {
   m_cmake_facade.go_into_subdirectory(m_root_path);
 }
@@ -468,7 +472,7 @@ void global_executor::initialize_execution_if_need()
   m_execution = std::make_unique<execution>(
     m_cmake_facade, m_builtin_context->builtin_types(),
     m_decl_namespace_context->types_accessor(), m_static_variables,
-    m_builtin_context->generic_creation_utils());
+    m_builtin_context->generic_creation_utils(), m_errors_observer);
 }
 
 sema::add_declarative_file_semantic_handler::add_declarative_file_result_t

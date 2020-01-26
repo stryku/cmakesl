@@ -12,12 +12,14 @@ execution::execution(
   sema::builtin_types_accessor builtin_types,
   decl_sema::decl_namespace_types_accessor decl_types,
   cross_translation_unit_static_variables_accessor& static_variables_accessor,
-  const sema::generic_type_creation_utils& generic_types)
+  const sema::generic_type_creation_utils& generic_types,
+  errors::errors_observer& errors_observer)
   : m_cmake_facade{ cmake_facade }
   , m_builtin_types{ builtin_types }
   , m_decl_types{ decl_types }
   , m_static_variables_accessor{ static_variables_accessor }
   , m_generic_types{ generic_types }
+  , m_errs{ errors_observer }
 {
 }
 
@@ -329,9 +331,10 @@ std::unique_ptr<inst::instance> execution::handle_component_creation_function(
   const decl_sema::component_creation_sema_function& function)
 {
   inst::instances_holder instances{ m_builtin_types };
-  auto creator = declarative_component_instance_creator{
-    m_cmake_facade, m_builtin_types, m_decl_types, instances, m_generic_types
-  };
+  auto creator =
+    declarative_component_instance_creator{ m_cmake_facade,  m_builtin_types,
+                                            m_decl_types,    instances,
+                                            m_generic_types, m_errs };
   return creator.create(function);
 }
 }

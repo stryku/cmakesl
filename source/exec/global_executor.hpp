@@ -45,7 +45,8 @@ class global_executor
 {
 public:
   explicit global_executor(const std::string& root_path,
-                           facade::cmake_facade& cmake_facade);
+                           facade::cmake_facade& cmake_facade,
+                           errors::errors_observer& errors_observer);
   ~global_executor();
 
   int execute(std::string source);
@@ -111,7 +112,7 @@ private:
 
   std::string m_root_path;
   facade::cmake_facade& m_cmake_facade;
-  errors::errors_observer m_errors_observer;
+  errors::errors_observer& m_errors_observer;
   strings_container_impl m_strings_container;
   // Contextes are going to be initialized with builtin stuff at builtin
   // context creation.

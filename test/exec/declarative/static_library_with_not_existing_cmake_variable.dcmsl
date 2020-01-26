@@ -1,0 +1,4 @@
+static_library {
+    name = "foo"
+    files.public = cmake_variables.NOT_EXISTING_VARIABLE.as_list
+}
