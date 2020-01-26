@@ -72,5 +72,20 @@ public:
    * @param v The visibility.
    */
   void compile_options(list<string> options, visibility v);
+
+  /** @brief Adds source files to be part of the executable.
+   *
+   * Uses cmake::visibility::private.
+   *
+   * @param sources The files to be added.
+   */
+  void add_sources(list<string> sources);
+
+  /** @brief Adds source files to be part of the executable.
+   *
+   * @param sources The files to be added.
+   * @param v The visibility.
+   */
+  void add_sources(list<string> sources, visibility v);
 };
 }

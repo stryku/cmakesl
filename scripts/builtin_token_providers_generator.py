@@ -255,6 +255,8 @@ GENERATION_INFO = {
             'compile_definitions_visibility': ['void compile_definitions(list<string> definitions, visibility v);', 'void ', 'compile_definitions'],
             'compile_options': ['void compile_options(list<string> options);', 'void ', 'compile_options'],
             'compile_options_visibility': ['void compile_options(list<string> options, visibility v);', 'void ', 'compile_options'],
+            'add_sources': ['void add_sources(list<string> sources);', 'void ', 'add_sources'],
+            'add_sources_visibility': ['void add_sources(list<string> sources, visibility v);', 'void ', 'add_sources'],
         }
     },
     'executable': {
@@ -269,6 +271,8 @@ GENERATION_INFO = {
             'compile_definitions_visibility': ['void compile_definitions(list<string> definitions, visibility v);', 'void ', 'compile_definitions'],
             'compile_options': ['void compile_options(list<string> options);', 'void ', 'compile_options'],
             'compile_options_visibility': ['void compile_options(list<string> options, visibility v);', 'void ', 'compile_options'],
+            'add_sources': ['void add_sources(list<string> sources);', 'void ', 'add_sources'],
+            'add_sources_visibility': ['void add_sources(list<string> sources, visibility v);', 'void ', 'add_sources'],
         }
     },
     'void': {

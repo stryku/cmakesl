@@ -61,4 +61,15 @@ void target_value::link_to(facade::cmake_facade& cmake_facade,
 {
   cmake_facade.target_link_library(m_name, v, target_name);
 }
+
+void target_value::add_sources(facade::cmake_facade& cmake_facade,
+                               const list_value& sources_list,
+                               facade::visibility v) const
+{
+  const auto sources = list_value_utils{ sources_list }.strings();
+  if (sources.empty()) {
+    return;
+  }
+  cmake_facade.target_sources(m_name, v, sources);
+}
 }

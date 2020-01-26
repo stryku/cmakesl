@@ -54,6 +54,9 @@ public:
   MOCK_METHOD3(target_compile_options,
                void(const std::string&, facade::visibility v,
                     const std::vector<std::string>&));
+  MOCK_METHOD3(target_sources,
+               void(const std::string&, facade::visibility v,
+                    const std::vector<std::string>&));
 
   MOCK_CONST_METHOD0(current_directory, std::string());
   MOCK_METHOD0(setup_adding_subdirectory_wiith_cmakesl_script, void());

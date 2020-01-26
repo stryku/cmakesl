@@ -36,6 +36,9 @@ public:
                        const list_value& options_list,
                        facade::visibility v) const;
 
+  void add_sources(facade::cmake_facade& cmake_facade,
+                   const list_value& sources_list, facade::visibility v) const;
+
 private:
   std::string m_name;
 };
