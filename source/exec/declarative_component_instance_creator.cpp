@@ -42,23 +42,6 @@ std::unique_ptr<inst::instance> declarative_component_instance_creator::create(
   return m_instances.gather_ownership(lib_instance);
 }
 
-inst::instance&
-declarative_component_instance_creator::access_property_instance(
-  inst::instance& component_instance,
-  const decl_sema::property_access_node& node)
-{
-  auto current_instance = &component_instance;
-  for (const auto& property_info : node.properties_access()) {
-    const auto found_member =
-      current_instance->find_member(property_info.index);
-    CMSL_ASSERT(found_member);
-
-    current_instance = found_member;
-  }
-
-  return *current_instance;
-}
-
 void declarative_component_instance_creator::register_in_facade(
   const inst::instance& instance)
 {
@@ -120,58 +103,82 @@ template <typename ValueType>
 void declarative_component_instance_creator::register_in_facade(
   const std::string& name, const inst::instance& instance)
 {
-  const auto& inst_type = instance.type();
+  ValueType val{ name };
+
+  {
+    const auto register_callback =
+      [&val, this](const auto& list_value, facade::visibility visibility) {
+        val.include_directories(m_facade, visibility, list_value);
+      };
+    register_forwarding_lists(instance, "include_dirs", register_callback);
+  }
+  {
+    const auto register_callback =
+      [&val, this](const auto& list_value, facade::visibility visibility) {
+        val.compile_options(m_facade, list_value, visibility);
+      };
+    register_forwarding_lists(instance, "compile_options", register_callback);
+  }
+  {
+    const auto register_callback =
+      [&val, this](const auto& list_value, facade::visibility visibility) {
+        val.compile_definitions(m_facade, list_value, visibility);
+      };
+    register_forwarding_lists(instance, "compile_definitions",
+                              register_callback);
+  }
+  {
+    const auto register_callback =
+      [&val, this](const auto& list_value, facade::visibility visibility) {
+        val.add_sources(m_facade, list_value, visibility);
+      };
+    register_forwarding_lists(instance, "files", register_callback);
+  }
+  {
+    const auto register_callback =
+      [&val, this](const auto& list_value, facade::visibility visibility) {
+        const auto dependencies =
+          inst::list_value_utils{ list_value }.strings();
+        for (const auto& dep : dependencies) {
+          val.link_to(m_facade, visibility, dep);
+        }
+      };
+    register_forwarding_lists(instance, "dependencies", register_callback);
+  }
+}
+
+template <typename RegisterCallback>
+void declarative_component_instance_creator::register_forwarding_lists(
+  const inst::instance& component_instance, cmsl::string_view lists_name,
+  RegisterCallback&& register_callback)
+{
+  const auto& inst_type = component_instance.type();
 
   const auto public_info = m_decl_types.forwarding_lists.find_member("public");
+  const auto private_info =
+    m_decl_types.forwarding_lists.find_member("private");
+  const auto interface_info =
+    m_decl_types.forwarding_lists.find_member("interface");
 
-  const auto include_dirs_info = inst_type.find_member("include_dirs");
-  CMSL_ASSERT(include_dirs_info.has_value());
-  const auto include_dirs_instance =
-    instance.find_cmember(include_dirs_info->index);
-  const auto public_include_dirs_instance =
-    include_dirs_instance->find_cmember(public_info->index);
+  const auto lists_info = inst_type.find_member(lists_name);
+  CMSL_ASSERT(lists_info.has_value());
+  const auto lists_instance =
+    component_instance.find_cmember(lists_info->index);
 
-  const auto compile_options_info = inst_type.find_member("compile_options");
-  CMSL_ASSERT(compile_options_info.has_value());
-  const auto compile_options_instance =
-    instance.find_cmember(compile_options_info->index);
-  const auto public_compile_options_instance =
-    compile_options_instance->find_cmember(public_info->index);
+  const auto pairs = {
+    std::pair{ public_info, facade::visibility::public_ },
+    std::pair{ private_info, facade::visibility::private_ },
+    std::pair{ interface_info, facade::visibility::interface },
+  };
 
-  const auto compile_definitions_info =
-    inst_type.find_member("compile_definitions");
-  CMSL_ASSERT(compile_definitions_info.has_value());
-  const auto compile_definitions_instance =
-    instance.find_cmember(compile_definitions_info->index);
-  const auto public_compile_definitions_instance =
-    compile_definitions_instance->find_cmember(public_info->index);
+  for (const auto& [info, visibility] : pairs) {
+    const auto visibility_based_list_instance =
+      lists_instance->find_cmember(info->index);
+    CMSL_ASSERT(visibility_based_list_instance);
 
-  const auto dependencies_info = inst_type.find_member("dependencies");
-  CMSL_ASSERT(dependencies_info.has_value());
-  const auto dependencies_instance =
-    instance.find_cmember(dependencies_info->index);
-  const auto public_dependencies_instance =
-    dependencies_instance->find_cmember(public_info->index);
-  const auto dependencies =
-    inst::list_value_utils{
-      public_dependencies_instance->value_cref().get_list_cref()
-    }
-      .strings();
-
-  ValueType val{ name };
-  val.include_directories(
-    m_facade, facade::visibility::public_,
-    public_include_dirs_instance->value_cref().get_list_cref());
-  val.compile_options(
-    m_facade, public_compile_options_instance->value_cref().get_list_cref(),
-    facade::visibility::public_);
-  val.compile_definitions(
-    m_facade,
-    public_compile_definitions_instance->value_cref().get_list_cref(),
-    facade::visibility::public_);
-
-  for (const auto& dep : dependencies) {
-    val.link_to(m_facade, facade::visibility::public_, dep);
+    const auto& visibility_based_list_value =
+      visibility_based_list_instance->value_cref().get_list_cref();
+    register_callback(visibility_based_list_value, visibility);
   }
 }
 }

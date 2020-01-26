@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/string.hpp"
 #include "decl_sema/decl_namespace_types_accessor.hpp"
 #include "sema/builtin_types_accessor.hpp"
 
@@ -45,15 +46,16 @@ public:
     const decl_sema::component_creation_sema_function& function);
 
 private:
-  inst::instance& access_property_instance(
-    inst::instance& component_instance,
-    const decl_sema::property_access_node& node);
-
   void register_in_facade(const inst::instance& instance);
 
   template <typename ValueType>
   void register_in_facade(const std::string& name,
                           const inst::instance& instance);
+
+  template <typename RegisterCallback>
+  void register_forwarding_lists(const inst::instance& instance,
+                                 cmsl::string_view lists_name,
+                                 RegisterCallback&& register_callback);
 
 private:
   facade::cmake_facade& m_facade;
