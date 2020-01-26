@@ -152,7 +152,8 @@ public:
   {
   }
 
-  std::string get_old_style_variable(const std::string&) const override
+  std::optional<std::string> get_old_style_variable(
+    const std::string&) const override
   {
     return {};
   }
@@ -191,7 +192,8 @@ int main(int argc, const char* argv[])
                       std::istreambuf_iterator<char>() };
 
   fake_cmake_facade facade;
-  cmsl::exec::global_executor executor{ root_dir_path, facade };
+  cmsl::errors::errors_observer errs{ &facade };
+  cmsl::exec::global_executor executor{ root_dir_path, facade, errs };
 
   executor.execute(source);
 }

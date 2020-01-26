@@ -13,12 +13,14 @@ declarative_component_instance_creator::declarative_component_instance_creator(
   facade::cmake_facade& facade, sema::builtin_types_accessor builtin_types,
   decl_sema::decl_namespace_types_accessor decl_types,
   inst::instances_holder_interface& instances,
-  const sema::generic_type_creation_utils& generic_types)
+  const sema::generic_type_creation_utils& generic_types,
+  errors::errors_observer& errors_observer)
   : m_facade{ facade }
   , m_builtin_types{ builtin_types }
   , m_decl_types{ decl_types }
   , m_instances{ instances }
   , m_generic_types{ generic_types }
+  , m_errs{ errors_observer }
 {
 }
 
@@ -29,7 +31,8 @@ std::unique_ptr<inst::instance> declarative_component_instance_creator::create(
   auto lib_instance = m_instances.create(lib_type);
 
   declarative_component_property_instances_collecting_visitor collector{
-    m_facade, m_builtin_types, m_instances, m_generic_types, *lib_instance
+    m_facade,        m_builtin_types, m_instances,
+    m_generic_types, *lib_instance,   m_errs
   };
 
   function.component().visit(collector);

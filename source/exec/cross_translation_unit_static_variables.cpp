@@ -14,12 +14,14 @@ cross_translation_unit_static_variables::
     sema::builtin_types_accessor builtin_types,
     decl_sema::decl_namespace_types_accessor decl_types,
     module_sema_tree_provider& sema_tree_provider,
-    const sema::generic_type_creation_utils& generic_types)
+    const sema::generic_type_creation_utils& generic_types,
+    errors::errors_observer& errors_observer)
   : m_cmake_facade{ cmake_facade }
   , m_builtin_types{ builtin_types }
   , m_decl_types{ decl_types }
   , m_sema_tree_provider{ sema_tree_provider }
   , m_generic_types{ generic_types }
+  , m_errs{ errors_observer }
 {
 }
 
@@ -31,8 +33,8 @@ cross_translation_unit_static_variables::
 void cross_translation_unit_static_variables::initialize_module(
   const sema::sema_node& module_sema_tree)
 {
-  execution e{ m_cmake_facade, m_builtin_types, m_decl_types, *this,
-               m_generic_types };
+  execution e{ m_cmake_facade, m_builtin_types, m_decl_types,
+               *this,          m_generic_types, m_errs };
   static_variables_initializer initializer{
     e, m_builtin_types, m_cmake_facade,
     /*module_variables_initializer=*/*this
