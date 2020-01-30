@@ -79,6 +79,66 @@ int global_executor::execute(std::string source)
   return result->value_cref().get_int();
 }
 
+int global_executor::execute_based_on_root_path()
+{
+  const auto script_path_creator = [this] {
+    std::string result = m_cmake_facade.current_directory();
+
+    std::string separator;
+
+    for (const auto& dir : m_directories) {
+      result += '/' + dir;
+    }
+
+    return result;
+  };
+
+  auto dcmakesl_script_path = script_path_creator() + "/CMakeLists.dcmsl";
+  if (file_exists(dcmakesl_script_path)) {
+    const auto compiled =
+      compile_declarative_file(std::move(dcmakesl_script_path));
+    if (!compiled) {
+      raise_unsuccessful_compilation_error(script_path_creator());
+      return -1;
+    }
+
+    const auto creation_function = compiled->get_target_creation_function();
+    execute(*creation_function);
+    return 0;
+  }
+
+  auto cmakesl_script_path = script_path_creator() + "/CMakeLists.cmsl";
+  if (file_exists(cmakesl_script_path)) {
+    const auto compiled = compile_file(std::move(cmakesl_script_path));
+    if (!compiled) {
+      raise_unsuccessful_compilation_error(script_path_creator());
+      return -1;
+    }
+
+    const auto main_function = compiled->get_main();
+    if (!main_function) {
+      raise_no_main_function_error(script_path_creator());
+      return -1;
+    }
+
+    const auto builtin_identifiers_info =
+      m_builtin_context->builtin_identifiers_info();
+
+    m_static_variables.initialize_builtin_variables(
+      builtin_identifiers_info, m_builtin_identifiers_observer);
+
+    auto result = execute(*compiled);
+    if (result == nullptr) {
+      return -1;
+    }
+
+    return result->value_cref().get_int();
+  }
+
+  // Todo: raise no script found error
+  return -1;
+}
+
 sema::add_subdirectory_semantic_handler::add_subdirectory_result_t
 global_executor::handle_add_subdirectory(
   cmsl::string_view name,
@@ -449,12 +509,16 @@ std::unique_ptr<inst::instance> global_executor::execute(
   m_execution->initialize_static_variables(*translation_unit,
                                            m_static_variables);
 
+  return execute(*compiled.get_main());
+}
+
+std::unique_ptr<inst::instance> global_executor::execute(
+  const sema::sema_function& function)
+{
+  initialize_execution_if_need();
   inst::instances_holder instances{ m_builtin_context->builtin_types() };
 
-  const auto main_function = compiled.get_main();
-  const auto casted =
-    dynamic_cast<const sema::user_sema_function*>(main_function);
-  auto main_result = m_execution->call(*casted, {}, instances);
+  auto main_result = m_execution->call(function, {}, instances);
 
   if (m_cmake_facade.did_fatal_error_occure()) {
     return nullptr;
