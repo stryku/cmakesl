@@ -50,6 +50,7 @@ public:
   ~global_executor();
 
   int execute(std::string source);
+  int execute_based_on_root_path();
 
   add_subdirectory_result_t handle_add_subdirectory(
     cmsl::string_view name,
@@ -95,6 +96,7 @@ private:
   const compiled_source* compile_source(std::string source, std::string path);
 
   std::unique_ptr<inst::instance> execute(const compiled_source& compiled);
+  std::unique_ptr<inst::instance> execute(const sema::sema_function& function);
 
   void initialize_execution_if_need();
 

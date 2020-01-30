@@ -81,6 +81,11 @@ void declarative_component_instance_creator::register_in_facade(
     name_instance->value_cref().get_string_cref() +
     name_suffix_instance->value_cref().get_string_cref();
 
+  // Todo: it probably should be done somewhere else
+  if (m_facade.get_root_source_dir() == m_facade.get_current_source_dir()) {
+    m_facade.register_project(name_str);
+  }
+
   if (instance.type() == m_decl_types.static_library ||
       instance.type().derives_from(m_decl_types.static_library)) {
     m_facade.add_library(name_str, sources);
