@@ -1,4 +1,6 @@
 #include "indexing_visitor.hpp"
+#include "ast/import_node.hpp"
+#include "ast/infix_nodes.hpp"
 
 namespace cmsl::tools {
 void indexer::visit(const sema::translation_unit_node& node)
@@ -204,7 +206,13 @@ void indexer::visit(const sema::initializer_list_node& node)
 
 void indexer::visit(const sema::add_subdirectory_node& node)
 {
-  // Todo: this could point to main function of added subdirectory.
+  const auto& ast_dir_name_node =
+    dynamic_cast<const ast::string_value_node&>(node.dir_name().ast_node());
+  for (const auto& token : ast_dir_name_node.tokens()) {
+    add_add_subdirectory_entry(token, node.dir_name().value());
+  }
+
+  visit_call_node(node);
 }
 
 void indexer::visit(const sema::unary_operator_node& node)
@@ -402,32 +410,59 @@ void indexer::visit(const sema::enum_constant_access_node& node)
 
 void indexer::visit(const sema::import_node& node)
 {
-  // Do nothing.
+  const auto& ast_import_node =
+    dynamic_cast<const ast::import_node&>(node.ast_node());
+
+  add_file_entry(ast_import_node.file_path(), node.pretty_file_path());
 }
 
 void indexer::visit(const sema::add_subdirectory_with_old_script_node& node)
 {
-  // Do nothing.
+  const auto& ast_dir_name_node =
+    dynamic_cast<const ast::string_value_node&>(node.dir_name().ast_node());
+  for (const auto& token : ast_dir_name_node.tokens()) {
+    add_add_subdirectory_entry(token, node.dir_name().value());
+  }
 }
 
 void indexer::visit(const sema::add_declarative_file_node& node)
 {
-  // Todo: implement
+  const auto& ast_dir_name_node =
+    dynamic_cast<const ast::string_value_node&>(node.file_path().ast_node());
+  for (const auto& token : ast_dir_name_node.tokens()) {
+    add_add_subdirectory_entry(token, node.file_path().value());
+  }
 }
 
 void indexer::visit(
   const sema::add_subdirectory_with_declarative_script_node& node)
 {
-  // Todo: Implement
+  const auto& ast_dir_name_node =
+    dynamic_cast<const ast::string_value_node&>(node.dir_name().ast_node());
+  for (const auto& token : ast_dir_name_node.tokens()) {
+    add_add_subdirectory_entry(token, node.dir_name().value());
+  }
 }
 
 void indexer::visit(const sema::cast_to_base_value_node& node)
 {
-  // Todo: Implement
+  node.expression().visit(*this);
 }
 
 void indexer::visit(const sema::cast_to_reference_to_base_node& node)
 {
-  // Todo: Implement
+  node.expression().visit(*this);
+}
+
+void indexer::add_file_entry(const lexer::token& token,
+                             string_view destination_path)
+{
+  add_entry(token, cmsl_index_entry_type::file, destination_path, 0u);
+}
+
+void indexer::add_add_subdirectory_entry(const lexer::token& token,
+                                         cmsl::string_view subdir_name)
+{
+  add_entry(token, cmsl_index_entry_type::add_subdirectory, subdir_name, 0);
 }
 }

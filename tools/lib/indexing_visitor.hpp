@@ -20,19 +20,19 @@ class indexer : public sema::sema_node_visitor
 public:
   void visit(const sema::add_declarative_file_node& node) override;
   void visit(const sema::add_subdirectory_node& node) override;
-  void visit(const sema::add_subdirectory_with_old_script_node& node) override;
   void visit(
     const sema::add_subdirectory_with_declarative_script_node& node) override;
+  void visit(const sema::add_subdirectory_with_old_script_node& node) override;
   void visit(const sema::binary_operator_node& node) override;
   void visit(const sema::block_node& node) override;
   void visit(const sema::bool_value_node& node) override;
   void visit(const sema::break_node&) override;
+  void visit(const sema::cast_to_base_value_node& node) override;
   void visit(const sema::cast_to_reference_node& node) override;
+  void visit(const sema::cast_to_reference_to_base_node& node) override;
   void visit(const sema::cast_to_value_node& node) override;
   void visit(const sema::class_member_access_node& node) override;
   void visit(const sema::class_node& node) override;
-  void visit(const sema::cast_to_base_value_node& node) override;
-  void visit(const sema::cast_to_reference_to_base_node& node) override;
   void visit(const sema::conditional_node& node) override;
   void visit(const sema::constructor_call_node& node) override;
   void visit(const sema::designated_initializers_node& node) override;
@@ -74,6 +74,10 @@ private:
   void add_qualified_type_access_entries(
     const std::vector<ast::name_with_coloncolon>& names,
     const sema::sema_type& type);
+
+  void add_file_entry(const lexer::token& token, string_view destination_path);
+  void add_add_subdirectory_entry(const lexer::token& token,
+                                  cmsl::string_view subdir_name);
 
   void add_entry(const lexer::token& entry_token, cmsl_index_entry_type type,
                  string_view destination_path, unsigned destination_position);

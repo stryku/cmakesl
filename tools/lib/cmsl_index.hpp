@@ -15,7 +15,9 @@ enum cmsl_index_entry_type
   operator_function,
   function_call_name,
   namespace_,
-  enum_value
+  enum_value,
+  file,
+  add_subdirectory
 };
 
 struct cmsl_index_entry
