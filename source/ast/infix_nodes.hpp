@@ -284,6 +284,8 @@ public:
   {
   }
 
+  const std::vector<token_t>& tokens() const { return m_tokens; }
+
   cmsl::string_view view() const { return m_view; }
 
   void visit(ast_node_visitor& visitor) const override
