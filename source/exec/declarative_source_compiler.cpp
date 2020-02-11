@@ -96,10 +96,39 @@ declarative_source_compiler::create_component_creation_function(
     lexer::make_token(lexer::token_type::identifier, "__component_creation");
   auto signature = sema::function_signature{ name_token };
 
+  const auto& function_return_type =
+    map_declarative_type_to_imperative_type(component_ty);
+
   auto function =
     std::make_unique<decl_sema::component_creation_sema_function>(
-      m_builtin_context, component_ty, std::move(signature), node);
+      m_builtin_context, function_return_type, std::move(signature), node);
 
   return m_factories_provider.function_factory().store(std::move(function));
+}
+
+const sema::sema_type&
+declarative_source_compiler::map_declarative_type_to_imperative_type(
+  const sema::sema_type& declarative_type) const
+{
+  const auto types = m_decl_context.types_accessor();
+  const auto imperative_types = *m_builtin_context.builtin_types().cmake;
+  if (declarative_type == types.static_library ||
+      declarative_type.derives_from(types.static_library)) {
+    return imperative_types.library;
+  }
+  if (declarative_type == types.shared_library ||
+      declarative_type.derives_from(types.shared_library)) {
+    return imperative_types.library;
+  }
+  if (declarative_type == types.executable ||
+      declarative_type.derives_from(types.executable)) {
+    return imperative_types.executable;
+  }
+  if (declarative_type == types.test_executable ||
+      declarative_type.derives_from(types.test_executable)) {
+    return imperative_types.executable;
+  }
+
+  CMSL_UNREACHABLE("Unknown component type");
 }
 }

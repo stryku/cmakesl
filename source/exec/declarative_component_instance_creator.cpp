@@ -27,22 +27,21 @@ declarative_component_instance_creator::declarative_component_instance_creator(
 std::unique_ptr<inst::instance> declarative_component_instance_creator::create(
   const decl_sema::component_creation_sema_function& function)
 {
-  const auto& lib_type = function.return_type();
-  auto lib_instance = m_instances.create(lib_type);
+  const auto& component_type = function.component().type();
+  auto component_instance = m_instances.create(component_type);
 
   declarative_component_property_instances_collecting_visitor collector{
-    m_facade,        m_builtin_types, m_instances,
-    m_generic_types, *lib_instance,   m_errs
+    m_facade,        m_builtin_types,     m_instances,
+    m_generic_types, *component_instance, m_errs
   };
 
   function.component().visit(collector);
 
-  register_in_facade(*lib_instance);
-
-  return m_instances.gather_ownership(lib_instance);
+  return register_in_facade(*component_instance);
 }
 
-void declarative_component_instance_creator::register_in_facade(
+std::unique_ptr<inst::instance>
+declarative_component_instance_creator::register_in_facade(
   const inst::instance& instance)
 {
   const auto& inst_type = instance.type();
@@ -86,22 +85,29 @@ void declarative_component_instance_creator::register_in_facade(
     m_facade.register_project(name_str);
   }
 
+  inst::instance* created{ nullptr };
+
   if (instance.type() == m_decl_types.static_library ||
       instance.type().derives_from(m_decl_types.static_library)) {
     m_facade.add_library(name_str, sources);
     register_in_facade<inst::library_value>(name_str, instance);
+    created = m_instances.create(inst::library_value{ name_str });
   } else if (instance.type() == m_decl_types.executable ||
              instance.type().derives_from(m_decl_types.executable)) {
 
     m_facade.add_executable(name_str, sources);
     register_in_facade<inst::executable_value>(name_str, instance);
+    created = m_instances.create(inst::executable_value{ name_str });
   } else if (instance.type() == m_decl_types.test_executable ||
              instance.type().derives_from(m_decl_types.test_executable)) {
 
     m_facade.add_executable(name_str, sources);
     m_facade.add_test(name_str);
     register_in_facade<inst::executable_value>(name_str, instance);
+    created = m_instances.create(inst::executable_value{ name_str });
   }
+
+  return m_instances.gather_ownership(created);
 }
 
 template <typename ValueType>

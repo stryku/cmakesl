@@ -46,6 +46,9 @@ private:
   const sema::sema_function& create_component_creation_function(
     const decl_sema::component_node& node);
 
+  const sema::sema_type& map_declarative_type_to_imperative_type(
+    const sema::sema_type& declarative_type) const;
+
 private:
   errors::errors_observer& m_errs;
   strings_container& m_strings;

@@ -46,7 +46,8 @@ public:
     const decl_sema::component_creation_sema_function& function);
 
 private:
-  void register_in_facade(const inst::instance& instance);
+  std::unique_ptr<inst::instance> register_in_facade(
+    const inst::instance& instance);
 
   template <typename ValueType>
   void register_in_facade(const std::string& name,
