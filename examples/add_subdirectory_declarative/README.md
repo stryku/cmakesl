@@ -1,0 +1,1 @@
+# Example usage of `add_subdirectory()` which contains a declarative `CMakeLists.dcmsl`

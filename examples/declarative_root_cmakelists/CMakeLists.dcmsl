@@ -1,0 +1,7 @@
+executable {
+    name = "declarative_root_example"
+
+    files.public = [
+        "main.cpp"
+    ]
+}

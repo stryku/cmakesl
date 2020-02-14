@@ -1,0 +1,13 @@
+int main()
+{
+  cmake::minimum_required(cmake::version(3, 14, 3));
+
+  auto p = cmake::project("add_declarative_file example");
+
+  auto lib = add_declarative_file("lib.dcmsl");
+
+  auto exe = p.add_executable("exe", { "main.cpp" });
+  exe.link_to(lib);
+
+  return 0;
+}

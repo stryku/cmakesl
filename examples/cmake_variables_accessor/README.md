@@ -1,0 +1,1 @@
+# Example usage of `cmake_variables.FOO.as_*`

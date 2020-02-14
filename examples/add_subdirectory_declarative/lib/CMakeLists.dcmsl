@@ -1,0 +1,7 @@
+static_library {
+    name = "lib"
+
+    files.public = [
+        "lib.cpp"
+    ]
+}

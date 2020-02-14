@@ -1,0 +1,14 @@
+int main()
+{
+  cmake::minimum_required(cmake::version(3, 14, 3));
+
+  auto p = cmake::project("cmake_variables_accessor");
+
+  cmake::set_old_style_variable("MY_FANCY_PREFIX", "my_fancy_");
+
+  cmake::set_old_style_variable("EXE_SOURCES", "main.cpp;msg.cpp");
+
+  add_declarative_file("exe.dcmsl");
+
+  return 0;
+}

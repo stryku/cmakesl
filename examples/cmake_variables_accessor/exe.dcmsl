@@ -1,0 +1,5 @@
+executable {
+    name = "exe"
+    name_prefix = cmake_variables.MY_FANCY_PREFIX.as_string
+    files.public = cmake_variables.EXE_SOURCES.as_list
+}

@@ -35,8 +35,13 @@ parser::parse_component_declaration()
   std::optional<token_t> colon;
   std::optional<token_t> derived_type_name;
   if ((colon = try_eat(token_type_t::colon))) {
-    derived_type_name = eat(token_type_t::identifier);
+    derived_type_name = eat();
     if (!derived_type_name) {
+      return nullptr;
+    }
+
+    if (derived_type_name->get_type() != token_type_t::identifier &&
+        derived_type_name->get_type() != token_type_t::kw_executable) {
       return nullptr;
     }
   }

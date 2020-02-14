@@ -1,0 +1,3 @@
+component my_fancy_exe : executable {
+    name_prefix = "my_fancy_"
+}

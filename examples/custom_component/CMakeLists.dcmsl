@@ -1,0 +1,9 @@
+import "my_fancy_exe.dcmsl";
+
+my_fancy_exe {
+    name = "executable"
+
+    files.public = [
+        "main.cpp"
+    ]
+}

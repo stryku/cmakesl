@@ -1,0 +1,1 @@
+# Example usage of declarative format as the root `CMakeLists.dcmsl`
