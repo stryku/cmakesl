@@ -1,6 +1,4 @@
-component my_fancy_exe : executable {
-    name_prefix = "my_fancy_"
-}
+import "my_fancy_exe.dcmsl";
 
 my_fancy_exe {
     name = "executable"
