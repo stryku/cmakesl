@@ -1,32 +1,38 @@
 # CMakeSL User guide
 
-Table of Contents
-=================
+# Table of contents
+- [CMakeSL User guide](#cmakesl-user-guide)
+  - [CMakeLists.txt vs CMakeLists.cmsl](#cmakeliststxt-vs-cmakelistscmsl)
+  - [Entry point of scripts execution](#entry-point-of-scripts-execution)
+- [Builtin types](#builtin-types)
+  - [void](#void)
+  - [bool](#bool)
+  - [int](#int)
+  - [double](#double)
+  - [string](#string)
+  - [extern<T>](#externt)
+  - [list<T>](#listt)
+  - [cmake::option](#cmakeoption)
+  - [cmake::version](#cmakeversion)
+  - [project](#project)
+  - [library](#library)
+  - [executable](#executable)
+- [User types](#user-types)
+- [Type deduction](#type-deduction)
+- [Designated initializers](#designated-initializers)
+- [Import/export](#importexport)
+- [Mixing CMakeSL with 'old' CMake](#mixing-cmakesl-with-old-cmake)
+- [Examples](#examples)
+  - [Hello world](#hello-world)
+  - [More complex example](#more-complex-example)
+- [Declarative format](#declarative-format)
+  - [Builtin components](#builtin-components)
+  - [forwarding_lists properties](#forwardinglists-properties)
+  - [Custom components](#custom-components)
+  - [Modules](#modules)
+  - [Accessing old-style CMake variables](#accessing-old-style-cmake-variables)
+  - [Declarative root file](#declarative-root-file)
 
-   * [CMakeSL User guide](#cmakesl-user-guide)
-      * [CMakeLists.txt vs CMakeLists.cmsl](#cmakeliststxt-vs-cmakelistscmsl)
-      * [Entry point of scripts execution](#entry-point-of-scripts-execution)
-   * [Builtin types](#builtin-types)
-      * [void](#void)
-      * [bool](#bool)
-      * [int](#int)
-      * [double](#double)
-      * [string](#string)
-      * [extern](#extern)
-      * [list](#list)
-      * [cmake::option](#cmakeoption)
-      * [cmake::version](#cmakeversion)
-      * [project](#project)
-      * [library](#library)
-      * [executable](#executable)
-   * [User types](#user-types)
-   * [Type deduction](#type-deduction)
-   * [Designated initializers](#designated-initializers)
-   * [Import/export](#importexport)
-   * [Mixing CMakeSL with 'old' CMake](#mixing-cmakesl-with-old-cmake)
-   * [Examples](#examples)
-      * [Hello world](#hello-world)
-      * [More complex example](#more-complex-example)
 
 ## CMakeLists.txt vs CMakeLists.cmsl
 CMake binary expects that CMakeSL scripts are named `CMakeLists.cmsl`. Based on extension (`cmsl` not `txt`) it knows that the scripts are written in CMakeSL, not the 'old' CMake language.
@@ -395,3 +401,130 @@ cmake::library main(cmake::project& top_lvl_project)
 }
 
 ```
+
+# Declarative format
+Declarative format can be used as leaf nodes of you build system.
+
+## Builtin components
+There are four builtin component types that you should be aware of:
+* `static_library`
+* `shared_library`
+* `executable`
+* `test_executable`
+
+All of them derive from `product` component type. You can find available properties in the [docs](https://github.com/stryku/cmakesl/blob/master/doc/builtin/decl.cmsl#L31).
+
+## forwarding_lists properties
+You've probably spotted an usage of property like `files.public`. At this point you probably figured out what does it mean.
+
+In CMake a lot of properties can be `PUBLIC`, `PRIVATE` or `INTERFACE`. You can add directories to an include path of a target, with `PRIVATE` keyword. That means they won't be forwarded.
+
+The same functionality comes with properties of `product` component, that are of `forwarding_lists` type. `forwarding_lists` has three properties:
+* `public`
+* `private`
+* `interface`
+
+and you can access them and assign to them like you saw earlier, e.g.:
+```
+static_library {
+    name = "foo"
+
+    files.public = [
+        "foo.cpp"
+    ]
+
+    include_dirs.public = [
+        "public/include/dir"
+    ]
+
+    inculde_dirs.private = [
+        "private/include/dir"
+    ]
+
+    dependencies.interface = [
+        "bar_dependency"
+    ]
+}
+```
+
+And so on..
+
+## Custom components
+(Check out a complete example: [custom_component](https://github.com/stryku/cmakesl/tree/master/examples/custom_component))
+
+There are of course cases, when you would want to create a custom component. E.g. you'd want to add a suffix to all of your libraries. You could, of course, add the suffix manually in every `static_library` declaration, but that's ugly. Instead, you can create a custom component that accumulates common functionality and properties. Later on it can be used to declare stuff.
+
+Let's say that we want all of our libraries to have suffix "_my_fancy_lib" and include directory "my/fancy/dir". Let's declare a custom component out of it, that derives from the builtin `static_library` component:
+```
+component my_fancy_lib : static_library {
+    name_suffix = "_my_fancy_lib"
+
+    include_dirs.public = [
+        "my/fancy/dir"
+    ]
+}
+```
+
+And now it can be used to declare our fancy lib:
+```
+my_fancy_lib {
+    name = "foo"
+
+    include_dirs.public += [
+        "another/fancy/dir"
+    ]
+}
+```
+
+Mind the `+=` while adding include directory. Thanks to that, the list with `another/fancy/dir` will be appended to the list in component declaration. If you'd use a plain `=`, the list would be overriden.
+
+## Modules
+(Check out a complete example: [module_import](https://github.com/stryku/cmakesl/tree/master/examples/module_import))
+
+Imperative CMakeSL as well as the declarative one has modules support. With the example above, you most likely would want to declare `my_fance_lib` component in a commonly accessible file and use it wherever you need.
+
+Just create the file, let's name it `my_fancy_lib.dcmsl` and in import it the file in whchich you want to use it:
+```
+import "my_fancy_lib.dcmsl";
+
+my_fancy_lib {
+    name = "foo"
+
+    include_dirs.public += [
+        "another/fancy/dir"
+    ]
+}
+```
+
+## Accessing old-style CMake variables
+(Check out a complete example: [cmake_variables_accessor](https://github.com/stryku/cmakesl/tree/master/examples/cmake_variables_accessor))
+
+In a lot of cases you'll need to get a value of an old-style CMake variable. You can get it from an accessor named `cmake_variables`. CMakeSL is statically typed, so you need to provide information how the variable should be treated, using `as_bool`, `as_int`, `as_double`, `as_string` or `as_list`.
+
+For example, let's say that you have a root CMakeLists written in the vanilla CMake:
+`CMakeLists.txt`:
+```
+cmake_minimum_required(VERSION 3.14.3)
+
+project("MyFancyProject")
+
+set(MY_FANCY_SUFFIX "_my_fancy_suffix")
+
+add_subdirectory(my_fancy_lib)
+```
+
+In the `my_fancy_lib` dir, you declare a library that gets its name suffix from the accessor:
+`my_fancy_lib/CMakeLists.dcmsl`:
+```
+static_library {
+    name = "my_fancy_lib"
+    name_suffix = cmake_variables.MY_FANCY_SUFFIX.as_string
+
+    ...
+}
+```
+
+## Declarative root file
+(Check out a complete example: [declarative_root_cmakelists](https://github.com/stryku/cmakesl/tree/master/examples/declarative_root_cmakelists))
+
+Declarative file can be used as the root CMakeLists. So, if you don't need to do anything fancy in the project, or just want to quickly check something out, that's the way.

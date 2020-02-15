@@ -31,12 +31,14 @@ To make CMake environment intuitive and developer-friendly.
 The CMakeSL's purpose is to introduce a new scripting language and the scripting language only.
 All well known CMake's concepts like targets, exporting, importing etc. are going to be preserved.
 
-Ideally, using CMakeSL should not require to learn a new language or install anything.
+Ideally, using CMakeSL should not require to install anything.
 Users with C/C++ (or similar) background can start scripting right away.
-C++ish style of the language allows to use tools like clang-format, doxygen and any other
+C++ish style of the imperative language allows to use tools like clang-format, doxygen and any other
 (that does not require semantic information) out-of-the-box.
+Declarative language is meant to be easy to pick up by humans as well as machines.
 
 For tasks that require semantic info, CMakeSL provides ready-made tools (a library with C interface): indexer and syntax completer. See the [tools section](#tools)
+(There are plans to add support for reading and modifing declarative files too)
 
 
 # Useful links
@@ -46,7 +48,7 @@ For tasks that require semantic info, CMakeSL provides ready-made tools (a libra
 * [Documentation for CMakeSL developers](https://github.com/stryku/cmakesl/blob/master/doc/DeveloperGuide.md)
 
 # Language design
-* Imperative - keep your mind in one paradigm while switching between C/C++ and CMake code.
+* Imperative with declarative extensions - use declarative paradigm to write simple stuff, use imperative one if you need to add a little magic to your build system.
 * C++ish taste - The syntax and semantic are very similar to the ones from C++, so a developer who has any experience with this language will fairly quickly pick the CMakeSL up. You have variables, classes, scopes, namespaces (soon), modules (soon) and a lot of other features known from C++. Another advantage of such approach is that CMakeSL is compatible with a lot of C++ tools like syntax highlighting, clang-format, doxygen etc. See [The language guide](https://github.com/stryku/cmakesl/blob/master/doc/UserGuide.md) for more.
 * Statically typed - be notified about the mistakes before the execution even starts.
 * Set of builtin types like `string`, `list<T>`, `project`, `executable` and more. Combined with static typing, makes CMake's interface powerful and easy to use at the same time.
@@ -77,9 +79,21 @@ int main()
 }
 ```
 
+# Declarative Hello World
+A top-level `CMakeLists.dcmsl`:
+```cpp
+executable {
+    name = "hw_exec"
+    files.public = [
+        "main.cpp"
+    ]
+}
+```
+
+Yep, that's all.
 
 # Tools
-CMakeSL is written with tooling in mind. While you can use doxygen, clang-format and possibly other tools out-of-the-box,
+CMakeSL is written with tooling in mind. While you can use doxygen, clang-format and possibly other tools out-of-the-box (on `*.cmsl` files),
 other tools that require language semantic (e.g. clang's code completion) will not work (because e.g. CMakeSL's fundamental types are in fact classes, with methods).
 That's why, CMakeSL provides its own tools for indexing and code completion. These tools provide C language interface, so they can be used pretty much everywhere
 
